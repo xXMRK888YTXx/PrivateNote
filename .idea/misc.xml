@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/PrivateNote/app/src/main/res/drawable/ic_baseline_lock_24.xml" value="0.121" />
+        <entry key="..\:/PrivateNote/app/src/main/res/drawable/ic_baseline_note_24.xml" value="0.121" />
+        <entry key="..\:/PrivateNote/app/src/main/res/drawable/ic_main_note_icon.xml" value="0.121" />
+      </map>
+    </option>
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_X" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

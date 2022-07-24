@@ -1,0 +1,7 @@
+package com.xxmrk888ytxx.privatenote.Screen
+
+sealed class Screen(val route:String) {
+    object SplashScreen : Screen("SplashScreen")
+    object MainScreen : Screen("MainScreen")
+
+}
