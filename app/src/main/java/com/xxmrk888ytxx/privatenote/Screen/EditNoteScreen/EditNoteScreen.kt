@@ -5,6 +5,7 @@ import android.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -17,14 +18,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.HorizontalAlignmentLine
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.ui.theme.CursorColor
 import com.xxmrk888ytxx.privatenote.ui.theme.DropDownMenuColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -35,6 +42,7 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
                 .background(MainBackGroundColor)
         ) {
             Toolbar(editNoteViewModel,navController)
+            TitleEditField()
         }
 
 }
@@ -95,5 +103,35 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                    }
                }
     }
+}
 
+@Composable
+fun TitleEditField() {
+    val text = remember {
+        mutableStateOf("")
+    }
+    TextField(value = text.value,
+        onValueChange = {text.value = it},
+        modifier = Modifier
+            .fillMaxWidth(),
+        singleLine = true,
+        placeholder = {Text("Заголовок",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+            )},
+        shape = RoundedCornerShape(80),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White.copy(0f),
+            focusedIndicatorColor = Color.White.copy(0f),
+            unfocusedIndicatorColor = Color.White.copy(0f),
+            cursorColor = CursorColor,
+            placeholderColor = TitleHintColor.copy(0.6f)
+        ),
+        textStyle = TextStyle(
+            color = Color.White.copy(0.9f),
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Bold,
+
+        )
+    )
 }

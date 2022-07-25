@@ -23,11 +23,13 @@ import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
+import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.ui.theme.PrivateNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    val utils = SecurityUtils()
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,15 +46,3 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    PrivateNoteTheme {
-        Greeting("Android")
-    }
-}
