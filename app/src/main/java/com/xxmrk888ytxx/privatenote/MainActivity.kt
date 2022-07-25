@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
@@ -33,8 +35,9 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             Scaffold() {
                 NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
-                    composable(Screen.SplashScreen.route) { SplashScreen(navController)}
-                    composable(Screen.MainScreen.route) { MainScreen()}
+                    composable(Screen.SplashScreen.route) {SplashScreen(navController)}
+                    composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
+                    composable(Screen.EditNoteScreen.route) {EditNoteScreen(navController = navController)}
                 }
             }
         }

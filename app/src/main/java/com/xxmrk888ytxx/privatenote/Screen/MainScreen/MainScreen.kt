@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -34,14 +36,14 @@ import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SearchColor
 
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: NavController) {
     Column(
         Modifier
             .background(MainBackGroundColor)
             .fillMaxSize(),
     ) {
         SearchLine()
-        NoteList(mainViewModel.getNoteList())
+        NoteList(mainViewModel,navController)
     }
 }
 
@@ -57,7 +59,7 @@ fun SearchLine() {
             .fillMaxWidth()
             .clip(RoundedCornerShape(100))
             .padding(15.dp),
-        label = { Text(text = "Поиск",
+        label = { Text(text = stringResource(R.string.Search),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
         )},
@@ -89,15 +91,15 @@ fun SearchLine() {
     )
 }
 @Composable
-fun NoteList(noteList:List<Note>) {
+fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
     LazyColumn(
         Modifier.fillMaxSize()
     ) {
-        items(noteList) {
+        items(mainViewModel.getNoteList()) {
             Card(
                 Modifier
                     .fillMaxWidth()
-                    .padding(10.dp),
+                    .padding(10.dp).clickable { mainViewModel.toEditNoteScreen(navController) },
                     shape = RoundedCornerShape(15)
             ) {
                Column(Modifier.fillMaxSize()

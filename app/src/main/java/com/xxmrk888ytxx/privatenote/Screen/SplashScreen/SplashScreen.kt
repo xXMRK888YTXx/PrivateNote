@@ -58,7 +58,7 @@ fun Splash(alpha:Float) {
         Image(
             painter = painterResource(R.drawable.ic_main_note_icon),
             contentDescription = "note",
-            modifier = Modifier.size(120.dp).alpha(alpha),
+            modifier = Modifier.size(175.dp).alpha(alpha),
         )
     }
 }
