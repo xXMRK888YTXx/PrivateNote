@@ -1,33 +1,29 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
-import android.widget.Toolbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.HorizontalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.PopupProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
+import com.xxmrk888ytxx.privatenote.Utils.NavArguments
+import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.CursorColor
 import com.xxmrk888ytxx.privatenote.ui.theme.DropDownMenuColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
@@ -36,33 +32,44 @@ import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navController: NavController) {
+    LaunchedEffect(key1 = true, block = {
+        editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
+    })
         Column(
             Modifier
                 .fillMaxSize()
                 .background(MainBackGroundColor)
         ) {
             Toolbar(editNoteViewModel,navController)
-            TitleEditField()
-            TimeCreated()
-            NoteTextEdit()
+            TitleEditField(editNoteViewModel)
+            TimeCreated(editNoteViewModel)
+            NoteTextEdit(editNoteViewModel)
         }
+    DisposableEffect(key1 = true, effect = {
+        this.onDispose {
+            editNoteViewModel.saveNote()
+        }
+    })
 
 }
 
 @Composable
-fun TimeCreated() {
-    Text(text = "12 Мая 09:47",
+fun TimeCreated(editNoteViewModel: editNoteViewModel) {
+    if(editNoteViewModel.currentTime.value == 0L) return
+    Text(text = editNoteViewModel.currentTime.value.secondToData(LocalContext.current),
         color = Color.White.copy(0.5f),
         fontSize = 14.sp,
         fontWeight = FontWeight.Light,
-        modifier = Modifier.fillMaxWidth().padding(start = 13.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 13.dp)
     )
 }
 
 @Composable
-fun NoteTextEdit() {
+fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
     val text = remember {
-        mutableStateOf("")
+        editNoteViewModel.textField
     }
     TextField(value = text.value,
         onValueChange = {text.value = it},
@@ -93,11 +100,13 @@ fun NoteTextEdit() {
 @Composable
 fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     val isDropDownMenuShow = remember {
-        mutableStateOf(false)
+        editNoteViewModel.isDropDownMenuShow
     }
     val dropDownItemList = listOf<DropDownItem>(
         DropDownItem(stringResource(R.string.Encrypt_note)){},
-        DropDownItem(stringResource(R.string.Delete)){}
+        DropDownItem(stringResource(R.string.Delete)){
+            editNoteViewModel.removeNote(navController)
+        }
     )
     Row(
         Modifier
@@ -149,9 +158,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
 }
 
 @Composable
-fun TitleEditField() {
+fun TitleEditField(editNoteViewModel: editNoteViewModel) {
     val text = remember {
-        mutableStateOf("")
+        editNoteViewModel.titleTextField
     }
     TextField(value = text.value,
         onValueChange = {text.value = it},

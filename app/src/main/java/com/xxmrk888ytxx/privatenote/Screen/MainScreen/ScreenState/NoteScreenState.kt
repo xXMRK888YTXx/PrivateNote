@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.DefaultShadowColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -27,6 +29,7 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainViewModel
 import com.xxmrk888ytxx.privatenote.Utils.getFirstLine
+import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -96,15 +99,16 @@ fun SearchLine(mainViewModel: MainViewModel) {
 }
 @Composable
 fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
+    val noteList = mainViewModel.getNoteList().collectAsState(listOf())
     LazyColumn(
         Modifier.fillMaxSize()
     ) {
-        items(mainViewModel.getNoteList()) {
+        items(noteList.value) {
             Card(
                 Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
-                    .clickable { mainViewModel.toEditNoteScreen(navController) },
+                    .clickable { mainViewModel.toEditNoteScreen(navController,it.id) },
                 shape = RoundedCornerShape(15)
             ) {
                 Column(
@@ -127,7 +131,7 @@ fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
                             color = Color.Gray
                         )
                     }
-                    Text(text = it.created_at,
+                    Text(text = it.created_at.secondToData(LocalContext.current),
                         modifier = Modifier.fillMaxWidth(),
                         fontSize = 12.sp,
                         color = Color.Gray
@@ -141,7 +145,7 @@ fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
 @Composable
 fun FloatButton(mainViewModel: MainViewModel,navController: NavController) {
     FloatingActionButton(
-        onClick = {mainViewModel.toEditNoteScreen(navController) },
+        onClick = {mainViewModel.toEditNoteScreen(navController,0) },
         backgroundColor = FloatingButtonColor,
         modifier = Modifier.size(65.dp)
     ){

@@ -5,12 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
+import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.Screen
+import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor() : ViewModel() {
+class MainViewModel @Inject constructor(
+    val noteRepository: NoteRepository
+) : ViewModel() {
 
     val screenState:MutableState<MainScreenState> = mutableStateOf(MainScreenState.NoteScreen)
     get() = field
@@ -22,12 +27,12 @@ class MainViewModel @Inject constructor() : ViewModel() {
         screenState.value = state
     }
 
-    fun getNoteList() : List<Note> {
-        return listOf(Note("Любители инстосамки","Тихонович Ярослав","12 Мая"),
-            Note("Любители инстосамки","","12 Мая"))
+    fun getNoteList() : Flow<List<Note>> {
+        return noteRepository.getAllNote()
     }
 
-    fun toEditNoteScreen(navController: NavController) {
+    fun toEditNoteScreen(navController: NavController,id:Int) {
+        NavArguments.bundle.putInt("getNoteId",id)
         navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
     }
 }

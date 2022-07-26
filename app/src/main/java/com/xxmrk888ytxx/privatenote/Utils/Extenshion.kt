@@ -1,9 +1,55 @@
 package com.xxmrk888ytxx.privatenote.Utils
 
+import android.content.Context
+import android.util.Log
+import com.xxmrk888ytxx.privatenote.R
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import java.util.*
+import kotlin.time.Duration.Companion.hours
+
 fun String.getFirstLine() : String {
-    try {
-       return this.lines()[0]
-    }catch (e:Exception) {
+       this.lines().forEach {
+           if(!it.isEmpty()) {
+               return it
+           }
+       }
         return ""
     }
+fun monthToString(month:Int,context: Context) : String {
+    context.resources.apply {
+        return when(month) {
+            0 -> getString(R.string.January)
+            1 -> getString(R.string.February)
+            2 -> getString(R.string.March)
+            3 -> getString(R.string.April)
+            4 -> getString(R.string.May)
+            5 -> getString(R.string.June)
+            6 -> getString(R.string.July)
+            7 -> getString(R.string.August)
+            8 -> getString(R.string.September)
+            9 -> getString(R.string.October)
+            10 -> getString(R.string.November)
+            11 -> getString(R.string.December)
+            else -> return ""
+        }
+    }
+}
+
+
+fun Long.secondToData(context: Context) : String {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = this
+    var minute = ""
+    if(calendar.get(Calendar.MINUTE) < 10)
+        minute = "0" + calendar.get(Calendar.MINUTE).toString()
+    else minute = calendar.get(Calendar.MINUTE).toString()
+    return "${calendar.get(Calendar.DAY_OF_MONTH)} ${monthToString(calendar.get(Calendar.MONTH),context)}" +
+            " ${calendar.get(Calendar.YEAR)} " +
+            "${calendar.get(Calendar.HOUR_OF_DAY)}:$minute"
+}
+
+fun <T> Flow<T>.getData() : T  = runBlocking {
+    return@runBlocking this@getData.first()
 }
