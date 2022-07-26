@@ -3,4 +3,6 @@
     <string name="Search">Поиск</string>
     <string name="Encrypt_note">Зашифровать заметку</string>
     <string name="Delete">Удалить</string>
+    <string name="Title">Заголовок</string>
+    <string name="Write_something_here">Напишите здесь что нибудь...</string>
 </resources>

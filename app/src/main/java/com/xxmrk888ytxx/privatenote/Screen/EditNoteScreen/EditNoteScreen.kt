@@ -43,8 +43,51 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
         ) {
             Toolbar(editNoteViewModel,navController)
             TitleEditField()
+            TimeCreated()
+            NoteTextEdit()
         }
 
+}
+
+@Composable
+fun TimeCreated() {
+    Text(text = "12 Мая 09:47",
+        color = Color.White.copy(0.5f),
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Light,
+        modifier = Modifier.fillMaxWidth().padding(start = 13.dp)
+    )
+}
+
+@Composable
+fun NoteTextEdit() {
+    val text = remember {
+        mutableStateOf("")
+    }
+    TextField(value = text.value,
+        onValueChange = {text.value = it},
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 0.dp),
+        placeholder = {Text(text = stringResource(R.string.Write_something_here),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+        )},
+        shape = RoundedCornerShape(80),
+        colors = TextFieldDefaults.textFieldColors(
+            backgroundColor = Color.White.copy(0f),
+            focusedIndicatorColor = Color.White.copy(0f),
+            unfocusedIndicatorColor = Color.White.copy(0f),
+            cursorColor = CursorColor,
+            placeholderColor = TitleHintColor.copy(0.6f)
+        ),
+        textStyle = TextStyle(
+            color = Color.White.copy(0.9f),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Medium,
+            )
+
+    )
 }
 
 @Composable
@@ -113,13 +156,13 @@ fun TitleEditField() {
     TextField(value = text.value,
         onValueChange = {text.value = it},
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(top = 20.dp),
         singleLine = true,
-        placeholder = {Text("Заголовок",
+        placeholder = {Text(stringResource(R.string.Title),
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             )},
-        shape = RoundedCornerShape(80),
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.White.copy(0f),
             focusedIndicatorColor = Color.White.copy(0f),
