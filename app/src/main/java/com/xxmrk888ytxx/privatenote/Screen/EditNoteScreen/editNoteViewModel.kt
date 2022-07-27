@@ -8,7 +8,9 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
+import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
+import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class editNoteViewModel @Inject constructor(
    val noteRepository: NoteRepository,
-   val securityUtils: SecurityUtils
+   val securityUtils: SecurityUtils,
+   val showToast: ShowToast
 ) : ViewModel() {
 
     val titleTextField = mutableStateOf("")
@@ -32,7 +35,7 @@ class editNoteViewModel @Inject constructor(
 
     val isDropDownMenuShow = mutableStateOf(false)
 
-    val isShowCryptDialog = mutableStateOf(false)
+    val dialogShowState = mutableStateOf<ShowDialogState>(ShowDialogState.None)
 
     private var notePassword:String? = null
 
@@ -48,6 +51,9 @@ class editNoteViewModel @Inject constructor(
                 titleTextField.value = note.title
                 textField.value = note.text
                 saveNoteState.value = SaveNoteState.DefaultSaveNote
+            }
+            else {
+                dialogShowState.value = ShowDialogState.DecryptDialog
             }
             currentTime.value = note.created_at
 
@@ -74,7 +80,10 @@ class editNoteViewModel @Inject constructor(
                     }
                 }
                 is SaveNoteState.CryptSaveNote -> {
-
+                    noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
+                        title = securityUtils.encrypt(titleTextField.value,notePassword!!),
+                        text = securityUtils.encrypt(textField.value,notePassword!!)
+                    ))
                 }
 
                 is SaveNoteState.None -> return@launch
@@ -91,6 +100,10 @@ class editNoteViewModel @Inject constructor(
     fun changeStateToEncryptNote(password:String) {
         saveNoteState.value = SaveNoteState.CryptSaveNote
         note.isEncrypted = true
-        notePassword = securityUtils.getPasswordToHash(password)
+        notePassword = securityUtils.passwordToHash(password)
+        dialogShowState.value = ShowDialogState.None
+        showToast.showToast("Заметка зашифрована")
     }
+
+    fun isEncryptNote() = note.isEncrypted
 }

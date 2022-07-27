@@ -11,6 +11,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,9 +25,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
+import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
@@ -35,8 +39,8 @@ import com.xxmrk888ytxx.privatenote.ui.theme.*
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navController: NavController) {
-    val isShowCryptDialog = remember {
-        editNoteViewModel.isShowCryptDialog
+    val dialogState = remember {
+        editNoteViewModel.dialogShowState
     }
     LaunchedEffect(key1 = true, block = {
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId),navController)
@@ -56,8 +60,10 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
             editNoteViewModel.saveNote()
         }
     })
-    if(isShowCryptDialog.value) {
-        CryptDialog(editNoteViewModel)
+    when(dialogState.value) {
+       is ShowDialogState.EncryptDialog -> {CryptDialog(editNoteViewModel)}
+        is ShowDialogState.DecryptDialog -> {DecriptDialog(editNoteViewModel,navController)}
+        is ShowDialogState.None -> {}
     }
 }
 
@@ -110,9 +116,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     val isDropDownMenuShow = remember {
         editNoteViewModel.isDropDownMenuShow
     }
-    val dropDownItemList = listOf<DropDownItem>(
-        DropDownItem(stringResource(R.string.Encrypt_note)) {
-            editNoteViewModel.isShowCryptDialog.value = true
+    val dropDownItemList = listOf(
+        DropDownItem(stringResource(R.string.Encrypt_note), isEnable = !editNoteViewModel.isEncryptNote()) {
+            editNoteViewModel.dialogShowState.value = ShowDialogState.EncryptDialog
         },
         DropDownItem(stringResource(R.string.Delete)){
             editNoteViewModel.removeNote(navController)
@@ -157,8 +163,10 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                            modifier = Modifier.background(DropDownMenuColor)
                        ) {
                            dropDownItemList.forEach {
-                               DropdownMenuItem(onClick = { it.onClick.invoke() }) {
-                                   Text(it.text,color = Color.White.copy(0.9f))
+                               if(it.isEnable) {
+                                   DropdownMenuItem(onClick = { it.onClick.invoke() }) {
+                                       Text(it.text,color = Color.White.copy(0.9f))
+                                   }
                                }
                            }
                        }
@@ -209,7 +217,7 @@ fun CryptDialog(editNoteViewModel: editNoteViewModel) {
     val isEnabled = remember {
         mutableStateOf(false)
     }
-    Dialog(onDismissRequest = {editNoteViewModel.isShowCryptDialog.value = false },
+    Dialog(onDismissRequest = {editNoteViewModel.dialogShowState.value = ShowDialogState.None },
         ) {
         Card(
             Modifier.fillMaxWidth(),
@@ -226,13 +234,13 @@ fun CryptDialog(editNoteViewModel: editNoteViewModel) {
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
-                    onClick = {  },
+                    onClick = { editNoteViewModel.changeStateToEncryptNote(passwordText.value) },
                     enabled = (isEnabled.value&&!passwordText.value.isEmpty()
                             &&!repitPasswordText.value.isEmpty()),
                     shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(contentColor = Color.White,
+                    colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.White.copy(0.9f),
-                        disabledContentColor = Color.White.copy(0.3f),
+                        disabledContentColor = Color.Black.copy(0.3f),
                         disabledBackgroundColor = Color.White.copy(0.3f)
                         )
                 ){
@@ -332,4 +340,74 @@ fun WarmingText() {
             )
 
     }
+}
+
+@Composable
+fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavController) {
+    val passwordText = remember {
+        mutableStateOf("")
+    }
+    Dialog(onDismissRequest = {editNoteViewModel.dialogShowState.value = ShowDialogState.None;navController.navigateUp() },
+    ) {
+        Card(
+            Modifier.fillMaxWidth()
+            ,
+            shape = RoundedCornerShape(10)
+        ) {
+            Column(
+                Modifier.background(MainBackGroundColor)
+
+            ) {
+                PasswordTextEdit(editNoteViewModel,passwordText)
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+                    onClick = {  },
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White.copy(0.9f),
+                        disabledContentColor = Color.Black.copy(0.3f),
+                        disabledBackgroundColor = Color.White.copy(0.3f)
+                    )
+                ){
+                    Text(text = "Расшифровать",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                }
+            }
+        }
+    }
+}
+@Composable
+fun PasswordTextEdit(editNoteViewModel: editNoteViewModel, password: MutableState<String>) {
+    OutlinedTextField(value = password.value,
+        onValueChange = {password.value = it},
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(100))
+            .padding(15.dp),
+        label = { Text(text = "Введите пароль",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color.White,
+            backgroundColor = SearchColor,
+            placeholderColor = Color.White.copy(0.7f),
+            focusedBorderColor = SearchColor,
+            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            cursorColor = CursorColor,
+            unfocusedLabelColor = Color.White.copy(0.6f)
+        ),
+        textStyle = TextStyle(fontSize = 16.sp),
+        keyboardOptions = KeyboardOptions(autoCorrect = false,
+            keyboardType = KeyboardType.Password,
+        ),
+        visualTransformation = PasswordVisualTransformation()
+    )
 }

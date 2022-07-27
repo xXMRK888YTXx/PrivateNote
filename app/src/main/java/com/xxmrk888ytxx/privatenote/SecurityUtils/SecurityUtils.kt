@@ -9,6 +9,7 @@ import javax.inject.Singleton
 @Singleton
 class SecurityUtils {
     fun encrypt(input:String,password:String): String {
+        if(input.isEmpty()) return ""
         val cipher = Cipher.getInstance("AES")
         val keySpec: SecretKeySpec = SecretKeySpec(password.toByteArray(),"AES")
         cipher.init(Cipher.ENCRYPT_MODE,keySpec)
@@ -17,6 +18,7 @@ class SecurityUtils {
     }
 
     fun decrypt(input:String,password:String): String {
+        if(input.isEmpty()) return ""
         val cipher = Cipher.getInstance("AES")
         val keySpec: SecretKeySpec = SecretKeySpec(password.toByteArray(),"AES")
         cipher.init(Cipher.DECRYPT_MODE,keySpec)
@@ -24,7 +26,8 @@ class SecurityUtils {
         return String(encrypt)
     }
 
-    fun getPasswordToHash(password:String,limit:Int = 32) : String {
+    fun passwordToHash(password:String, limit:Int = 32) : String {
+        if(password.isEmpty()) return ""
         return MessageDigest
             .getInstance("SHA-256")
             .digest(password.toByteArray())

@@ -1,0 +1,18 @@
+package com.xxmrk888ytxx.privatenote.DI
+
+import android.content.Context
+import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+
+@Module
+@InstallIn(SingletonComponent::class)
+class UtilsModule {
+    @Provides
+    fun getShowToast(@ApplicationContext context: Context) : ShowToast {
+        return ShowToast(context)
+    }
+}

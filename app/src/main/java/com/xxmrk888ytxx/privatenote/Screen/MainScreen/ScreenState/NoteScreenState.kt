@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -97,17 +98,19 @@ fun SearchLine(mainViewModel: MainViewModel) {
         }
     )
 }
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
     val noteList = mainViewModel.getNoteList().collectAsState(listOf())
     LazyColumn(
         Modifier.fillMaxSize()
     ) {
-        items(noteList.value) {
+        items(noteList.value.sortedByDescending { it.created_at },key = {it.id}) {
             Card(
                 Modifier
                     .fillMaxWidth()
                     .padding(10.dp)
+                    .animateItemPlacement()
                     .clickable { mainViewModel.toEditNoteScreen(navController,it.id) },
                 shape = RoundedCornerShape(15)
             ) {
