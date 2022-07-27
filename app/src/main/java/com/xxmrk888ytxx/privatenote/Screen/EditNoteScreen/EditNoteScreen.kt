@@ -1,39 +1,45 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
-import com.xxmrk888ytxx.privatenote.ui.theme.CursorColor
-import com.xxmrk888ytxx.privatenote.ui.theme.DropDownMenuColor
-import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
+import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navController: NavController) {
+    val isShowCryptDialog = remember {
+        editNoteViewModel.isShowCryptDialog
+    }
     LaunchedEffect(key1 = true, block = {
-        editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
+        editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId),navController)
     })
         Column(
             Modifier
@@ -50,7 +56,9 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
             editNoteViewModel.saveNote()
         }
     })
-
+    if(isShowCryptDialog.value) {
+        CryptDialog(editNoteViewModel)
+    }
 }
 
 @Composable
@@ -103,7 +111,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         editNoteViewModel.isDropDownMenuShow
     }
     val dropDownItemList = listOf<DropDownItem>(
-        DropDownItem(stringResource(R.string.Encrypt_note)){},
+        DropDownItem(stringResource(R.string.Encrypt_note)) {
+            editNoteViewModel.isShowCryptDialog.value = true
+        },
         DropDownItem(stringResource(R.string.Delete)){
             editNoteViewModel.removeNote(navController)
         }
@@ -186,4 +196,140 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
 
         )
     )
+}
+
+@Composable
+fun CryptDialog(editNoteViewModel: editNoteViewModel) {
+    val passwordText = remember {
+        mutableStateOf("")
+    }
+    val repitPasswordText = remember {
+        mutableStateOf("")
+    }
+    val isEnabled = remember {
+        mutableStateOf(false)
+    }
+    Dialog(onDismissRequest = {editNoteViewModel.isShowCryptDialog.value = false },
+        ) {
+        Card(
+            Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10)
+        ) {
+            Column(
+                Modifier.background(MainBackGroundColor)
+
+            ) {
+                PasswordTextEdit(editNoteViewModel,passwordText,repitPasswordText,isEnabled)
+                RepitPasswordTextEdit(editNoteViewModel,repitPasswordText,passwordText,isEnabled)
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+                    onClick = {  },
+                    enabled = (isEnabled.value&&!passwordText.value.isEmpty()
+                            &&!repitPasswordText.value.isEmpty()),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(contentColor = Color.White,
+                        backgroundColor = Color.White.copy(0.9f),
+                        disabledContentColor = Color.White.copy(0.3f),
+                        disabledBackgroundColor = Color.White.copy(0.3f)
+                        )
+                ){
+                    Text(text = "Зашифровать",
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                }
+                WarmingText()
+            }
+            }
+        }
+    }
+@Composable
+fun PasswordTextEdit(editNoteViewModel: editNoteViewModel, password: MutableState<String>,
+                     repitPassword: MutableState<String>, isEnabled:MutableState<Boolean>) {
+    OutlinedTextField(value = password.value,
+        onValueChange = {password.value = it;isEnabled.value = repitPassword.value == password.value},
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(100))
+            .padding(15.dp),
+        label = { Text(text = "Введите пароль",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color.White,
+            backgroundColor = SearchColor,
+            placeholderColor = Color.White.copy(0.7f),
+            focusedBorderColor = SearchColor,
+            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            cursorColor = CursorColor,
+            unfocusedLabelColor = Color.White.copy(0.6f)
+        ),
+        textStyle = TextStyle(fontSize = 16.sp),
+        keyboardOptions = KeyboardOptions(autoCorrect = false,
+        keyboardType = KeyboardType.Password,
+            ),
+            visualTransformation = PasswordVisualTransformation()
+    )
+}
+
+@Composable
+fun RepitPasswordTextEdit(editNoteViewModel: editNoteViewModel, repitPassword:MutableState<String>,
+    password: MutableState<String>, isEnabled:MutableState<Boolean>) {
+
+    OutlinedTextField(value = repitPassword.value,
+        onValueChange = {repitPassword.value = it;isEnabled.value = repitPassword.value == password.value },
+        singleLine = true,
+        isError = (!isEnabled.value&&!repitPassword.value.isEmpty()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(100))
+            .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+        label = { Text(text = "Повторите пароль",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            textColor = Color.White,
+            backgroundColor = SearchColor,
+            placeholderColor = Color.White.copy(0.7f),
+            focusedBorderColor = SearchColor,
+            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            cursorColor = CursorColor,
+            unfocusedLabelColor = Color.White.copy(0.6f)
+        ),
+        textStyle = TextStyle(fontSize = 16.sp),
+        keyboardOptions = KeyboardOptions(autoCorrect = false,
+            keyboardType = KeyboardType.Password,
+        ),
+        visualTransformation = PasswordVisualTransformation()
+    )
+}
+@Composable
+fun WarmingText() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(painter = painterResource(id = R.drawable.ic_error),
+            contentDescription = "Error",
+            tint = Color.Red,
+            modifier = Modifier.padding(end = 10.dp)
+            )
+        Text(text = "Запомните этот пароль.Если вы потеряете его," +
+                " вы не сможете получить доступ к заметке.",
+                color = Color.White.copy(0.9f),
+            fontSize = 18.sp,
+            fontStyle = FontStyle.Italic,
+            )
+
+    }
 }
