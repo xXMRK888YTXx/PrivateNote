@@ -11,24 +11,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainViewModel
 import com.xxmrk888ytxx.privatenote.Utils.getFirstLine
@@ -113,36 +111,14 @@ fun NoteList(mainViewModel: MainViewModel,navController: NavController) {
                     .fillMaxWidth()
                     .padding(10.dp)
                     .animateItemPlacement()
-                    .clickable { mainViewModel.toEditNoteScreen(navController,it.id) },
+                    .clickable { mainViewModel.toEditNoteScreen(navController, it.id) },
                 shape = RoundedCornerShape(15)
             ) {
-                Column(
-                    Modifier
-                        .fillMaxSize()
-                        .background(CardNoteColor)
-                        .padding(10.dp),
-                    verticalArrangement = Arrangement.Top
-                ) {
-                    Text(text = it.title,
-                        modifier = Modifier.fillMaxWidth(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White.copy(0.9f),
-                    )
-                    if(it.text.getFirstLine() != "") {
-                        Text(text = it.text.getFirstLine(),
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            maxLines = 1
-                            )
-                    }
-                    Text(text = it.created_at.secondToData(LocalContext.current),
-                        modifier = Modifier.fillMaxWidth(),
-                        fontSize = 12.sp,
-                        color = Color.Gray
-                    )
-
+                if(!it.isEncrypted) {
+                    DefaultNoteItem(it,navController)
+                }
+                else {
+                    EncryptNoteItem(it,navController)
                 }
             }
         }
@@ -161,4 +137,66 @@ fun FloatButton(mainViewModel: MainViewModel,navController: NavController) {
             modifier = Modifier.size(35.dp)
         )
     }
+}
+
+@Composable
+fun DefaultNoteItem(note: Note, navController: NavController) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(CardNoteColor)
+            .padding(10.dp),
+        verticalArrangement = Arrangement.Top
+    ) {
+        Text(text = note.title,
+            modifier = Modifier.fillMaxWidth(),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Black,
+            color = Color.White.copy(0.9f),
+        )
+        if(note.text.getFirstLine() != "") {
+            Text(text = note.text.getFirstLine(),
+                modifier = Modifier.fillMaxWidth(),
+                fontSize = 16.sp,
+                color = Color.Gray,
+                maxLines = 1
+            )
+        }
+        Text(text = note.created_at.secondToData(LocalContext.current),
+            modifier = Modifier.fillMaxWidth(),
+            fontSize = 12.sp,
+            color = Color.Gray
+        )
+
+    }
+}
+@Composable
+fun EncryptNoteItem(note: Note,navController: NavController) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(CardNoteColor)
+            .padding(10.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ){
+        Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
+            contentDescription = "lock",
+            tint = Color.Gray.copy(0.9f),
+        )
+        Text(text = "Данная заметка зашифрована",
+            textAlign = TextAlign.Center,
+            fontSize = 16.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Light,
+            color = Color.White.copy(0.9f),
+            modifier = Modifier.padding(top = 5.dp)
+        )
+        Text(text = note.created_at.secondToData(LocalContext.current),
+            modifier = Modifier.fillMaxWidth().padding(top = 5.dp),
+            fontSize = 12.sp,
+            color = Color.Gray
+        )
+    }
+
 }
