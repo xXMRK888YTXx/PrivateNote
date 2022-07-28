@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
+import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
+import com.xxmrk888ytxx.privatenote.LifeCycleState
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
@@ -13,16 +16,35 @@ import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class editNoteViewModel @Inject constructor(
-   val noteRepository: NoteRepository,
-   val securityUtils: SecurityUtils,
-   val showToast: ShowToast
+    private val noteRepository: NoteRepository,
+    private val securityUtils: SecurityUtils,
+    private val showToast: ShowToast,
+    private val lifeCycleState: MutableStateFlow<LifeCycleState>
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch {
+            lifeCycleState.collect() {
+                if(it == LifeCycleState.onPause) {
+                    if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
+                        isHideText.value = true
+                        dialogShowState.value = ShowDialogState.DecryptDialog
+                    }
+                    if(note.id == 0) return@collect
+                    saveNote()
+                }
+            }
+        }
+    }
     val titleTextField = mutableStateOf("")
 
     val textField = mutableStateOf("")
@@ -39,17 +61,19 @@ class editNoteViewModel @Inject constructor(
 
     private var notePassword:String? = null
 
+    val isHideText = mutableStateOf(false)
+
+
     fun backToMainScreen(navController: NavController) {
         navController.navigateUp()
     }
 
-    fun getNote(id:Int,navController: NavController) {
-        Log.d("MyLog",id.toString())
+    fun getNote(id:Int) {
         if(id != 0) {
             note = noteRepository.getNoteById(id).getData()
             if(!note.isEncrypted) {
-                titleTextField.value = note.title
-                textField.value = note.text
+                    titleTextField.value = note.title
+                    textField.value = note.text
                 saveNoteState.value = SaveNoteState.DefaultSaveNote
             }
             else {
@@ -59,13 +83,19 @@ class editNoteViewModel @Inject constructor(
 
         }
         else {
-            note = Note(title = "", text = "")
-            saveNoteState.value = SaveNoteState.DefaultSaveNote
+            if(saveNoteState.value != SaveNoteState.CryptSaveNote) {
+                saveNoteState.value = SaveNoteState.DefaultSaveNote
+            }
+            else {
+                dialogShowState.value = ShowDialogState.DecryptDialog
+                isHideText.value = true
+            }
         }
     }
 
+
     fun saveNote() {
-        viewModelScope.launch {
+        GlobalScope.launch {
             when(saveNoteState.value) {
                 is SaveNoteState.DefaultSaveNote -> {
                     if(textField.value == note.text&&titleTextField.value == note.title) return@launch
@@ -80,10 +110,16 @@ class editNoteViewModel @Inject constructor(
                     }
                 }
                 is SaveNoteState.CryptSaveNote -> {
-                    noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
-                        title = securityUtils.encrypt(titleTextField.value,notePassword!!),
-                        text = securityUtils.encrypt(textField.value,notePassword!!)
-                    ))
+                    try {
+                        val title = securityUtils.encrypt(titleTextField.value,notePassword!!)
+                        val text = securityUtils.encrypt(textField.value,notePassword!!)
+                        if(text == note.text&&title == note.title) return@launch
+                        noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
+                            title = title,
+                            text = text
+                        ))
+                    }catch (e:Exception){}
+
                 }
 
                 is SaveNoteState.None -> return@launch
@@ -102,8 +138,45 @@ class editNoteViewModel @Inject constructor(
         note.isEncrypted = true
         notePassword = securityUtils.passwordToHash(password)
         dialogShowState.value = ShowDialogState.None
-        showToast.showToast("Заметка зашифрована")
+        showToast.showToast(R.string.Note_encrypted)
     }
 
     fun isEncryptNote() = note.isEncrypted
+
+   fun decrypt(password: String) {
+       if(notePassword != null) {
+           if(notePassword == securityUtils.passwordToHash(password)) {
+               dialogShowState.value = ShowDialogState.None
+               isHideText.value = false
+               return
+           }
+           else {
+               throw FailedDecryptException("Invalid password")
+           }
+       }
+        try {
+            val hashPassword = securityUtils.passwordToHash(password)
+            isHideText.value = false
+            titleTextField.value = securityUtils.decrypt(note.title,hashPassword)
+            textField.value = securityUtils.decrypt(note.text,hashPassword)
+            notePassword = hashPassword
+            saveNoteState.value = SaveNoteState.CryptSaveNote
+            dialogShowState.value = ShowDialogState.None
+        }catch (e:Exception) {
+            throw FailedDecryptException("Invalid password")
+        }
+
+    }
+
+    fun changeStateToDefaultNote() {
+        saveNoteState.value = SaveNoteState.DefaultSaveNote
+        note.isEncrypted = false
+        notePassword = null
+        showToast.showToast(R.string.Note_decrypted)
+    }
+
+    override fun onCleared() {
+        saveNote()
+        super.onCleared()
+    }
 }

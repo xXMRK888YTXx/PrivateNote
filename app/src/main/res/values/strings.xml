@@ -17,4 +17,13 @@
     <string name="October">Октябрь</string>
     <string name="November">Ноябрь</string>
     <string name="December">Декабрь</string>
+    <string name="Encrypt">Зашифровать</string>
+    <string name="Enter_password">Введите пароль</string>
+    <string name="Repit_password">Повторите пароль</string>
+    <string name="warming_remember_password">Запомните этот пароль.Если вы потеряете его, вы не сможете получить доступ к заметке.</string>
+    <string name="Decrypt">Расшифровать</string>
+    <string name="Note_encrypted">Заметка зашифрована</string>
+    <string name="Invalid_password">Неверный пароль</string>
+    <string name="Note_decrypted">Заметка расшифрована</string>
+    <string name="Decript_note">Расшифровать заметку</string>
 </resources>
