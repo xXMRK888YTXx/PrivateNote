@@ -144,6 +144,11 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     }
     val dropDownItemList = listOf(
         DropDownItem(stringResource(R.string.Encrypt_note), isEnable = !editNoteViewModel.isEncryptNote()) {
+            if(editNoteViewModel.textField.value.isEmpty()&&editNoteViewModel.titleTextField.value.isEmpty()) {
+                editNoteViewModel.getToast().showToast(R.string.note_is_empty)
+                isDropDownMenuShow.value = false
+                return@DropDownItem
+            }
             isDropDownMenuShow.value = false
             editNoteViewModel.dialogShowState.value = ShowDialogState.EncryptDialog
         },
@@ -154,6 +159,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         DropDownItem(stringResource(R.string.Delete)){
             editNoteViewModel.removeNote(navController)
         },
+        DropDownItem(stringResource(R.string.cancel_changes),editNoteViewModel.isHavePrimaryVersion()) {
+            editNoteViewModel.notSaveChanges(navController)
+        }
     )
     Row(
         Modifier

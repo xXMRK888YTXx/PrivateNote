@@ -26,4 +26,6 @@
     <string name="Invalid_password">Неверный пароль</string>
     <string name="Note_decrypted">Заметка расшифрована</string>
     <string name="Decript_note">Расшифровать заметку</string>
+    <string name="note_is_empty">Заметка пуста.Шифрование не возможно.</string>
+    <string name="cancel_changes">Отменить изменения</string>
 </resources>

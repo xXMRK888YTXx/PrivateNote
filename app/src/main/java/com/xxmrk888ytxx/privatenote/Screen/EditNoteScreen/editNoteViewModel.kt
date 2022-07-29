@@ -63,6 +63,12 @@ class editNoteViewModel @Inject constructor(
 
     val isHideText = mutableStateOf(false)
 
+    private var primaryNoteVersion:Note? = null
+
+    fun savePrimaryVersion(note: Note) {
+        if(primaryNoteVersion != null) return
+        primaryNoteVersion = note
+    }
 
     fun backToMainScreen(navController: NavController) {
         navController.navigateUp()
@@ -71,6 +77,7 @@ class editNoteViewModel @Inject constructor(
     fun getNote(id:Int) {
         if(id != 0) {
             note = noteRepository.getNoteById(id).getData()
+            savePrimaryVersion(note.copy())
             if(!note.isEncrypted) {
                     titleTextField.value = note.title
                     textField.value = note.text
@@ -108,6 +115,9 @@ class editNoteViewModel @Inject constructor(
                     if(note.id != 0) {
                         noteRepository.removeNote(note.id)
                     }
+                }
+                is SaveNoteState.NotSaveChanges -> {
+                    noteRepository.insertNote(primaryNoteVersion!!)
                 }
                 is SaveNoteState.CryptSaveNote -> {
                     try {
@@ -175,8 +185,16 @@ class editNoteViewModel @Inject constructor(
         showToast.showToast(R.string.Note_decrypted)
     }
 
+    fun notSaveChanges(navController: NavController) {
+        saveNoteState.value = SaveNoteState.NotSaveChanges
+        navController.navigateUp()
+    }
+
     override fun onCleared() {
         saveNote()
         super.onCleared()
     }
+    fun getToast() = showToast
+
+    fun isHavePrimaryVersion() = primaryNoteVersion != null
 }
