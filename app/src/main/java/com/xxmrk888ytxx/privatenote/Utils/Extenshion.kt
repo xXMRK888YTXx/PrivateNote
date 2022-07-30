@@ -2,6 +2,10 @@ package com.xxmrk888ytxx.privatenote.Utils
 
 import android.content.Context
 import android.util.Log
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.xxmrk888ytxx.privatenote.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -9,13 +13,10 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 import kotlin.time.Duration.Companion.hours
 
-fun String.getFirstLine() : String {
-       this.lines().forEach {
-           if(!it.isEmpty()) {
-               return it
-           }
-       }
-        return ""
+fun String.getFirstChars() : String {
+    if(this.length <= 25) return this
+    else if(this.isEmpty()) return ""
+    return this.take(25) + "..."
     }
 fun monthToString(month:Int,context: Context) : String {
     context.resources.apply {
@@ -52,4 +53,35 @@ fun Long.secondToData(context: Context) : String {
 
 fun <T> Flow<T>.getData() : T  = runBlocking {
     return@runBlocking this@getData.first()
+}
+object BackPressController {
+    @Composable
+    fun setHandler(enabled: Boolean = true, onBack: () -> Unit) {
+        // Safely update the current `onBack` lambda when a new one is provided
+        val currentOnBack by rememberUpdatedState(onBack)
+        // Remember in Composition a back callback that calls the `onBack` lambda
+        val backCallback = remember {
+            object : OnBackPressedCallback(enabled) {
+                override fun handleOnBackPressed() {
+                    currentOnBack()
+                }
+            }
+        }
+        // On every successful composition, update the callback with the `enabled` value
+        SideEffect {
+            backCallback.isEnabled = enabled
+        }
+        val backDispatcher = checkNotNull(LocalOnBackPressedDispatcherOwner.current) {
+            "No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner"
+        }.onBackPressedDispatcher
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(lifecycleOwner, backDispatcher) {
+            // Add callback to the backDispatcher
+            backDispatcher.addCallback(lifecycleOwner, backCallback)
+            // When the effect leaves the Composition, remove the callback
+            onDispose {
+                backCallback.remove()
+            }
+        }
+    }
 }

@@ -2,11 +2,10 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteScreenState
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -16,6 +15,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
    }
     when(state.value) {
       is MainScreenState.NoteScreen -> {
-          NoteScreenState(mainViewModel, navController)}
+          NoteScreenState(navController = navController)
+      }
     }
 }

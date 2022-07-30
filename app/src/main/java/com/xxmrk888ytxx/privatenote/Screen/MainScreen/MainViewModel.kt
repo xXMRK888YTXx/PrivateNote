@@ -14,25 +14,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    val noteRepository: NoteRepository
 ) : ViewModel() {
 
     val screenState:MutableState<MainScreenState> = mutableStateOf(MainScreenState.NoteScreen)
     get() = field
 
-    val searchFieldText = mutableStateOf("")
-    get() = field
-
     fun changeScreenState(state: MainScreenState) {
         screenState.value = state
-    }
-
-    fun getNoteList() : Flow<List<Note>> {
-        return noteRepository.getAllNote()
-    }
-
-    fun toEditNoteScreen(navController: NavController,id:Int) {
-        NavArguments.bundle.putInt("getNoteId",id)
-        navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
     }
 }
