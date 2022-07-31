@@ -1,9 +1,12 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
+import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
@@ -11,8 +14,10 @@ import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +46,48 @@ class NoteStateViewModel @Inject constructor(
 
     fun toDefaultMode() {
         currentNoteModeMode.value = NoteScreenMode.Default
+        selectedNoteList.clear()
     }
 
+    private val selectedNoteList = mutableSetOf<Int>()
+
+    fun isSelected(noteId:Int) : Boolean {
+        return selectedNoteList.any{it == noteId}
+    }
+
+    fun changeSelectedState(noteId: Int,checkState:Boolean) {
+        if(!checkState) {
+            selectedNoteList.remove(noteId)
+        }
+        else {
+            selectedNoteList.add(noteId)
+        }
+        isSelectedItemNotEmpty.value = isSelectedNotEmpty()
+        Log.d("MyLog",selectedNoteList.toString())
+        selectionItemCount.value = selectedNoteList.size
+    }
+    var isSelectedItemNotEmpty = mutableStateOf(false)
+
+    var selectionItemCount = mutableStateOf(0)
+    get() = field
+
+    fun selectAll() {
+        currentNoteModeMode.value = NoteScreenMode.Default
+        getNoteList().getData().forEach {
+            changeSelectedState(it.id,true)
+        }
+        currentNoteModeMode.value = NoteScreenMode.SelectionScreenMode
+    }
+
+    fun isSelectedNotEmpty() = selectedNoteList.isNotEmpty()
+
+     fun removeSelected() {
+         viewModelScope.launch {
+             val selectedItem = selectedNoteList
+             currentNoteModeMode.value = NoteScreenMode.Default
+             selectedItem.forEach {
+                 noteRepository.removeNote(it)
+             }
+         }
+    }
 }

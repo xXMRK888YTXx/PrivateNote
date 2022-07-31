@@ -1,13 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.annotation.SuppressLint
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutLinearInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,10 +15,10 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -37,11 +31,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.editNoteViewModel
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -49,7 +44,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
     val mode = remember {
         noteStateViewModel.getCurrentMode()
     }
-    BackPressController.setHandler(mode.value == NoteScreenMode.SelectionScreenMode) {
+    BackPressController.setHandler(mode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
     }
     Scaffold(
@@ -62,25 +57,107 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
                 .background(MainBackGroundColor)
                 .fillMaxSize(),
         ) {
-            SearchLine(noteStateViewModel)
+            Topbar(noteStateViewModel)
             NoteList(noteStateViewModel,navController)
 
         }
-        if(mode.value == NoteScreenMode.SelectionScreenMode) {
-            SelectionBar(noteStateViewModel)
+        if(mode.value == SelectionScreenMode) {
+            SelectionBottomBar(noteStateViewModel)
         }
     }
 
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SelectionBar(noteStateViewModel : NoteStateViewModel) {
-    val items = listOf<SelectionBarItem>(
-        SelectionBarItem(R.drawable.ic_backet,"Удалить"){
+fun Topbar(noteStateViewModel: NoteStateViewModel) {
+    when(noteStateViewModel.getCurrentMode().value) {
+        is NoteScreenMode.Default -> {
+            DefaltTopBar(noteStateViewModel)
+            SearchLine(noteStateViewModel)
 
+        }
+        is NoteScreenMode.SearchScreenMode -> {
+            SearchLine(noteStateViewModel)
+        }
+        is NoteScreenMode.SelectionScreenMode -> {
+            SelectionTopBar(noteStateViewModel)
+        }
+    }
+}
+
+@Composable
+fun DefaltTopBar(noteStateViewModel: NoteStateViewModel) {
+    val notes = noteStateViewModel.getNoteList().collectAsState(initial = listOf())
+    val textUnderLabelText = if(notes.value.isNotEmpty()) "${notes.value.size} заметки" else "Нет заметок"
+    Row(Modifier.fillMaxWidth().padding(start = 25.dp, bottom = 20.dp, top = 20.dp)) {
+        Column {
+            Text(text = "Мои заметки",
+                fontWeight = FontWeight.W800 ,
+                fontSize = 40.sp,
+                color = Color.White.copy(0.9f)
+            )
+            Text(text = textUnderLabelText,
+            fontStyle = FontStyle.Italic,
+                fontSize = 20.sp,
+                color = Color.Gray.copy(0.9f)
+                )
+        }
+
+    }
+}
+
+@Composable
+fun SelectionTopBar(noteStateViewModel: NoteStateViewModel) {
+    val selectionCount = remember {
+        noteStateViewModel.selectionItemCount
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = 15.dp, top = 15.dp, start = 10.dp, end = 10.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(painter = painterResource(R.drawable.ic_close),
+            contentDescription = "close",
+            tint = Color.White.copy(0.9f),
+            modifier = Modifier
+                .size(28.dp)
+                .clickable {
+                    noteStateViewModel.toDefaultMode()
+                }
+            )
+        Text(text = "Выбрано: ${selectionCount.value}",
+        color = Color.White.copy(0.9f),
+            fontSize = 22.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(0.9f)
+            )
+            Icon(painter = painterResource(R.drawable.ic_all_done),
+                contentDescription = "done all",
+                tint = Color.White.copy(0.9f),
+                modifier = Modifier
+                    .size(28.dp)
+                    .clickable {
+                        noteStateViewModel.selectAll()
+                    }
+            )
+    }
+}
+
+
+@Composable
+fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
+    val isSelectedItemNotEmpty = remember {
+       noteStateViewModel.isSelectedItemNotEmpty
+    }
+    val items = listOf(
+        SelectionBarItem(R.drawable.ic_backet,"Удалить",
+        enable = isSelectedItemNotEmpty.value)
+        {
+            noteStateViewModel.removeSelected()
         },
-        SelectionBarItem(R.drawable.ic_backet,"Удалить"){
+        SelectionBarItem(R.drawable.ic_pin,"Закрепить"){
 
         }
     )
@@ -95,22 +172,29 @@ fun SelectionBar(noteStateViewModel : NoteStateViewModel) {
             Row(
                 modifier = Modifier
                     .background(SearchColor)
-                    .fillMaxWidth().padding(10.dp),
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.Bottom
             ) {
                 LazyRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     items(items) {
+                        val enableColor = if(it.enable) 1f else 0.4f
                         Column(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.clickable {
-                                it.onClick()
-                            }.padding(start = 12.dp)
+                            modifier = Modifier
+                                .clickable {
+                                    if (!it.enable) return@clickable
+                                    it.onClick()
+                                    noteStateViewModel.toDefaultMode()
+                                }
+                                .padding(start = 15.dp)
+                                .alpha(enableColor)
                         ) {
                             Icon(painter = painterResource(it.icon),
                                 contentDescription = it.title,
-                                tint = Color.White,
+                                tint = Color.White.copy(),
                                 modifier = Modifier.size(25.dp)
                             )
                             Text(text = it.title,
@@ -136,7 +220,6 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(100))
             .padding(15.dp),
         label = { Text(text = stringResource(R.string.Search),
             fontSize = 16.sp,
@@ -159,6 +242,7 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
             tint = Color.White.copy(0.7f)
         )
         },
+        shape = RoundedCornerShape(100) ,
         trailingIcon = {
             if(!searchText.value.isEmpty()) {
                 Icon(painter = painterResource(id = R.drawable.ic_cancel),
@@ -179,24 +263,38 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val mode = remember {
         noteStateViewModel.getCurrentMode()
     }
-    val ListPadding = if(mode.value == NoteScreenMode.SelectionScreenMode) 55 else 0
+    val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
     LazyColumn(
-        Modifier.fillMaxSize().padding(bottom = ListPadding.dp)
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = ListPadding.dp)
     ) {
         items(noteList.value.sortedByDescending { it.created_at },key = {it.id}) {
             val check = remember {
-                mutableStateOf(true)
+                mutableStateOf(false)
             }
-            val cardSize = if(mode.value == NoteScreenMode.SelectionScreenMode) 0.9f else 1f
-            Row(Modifier.fillMaxWidth()) {
+            val cardSize = if(mode.value == SelectionScreenMode) 0.9f else 1f
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement()) {
                 Card(
                     Modifier
                         .fillMaxWidth(cardSize)
                         .padding(10.dp)
                         .animateItemPlacement()
                         .combinedClickable(
-                            onClick = { noteStateViewModel.toEditNoteScreen(navController, it.id) },
+                            onClick = {
+                                if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
+                                    noteStateViewModel.toEditNoteScreen(navController, it.id)
+                                } else {
+                                    check.value = !check.value
+                                    noteStateViewModel.changeSelectedState(it.id, check.value)
+                                }
+                            },
                             onLongClick = {
+                                check.value = true
+                                noteStateViewModel.changeSelectedState(it.id, check.value)
                                 noteStateViewModel.toSelectionMode()
 
                             }
@@ -211,14 +309,22 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                         EncryptNoteItem(it)
                     }
                 }
-                if(mode.value == NoteScreenMode.SelectionScreenMode) {
+                if(mode.value == SelectionScreenMode) {
+                    val padding = if(it.isEncrypted) 85 else 100
+                    check.value = noteStateViewModel.isSelected(it.id)
                     Column(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.End,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(padding.dp)
                     ) {
-                        Checkbox(checked = check.value, onCheckedChange = {check.value = it},
-                            modifier = Modifier.padding(top = 22.dp, bottom = 22.dp),
+                        Checkbox(checked = check.value,
+                            onCheckedChange = {checkState ->
+                                check.value =  checkState
+                                noteStateViewModel.changeSelectedState(it.id,checkState)
+                                              },
+                            modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
                             colors = CheckboxDefaults.colors(
                                 checkedColor = FloatingButtonColor,
                                 checkmarkColor = Color.White.copy(0.9f),
@@ -227,6 +333,9 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
 
                         )
                     }
+                }
+                else {
+                    check.value = false
                 }
             }
 
@@ -290,25 +399,26 @@ fun EncryptNoteItem(note: Note) {
             .background(CardNoteColor)
             .fillMaxWidth()
             .padding(10.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        verticalArrangement = Arrangement.Top
     ){
-        Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
-            contentDescription = "lock",
-            tint = Color.Gray.copy(0.9f),
-        )
-        Text(text = "Данная заметка зашифрована",
-            textAlign = TextAlign.Center,
-            fontSize = 16.sp,
-            fontStyle = FontStyle.Italic,
-            fontWeight = FontWeight.Light,
-            color = Color.White.copy(0.9f),
-            modifier = Modifier.padding(top = 5.dp)
-        )
+        Row(Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
+                contentDescription = "lock",
+                tint = Color.Gray.copy(0.9f),
+            )
+            Text(text = "Данная заметка зашифрована",
+                textAlign = TextAlign.Center,
+                fontSize = 16.sp,
+                fontStyle = FontStyle.Italic,
+                color = Color.White.copy(0.9f),
+                modifier = Modifier.padding(start = 7.dp)
+            )
+        }
         Text(text = note.created_at.secondToData(LocalContext.current),
             modifier = Modifier
-                .padding(top = 5.dp)
-                .fillMaxWidth(),
+                .padding(top = 7.dp),
             fontSize = 12.sp,
             color = Color.Gray
         )

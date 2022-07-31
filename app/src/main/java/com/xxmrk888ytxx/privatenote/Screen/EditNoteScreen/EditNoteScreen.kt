@@ -222,6 +222,7 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
     val text = remember {
         editNoteViewModel.titleTextField
     }
+
     if(!isHideText.value) {
         TextField(value = text.value,
             onValueChange = {text.value = it},
