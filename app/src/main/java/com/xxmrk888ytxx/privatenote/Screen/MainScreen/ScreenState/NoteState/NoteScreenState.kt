@@ -1,26 +1,34 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.annotation.SuppressLint
+import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.*
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusTarget
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -36,7 +44,6 @@ import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -72,7 +79,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
 fun Topbar(noteStateViewModel: NoteStateViewModel) {
     when(noteStateViewModel.getCurrentMode().value) {
         is NoteScreenMode.Default -> {
-            DefaltTopBar(noteStateViewModel)
+            DefaultTopBar(noteStateViewModel)
             SearchLine(noteStateViewModel)
 
         }
@@ -86,10 +93,13 @@ fun Topbar(noteStateViewModel: NoteStateViewModel) {
 }
 
 @Composable
-fun DefaltTopBar(noteStateViewModel: NoteStateViewModel) {
+fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
     val notes = noteStateViewModel.getNoteList().collectAsState(initial = listOf())
     val textUnderLabelText = if(notes.value.isNotEmpty()) "${notes.value.size} заметки" else "Нет заметок"
-    Row(Modifier.fillMaxWidth().padding(start = 25.dp, bottom = 20.dp, top = 20.dp)) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 25.dp, bottom = 5.dp, top = 20.dp)) {
         Column {
             Text(text = "Мои заметки",
                 fontWeight = FontWeight.W800 ,
@@ -210,17 +220,39 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchLine(noteStateViewModel: NoteStateViewModel) {
     val searchText = remember {
         noteStateViewModel.searchFieldText
     }
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val currentMode = remember {
+        noteStateViewModel.getCurrentMode()
+    }
+    val focus = remember { FocusRequester() }
     OutlinedTextField(value = searchText.value,
-        onValueChange = {searchText.value = it},
+        onValueChange = {searchText.value = it
+                        if(searchText.value.isNotEmpty()) {
+                            noteStateViewModel.toSearchMode()
+                        }
+                        else {
+                            focusManager.clearFocus()
+                            noteStateViewModel.toDefaultMode()
+                        }
+                        },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp),
+            .padding(15.dp)
+            .focusRequester(focus)
+            .onFocusChanged {
+                if (it.isFocused) {
+                    noteStateViewModel.toSearchMode()
+                }
+            }
+        ,
         label = { Text(text = stringResource(R.string.Search),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
@@ -249,12 +281,24 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
                     contentDescription = "Cancel",
                     modifier = Modifier.clickable {
                         searchText.value = ""
+                        noteStateViewModel.toDefaultMode()
                     },
                     tint = Color.White.copy(0.7f)
                 )
             }
         }
     )
+    SideEffect {
+        if(currentMode.value == NoteScreenMode.SearchScreenMode) {
+            focus.requestFocus()
+        }
+    }
+    BackPressController.setHandler() {
+        if(currentMode.value == NoteScreenMode.SearchScreenMode) {
+            searchText.value = ""
+            noteStateViewModel.toDefaultMode()
+        }
+    }
 }
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -263,13 +307,18 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val mode = remember {
         noteStateViewModel.getCurrentMode()
     }
+    val searchSubString = remember {
+        noteStateViewModel.searchFieldText
+    }
     val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
     LazyColumn(
         Modifier
             .fillMaxSize()
             .padding(bottom = ListPadding.dp)
     ) {
-        items(noteList.value.sortedByDescending { it.created_at },key = {it.id}) {
+        items(noteList.value.searchFilter(
+            mode.value == NoteScreenMode.SearchScreenMode,
+            searchSubString.value).sortedByDescending { it.created_at },key = {it.id}) {
             val check = remember {
                 mutableStateOf(false)
             }

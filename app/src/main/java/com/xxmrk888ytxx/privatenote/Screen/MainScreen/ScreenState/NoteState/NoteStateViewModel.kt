@@ -5,6 +5,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -90,4 +91,19 @@ class NoteStateViewModel @Inject constructor(
              }
          }
     }
+
+    fun toSearchMode() {
+        currentNoteModeMode.value = NoteScreenMode.SearchScreenMode
+    }
+}
+fun search(subString: String, note: Note) : Boolean {
+    if(note.isEncrypted) return false
+    if(subString.toLowerCase() in note.text.toLowerCase()) return true
+    if(subString.toLowerCase() in note.title.toLowerCase()) return true
+    return false
+}
+
+fun List<Note>.searchFilter(enable:Boolean,subString: String) : List<Note> {
+    if(!enable) return this
+    return this.filter { search(subString,it) }
 }

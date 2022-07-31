@@ -75,16 +75,20 @@ fun TimeCreated(editNoteViewModel: editNoteViewModel) {
 
 @Composable
 fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
-    val text = remember {
+    val textInField = remember {
         editNoteViewModel.textField
     }
     val isHideText = remember {
         editNoteViewModel.isHideText
     }
-    if(!isHideText.value) {
+
+    val stub = remember {
+        mutableStateOf("")
+    }
+    val textState = if(!isHideText.value) textInField else stub
         TextField(
-            value = text.value,
-            onValueChange = {text.value = it},
+            value = textState.value,
+            onValueChange = {textState.value = it},
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 0.dp),
@@ -108,34 +112,6 @@ fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
 
         )
     }
-    else {
-        TextField(
-            value = "",
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 0.dp),
-            placeholder = {Text(text = stringResource(R.string.Write_something_here),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-            )},
-            shape = RoundedCornerShape(80),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White.copy(0f),
-                focusedIndicatorColor = Color.White.copy(0f),
-                unfocusedIndicatorColor = Color.White.copy(0f),
-                cursorColor = CursorColor,
-                placeholderColor = TitleHintColor.copy(0.6f)
-            ),
-            textStyle = TextStyle(
-                color = Color.White.copy(0.9f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium,
-            )
-
-        )
-    }
-}
 
 @Composable
 fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
@@ -219,13 +195,15 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
     val isHideText = remember {
         editNoteViewModel.isHideText
     }
-    val text = remember {
+    val textInField = remember {
         editNoteViewModel.titleTextField
     }
-
-    if(!isHideText.value) {
-        TextField(value = text.value,
-            onValueChange = {text.value = it},
+    val stub = remember {
+        mutableStateOf("")
+    }
+    val textState = if(!isHideText.value) textInField else stub
+        TextField(value = textState.value,
+            onValueChange = {textState.value = it},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp),
@@ -249,33 +227,6 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
                 )
         )
     }
-    else {
-        TextField(value = "",
-            onValueChange = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp),
-            singleLine = true,
-            placeholder = {Text(stringResource(R.string.Title),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-            )},
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.White.copy(0f),
-                focusedIndicatorColor = Color.White.copy(0f),
-                unfocusedIndicatorColor = Color.White.copy(0f),
-                cursorColor = CursorColor,
-                placeholderColor = TitleHintColor.copy(0.6f)
-            ),
-            textStyle = TextStyle(
-                color = Color.White.copy(0.9f),
-                fontSize = 30.sp,
-                fontWeight = FontWeight.Bold,
-
-                )
-        )
-    }
-}
 
 @Composable
 fun CryptDialog(editNoteViewModel: editNoteViewModel) {
