@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.annotation.SuppressLint
-import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -9,26 +8,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -40,18 +30,16 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
-import com.xxmrk888ytxx.privatenote.Utils.BackPressController
-import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
-import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), navController: NavController) {
-    val mode = remember {
+    val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
-    BackPressController.setHandler(mode.value == SelectionScreenMode) {
+    BackPressController.setHandler(currentMode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
     }
     Scaffold(
@@ -68,7 +56,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
             NoteList(noteStateViewModel,navController)
 
         }
-        if(mode.value == SelectionScreenMode) {
+        if(currentMode.value == SelectionScreenMode) {
             SelectionBottomBar(noteStateViewModel)
         }
     }
@@ -77,10 +65,15 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
 
 @Composable
 fun Topbar(noteStateViewModel: NoteStateViewModel) {
+    val isSearchListHide = remember {
+        noteStateViewModel.isSearchLineHide
+    }
     when(noteStateViewModel.getCurrentMode().value) {
         is NoteScreenMode.Default -> {
             DefaultTopBar(noteStateViewModel)
-            SearchLine(noteStateViewModel)
+            if(!isSearchListHide.value) {
+                SearchLine(noteStateViewModel)
+            }
 
         }
         is NoteScreenMode.SearchScreenMode -> {
@@ -94,22 +87,31 @@ fun Topbar(noteStateViewModel: NoteStateViewModel) {
 
 @Composable
 fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
-    val notes = noteStateViewModel.getNoteList().collectAsState(initial = listOf())
-    val textUnderLabelText = if(notes.value.isNotEmpty()) "${notes.value.size} заметки" else "Нет заметок"
+    val noteList = noteStateViewModel.getNoteList()
+        .collectAsState(initial = listOf<Note>().fillList(Note(0,"","")
+            ,noteStateViewModel.lastNoteCount.value),
+    rememberCoroutineScope().coroutineContext)
+
+    val textUnderLabelText = if(noteList.value.isNotEmpty()) "${noteList.value.size} " +
+            stringResource(id = R.string.Notes)
+    else stringResource(R.string.No_Notes)
+    SideEffect {
+        noteStateViewModel.lastNoteCount.value = noteList.value.size
+    }
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(start = 25.dp, bottom = 5.dp, top = 20.dp)) {
+            .padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
         Column {
-            Text(text = "Мои заметки",
+            Text(text = stringResource(R.string.My_Notes),
                 fontWeight = FontWeight.W800 ,
-                fontSize = 40.sp,
-                color = Color.White.copy(0.9f)
+                fontSize = 30.sp,
+                color = PrimaryFontColor
             )
             Text(text = textUnderLabelText,
             fontStyle = FontStyle.Italic,
-                fontSize = 20.sp,
-                color = Color.Gray.copy(0.9f)
+                fontSize = 18.sp,
+                color = SecondoryFontColor
                 )
         }
 
@@ -130,22 +132,22 @@ fun SelectionTopBar(noteStateViewModel: NoteStateViewModel) {
     ) {
         Icon(painter = painterResource(R.drawable.ic_close),
             contentDescription = "close",
-            tint = Color.White.copy(0.9f),
+            tint = PrimaryFontColor,
             modifier = Modifier
                 .size(28.dp)
                 .clickable {
                     noteStateViewModel.toDefaultMode()
                 }
             )
-        Text(text = "Выбрано: ${selectionCount.value}",
-        color = Color.White.copy(0.9f),
+        Text(text = "${stringResource(R.string.Selected)}: ${selectionCount.value}",
+        color = PrimaryFontColor,
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(0.9f)
             )
             Icon(painter = painterResource(R.drawable.ic_all_done),
                 contentDescription = "done all",
-                tint = Color.White.copy(0.9f),
+                tint = PrimaryFontColor,
                 modifier = Modifier
                     .size(28.dp)
                     .clickable {
@@ -162,12 +164,12 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
        noteStateViewModel.isSelectedItemNotEmpty
     }
     val items = listOf(
-        SelectionBarItem(R.drawable.ic_backet,"Удалить",
+        SelectionBarItem(R.drawable.ic_backet, stringResource(R.string.Remove),
         enable = isSelectedItemNotEmpty.value)
         {
             noteStateViewModel.removeSelected()
         },
-        SelectionBarItem(R.drawable.ic_pin,"Закрепить"){
+        SelectionBarItem(R.drawable.ic_pin, stringResource(R.string.Pick)){
 
         }
     )
@@ -204,11 +206,11 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
                         ) {
                             Icon(painter = painterResource(it.icon),
                                 contentDescription = it.title,
-                                tint = Color.White.copy(),
+                                tint = PrimaryFontColor,
                                 modifier = Modifier.size(25.dp)
                             )
                             Text(text = it.title,
-                                color = Color.White,
+                                color = PrimaryFontColor,
                             )
 
                         }
@@ -220,28 +222,18 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun SearchLine(noteStateViewModel: NoteStateViewModel) {
     val searchText = remember {
         noteStateViewModel.searchFieldText
     }
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
     val focus = remember { FocusRequester() }
     OutlinedTextField(value = searchText.value,
-        onValueChange = {searchText.value = it
-                        if(searchText.value.isNotEmpty()) {
-                            noteStateViewModel.toSearchMode()
-                        }
-                        else {
-                            focusManager.clearFocus()
-                            noteStateViewModel.toDefaultMode()
-                        }
-                        },
+        onValueChange = {searchText.value = it },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
@@ -259,31 +251,30 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color.White,
+            textColor = PrimaryFontColor,
             backgroundColor = SearchColor,
-            placeholderColor = Color.White.copy(0.7f),
+            placeholderColor = PrimaryFontColor.copy(0.7f),
             focusedBorderColor = SearchColor,
-            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
             cursorColor = CursorColor,
-            unfocusedLabelColor = Color.White.copy(0.6f)
+            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         leadingIcon = {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_search_24),
             contentDescription = "Search",
-            tint = Color.White.copy(0.7f)
+            tint = PrimaryFontColor.copy(0.7f)
         )
         },
         shape = RoundedCornerShape(100) ,
         trailingIcon = {
-            if(!searchText.value.isEmpty()) {
+            if(searchText.value.isNotEmpty()) {
                 Icon(painter = painterResource(id = R.drawable.ic_cancel),
                     contentDescription = "Cancel",
                     modifier = Modifier.clickable {
                         searchText.value = ""
-                        noteStateViewModel.toDefaultMode()
                     },
-                    tint = Color.White.copy(0.7f)
+                    tint = PrimaryFontColor.copy(0.7f)
                 )
             }
         }
@@ -293,11 +284,9 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
             focus.requestFocus()
         }
     }
-    BackPressController.setHandler() {
-        if(currentMode.value == NoteScreenMode.SearchScreenMode) {
-            searchText.value = ""
-            noteStateViewModel.toDefaultMode()
-        }
+    BackPressController.setHandler(currentMode.value == NoteScreenMode.SearchScreenMode) {
+        noteStateViewModel.searchFieldText.value = ""
+        noteStateViewModel.toDefaultMode()
     }
 }
 @OptIn(ExperimentalFoundationApi::class)
@@ -310,88 +299,160 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val searchSubString = remember {
         noteStateViewModel.searchFieldText
     }
+    val selectedItemCount = remember {
+        noteStateViewModel.selectionItemCount
+    }
     val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = ListPadding.dp)
-    ) {
-        items(noteList.value.searchFilter(
-            mode.value == NoteScreenMode.SearchScreenMode,
-            searchSubString.value).sortedByDescending { it.created_at },key = {it.id}) {
-            val check = remember {
-                mutableStateOf(false)
-            }
-            val cardSize = if(mode.value == SelectionScreenMode) 0.9f else 1f
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()) {
-                Card(
+    val sortedNoteList = noteList.value.searchFilter(
+        mode.value == NoteScreenMode.SearchScreenMode,
+        searchSubString.value).sortedByDescending { it.created_at }
+    noteStateViewModel.isSearchLineHide.value = sortedNoteList.isEmpty()
+    if(mode.value == NoteScreenMode.SearchScreenMode && sortedNoteList.isEmpty()) {
+        SearchStub()
+    }
+    else if(mode.value == NoteScreenMode.Default && sortedNoteList.isEmpty()) {
+        Stub()
+    }
+    else {
+        LazyColumn(
+            Modifier
+                .fillMaxSize()
+                .padding(bottom = ListPadding.dp)
+        ) {
+            items(sortedNoteList,key = {it.id}) {
+                val check = remember {
+                    mutableStateOf(false)
+                }
+                val cardSize = if(mode.value == SelectionScreenMode) 0.9f else 1f
+                Row(
                     Modifier
-                        .fillMaxWidth(cardSize)
-                        .padding(10.dp)
-                        .animateItemPlacement()
-                        .combinedClickable(
-                            onClick = {
-                                if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
-                                    noteStateViewModel.toEditNoteScreen(navController, it.id)
-                                } else {
-                                    check.value = !check.value
+                        .fillMaxWidth()
+                        .animateItemPlacement()) {
+                    Card(
+                        Modifier
+                            .fillMaxWidth(cardSize)
+                            .padding(10.dp)
+                            .animateItemPlacement()
+                            .combinedClickable(
+                                onClick = {
+                                    if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
+                                        noteStateViewModel.toEditNoteScreen(navController, it.id)
+                                    } else {
+                                        check.value = !check.value
+                                        noteStateViewModel.changeSelectedState(it.id, check.value)
+                                    }
+                                },
+                                onLongClick = {
+                                    check.value = true
                                     noteStateViewModel.changeSelectedState(it.id, check.value)
-                                }
-                            },
-                            onLongClick = {
-                                check.value = true
-                                noteStateViewModel.changeSelectedState(it.id, check.value)
-                                noteStateViewModel.toSelectionMode()
+                                    noteStateViewModel.toSelectionMode()
 
-                            }
-                        ),
-                    shape = RoundedCornerShape(15),
-                    backgroundColor = CardNoteColor
-                ) {
-                    if(!it.isEncrypted) {
-                        DefaultNoteItem(it)
+                                }
+                            ),
+                        shape = RoundedCornerShape(15),
+                        backgroundColor = CardNoteColor
+                    ) {
+                        if(!it.isEncrypted) {
+                            DefaultNoteItem(it)
+                        }
+                        else {
+                            EncryptNoteItem(it)
+                        }
+                    }
+                    if(mode.value == SelectionScreenMode) {
+                        LaunchedEffect(key1 = selectedItemCount.value, block = {
+                            check.value = noteStateViewModel.isItemSelected(it.id)
+                        })
+                        val padding = if(it.isEncrypted) 85 else 100
+                        check.value = noteStateViewModel.isItemSelected(it.id)
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.End,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(padding.dp)
+                        ) {
+                            Checkbox(checked = check.value,
+                                onCheckedChange = {checkState ->
+                                    check.value =  checkState
+                                    noteStateViewModel.changeSelectedState(it.id,checkState)
+                                },
+                                modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = FloatingButtonColor,
+                                    checkmarkColor = PrimaryFontColor,
+                                    uncheckedColor = FloatingButtonColor
+                                )
+
+                            )
+                        }
                     }
                     else {
-                        EncryptNoteItem(it)
+                        check.value = false
                     }
                 }
-                if(mode.value == SelectionScreenMode) {
-                    val padding = if(it.isEncrypted) 85 else 100
-                    check.value = noteStateViewModel.isSelected(it.id)
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(padding.dp)
-                    ) {
-                        Checkbox(checked = check.value,
-                            onCheckedChange = {checkState ->
-                                check.value =  checkState
-                                noteStateViewModel.changeSelectedState(it.id,checkState)
-                                              },
-                            modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = FloatingButtonColor,
-                                checkmarkColor = Color.White.copy(0.9f),
-                                uncheckedColor = FloatingButtonColor
-                            )
 
-                        )
-                    }
-                }
-                else {
-                    check.value = false
-                }
             }
 
         }
+    }
+}
+
+@Composable
+fun SearchStub() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = 50.dp),
+    verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+        Text(text = "¯\\_(ツ)_/¯",
+        fontSize = 35.sp,
+            color = PrimaryFontColor,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            )
+        Text(text = stringResource(R.string.Not_Found),
+        fontSize = 20.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Medium,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 5.dp)
+            )
 
     }
 }
+
+@Composable
+fun Stub() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = 100.dp),
+    verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+        Icon(painterResource(R.drawable.ic_edit_note),
+            contentDescription = "edit_note",
+        tint = PrimaryFontColor,
+            modifier = Modifier.size(100.dp)
+            )
+        Text(text = stringResource(R.string.Empty),
+            fontSize = 20.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Medium,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
+}
+
 @Composable
 fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val mode = remember {
@@ -405,7 +466,7 @@ fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavContro
     ){
         Icon(painter = painterResource(id = R.drawable.ic_plus),
             contentDescription = "plus",
-            tint = Color.White.copy(0.9f),
+            tint = PrimaryFontColor,
             modifier = Modifier.size(35.dp)
         )
     }
@@ -422,13 +483,13 @@ fun DefaultNoteItem(note: Note) {
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
-                color = Color.White.copy(0.9f),
+                color = PrimaryFontColor,
             )
             if(note.text.getFirstChars() != "") {
                 Text(text = note.text.getFirstChars(),
                     modifier = Modifier.fillMaxWidth(),
                     fontSize = 16.sp,
-                    color = Color.Gray,
+                    color = SecondoryFontColor,
                     maxLines = 1,
 
                 )
@@ -436,7 +497,7 @@ fun DefaultNoteItem(note: Note) {
             Text(text = note.created_at.secondToData(LocalContext.current),
                 modifier = Modifier.fillMaxWidth(),
                 fontSize = 12.sp,
-                color = Color.Gray
+                color = SecondoryFontColor
             )
 
         }
@@ -455,13 +516,13 @@ fun EncryptNoteItem(note: Note) {
         ) {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
                 contentDescription = "lock",
-                tint = Color.Gray.copy(0.9f),
+                tint = SecondoryFontColor,
             )
-            Text(text = "Данная заметка зашифрована",
+            Text(text = stringResource(R.string.This_note_is_encrypted),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 fontStyle = FontStyle.Italic,
-                color = Color.White.copy(0.9f),
+                color = PrimaryFontColor,
                 modifier = Modifier.padding(start = 7.dp)
             )
         }
@@ -469,7 +530,7 @@ fun EncryptNoteItem(note: Note) {
             modifier = Modifier
                 .padding(top = 7.dp),
             fontSize = 12.sp,
-            color = Color.Gray
+            color = SecondoryFontColor
         )
     }
 }

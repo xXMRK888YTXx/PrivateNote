@@ -28,4 +28,16 @@
     <string name="Decript_note">Расшифровать заметку</string>
     <string name="note_is_empty">Заметка пуста.Шифрование не возможно.</string>
     <string name="cancel_changes">Отменить изменения</string>
+    <string name="Notes">Заметок</string>
+    <string name="No_Notes">Нет заметок</string>
+    <string name="My_Notes">Мои заметки</string>
+    <string name="Selected">Выбрано</string>
+    <string name="Remove">Удалить</string>
+    <string name="Pick">Закрепить</string>
+    <string name="This_note_is_encrypted">Данная заметка зашифрована</string>
+    <string name="Not_Found">К сожалению, ничего не найдено</string>
+    <string name="Empty">Здесь пока пусто</string>
+    <string name="Save_changes_question">Сохранить изменения?</string>
+    <string name="Not_save">Не сохранять</string>
+    <string name="Save">Сохранить</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -75,7 +76,7 @@ object BackPressController {
             "No OnBackPressedDispatcherOwner was provided via LocalOnBackPressedDispatcherOwner"
         }.onBackPressedDispatcher
         val lifecycleOwner = LocalLifecycleOwner.current
-        DisposableEffect(lifecycleOwner, backDispatcher) {
+        DisposableEffect(lifecycleOwner, backDispatcher,) {
             // Add callback to the backDispatcher
             backDispatcher.addCallback(lifecycleOwner, backCallback)
             // When the effect leaves the Composition, remove the callback
@@ -84,4 +85,24 @@ object BackPressController {
             }
         }
     }
+}
+
+fun <T> List<T>.fillList(element:T,count:Int) : List<T> {
+    val list = mutableListOf<T>()
+    repeat(count) {
+        list.add(element)
+    }
+    return list.toList()
+}
+
+fun search(subString: String, note: Note) : Boolean {
+    if(note.isEncrypted) return false
+    if(subString.toLowerCase() in note.text.toLowerCase()) return true
+    if(subString.toLowerCase() in note.title.toLowerCase()) return true
+    return false
+}
+
+fun List<Note>.searchFilter(enable:Boolean, subString: String) : List<Note> {
+    if(!enable) return this
+    return this.filter { search(subString,it) }
 }

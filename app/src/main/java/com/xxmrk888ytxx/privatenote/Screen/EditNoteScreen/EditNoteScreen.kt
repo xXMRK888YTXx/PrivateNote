@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -20,14 +23,18 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
+import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
@@ -43,20 +50,28 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
     })
+    val textFieldFocus = remember { FocusRequester() }
         Column(
             Modifier
                 .fillMaxSize()
                 .background(MainBackGroundColor)
         ) {
             Toolbar(editNoteViewModel,navController)
-            TitleEditField(editNoteViewModel)
+            TitleEditField(editNoteViewModel,textFieldFocus)
             TimeCreated(editNoteViewModel)
-            NoteTextEdit(editNoteViewModel)
+            NoteTextEdit(editNoteViewModel,textFieldFocus)
         }
     when(dialogState.value) {
        is ShowDialogState.EncryptDialog -> {CryptDialog(editNoteViewModel)}
         is ShowDialogState.DecryptDialog -> {DecriptDialog(editNoteViewModel,navController)}
+        is ShowDialogState.ExitDialog -> { ExitDialog(editNoteViewModel,navController)}
         is ShowDialogState.None -> {}
+    }
+    val isHaveChanges = remember {
+        editNoteViewModel.isHaveChanges
+    }
+    BackPressController.setHandler(isHaveChanges.value&&editNoteViewModel.isHavePrimaryVersion()) {
+        editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
     }
 }
 
@@ -64,7 +79,7 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
 fun TimeCreated(editNoteViewModel: editNoteViewModel) {
     if(editNoteViewModel.currentTime.value == 0L) return
     Text(text = editNoteViewModel.currentTime.value.secondToData(LocalContext.current),
-        color = Color.White.copy(0.5f),
+        color = PrimaryFontColor.copy(0.5f),
         fontSize = 14.sp,
         fontWeight = FontWeight.Light,
         modifier = Modifier
@@ -74,7 +89,7 @@ fun TimeCreated(editNoteViewModel: editNoteViewModel) {
 }
 
 @Composable
-fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
+fun NoteTextEdit(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequester) {
     val textInField = remember {
         editNoteViewModel.textField
     }
@@ -88,10 +103,10 @@ fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
     val textState = if(!isHideText.value) textInField else stub
         TextField(
             value = textState.value,
-            onValueChange = {textState.value = it},
+            onValueChange = {textState.value = it;editNoteViewModel.checkChanges()},
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 0.dp),
+                .focusRequester(textFieldFocus),
             placeholder = {Text(text = stringResource(R.string.Write_something_here),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
@@ -105,7 +120,7 @@ fun NoteTextEdit(editNoteViewModel: editNoteViewModel) {
                 placeholderColor = TitleHintColor.copy(0.6f)
             ),
             textStyle = TextStyle(
-                color = Color.White.copy(0.9f),
+                color = PrimaryFontColor,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
             )
@@ -153,7 +168,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                 .clickable { editNoteViewModel.backToMainScreen(navController) }
                 .size(40.dp)
                 .padding(top = 10.dp, start = 15.dp),
-            tint = Color.White
+            tint = PrimaryFontColor
             )
                Row(
                    Modifier.fillMaxWidth(),
@@ -168,7 +183,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                            .clickable { isDropDownMenuShow.value = true }
                            .size(40.dp)
                            .padding(top = 10.dp),
-                       tint = Color.White
+                       tint = PrimaryFontColor
                    )
                    Box(
                        modifier = Modifier
@@ -180,7 +195,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                            dropDownItemList.forEach {
                                if(it.isEnable) {
                                    DropdownMenuItem(onClick = { it.onClick.invoke() }) {
-                                       Text(it.text,color = Color.White.copy(0.9f))
+                                       Text(it.text,color = PrimaryFontColor)
                                    }
                                }
                            }
@@ -191,7 +206,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
 }
 
 @Composable
-fun TitleEditField(editNoteViewModel: editNoteViewModel) {
+fun TitleEditField(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequester) {
     val isHideText = remember {
         editNoteViewModel.isHideText
     }
@@ -203,7 +218,7 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
     }
     val textState = if(!isHideText.value) textInField else stub
         TextField(value = textState.value,
-            onValueChange = {textState.value = it},
+            onValueChange = {textState.value = it;editNoteViewModel.checkChanges()},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp),
@@ -220,11 +235,15 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel) {
                 placeholderColor = TitleHintColor.copy(0.6f)
             ),
             textStyle = TextStyle(
-                color = Color.White.copy(0.9f),
+                color = PrimaryFontColor,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
-
-                )
+                ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    textFieldFocus.requestFocus()
+                }
+            )
         )
     }
 
@@ -261,9 +280,9 @@ fun CryptDialog(editNoteViewModel: editNoteViewModel) {
                             &&!repitPasswordText.value.isEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = Color.White.copy(0.9f),
+                        backgroundColor = PrimaryFontColor,
                         disabledContentColor = Color.Black.copy(0.3f),
-                        disabledBackgroundColor = Color.White.copy(0.3f)
+                        disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
                         )
                 ){
                     Text(text = stringResource(R.string.Encrypt),
@@ -292,13 +311,13 @@ fun PasswordTextEdit(editNoteViewModel: editNoteViewModel, password: MutableStat
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color.White,
+            textColor = PrimaryFontColor,
             backgroundColor = SearchColor,
-            placeholderColor = Color.White.copy(0.7f),
+            placeholderColor = PrimaryFontColor.copy(0.7f),
             focusedBorderColor = SearchColor,
-            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
             cursorColor = CursorColor,
-            unfocusedLabelColor = Color.White.copy(0.6f)
+            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -326,13 +345,13 @@ fun RepitPasswordTextEdit(editNoteViewModel: editNoteViewModel, repitPassword:Mu
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color.White,
+            textColor = PrimaryFontColor,
             backgroundColor = SearchColor,
-            placeholderColor = Color.White.copy(0.7f),
+            placeholderColor = PrimaryFontColor.copy(0.7f),
             focusedBorderColor = SearchColor,
-            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
             cursorColor = CursorColor,
-            unfocusedLabelColor = Color.White.copy(0.6f)
+            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -355,7 +374,7 @@ fun WarmingText(text:String) {
             modifier = Modifier.padding(end = 10.dp)
             )
         Text(text = text,
-                color = Color.White.copy(0.9f),
+                color = PrimaryFontColor,
             fontSize = 18.sp,
             fontStyle = FontStyle.Italic,
             )
@@ -408,9 +427,9 @@ fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavControl
                         shape = RoundedCornerShape(50),
                         enabled = passwordText.value.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White.copy(0.9f),
+                            backgroundColor = PrimaryFontColor,
                             disabledContentColor = Color.Black.copy(0.3f),
-                            disabledBackgroundColor = Color.White.copy(0.3f)
+                            disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
                         )
                     ){
                         Text(text = stringResource(R.string.Decrypt),
@@ -447,13 +466,13 @@ fun PasswordTextEdit(titleText:MutableState<String>, password: MutableState<Stri
         },
         isError = titleText.value == stringResource(id = R.string.Invalid_password),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = Color.White,
+            textColor = PrimaryFontColor,
             backgroundColor = SearchColor,
-            placeholderColor = Color.White.copy(0.7f),
+            placeholderColor = PrimaryFontColor.copy(0.7f),
             focusedBorderColor = SearchColor,
-            focusedLabelColor = Color.White.copy(alpha = 0.85f),
+            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
             cursorColor = CursorColor,
-            unfocusedLabelColor = Color.White.copy(0.6f)
+            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -461,4 +480,74 @@ fun PasswordTextEdit(titleText:MutableState<String>, password: MutableState<Stri
         ),
         visualTransformation = PasswordVisualTransformation()
     )
+}
+
+@Composable
+fun ExitDialog(editNoteViewModel: editNoteViewModel,navController: NavController) {
+    Dialog(onDismissRequest = {
+        editNoteViewModel.dialogShowState.value = ShowDialogState.None
+    }) {
+            Card(
+               modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(CardNoteColor),
+                    verticalArrangement = Arrangement.Bottom,
+                ) {
+                    Text(
+                        text = stringResource(R.string.Save_changes_question),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .padding(bottom = 25.dp, top = 25.dp)
+                            .fillMaxWidth(),
+                        fontSize = 17.sp,
+                        color = PrimaryFontColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(
+                        Modifier,
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.Bottom,
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                editNoteViewModel.notSaveChanges(navController)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .padding(start = 5.dp, end = 5.dp),
+                            shape = RoundedCornerShape(80),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = TitleHintColor,
+                            )
+                        ) {
+                            Text(text = stringResource(R.string.Not_save),
+                                color = PrimaryFontColor
+                            )
+                        }
+                        OutlinedButton(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = FloatingButtonColor,
+                            ),
+                            onClick = {
+                                editNoteViewModel.dialogShowState.value = ShowDialogState.None
+                                navController.navigateUp()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 5.dp, end = 5.dp),
+                            shape = RoundedCornerShape(80),
+                        ) {
+                            Text(text = stringResource(R.string.Save),
+                            color = PrimaryFontColor
+                                )
+                        }
+                    }
+                }
+            }
+
+    }
 }

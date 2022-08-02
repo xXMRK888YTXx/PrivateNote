@@ -65,6 +65,7 @@ class editNoteViewModel @Inject constructor(
 
     private var primaryNoteVersion:Note? = null
 
+
     fun savePrimaryVersion(note: Note) {
         if(primaryNoteVersion != null) return
         primaryNoteVersion = note
@@ -100,6 +101,24 @@ class editNoteViewModel @Inject constructor(
         }
     }
 
+    fun checkChanges() {
+        viewModelScope.launch {
+            if(!isHavePrimaryVersion()) return@launch
+            if (isEncryptNote()) {
+                val title = securityUtils.encrypt(titleTextField.value, notePassword!!)
+                val text = securityUtils.encrypt(textField.value, notePassword!!)
+                isHaveChanges.value = !(text == primaryNoteVersion?.text && title ==
+                        primaryNoteVersion?.title)
+            } else {
+                isHaveChanges.value =
+                    !(textField.value == primaryNoteVersion?.text && titleTextField.value ==
+                            primaryNoteVersion?.title)
+            }
+        }
+    }
+
+    val isHaveChanges = mutableStateOf(false)
+    get() = field
 
     fun saveNote() {
         GlobalScope.launch {
@@ -136,6 +155,8 @@ class editNoteViewModel @Inject constructor(
             }
         }
     }
+
+
 
     fun removeNote(navController: NavController) {
         isDropDownMenuShow.value = false
@@ -186,6 +207,7 @@ class editNoteViewModel @Inject constructor(
     }
 
     fun notSaveChanges(navController: NavController) {
+        dialogShowState.value = ShowDialogState.None
         saveNoteState.value = SaveNoteState.NotSaveChanges
         navController.navigateUp()
     }
@@ -193,6 +215,7 @@ class editNoteViewModel @Inject constructor(
     override fun onCleared() {
         saveNote()
         super.onCleared()
+        Log.d("MyLog",primaryNoteVersion.toString())
     }
     fun getToast() = showToast
 

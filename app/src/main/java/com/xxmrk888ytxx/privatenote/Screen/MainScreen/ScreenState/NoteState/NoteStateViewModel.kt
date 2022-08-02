@@ -1,11 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.util.Log
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -18,6 +14,8 @@ import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,9 +27,12 @@ class NoteStateViewModel @Inject constructor(
     val searchFieldText = mutableStateOf("")
         get() = field
 
-    private val currentNoteModeMode = mutableStateOf<NoteScreenMode>(NoteScreenMode.Default)
+    val isSearchLineHide = mutableStateOf(false)
+    get() = field
 
-    fun getCurrentMode() = currentNoteModeMode
+    private val currentNoteMode = mutableStateOf<NoteScreenMode>(NoteScreenMode.Default)
+
+    fun getCurrentMode() = currentNoteMode
 
     fun getNoteList() : Flow<List<Note>> {
         return noteRepository.getAllNote()
@@ -42,17 +43,17 @@ class NoteStateViewModel @Inject constructor(
         navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
     }
     fun toSelectionMode() {
-        currentNoteModeMode.value = NoteScreenMode.SelectionScreenMode
+        currentNoteMode.value = NoteScreenMode.SelectionScreenMode
     }
 
     fun toDefaultMode() {
-        currentNoteModeMode.value = NoteScreenMode.Default
+        currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
     }
 
     private val selectedNoteList = mutableSetOf<Int>()
 
-    fun isSelected(noteId:Int) : Boolean {
+    fun isItemSelected(noteId:Int) : Boolean {
         return selectedNoteList.any{it == noteId}
     }
 
@@ -73,11 +74,13 @@ class NoteStateViewModel @Inject constructor(
     get() = field
 
     fun selectAll() {
-        currentNoteModeMode.value = NoteScreenMode.Default
-        getNoteList().getData().forEach {
-            changeSelectedState(it.id,true)
+        viewModelScope.launch {
+            val noteList = getNoteList().first()
+            val selectAllOrNot = noteList.size != selectedNoteList.size
+            noteList.forEach {
+                changeSelectedState(it.id,selectAllOrNot)
+            }
         }
-        currentNoteModeMode.value = NoteScreenMode.SelectionScreenMode
     }
 
     fun isSelectedNotEmpty() = selectedNoteList.isNotEmpty()
@@ -85,7 +88,7 @@ class NoteStateViewModel @Inject constructor(
      fun removeSelected() {
          viewModelScope.launch {
              val selectedItem = selectedNoteList
-             currentNoteModeMode.value = NoteScreenMode.Default
+             currentNoteMode.value = NoteScreenMode.Default
              selectedItem.forEach {
                  noteRepository.removeNote(it)
              }
@@ -93,17 +96,8 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun toSearchMode() {
-        currentNoteModeMode.value = NoteScreenMode.SearchScreenMode
+        currentNoteMode.value = NoteScreenMode.SearchScreenMode
     }
-}
-fun search(subString: String, note: Note) : Boolean {
-    if(note.isEncrypted) return false
-    if(subString.toLowerCase() in note.text.toLowerCase()) return true
-    if(subString.toLowerCase() in note.title.toLowerCase()) return true
-    return false
-}
-
-fun List<Note>.searchFilter(enable:Boolean,subString: String) : List<Note> {
-    if(!enable) return this
-    return this.filter { search(subString,it) }
+    val lastNoteCount = mutableStateOf(0)
+    get() = field
 }

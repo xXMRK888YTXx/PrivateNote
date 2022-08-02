@@ -1,5 +1,7 @@
 package com.xxmrk888ytxx.privatenote.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val Purple200 = Color(0xFFBB86FC)
@@ -13,3 +15,5 @@ val CardNoteColor = Color(0xFF242424)
 val DropDownMenuColor = Color(0xFF424141)
 val TitleHintColor = Color(0xFF4D4949)
 val FloatingButtonColor = Color(0xFF016CDE)
+val PrimaryFontColor = Color.White.copy(0.9f)
+val SecondoryFontColor = Color.Gray
