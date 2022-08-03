@@ -1,29 +1,27 @@
 package com.xxmrk888ytxx.privatenote.InputHistoryManager
 
-class InputHistoryManager(
-    private var maxBufferSize:Int = 20
-) {
+class InputHistoryManager{
     private val historyBuffer:MutableList<String> = mutableListOf()
-    var currentPos = 0
+    var currentPos = -1
     get() = field
     private set
 
+    private var primaryVersion = ""
+
+    fun setPrimaryVersion(text: String) {
+        primaryVersion = text
+    }
+
     fun addInHistory(text: String) {
         historyBuffer.add(text)
-        if(historyBuffer.size > maxBufferSize) historyBuffer.removeFirst()
         currentPos = historyBuffer.lastIndex
     }
 
-    fun getMaxBufferSize() = maxBufferSize
-
-    fun setMaxBufferSize(size:Int) {
-        maxBufferSize = size
-    }
-
     fun isHaveUndo():Boolean {
-        if(historyBuffer.isEmpty()) return false
+        if(historyBuffer.isEmpty()||currentPos == -1) return false
         return try {
-            historyBuffer[currentPos--]
+            val undoPos = if(currentPos != 0) currentPos - 1 else currentPos
+            historyBuffer[undoPos]
             true
         }catch (e:Exception) {
             false
@@ -33,7 +31,8 @@ class InputHistoryManager(
     fun isHaveRedo():Boolean {
         if(historyBuffer.isEmpty()) return false
         return try {
-            historyBuffer[currentPos++]
+            val repoPos = currentPos + 1
+            historyBuffer[repoPos]
             true
         }catch (e:Exception) {
             false
@@ -42,8 +41,9 @@ class InputHistoryManager(
 
     fun getUndo() : String {
         try {
+            currentPos--
+            if(currentPos == -1) return primaryVersion
             val text = historyBuffer[currentPos]
-            currentPos = currentPos--
             return text
         }catch (e:Exception) {
             throw IndexOutOfBoundsException()
@@ -52,8 +52,8 @@ class InputHistoryManager(
 
     fun getRedo() : String {
         try {
+            currentPos++
             val text = historyBuffer[currentPos]
-            currentPos = currentPos--
             return text
         }catch (e:Exception) {
             throw IndexOutOfBoundsException()

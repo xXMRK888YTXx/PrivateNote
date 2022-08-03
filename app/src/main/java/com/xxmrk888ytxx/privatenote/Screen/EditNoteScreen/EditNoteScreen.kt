@@ -103,7 +103,10 @@ fun NoteTextEdit(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequ
     val textState = if(!isHideText.value) textInField else stub
         TextField(
             value = textState.value,
-            onValueChange = {textState.value = it;editNoteViewModel.checkChanges()},
+            onValueChange = {textState.value = it
+                editNoteViewModel.checkChanges()
+                editNoteViewModel.addInHistoryChanges()
+                            },
             modifier = Modifier
                 .fillMaxSize()
                 .focusRequester(textFieldFocus),
@@ -158,10 +161,10 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         }
     )
     val isUndoAvailable = remember {
-        mutableStateOf(true)
+        editNoteViewModel.isHaveUndo
     }
     val isRedoAvailable = remember {
-        mutableStateOf(false)
+        editNoteViewModel.isHaveRepo
     }
     val undoArrowColor = if(isUndoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
     val redoArrowColor = if(isRedoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
@@ -195,7 +198,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         ) {
             IconButton(
                 onClick = {
-
+                    editNoteViewModel.undo()
                 },
                 enabled = isUndoAvailable.value
             ){
@@ -207,7 +210,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
             }
             IconButton(
                 onClick = {
-
+                    editNoteViewModel.redo()
                 },
                 enabled = isRedoAvailable.value
             ){

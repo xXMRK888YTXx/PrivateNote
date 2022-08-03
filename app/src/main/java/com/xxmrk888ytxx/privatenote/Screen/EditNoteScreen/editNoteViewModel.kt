@@ -72,6 +72,7 @@ class editNoteViewModel @Inject constructor(
         //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
         if(primaryNoteVersion != null) return
+        inputHistoryManager.setPrimaryVersion(note.text)
         primaryNoteVersion = note
     }
     //получает заметку из БД
@@ -223,10 +224,36 @@ class editNoteViewModel @Inject constructor(
 
     val isHaveUndo = mutableStateOf(false)
     val isHaveRepo = mutableStateOf(false)
+
     //проверяет есть ли возможность откатиться назад или вперёд
     fun checkHistoryState() {
         isHaveRepo.value = inputHistoryManager.isHaveRedo()
         isHaveUndo.value = inputHistoryManager.isHaveUndo()
+    }
+    //перемещает указатель истории изменений вперёд
+    fun redo() {
+        try {
+            textField.value = inputHistoryManager.getRedo()
+            checkHistoryState()
+        }catch (e:IndexOutOfBoundsException) {
+            showToast.showToast("Ошибка отката теста")
+        }
+    }
+    //перемещает указатель истории изменений назад
+    fun undo() {
+        try {
+            textField.value = inputHistoryManager.getUndo()
+            checkHistoryState()
+        }catch (e:IndexOutOfBoundsException) {
+            showToast.showToast("Ошибка отката теста")
+        }
+    }
+    //добавление изменений в историю
+    fun addInHistoryChanges() {
+        viewModelScope.launch {
+            inputHistoryManager.addInHistory(textField.value)
+            checkHistoryState()
+        }
     }
 
 }
