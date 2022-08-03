@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
+import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
@@ -28,10 +29,12 @@ class editNoteViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val securityUtils: SecurityUtils,
     private val showToast: ShowToast,
-    private val lifeCycleState: MutableStateFlow<LifeCycleState>
+    private val lifeCycleState: MutableStateFlow<LifeCycleState>,
+    private val inputHistoryManager: InputHistoryManager
 ) : ViewModel() {
 
     init {
+        //Наблюдение за жизненым циклом
         viewModelScope.launch {
             lifeCycleState.collect() {
                 if(it == LifeCycleState.onPause) {
@@ -53,10 +56,11 @@ class editNoteViewModel @Inject constructor(
 
     private var note: Note = Note(title = "", text = "")
 
+    //режим сохранения заметки
     private val saveNoteState = mutableStateOf<SaveNoteState>(SaveNoteState.None)
 
     val isDropDownMenuShow = mutableStateOf(false)
-
+        //состояние показа диалоговых окон
     val dialogShowState = mutableStateOf<ShowDialogState>(ShowDialogState.None)
 
     private var notePassword:String? = null
@@ -65,16 +69,12 @@ class editNoteViewModel @Inject constructor(
 
     private var primaryNoteVersion:Note? = null
 
-
+        //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
         if(primaryNoteVersion != null) return
         primaryNoteVersion = note
     }
-
-    fun backToMainScreen(navController: NavController) {
-        navController.navigateUp()
-    }
-
+    //получает заметку из БД
     fun getNote(id:Int) {
         if(id != 0) {
             note = noteRepository.getNoteById(id).getData()
@@ -100,7 +100,7 @@ class editNoteViewModel @Inject constructor(
             }
         }
     }
-
+    //проверяет наличие изменений
     fun checkChanges() {
         viewModelScope.launch {
             if(!isHavePrimaryVersion()) return@launch
@@ -119,7 +119,7 @@ class editNoteViewModel @Inject constructor(
 
     val isHaveChanges = mutableStateOf(false)
     get() = field
-
+        //сохрание заметки(зависит от режима)
     fun saveNote() {
         GlobalScope.launch {
             when(saveNoteState.value) {
@@ -220,4 +220,13 @@ class editNoteViewModel @Inject constructor(
     fun getToast() = showToast
 
     fun isHavePrimaryVersion() = primaryNoteVersion != null
+
+    val isHaveUndo = mutableStateOf(false)
+    val isHaveRepo = mutableStateOf(false)
+    //проверяет есть ли возможность откатиться назад или вперёд
+    fun checkHistoryState() {
+        isHaveRepo.value = inputHistoryManager.isHaveRedo()
+        isHaveUndo.value = inputHistoryManager.isHaveUndo()
+    }
+
 }

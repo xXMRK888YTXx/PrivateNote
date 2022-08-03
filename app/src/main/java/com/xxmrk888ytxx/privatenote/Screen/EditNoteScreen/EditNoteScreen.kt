@@ -133,6 +133,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     val isDropDownMenuShow = remember {
         editNoteViewModel.isDropDownMenuShow
     }
+    val isHaveChanges = remember {
+        editNoteViewModel.isHaveChanges
+    }
     val dropDownItemList = listOf(
         DropDownItem(stringResource(R.string.Encrypt_note), isEnable = !editNoteViewModel.isEncryptNote()) {
             if(editNoteViewModel.textField.value.isEmpty()&&editNoteViewModel.titleTextField.value.isEmpty()) {
@@ -150,43 +153,89 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         DropDownItem(stringResource(R.string.Delete)){
             editNoteViewModel.removeNote(navController)
         },
-        DropDownItem(stringResource(R.string.cancel_changes),editNoteViewModel.isHavePrimaryVersion()) {
+        DropDownItem(stringResource(R.string.cancel_changes),isHaveChanges.value) {
             editNoteViewModel.notSaveChanges(navController)
         }
     )
+    val isUndoAvailable = remember {
+        mutableStateOf(true)
+    }
+    val isRedoAvailable = remember {
+        mutableStateOf(false)
+    }
+    val undoArrowColor = if(isUndoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
+    val redoArrowColor = if(isRedoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
     Row(
         Modifier
             .fillMaxWidth()
             .background(MainBackGroundColor),
         verticalAlignment = Alignment.CenterVertically,
         ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_back_arrow),
-            contentDescription = "Back Arrow",
-            modifier = Modifier
-                .background(MainBackGroundColor)
-                .clickable { editNoteViewModel.backToMainScreen(navController) }
-                .size(40.dp)
-                .padding(top = 10.dp, start = 15.dp),
-            tint = PrimaryFontColor
+        IconButton(
+            onClick = {
+                if (isHaveChanges.value)
+                    editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
+                else navController.navigateUp()
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back_arrow),
+                contentDescription = "Back Arrow",
+                modifier = Modifier
+                    .size(30.dp),
+                tint = PrimaryFontColor
             )
+        }
+        Row(
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .padding(end = 45.dp)
+        ) {
+            IconButton(
+                onClick = {
+
+                },
+                enabled = isUndoAvailable.value
+            ){
+                Icon(painter = painterResource(R.drawable.ic_undo_up),
+                    contentDescription = null,
+                    tint = undoArrowColor,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+            IconButton(
+                onClick = {
+
+                },
+                enabled = isRedoAvailable.value
+            ){
+                Icon(painter = painterResource(R.drawable.ic_redo_up),
+                    contentDescription = null,
+                    tint = redoArrowColor,
+                    modifier = Modifier.size(25.dp)
+                )
+            }
+        }
                Row(
                    Modifier.fillMaxWidth(),
                    verticalAlignment = Alignment.CenterVertically,
                    horizontalArrangement = Arrangement.End
                ) {
-                   Icon(
-                       painter = painterResource(id = R.drawable.ic_dots),
-                       contentDescription = "Dots",
-                       modifier = Modifier
-                           .background(MainBackGroundColor)
-                           .clickable { isDropDownMenuShow.value = true }
-                           .size(40.dp)
-                           .padding(top = 10.dp),
-                       tint = PrimaryFontColor
-                   )
+                   IconButton(
+                       onClick = {
+                           isDropDownMenuShow.value = true
+                       }) {
+                       Icon(
+                           painter = painterResource(id = R.drawable.ic_dots),
+                           contentDescription = "Dots",
+                           modifier = Modifier
+                               .size(40.dp),
+                           tint = PrimaryFontColor
+                       )
+                   }
                    Box(
-                       modifier = Modifier
                    ) {
                        DropdownMenu(expanded = isDropDownMenuShow.value,
                            onDismissRequest = { isDropDownMenuShow.value = false },
