@@ -11,11 +11,9 @@ import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
-import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

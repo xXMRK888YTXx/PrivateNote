@@ -14,6 +14,6 @@ data class Note(
     val title:String,
     val text:String,
     val created_at:Long = System.currentTimeMillis(),
-    val isChosen:Boolean = false,
+    var isChosen:Boolean = false,
     var isEncrypted:Boolean = false
 )

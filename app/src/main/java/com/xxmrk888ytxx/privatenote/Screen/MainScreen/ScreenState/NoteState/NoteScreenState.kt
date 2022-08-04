@@ -169,7 +169,10 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
         {
             noteStateViewModel.removeSelected()
         },
-        SelectionBarItem(R.drawable.ic_pin, stringResource(R.string.Pick)){
+        SelectionBarItem(R.drawable.ic_star,
+            stringResource(R.string.In_chosen),
+            isSelectedItemNotEmpty.value
+        ){
 
         }
     )

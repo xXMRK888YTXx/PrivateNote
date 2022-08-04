@@ -40,4 +40,5 @@
     <string name="Save_changes_question">Сохранить изменения?</string>
     <string name="Not_save">Не сохранять</string>
     <string name="Save">Сохранить</string>
+    <string name="In_chosen">В избраное</string>
 </resources>

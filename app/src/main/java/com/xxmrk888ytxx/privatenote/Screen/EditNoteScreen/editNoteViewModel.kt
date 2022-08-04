@@ -17,10 +17,9 @@ import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,6 +33,7 @@ class editNoteViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
+        Log.d("MyLog",inputHistoryManager.hashCode().toString())
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
             lifeCycleState.collect() {
@@ -69,6 +69,8 @@ class editNoteViewModel @Inject constructor(
 
     private var primaryNoteVersion:Note? = null
 
+    val isChosenNoteState = mutableStateOf(false)
+
         //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
         if(primaryNoteVersion != null) return
@@ -89,6 +91,7 @@ class editNoteViewModel @Inject constructor(
                 dialogShowState.value = ShowDialogState.DecryptDialog
             }
             currentTime.value = note.created_at
+            isChosenNoteState.value = note.isChosen
 
         }
         else {
@@ -122,13 +125,15 @@ class editNoteViewModel @Inject constructor(
     get() = field
         //сохрание заметки(зависит от режима)
     fun saveNote() {
-        GlobalScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             when(saveNoteState.value) {
                 is SaveNoteState.DefaultSaveNote -> {
-                    if(textField.value == note.text&&titleTextField.value == note.title) return@launch
+                    if(textField.value == note.text&&
+                        titleTextField.value == note.title&&!checkChangeNoteConfiguration()) return@launch
                     noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
                         title = titleTextField.value,
-                        text = textField.value
+                        text = textField.value,
+                        isChosen = isChosenNoteState.value
                     ))
                 }
                 is SaveNoteState.RemoveNote -> {
@@ -143,10 +148,12 @@ class editNoteViewModel @Inject constructor(
                     try {
                         val title = securityUtils.encrypt(titleTextField.value,notePassword!!)
                         val text = securityUtils.encrypt(textField.value,notePassword!!)
-                        if(text == note.text&&title == note.title) return@launch
+                        if(text == note.text&&title == note.title
+                            &&!checkChangeNoteConfiguration()) return@launch
                         noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
                             title = title,
-                            text = text
+                            text = text,
+                            isChosen = isChosenNoteState.value
                         ))
                     }catch (e:Exception){}
 
@@ -157,6 +164,9 @@ class editNoteViewModel @Inject constructor(
         }
     }
 
+    private fun checkChangeNoteConfiguration(): Boolean {
+        return primaryNoteVersion?.isChosen != isChosenNoteState.value
+    }
 
 
     fun removeNote(navController: NavController) {
@@ -215,8 +225,8 @@ class editNoteViewModel @Inject constructor(
 
     override fun onCleared() {
         saveNote()
+        inputHistoryManager.clearBuffer()
         super.onCleared()
-        Log.d("MyLog",primaryNoteVersion.toString())
     }
     fun getToast() = showToast
 
@@ -256,4 +266,11 @@ class editNoteViewModel @Inject constructor(
         }
     }
 
+    fun addInChosen() {
+        isChosenNoteState.value = true
+    }
+
+    fun removeFromChosen() {
+        isChosenNoteState.value = false
+    }
 }

@@ -1,12 +1,15 @@
 package com.xxmrk888ytxx.privatenote.InputHistoryManager
 
-class InputHistoryManager{
+import kotlin.random.Random
+
+class InputHistoryManager {
     private val historyBuffer:MutableList<String> = mutableListOf()
     var currentPos = -1
     get() = field
     private set
 
     private var primaryVersion = ""
+
 
     fun setPrimaryVersion(text: String) {
         primaryVersion = text
@@ -50,6 +53,10 @@ class InputHistoryManager{
         }
     }
 
+    fun clearBuffer() {
+        historyBuffer.clear()
+    }
+
     fun getRedo() : String {
         try {
             currentPos++
@@ -58,5 +65,9 @@ class InputHistoryManager{
         }catch (e:Exception) {
             throw IndexOutOfBoundsException()
         }
+    }
+    private var hashcode:Int = Random(System.currentTimeMillis()).nextInt(100000,999999)
+    override fun hashCode(): Int {
+        return hashcode
     }
 }

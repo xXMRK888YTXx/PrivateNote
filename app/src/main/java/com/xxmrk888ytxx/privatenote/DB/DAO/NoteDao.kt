@@ -20,4 +20,7 @@ interface NoteDao {
 
     @Query("DELETE FROM Note WHERE id = :id")
     fun removeNote(id:Int)
+
+    @Query("UPDATE Note SET isChosen=:isChosen WHERE id=:id")
+    fun changeChosenStatus(isChosen:Boolean,id: Int)
 }

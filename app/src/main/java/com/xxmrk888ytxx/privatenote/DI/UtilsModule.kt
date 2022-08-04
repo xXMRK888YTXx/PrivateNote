@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.DI
 import android.content.Context
 import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.Utils.ShowToastImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,8 +16,13 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class UtilsModule {
     @Provides
-    fun getShowToast(@ApplicationContext context: Context) : ShowToast {
-        return ShowToast(context)
+    fun getShowToastRealisation(@ApplicationContext context: Context) : ShowToastImpl {
+        return ShowToastImpl(context)
+    }
+
+    @Provides
+    fun getShowToast(showToastImpl:ShowToastImpl) : ShowToast {
+        return showToastImpl
     }
 
     @Provides

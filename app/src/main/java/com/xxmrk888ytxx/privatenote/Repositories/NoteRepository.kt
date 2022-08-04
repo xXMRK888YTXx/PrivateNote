@@ -1,26 +1,12 @@
 package com.xxmrk888ytxx.privatenote.Repositories
 
-import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
-
-class NoteRepository @Inject constructor(
-    private val noteDao: NoteDao
-) {
-    fun getAllNote() = runBlocking(Dispatchers.IO) {
-        return@runBlocking noteDao.getAllNote()
-    }
-
-    fun insertNote(note: Note) = runBlocking(Dispatchers.IO) { noteDao.insertNote(note) }
-
-    fun getNoteById(id:Int) = runBlocking(Dispatchers.IO) {
-        return@runBlocking noteDao.getNoteById(id)
-    }
-
-    fun removeNote(id:Int) = runBlocking(Dispatchers.IO) {
-        noteDao.removeNote(id)
-    }
+interface NoteRepository {
+    fun getAllNote() : Flow<List<Note>>
+    fun insertNote(note: Note)
+    fun getNoteById(id:Int): Flow<Note>
+    fun removeNote(id:Int)
+    fun changeChosenStatus(isChosen:Boolean,id:Int)
 }

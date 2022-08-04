@@ -2,7 +2,6 @@ package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,8 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.SecureFlagPolicy
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
@@ -139,6 +136,9 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     val isHaveChanges = remember {
         editNoteViewModel.isHaveChanges
     }
+    val isNoteChosen = remember {
+        editNoteViewModel.isChosenNoteState
+    }
     val dropDownItemList = listOf(
         DropDownItem(stringResource(R.string.Encrypt_note), isEnable = !editNoteViewModel.isEncryptNote()) {
             if(editNoteViewModel.textField.value.isEmpty()&&editNoteViewModel.titleTextField.value.isEmpty()) {
@@ -158,7 +158,14 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         },
         DropDownItem(stringResource(R.string.cancel_changes),isHaveChanges.value) {
             editNoteViewModel.notSaveChanges(navController)
+        },
+        DropDownItem("В избраное",!isNoteChosen.value) {
+            editNoteViewModel.addInChosen()
+        },
+        DropDownItem("Убрать из избраного",isNoteChosen.value) {
+            editNoteViewModel.removeFromChosen()
         }
+
     )
     val isUndoAvailable = remember {
         editNoteViewModel.isHaveUndo
