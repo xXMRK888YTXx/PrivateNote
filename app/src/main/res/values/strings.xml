@@ -41,4 +41,6 @@
     <string name="Not_save">Не сохранять</string>
     <string name="Save">Сохранить</string>
     <string name="In_chosen">В избраное</string>
+    <string name="to_chosen">В избраное</string>
+    <string name="Remove_from_chosen">Убрать из избраного</string>
 </resources>

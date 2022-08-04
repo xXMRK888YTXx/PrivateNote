@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -306,9 +307,10 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
         noteStateViewModel.selectionItemCount
     }
     val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
-    val sortedNoteList = noteList.value.searchFilter(
-        mode.value == NoteScreenMode.SearchScreenMode,
-        searchSubString.value).sortedByDescending { it.created_at }
+    val sortedNoteList = noteList.value
+        .searchFilter(mode.value == NoteScreenMode.SearchScreenMode,
+        searchSubString.value).sortNote()
+    
     noteStateViewModel.isSearchLineHide.value = sortedNoteList.isEmpty()
     if(mode.value == NoteScreenMode.SearchScreenMode && sortedNoteList.isEmpty()) {
         SearchStub()
@@ -497,11 +499,23 @@ fun DefaultNoteItem(note: Note) {
 
                 )
             }
-            Text(text = note.created_at.secondToData(LocalContext.current),
-                modifier = Modifier.fillMaxWidth(),
-                fontSize = 12.sp,
-                color = SecondoryFontColor
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = note.created_at.secondToData(LocalContext.current),
+                   // modifier = Modifier.fillMaxWidth(),
+                    fontSize = 12.sp,
+                    color = SecondoryFontColor
+                )
+                if(note.isChosen) {
+                    Icon(painter = painterResource(R.drawable.ic_full_star),
+                        contentDescription = null,
+                        tint = Color.Yellow.copy(0.9f),
+                        modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                    )
+                }
+            }
 
         }
 }
@@ -529,11 +543,22 @@ fun EncryptNoteItem(note: Note) {
                 modifier = Modifier.padding(start = 7.dp)
             )
         }
-        Text(text = note.created_at.secondToData(LocalContext.current),
-            modifier = Modifier
-                .padding(top = 7.dp),
-            fontSize = 12.sp,
-            color = SecondoryFontColor
-        )
+        Row(
+            Modifier.fillMaxWidth().padding(top = 7.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = note.created_at.secondToData(LocalContext.current),
+                // modifier = Modifier.fillMaxWidth(),
+                fontSize = 12.sp,
+                color = SecondoryFontColor
+            )
+            if(note.isChosen) {
+                Icon(painter = painterResource(R.drawable.ic_full_star),
+                    contentDescription = null,
+                    tint = Color.Yellow.copy(0.9f),
+                    modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                )
+            }
+        }
     }
 }

@@ -106,3 +106,12 @@ fun List<Note>.searchFilter(enable:Boolean, subString: String) : List<Note> {
     if(!enable) return this
     return this.filter { search(subString,it) }
 }
+
+fun List<Note>.sortNote() : List<Note> {
+    val chosenNote = this.filter { it.isChosen }.sortedByDescending { it.created_at }
+    val otherNote = this.filter { !it.isChosen }.sortedByDescending { it.created_at }
+    val joinList = mutableListOf<Note>()
+    joinList.addAll(chosenNote)
+    joinList.addAll(otherNote)
+    return joinList
+}

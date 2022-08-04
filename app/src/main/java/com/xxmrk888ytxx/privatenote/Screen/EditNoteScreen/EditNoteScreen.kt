@@ -159,10 +159,12 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
         DropDownItem(stringResource(R.string.cancel_changes),isHaveChanges.value) {
             editNoteViewModel.notSaveChanges(navController)
         },
-        DropDownItem("В избраное",!isNoteChosen.value) {
+        DropDownItem(stringResource(R.string.to_chosen),!isNoteChosen.value) {
+            isDropDownMenuShow.value = false
             editNoteViewModel.addInChosen()
         },
-        DropDownItem("Убрать из избраного",isNoteChosen.value) {
+        DropDownItem(stringResource(R.string.Remove_from_chosen),isNoteChosen.value) {
+            isDropDownMenuShow.value = false
             editNoteViewModel.removeFromChosen()
         }
 
