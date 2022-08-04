@@ -3,10 +3,14 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -17,6 +21,9 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +40,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.ui.theme.*
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -174,7 +182,7 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
             stringResource(R.string.In_chosen),
             isSelectedItemNotEmpty.value
         ){
-
+            noteStateViewModel.addInChosenSelected()
         }
     )
     Box(
@@ -512,7 +520,9 @@ fun DefaultNoteItem(note: Note) {
                     Icon(painter = painterResource(R.drawable.ic_full_star),
                         contentDescription = null,
                         tint = Color.Yellow.copy(0.9f),
-                        modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(16.dp)
                     )
                 }
             }
@@ -544,11 +554,12 @@ fun EncryptNoteItem(note: Note) {
             )
         }
         Row(
-            Modifier.fillMaxWidth().padding(top = 7.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 7.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(text = note.created_at.secondToData(LocalContext.current),
-                // modifier = Modifier.fillMaxWidth(),
                 fontSize = 12.sp,
                 color = SecondoryFontColor
             )
@@ -556,7 +567,9 @@ fun EncryptNoteItem(note: Note) {
                 Icon(painter = painterResource(R.drawable.ic_full_star),
                     contentDescription = null,
                     tint = Color.Yellow.copy(0.9f),
-                    modifier = Modifier.padding(start = 8.dp).size(16.dp)
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(16.dp)
                 )
             }
         }

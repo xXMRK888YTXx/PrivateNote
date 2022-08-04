@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -12,6 +13,8 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -98,4 +101,14 @@ class NoteStateViewModel @Inject constructor(
     }
     val lastNoteCount = mutableStateOf(0)
     get() = field
+
+    fun addInChosenSelected() {
+        viewModelScope.launch {
+            val selectedItem = selectedNoteList
+            currentNoteMode.value = NoteScreenMode.Default
+            selectedItem.forEach {
+                noteRepository.changeChosenStatus(true,it)
+            }
+        }
+    }
 }

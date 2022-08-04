@@ -165,6 +165,7 @@ class editNoteViewModel @Inject constructor(
     }
 
     private fun checkChangeNoteConfiguration(): Boolean {
+        if(!isHavePrimaryVersion()) return false
         return primaryNoteVersion?.isChosen != isChosenNoteState.value
     }
 
