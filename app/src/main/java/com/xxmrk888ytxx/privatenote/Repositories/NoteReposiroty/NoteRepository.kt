@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Repositories
+package com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty
 
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import kotlinx.coroutines.flow.Flow

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3ce290ba3d2e842a3acd6a7e08d60b2b",
+    "identityHash": "f10613008b00d02b58f357d7cf2706b0",
     "entities": [
       {
         "tableName": "Note",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `isChosen` INTEGER NOT NULL, `isEncrypted` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `text` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `isChosen` INTEGER NOT NULL, `isEncrypted` INTEGER NOT NULL, `category` INTEGER, FOREIGN KEY(`category`) REFERENCES `Category`(`categoryId`) ON UPDATE CASCADE ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -43,6 +43,12 @@
             "columnName": "isEncrypted",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "category",
+            "columnName": "category",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -60,6 +66,90 @@
             ],
             "orders": [],
             "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Note_id` ON `${TABLE_NAME}` (`id`)"
+          },
+          {
+            "name": "index_Note_category",
+            "unique": false,
+            "columnNames": [
+              "category"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_Note_category` ON `${TABLE_NAME}` (`category`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "Category",
+            "onDelete": "SET NULL",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "category"
+            ],
+            "referencedColumns": [
+              "categoryId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "Category",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`categoryId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `categoryName` TEXT NOT NULL, `red` INTEGER NOT NULL, `green` INTEGER NOT NULL, `blue` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "categoryId",
+            "columnName": "categoryId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "categoryName",
+            "columnName": "categoryName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "red",
+            "columnName": "red",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "green",
+            "columnName": "green",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "blue",
+            "columnName": "blue",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "categoryId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Category_categoryId",
+            "unique": true,
+            "columnNames": [
+              "categoryId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Category_categoryId` ON `${TABLE_NAME}` (`categoryId`)"
+          },
+          {
+            "name": "index_Category_categoryName",
+            "unique": true,
+            "columnNames": [
+              "categoryName"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Category_categoryName` ON `${TABLE_NAME}` (`categoryName`)"
           }
         ],
         "foreignKeys": []
@@ -68,7 +158,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3ce290ba3d2e842a3acd6a7e08d60b2b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f10613008b00d02b58f357d7cf2706b0')"
     ]
   }
 }

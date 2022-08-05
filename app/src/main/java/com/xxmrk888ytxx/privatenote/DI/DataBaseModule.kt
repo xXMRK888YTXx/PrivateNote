@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.xxmrk888ytxx.privatenote.DB.AppDataBase
+import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
 import dagger.Module
 import dagger.Provides
@@ -24,6 +25,12 @@ class DataBaseModule {
     @Singleton
     fun getNoteDao(dataBase: AppDataBase) : NoteDao {
         return dataBase.getNoteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun getCategoryDao(dataBase: AppDataBase) : CategoryDao {
+        return dataBase.getCategoryDao()
     }
 
 }

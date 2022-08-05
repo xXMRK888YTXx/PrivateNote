@@ -43,4 +43,5 @@
     <string name="In_chosen">В избраное</string>
     <string name="to_chosen">В избраное</string>
     <string name="Remove_from_chosen">Убрать из избраного</string>
+    <string name="No_category">Без категории</string>
 </resources>

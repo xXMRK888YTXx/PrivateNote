@@ -1,8 +1,11 @@
 package com.xxmrk888ytxx.privatenote.DI
 
+import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
-import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
-import com.xxmrk888ytxx.privatenote.Repositories.NoteRepositoryImpl
+import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
+import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepositoryImpl
+import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
+import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +23,19 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getNoteRepository(noteRepositoryImpl:NoteRepositoryImpl) : NoteRepository {
+    fun getNoteRepository(noteRepositoryImpl: NoteRepositoryImpl) : NoteRepository {
         return noteRepositoryImpl
+    }
+
+    @Provides
+    @Singleton
+    fun getCategoryRepositoryImpl(categoryDao: CategoryDao) : CategoryRepositoryImpl {
+        return CategoryRepositoryImpl(categoryDao)
+    }
+
+    @Provides
+    @Singleton
+    fun getCategoryRepository(categoryRepositoryImpl: CategoryRepositoryImpl): CategoryRepository {
+        return categoryRepositoryImpl
     }
 }

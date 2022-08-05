@@ -1,20 +1,19 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
-import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
-import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
+import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
+import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -23,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteStateViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
-    val showToast: ShowToast
+    private val showToast: ShowToast,
+    private val categoryRepository: CategoryRepository
 ) : ViewModel() {
     val searchFieldText = mutableStateOf("")
         get() = field
@@ -110,5 +110,10 @@ class NoteStateViewModel @Inject constructor(
                 noteRepository.changeChosenStatus(true,it)
             }
         }
+    }
+
+    fun getCategoryById(categoryId:Int?) : Flow<Category>? {
+        if(categoryId == null) return null
+        return categoryRepository.getCategoryById(categoryId)
     }
 }

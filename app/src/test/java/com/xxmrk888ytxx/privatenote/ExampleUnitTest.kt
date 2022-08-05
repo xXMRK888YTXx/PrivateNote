@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote
 
+import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -14,4 +15,5 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
 }

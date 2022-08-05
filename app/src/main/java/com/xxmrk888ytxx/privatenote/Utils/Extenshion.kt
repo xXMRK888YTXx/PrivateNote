@@ -5,7 +5,9 @@ import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import kotlinx.coroutines.flow.Flow
@@ -114,4 +116,8 @@ fun List<Note>.sortNote() : List<Note> {
     joinList.addAll(chosenNote)
     joinList.addAll(otherNote)
     return joinList
+}
+
+fun Category.getColor() : Color {
+    return Color(red.toInt(),green.toInt(),blue.toInt())
 }

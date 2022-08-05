@@ -1,12 +1,20 @@
 package com.xxmrk888ytxx.privatenote.DB.Entity
 
-import androidx.room.Entity
-import androidx.room.Index
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     indices =[
-        Index("id", unique = true)
+        Index("id", unique = true),
+        Index("category")
+    ],
+    foreignKeys = [
+        ForeignKey(
+            entity = Category::class,
+            parentColumns = ["categoryId"],
+            childColumns = ["category"],
+            onDelete = ForeignKey.SET_NULL,
+            onUpdate = ForeignKey.CASCADE
+        )
     ]
 )
 data class Note(
@@ -15,5 +23,6 @@ data class Note(
     val text:String,
     val created_at:Long = System.currentTimeMillis(),
     var isChosen:Boolean = false,
-    var isEncrypted:Boolean = false
+    var isEncrypted:Boolean = false,
+    val category:Int? = null
 )

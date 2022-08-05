@@ -10,7 +10,7 @@ import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Repositories.NoteRepository
+import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils

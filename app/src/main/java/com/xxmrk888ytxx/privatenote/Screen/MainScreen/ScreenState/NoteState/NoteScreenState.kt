@@ -337,6 +337,9 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                     mutableStateOf(false)
                 }
                 val cardSize = if(mode.value == SelectionScreenMode) 0.9f else 1f
+                val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
+                val backGroundColor = if(category?.value != null) category.value!!.getColor()
+                else CardNoteColor
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -363,7 +366,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                                 }
                             ),
                         shape = RoundedCornerShape(15),
-                        backgroundColor = CardNoteColor
+                        backgroundColor = backGroundColor.copy(0.3f)
                     ) {
                         if(!it.isEncrypted) {
                             DefaultNoteItem(it)
@@ -488,7 +491,7 @@ fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavContro
 @Composable
 fun DefaultNoteItem(note: Note) {
         Column(
-            Modifier
+            Modifier.background(CardNoteColor.copy(0.3f))
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
@@ -526,14 +529,13 @@ fun DefaultNoteItem(note: Note) {
                     )
                 }
             }
-
         }
 }
 @Composable
 fun EncryptNoteItem(note: Note) {
     Column(
         Modifier
-            .background(CardNoteColor)
+            .background(CardNoteColor.copy(0.3f))
             .fillMaxWidth()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top

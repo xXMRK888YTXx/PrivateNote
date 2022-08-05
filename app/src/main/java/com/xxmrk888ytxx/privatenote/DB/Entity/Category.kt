@@ -1,0 +1,21 @@
+package com.xxmrk888ytxx.privatenote.DB.Entity
+
+import androidx.compose.ui.graphics.Color
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import kotlin.random.Random
+
+@Entity(
+    indices =[
+        Index("categoryId", unique = true),
+        Index("categoryName", unique = true)
+    ]
+)
+data class Category(
+    @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
+    val categoryName:String,
+    val red:Short = (0..255).random().toShort(),
+    val green:Short =(0..255).random().toShort(),
+    val blue:Short = (0..255).random().toShort()
+)
