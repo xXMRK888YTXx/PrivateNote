@@ -33,6 +33,10 @@ class NoteStateViewModel @Inject constructor(
 
     private val currentNoteMode = mutableStateOf<NoteScreenMode>(NoteScreenMode.Default)
 
+    val dialogState = mutableStateOf<NoteDialogState>(NoteDialogState.None)
+
+    val showDropDownCategory = mutableStateOf(false)
+
     fun getCurrentMode() = currentNoteMode
 
     fun getNoteList() : Flow<List<Note>> {
@@ -115,5 +119,10 @@ class NoteStateViewModel @Inject constructor(
     fun getCategoryById(categoryId:Int?) : Flow<Category>? {
         if(categoryId == null) return null
         return categoryRepository.getCategoryById(categoryId)
+    }
+
+    fun getAllCategory() = categoryRepository.getAllCategory()
+    fun showCategoryList() {
+        showDropDownCategory.value = true
     }
 }

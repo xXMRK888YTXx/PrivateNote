@@ -3,15 +3,14 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
-import androidx.compose.foundation.gestures.FlingBehavior
-import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,13 +20,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,18 +34,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.ui.theme.*
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), navController: NavController) {
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
+    }
+    val isShowCategoryMenu = remember {
+        noteStateViewModel.showDropDownCategory
     }
     BackPressController.setHandler(currentMode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
@@ -63,13 +65,32 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
         ) {
             Topbar(noteStateViewModel)
             NoteList(noteStateViewModel,navController)
-
+            DialogController(noteStateViewModel)
         }
         if(currentMode.value == SelectionScreenMode) {
             SelectionBottomBar(noteStateViewModel)
         }
     }
+    if(isShowCategoryMenu.value) {
+        Box(
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            CategoryMenu(noteStateViewModel)
+        }
+    }
+    BackPressController.setHandler(isShowCategoryMenu.value) {
+        isShowCategoryMenu.value = false
+    }
 
+}
+
+@Composable
+fun DialogController(noteStateViewModel: NoteStateViewModel) {
+    when(noteStateViewModel.dialogState.value) {
+        is NoteDialogState.OrderCategoryDialog -> {
+            OrderCategoryDialog(noteStateViewModel) }
+        is NoteDialogState.None -> {}
+    }
 }
 
 @Composable
@@ -104,6 +125,21 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
     val textUnderLabelText = if(noteList.value.isNotEmpty()) "${noteList.value.size} " +
             stringResource(id = R.string.Notes)
     else stringResource(R.string.No_Notes)
+    val annotatedLabelString = buildAnnotatedString {
+        append(stringResource(R.string.My_Notes))
+        appendInlineContent("drop_down_triangle")
+    }
+    val inlineContentMap = mapOf(
+        "drop_down_triangle" to InlineTextContent(
+            Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
+        ) {
+            Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.padding(top = 10.dp)
+                )
+        }
+    )
     SideEffect {
         noteStateViewModel.lastNoteCount.value = noteList.value.size
     }
@@ -112,10 +148,14 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
             .fillMaxWidth()
             .padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
         Column {
-            Text(text = stringResource(R.string.My_Notes),
+            Text(text = annotatedLabelString,
+                inlineContent = inlineContentMap,
                 fontWeight = FontWeight.W800 ,
                 fontSize = 30.sp,
-                color = PrimaryFontColor
+                color = PrimaryFontColor,
+                modifier = Modifier.clickable {
+                    noteStateViewModel.showCategoryList()
+                }
             )
             Text(text = textUnderLabelText,
             fontStyle = FontStyle.Italic,
@@ -490,8 +530,10 @@ fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavContro
 
 @Composable
 fun DefaultNoteItem(note: Note) {
+    val backGroundAlpha = if(note.category != null) 0.3f else 1f
         Column(
-            Modifier.background(CardNoteColor.copy(0.3f))
+            Modifier
+                .background(CardNoteColor.copy(backGroundAlpha))
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
@@ -533,9 +575,10 @@ fun DefaultNoteItem(note: Note) {
 }
 @Composable
 fun EncryptNoteItem(note: Note) {
+    val backGroundAlpha = if(note.category != null) 0.3f else 1f
     Column(
         Modifier
-            .background(CardNoteColor.copy(0.3f))
+            .background(CardNoteColor.copy(backGroundAlpha))
             .fillMaxWidth()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top
@@ -577,3 +620,82 @@ fun EncryptNoteItem(note: Note) {
         }
     }
 }
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
+    val defaultCategoryItems = listOf(
+        DefaultCategoryItem(
+            title = "Все заметки",
+            icon = R.drawable.ic_notes,
+        ){
+
+        },
+        DefaultCategoryItem(
+            title = "Избранное",
+            icon = R.drawable.ic_star,
+        ){
+
+        },
+    )
+    val categoryList = listOf(
+        Category(categoryName = "test"), Category(
+        categoryName = "Белый цвет",
+        red = 255,
+        green = 255,
+        blue = 255
+    )
+    )
+    LazyColumn(
+        modifier = Modifier
+            .background(MainBackGroundColor)
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ){
+        itemsIndexed(defaultCategoryItems) { index,it ->
+            val backGround = if(index == 0) SelectedCategoryColor else PrimaryFontColor.copy(0.75f)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(painterResource(it.icon),
+                    contentDescription = "",
+                    tint = PrimaryFontColor,
+                    modifier = Modifier.padding(15.dp)
+                )
+                Text(text = it.title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = backGround,
+                    modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                )
+            }
+            if(index == defaultCategoryItems.lastIndex) {
+                Divider(thickness = 3.dp,color = SecondoryFontColor)
+            }
+        }
+        items(categoryList) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(painterResource(R.drawable.ic_category_icon),
+                    contentDescription = "",
+                    tint = it.getColor(),
+                    modifier = Modifier.padding(15.dp)
+                )
+                Text(text = it.categoryName,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = PrimaryFontColor.copy(0.75f),
+                    modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                )
+            }
+        }
+    }
+}
+

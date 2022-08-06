@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
