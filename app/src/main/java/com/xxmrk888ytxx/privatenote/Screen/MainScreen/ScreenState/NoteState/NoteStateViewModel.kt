@@ -1,12 +1,15 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -141,4 +144,28 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun editCategoryStatus() = showEditCategoryDialog
+
+    fun addCategory(categoryName:String,iconColor: Color){
+        viewModelScope.launch {
+            showEditCategoryDialog.value = false
+            val category = Category(
+                categoryName = categoryName,
+                red = iconColor.red,
+                green = iconColor.green,
+                blue = iconColor.blue
+            )
+            categoryRepository.insertCategory(category)
+        }
+    }
+
+    fun removeCategory(category: Category,context: Context) {
+        viewModelScope.launch {
+            categoryRepository.removeCategory(category.categoryId)
+            showToast.showToast("${context.getString(R.string.Categoty)} \"${category.categoryName}\" " +
+                    context.getString(R.string.has_been_deleted)
+            )
+        }
+    }
+
+    val savedCategory = mutableStateOf(listOf<Category>())
 }

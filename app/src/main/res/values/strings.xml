@@ -30,7 +30,7 @@
     <string name="cancel_changes">Отменить изменения</string>
     <string name="Notes">Заметок</string>
     <string name="No_Notes">Нет заметок</string>
-    <string name="My_Notes">Мои заметки</string>
+    <string name="All_Notes">Все заметки</string>
     <string name="Selected">Выбрано</string>
     <string name="Remove">Удалить</string>
     <string name="Pick">Закрепить</string>
@@ -45,4 +45,10 @@
     <string name="Remove_from_chosen">Убрать из избраного</string>
     <string name="No_category">Без категории</string>
     <string name="Cancel">Отмена</string>
+    <string name="Category_Name">Название категории</string>
+    <string name="Add">Добавить</string>
+    <string name="Categoryes">Категории</string>
+    <string name="Chosen">Избранное</string>
+    <string name="Categoty">Категория</string>
+    <string name="has_been_deleted">была удалена</string>
 </resources>

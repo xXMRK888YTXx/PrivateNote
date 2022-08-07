@@ -128,6 +128,6 @@ fun List<Note>.sortNote() : List<Note> {
 }
 
 fun Category.getColor() : Color {
-    return Color(red.toInt(),green.toInt(),blue.toInt())
+    return Color(red,green,blue)
 }
 

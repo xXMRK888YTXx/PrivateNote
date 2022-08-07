@@ -111,7 +111,7 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
             stringResource(id = R.string.Notes)
     else stringResource(R.string.No_Notes)
     val annotatedLabelString = buildAnnotatedString {
-        append(stringResource(R.string.My_Notes))
+        append(stringResource(R.string.All_Notes))
         appendInlineContent("drop_down_triangle")
     }
     val inlineContentMap = mapOf(
@@ -495,6 +495,48 @@ fun Stub() {
 }
 
 @Composable
+fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(bottom = 0.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(painterResource(R.drawable.ic_add_category),
+            contentDescription = "add_category",
+            tint = PrimaryFontColor,
+            modifier = Modifier.size(100.dp)
+        )
+        Text(text = "К сожалению, здесь пусто",
+            fontSize = 20.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Medium,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+        OutlinedButton(
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = FloatingButtonColor,
+            ),
+            onClick = {
+                noteStateViewModel.showEditCategoryDialog()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 35.dp, end = 35.dp),
+            shape = RoundedCornerShape(80),
+        ) {
+            Text(text = "Добавить категорию",
+                color = PrimaryFontColor
+            )
+        }
+    }
+}
+
+@Composable
 fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val mode = remember {
         noteStateViewModel.getCurrentMode()
@@ -609,33 +651,30 @@ fun EncryptNoteItem(note: Note) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
+    val categoryList = noteStateViewModel.getAllCategory()
+        .collectAsState(noteStateViewModel.savedCategory.value)
     val showEditDialogState = remember {
         noteStateViewModel.editCategoryStatus()
     }
     if(showEditDialogState.value) {
         EditCategoryDialog(noteStateViewModel)
     }
+    val currentOptionMenuEnable = remember {
+        mutableStateOf(-1)
+    }
     val defaultCategoryItems = listOf(
         DefaultCategoryItem(
-            title = "Все заметки",
+            title = stringResource(R.string.All_Notes),
             icon = R.drawable.ic_notes,
         ){
 
         },
         DefaultCategoryItem(
-            title = "Избранное",
+            title = stringResource(R.string.Chosen),
             icon = R.drawable.ic_star,
         ){
 
         },
-    )
-    val categoryList = listOf(
-        Category(categoryName = "test"), Category(
-        categoryName = "Белый цвет",
-        red = 255,
-        green = 255,
-        blue = 255
-    )
     )
     LazyColumn(
         modifier = Modifier
@@ -670,14 +709,14 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 Divider(thickness = 3.dp,color = SecondoryFontColor)
             }
         }
-        itemsIndexed(categoryList) { index,it ->
+        itemsIndexed(categoryList.value) { index,it ->
             if(index == 0) {
                 Row(
                     Modifier
                         .fillMaxWidth()
                         .padding(bottom = 10.dp)
                 ){
-                    Text(text = "Категории",
+                    Text(text = stringResource(R.string.Categoryes),
                         modifier = Modifier.padding(start = 15.dp,top = 10.dp),
                         fontWeight = FontWeight.Medium,
                         color = SecondoryFontColor,
@@ -686,7 +725,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                     Box(contentAlignment = Alignment.CenterEnd,
                     modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = "Добавить",
+                            Text(text = stringResource(R.string.Add),
                                 modifier = Modifier
                                     .clickable {
                                         noteStateViewModel.showEditCategoryDialog()
@@ -700,13 +739,24 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                         }
                 }
             }
+            Box(modifier = Modifier.padding(start = 35.dp)) {
+                CategoryOptionMenu(noteStateViewModel, currentOptionMenuEnable, it)
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .animateItemPlacement(),
+                    .animateItemPlacement()
+                    .combinedClickable(
+                        onClick = {
+
+                        },
+                        onLongClick = {
+                            currentOptionMenuEnable.value = it.categoryId
+                        }
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(painterResource(R.drawable.ic_category_icon),
+                    Icon(painterResource(R.drawable.ic_category_icon),
                     contentDescription = "",
                     tint = it.getColor(),
                     modifier = Modifier.padding(15.dp)
@@ -720,4 +770,33 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
             }
         }
     }
+    if(categoryList.value.isEmpty()) {
+        CategoryMenuStub(noteStateViewModel)
+    }
+    SideEffect {
+        noteStateViewModel.savedCategory.value = categoryList.value
+    }
+}
+
+@Composable
+fun CategoryOptionMenu(noteStateViewModel: NoteStateViewModel, isShow:MutableState<Int>,
+                       category: Category
+) {
+    val content = LocalContext.current
+        DropdownMenu(expanded = isShow.value == category.categoryId, onDismissRequest = {
+            isShow.value = -1
+        },
+            modifier = Modifier.background(DropDownMenuColor)
+        ) {
+            DropdownMenuItem(onClick = {
+
+            }) {
+                Text(text = "Редактировать",color = PrimaryFontColor)
+            }
+            DropdownMenuItem(onClick = {
+                noteStateViewModel.removeCategory(category,content)
+            }) {
+                Text(text = stringResource(R.string.Remove),color = PrimaryFontColor)
+            }
+        }
 }

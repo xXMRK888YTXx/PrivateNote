@@ -15,7 +15,7 @@ import kotlin.random.Random
 data class Category(
     @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
     val categoryName:String,
-    val red:Short = (0..255).random().toShort(),
-    val green:Short =(0..255).random().toShort(),
-    val blue:Short = (0..255).random().toShort()
+    val red:Float = (0..255).random().toFloat(),
+    val green:Float =(0..255).random().toFloat(),
+    val blue:Float = (0..255).random().toFloat()
 )
