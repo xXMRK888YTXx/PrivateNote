@@ -35,7 +35,7 @@ class NoteStateViewModel @Inject constructor(
 
     val dialogState = mutableStateOf<NoteDialogState>(NoteDialogState.None)
 
-    val showDropDownCategory = mutableStateOf(false)
+    private val showEditCategoryDialog = mutableStateOf(false)
 
     fun getCurrentMode() = currentNoteMode
 
@@ -122,7 +122,23 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun getAllCategory() = categoryRepository.getAllCategory()
+
     fun showCategoryList() {
-        showDropDownCategory.value = true
+        currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
+
+    fun hideCategoryList() {
+        currentNoteMode.value = NoteScreenMode.Default
+        showEditCategoryDialog.value = false
+    }
+
+    fun showEditCategoryDialog() {
+        showEditCategoryDialog.value = true
+    }
+
+    fun hideEditCategoryDialog() {
+        showEditCategoryDialog.value = false
+    }
+
+    fun editCategoryStatus() = showEditCategoryDialog
 }

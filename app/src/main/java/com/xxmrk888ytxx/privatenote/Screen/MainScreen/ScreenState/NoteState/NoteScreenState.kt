@@ -47,11 +47,11 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
-    val isShowCategoryMenu = remember {
-        noteStateViewModel.showDropDownCategory
-    }
     BackPressController.setHandler(currentMode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
+    }
+    BackPressController.setHandler(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
+       noteStateViewModel.hideCategoryList()
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -65,46 +65,31 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
         ) {
             Topbar(noteStateViewModel)
             NoteList(noteStateViewModel,navController)
-            DialogController(noteStateViewModel)
         }
         if(currentMode.value == SelectionScreenMode) {
             SelectionBottomBar(noteStateViewModel)
         }
     }
-    if(isShowCategoryMenu.value) {
+    if(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
         Box(
             contentAlignment = Alignment.BottomCenter
         ) {
             CategoryMenu(noteStateViewModel)
         }
     }
-    BackPressController.setHandler(isShowCategoryMenu.value) {
-        isShowCategoryMenu.value = false
-    }
-
 }
-
-@Composable
-fun DialogController(noteStateViewModel: NoteStateViewModel) {
-    when(noteStateViewModel.dialogState.value) {
-        is NoteDialogState.OrderCategoryDialog -> {
-            OrderCategoryDialog(noteStateViewModel) }
-        is NoteDialogState.None -> {}
-    }
-}
-
 @Composable
 fun Topbar(noteStateViewModel: NoteStateViewModel) {
     val isSearchListHide = remember {
         noteStateViewModel.isSearchLineHide
     }
     when(noteStateViewModel.getCurrentMode().value) {
-        is NoteScreenMode.Default -> {
+        is NoteScreenMode.Default,
+        is NoteScreenMode.ShowCategoryMenu -> {
             DefaultTopBar(noteStateViewModel)
             if(!isSearchListHide.value) {
                 SearchLine(noteStateViewModel)
             }
-
         }
         is NoteScreenMode.SearchScreenMode -> {
             SearchLine(noteStateViewModel)
@@ -624,6 +609,12 @@ fun EncryptNoteItem(note: Note) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
+    val showEditDialogState = remember {
+        noteStateViewModel.editCategoryStatus()
+    }
+    if(showEditDialogState.value) {
+        EditCategoryDialog(noteStateViewModel)
+    }
     val defaultCategoryItems = listOf(
         DefaultCategoryItem(
             title = "Все заметки",
@@ -657,6 +648,9 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        it.onClick()
+                    }
                     .animateItemPlacement(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -676,7 +670,36 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 Divider(thickness = 3.dp,color = SecondoryFontColor)
             }
         }
-        items(categoryList) {
+        itemsIndexed(categoryList) { index,it ->
+            if(index == 0) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp)
+                ){
+                    Text(text = "Категории",
+                        modifier = Modifier.padding(start = 15.dp,top = 10.dp),
+                        fontWeight = FontWeight.Medium,
+                        color = SecondoryFontColor,
+                        fontSize = 16.sp
+                    )
+                    Box(contentAlignment = Alignment.CenterEnd,
+                    modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "Добавить",
+                                modifier = Modifier
+                                    .clickable {
+                                        noteStateViewModel.showEditCategoryDialog()
+                                    }
+                                    .padding(start = 15.dp, top = 10.dp, end = 15.dp),
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Cyan,
+                                textAlign = TextAlign.End,
+                                fontSize = 16.sp
+                            )
+                        }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -698,4 +721,3 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
         }
     }
 }
-
