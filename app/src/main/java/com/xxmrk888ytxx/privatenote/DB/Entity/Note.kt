@@ -13,7 +13,7 @@ import androidx.room.*
             parentColumns = ["categoryId"],
             childColumns = ["category"],
             onDelete = ForeignKey.SET_NULL,
-            onUpdate = ForeignKey.CASCADE
+            onUpdate = ForeignKey.NO_ACTION
         )
     ]
 )

@@ -9,7 +9,7 @@ import kotlin.random.Random
 @Entity(
     indices =[
         Index("categoryId", unique = true),
-        Index("categoryName", unique = true)
+        Index("categoryName")
     ]
 )
 data class Category(

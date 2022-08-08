@@ -51,4 +51,5 @@
     <string name="Chosen">Избранное</string>
     <string name="Categoty">Категория</string>
     <string name="has_been_deleted">была удалена</string>
+    <string name="Ok">Ок</string>
 </resources>

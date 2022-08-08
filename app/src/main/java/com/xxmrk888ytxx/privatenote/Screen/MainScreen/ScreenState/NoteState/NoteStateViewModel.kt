@@ -7,15 +7,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.github.skydoves.colorpicker.compose.ColorPickerController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
+import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -38,7 +41,15 @@ class NoteStateViewModel @Inject constructor(
 
     val dialogState = mutableStateOf<NoteDialogState>(NoteDialogState.None)
 
-    private val showEditCategoryDialog = mutableStateOf(false)
+    private val showEditCategoryDialog = mutableStateOf(Pair<Boolean,Category?>(false,null))
+    
+    val nameCategoryFieldText = mutableStateOf("")
+
+    val currentCategoryColor = mutableStateOf(PrimaryFontColor)
+
+    val isShowSelectedCategoryMenu = mutableStateOf(false)
+
+    val currentSelectedCategoryId = mutableStateOf(0)
 
     fun getCurrentMode() = currentNoteMode
 
@@ -126,37 +137,45 @@ class NoteStateViewModel @Inject constructor(
 
     fun getAllCategory() = categoryRepository.getAllCategory()
 
+    fun getNoteRepository() = noteRepository
+
     fun showCategoryList() {
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
         currentNoteMode.value = NoteScreenMode.Default
-        showEditCategoryDialog.value = false
+        showEditCategoryDialog.value = Pair(false,null)
     }
 
-    fun showEditCategoryDialog() {
-        showEditCategoryDialog.value = true
+    fun showEditCategoryDialog(changedCategory:Category? = null) {
+        showEditCategoryDialog.value = Pair(true,changedCategory)
     }
 
     fun hideEditCategoryDialog() {
-        showEditCategoryDialog.value = false
+        showEditCategoryDialog.value = Pair(false,null)
+        nameCategoryFieldText.value = ""
+        currentCategoryColor.value = PrimaryFontColor
     }
 
     fun editCategoryStatus() = showEditCategoryDialog
 
-    fun addCategory(categoryName:String,iconColor: Color){
+    fun saveCategory(categoryName:String, iconColor: Color, categoryId: Int = 0){
         viewModelScope.launch {
-            showEditCategoryDialog.value = false
+            hideEditCategoryDialog()
             val category = Category(
+                categoryId = categoryId,
                 categoryName = categoryName,
                 red = iconColor.red,
                 green = iconColor.green,
                 blue = iconColor.blue
             )
+            if(categoryId == 0)
             categoryRepository.insertCategory(category)
+            else categoryRepository.updateCategory(category)
         }
     }
+
 
     fun removeCategory(category: Category,context: Context) {
         viewModelScope.launch {
@@ -168,4 +187,33 @@ class NoteStateViewModel @Inject constructor(
     }
 
     val savedCategory = mutableStateOf(listOf<Category>())
+
+    fun getSelectionCategoryDispatcher() : SelectionCategoryDispatcher {
+        return object : SelectionCategoryDispatcher {
+            override fun onCanceled() {
+                isShowSelectedCategoryMenu.value = false
+                currentSelectedCategoryId.value = 0
+            }
+
+            override fun onConfirmed() {
+                isShowSelectedCategoryMenu.value = false
+                val currentCategory = currentSelectedCategoryId.value
+                currentSelectedCategoryId.value = 0
+                changeCategorySelected(currentCategory)
+            }
+
+            override fun getCategory() : Flow<List<Category>> {
+                return getAllCategory()
+            }
+
+        }
+    }
+
+    fun changeCategorySelected(categoryId: Int) {
+        viewModelScope.launch {
+            selectedNoteList.forEach {
+                noteRepository.changeCurrentCategory(it,categoryId)
+            }
+        }
+    }
 }

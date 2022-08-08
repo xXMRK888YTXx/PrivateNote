@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import kotlinx.coroutines.flow.Flow
 
@@ -23,4 +24,7 @@ interface NoteDao {
 
     @Query("UPDATE Note SET isChosen=:isChosen WHERE id=:id")
     fun changeChosenStatus(isChosen:Boolean,id: Int)
+
+    @Query("UPDATE NOTE SET category= :categoryId WHERE id = :noteId")
+    fun changeCurrentCategory(noteId:Int,categoryId:Int?)
 }

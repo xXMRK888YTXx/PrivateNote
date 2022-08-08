@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.ui.theme.*
@@ -46,6 +47,9 @@ import com.xxmrk888ytxx.privatenote.ui.theme.*
 fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), navController: NavController) {
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
+    }
+    val isCategorySelectedMenuShow = remember {
+        noteStateViewModel.isShowSelectedCategoryMenu
     }
     BackPressController.setHandler(currentMode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
@@ -75,6 +79,14 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
             contentAlignment = Alignment.BottomCenter
         ) {
             CategoryMenu(noteStateViewModel)
+        }
+    }
+    if(isCategorySelectedMenuShow.value) {
+        noteStateViewModel.apply {
+            SelectionCategoryDialog(
+                currentSelected = currentSelectedCategoryId,
+                dialogDispatcher =  getSelectionCategoryDispatcher()
+            )
         }
     }
 }
@@ -208,7 +220,16 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
             isSelectedItemNotEmpty.value
         ){
             noteStateViewModel.addInChosenSelected()
-        }
+        },
+        SelectionBarItem(
+            title = "Добавить в",
+            icon = R.drawable.ic_add_category,
+            enable = isSelectedItemNotEmpty.value,
+            closeAfterClick = false,
+            onClick = {
+                noteStateViewModel.isShowSelectedCategoryMenu.value = true
+            }
+        )
     )
     Box(
         contentAlignment = Alignment.BottomCenter,
@@ -236,7 +257,8 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
                                 .clickable {
                                     if (!it.enable) return@clickable
                                     it.onClick()
-                                    noteStateViewModel.toDefaultMode()
+                                    if (it.closeAfterClick)
+                                        noteStateViewModel.toDefaultMode()
                                 }
                                 .padding(start = 15.dp)
                                 .alpha(enableColor)
@@ -499,14 +521,14 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
     Column(
         Modifier
             .fillMaxSize()
-            .padding(bottom = 0.dp),
+            .padding(top = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(painterResource(R.drawable.ic_add_category),
             contentDescription = "add_category",
             tint = PrimaryFontColor,
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(75.dp)
         )
         Text(text = "К сожалению, здесь пусто",
             fontSize = 20.sp,
@@ -557,7 +579,7 @@ fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavContro
 
 @Composable
 fun DefaultNoteItem(note: Note) {
-    val backGroundAlpha = if(note.category != null) 0.3f else 1f
+    val backGroundAlpha = if(note.category != null) 0f else 1f
         Column(
             Modifier
                 .background(CardNoteColor.copy(backGroundAlpha))
@@ -602,7 +624,7 @@ fun DefaultNoteItem(note: Note) {
 }
 @Composable
 fun EncryptNoteItem(note: Note) {
-    val backGroundAlpha = if(note.category != null) 0.3f else 1f
+    val backGroundAlpha = if(note.category != null) 0f else 1f
     Column(
         Modifier
             .background(CardNoteColor.copy(backGroundAlpha))
@@ -656,8 +678,8 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
     val showEditDialogState = remember {
         noteStateViewModel.editCategoryStatus()
     }
-    if(showEditDialogState.value) {
-        EditCategoryDialog(noteStateViewModel)
+    if(showEditDialogState.value.first) {
+        EditCategoryDialog(noteStateViewModel,showEditDialogState.value.second)
     }
     val currentOptionMenuEnable = remember {
         mutableStateOf(-1)
@@ -789,7 +811,7 @@ fun CategoryOptionMenu(noteStateViewModel: NoteStateViewModel, isShow:MutableSta
             modifier = Modifier.background(DropDownMenuColor)
         ) {
             DropdownMenuItem(onClick = {
-
+                noteStateViewModel.showEditCategoryDialog(category)
             }) {
                 Text(text = "Редактировать",color = PrimaryFontColor)
             }

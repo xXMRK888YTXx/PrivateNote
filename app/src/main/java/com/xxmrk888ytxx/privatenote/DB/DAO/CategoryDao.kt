@@ -20,4 +20,16 @@ interface CategoryDao {
 
     @Query("DELETE FROM Category WHERE categoryId = :categoryId")
     fun removeCategory(categoryId: Int)
+
+    @Query("UPDATE Category SET categoryName = :newName WHERE categoryId = :categoryId")
+    fun updateCategoryName(categoryId: Int,newName:String)
+
+    @Query("UPDATE Category SET red = :newValue WHERE categoryId = :categoryId")
+    fun updateRedColor(categoryId: Int,newValue:Float)
+
+    @Query("UPDATE Category SET green = :newValue WHERE categoryId = :categoryId")
+    fun updateGreenColor(categoryId: Int,newValue:Float)
+
+    @Query("UPDATE Category SET blue = :newValue WHERE categoryId = :categoryId")
+    fun updateBlueColor(categoryId: Int,newValue:Float)
 }

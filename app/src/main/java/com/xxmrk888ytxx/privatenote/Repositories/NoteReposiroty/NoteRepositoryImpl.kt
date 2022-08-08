@@ -27,4 +27,8 @@ class NoteRepositoryImpl @Inject constructor(
     override fun changeChosenStatus(isChosen:Boolean,id:Int) = runBlocking(Dispatchers.IO) {
         noteDao.changeChosenStatus(isChosen,id)
     }
+
+    override fun changeCurrentCategory(noteId: Int, categoryId: Int?) = runBlocking(Dispatchers.IO) {
+        noteDao.changeCurrentCategory(noteId,categoryId)
+    }
 }

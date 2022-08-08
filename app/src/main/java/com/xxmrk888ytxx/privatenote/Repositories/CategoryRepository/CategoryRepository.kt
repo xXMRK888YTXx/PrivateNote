@@ -14,4 +14,6 @@ interface CategoryRepository {
     fun insertCategory(category: Category)
 
     fun removeCategory(categoryId: Int)
+
+    fun updateCategory(category: Category)
 }

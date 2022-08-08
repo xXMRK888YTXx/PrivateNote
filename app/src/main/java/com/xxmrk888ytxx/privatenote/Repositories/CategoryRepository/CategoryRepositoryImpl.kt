@@ -25,4 +25,16 @@ class CategoryRepositoryImpl @Inject constructor(
     override fun removeCategory(categoryId: Int) = runBlocking(Dispatchers.IO) {
         categoryDao.removeCategory(categoryId)
     }
+
+    override fun updateCategory(category: Category): Unit = runBlocking(Dispatchers.IO) {
+        category.apply {
+            val id = categoryId
+            categoryDao.apply {
+                updateCategoryName(id,categoryName)
+                updateRedColor(id,red)
+                updateGreenColor(id,green)
+                updateBlueColor(id,blue)
+            }
+        }
+    }
 }

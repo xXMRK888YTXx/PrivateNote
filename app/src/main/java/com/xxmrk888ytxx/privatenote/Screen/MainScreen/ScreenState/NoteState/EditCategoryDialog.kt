@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,7 +13,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -22,28 +20,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
+import com.xxmrk888ytxx.privatenote.Utils.getColor
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @Composable
 fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category? = null) {
     val orientation = LocalConfiguration.current.orientation
     val nameCategoryFieldText = remember {
-        mutableStateOf("")
+        noteStateViewModel.nameCategoryFieldText
     }
     val currentColor = remember {
-        mutableStateOf(Color(0))
+        noteStateViewModel.currentCategoryColor
     }
     val enableScroll = remember {
         mutableStateOf(false)
     }
+    var isLaunched = true
     LaunchedEffect(key1 = Unit, block = {
         enableScroll.value = orientation == ORIENTATION_LANDSCAPE
+    })
+    LaunchedEffect(key1 = Unit, block = {
+        if(category != null) {
+            if(nameCategoryFieldText.value == "")
+                nameCategoryFieldText.value = category.categoryName
+            if(currentColor.value == PrimaryFontColor) {
+                currentColor.value = category.getColor()
+            }
+            else {
+
+            }
+        }
     })
     val focus = remember { FocusRequester() }
     Dialog(
@@ -106,7 +116,12 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                             .padding(10.dp)
                             .height(240.dp),
                             onColorChanged = {
-                                currentColor.value = it.color
+                                if(isLaunched){
+                                    isLaunched = false
+                                }
+                                else {
+                                    currentColor.value = it.color
+                                }
                             },
                             controller = rememberColorPickerController()
                         )
@@ -137,9 +152,10 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                                 backgroundColor = FloatingButtonColor,
                             ),
                             onClick = {
-                                noteStateViewModel.addCategory(
+                                noteStateViewModel.saveCategory(
                                     categoryName = nameCategoryFieldText.value,
-                                    iconColor = currentColor.value
+                                    iconColor = currentColor.value,
+                                    categoryId = category?.categoryId ?: 0
                                 )
                             },
                             modifier = Modifier
