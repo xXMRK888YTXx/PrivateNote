@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface CategoryRepository {
     fun getAllCategory() : Flow<List<Category>>
 
-    fun getCategoryById(categoryId:Int) : Flow<Category>
+    fun getCategoryById(categoryId:Int) : Flow<Category>?
 
     fun insertCategory(category: Category)
 

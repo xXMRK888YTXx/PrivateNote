@@ -40,6 +40,8 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Utils.*
+import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
+import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -118,12 +120,22 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
         .collectAsState(initial = listOf<Note>().fillList(Note(0,"","")
             ,noteStateViewModel.lastNoteCount.value),
     rememberCoroutineScope().coroutineContext)
+    val currentCategory = remember {
+        noteStateViewModel.getCategoryFilterStatus()
+    }
+    val category = if(currentCategory.value > 0)
+        noteStateViewModel.getCategoryById(currentCategory.value)
+            ?.collectAsState(Category(categoryName = "")) else null
+    val categoryName = category?.value?.categoryName ?: noteStateViewModel.getDefaultTitle(
+        LocalContext.current,currentCategory.value
+    )
+    val filterList = noteList.value.sortedByCategory(currentCategory.value)
 
-    val textUnderLabelText = if(noteList.value.isNotEmpty()) "${noteList.value.size} " +
+    val textUnderLabelText = if(filterList.isNotEmpty()) "${filterList.size} " +
             stringResource(id = R.string.Notes)
     else stringResource(R.string.No_Notes)
     val annotatedLabelString = buildAnnotatedString {
-        append(stringResource(R.string.All_Notes))
+        append(categoryName)
         appendInlineContent("drop_down_triangle")
     }
     val inlineContentMap = mapOf(
@@ -361,8 +373,11 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val selectedItemCount = remember {
         noteStateViewModel.selectionItemCount
     }
+    val currentCategory = remember {
+        noteStateViewModel.getCategoryFilterStatus()
+    }
     val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
-    val sortedNoteList = noteList.value
+    val sortedNoteList = noteList.value.sortedByCategory(currentCategory.value)
         .searchFilter(mode.value == NoteScreenMode.SearchScreenMode,
         searchSubString.value).sortNote()
     
@@ -581,8 +596,7 @@ fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavContro
 fun DefaultNoteItem(note: Note) {
     val backGroundAlpha = if(note.category != null) 0f else 1f
         Column(
-            Modifier
-                .background(CardNoteColor.copy(backGroundAlpha))
+            Modifier.background(CardNoteColor.copy(backGroundAlpha))
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
@@ -626,8 +640,7 @@ fun DefaultNoteItem(note: Note) {
 fun EncryptNoteItem(note: Note) {
     val backGroundAlpha = if(note.category != null) 0f else 1f
     Column(
-        Modifier
-            .background(CardNoteColor.copy(backGroundAlpha))
+        Modifier.background(CardNoteColor.copy(backGroundAlpha))
             .fillMaxWidth()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top
@@ -684,18 +697,23 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
     val currentOptionMenuEnable = remember {
         mutableStateOf(-1)
     }
+    val selectedCategoryFilter = remember {
+        noteStateViewModel.getCategoryFilterStatus()
+    }
     val defaultCategoryItems = listOf(
         DefaultCategoryItem(
             title = stringResource(R.string.All_Notes),
             icon = R.drawable.ic_notes,
+            itemNumber = IGNORE_CATEGORY
         ){
-
+            noteStateViewModel.changeCategoryFilterStatus(IGNORE_CATEGORY)
         },
         DefaultCategoryItem(
             title = stringResource(R.string.Chosen),
             icon = R.drawable.ic_star,
+            itemNumber = CHOSEN_ONLY
         ){
-
+            noteStateViewModel.changeCategoryFilterStatus(CHOSEN_ONLY)
         },
     )
     LazyColumn(
@@ -705,12 +723,14 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
             .fillMaxHeight()
     ){
         itemsIndexed(defaultCategoryItems) { index,it ->
-            val backGround = if(index == 0) SelectedCategoryColor else PrimaryFontColor.copy(0.75f)
+            val backGround = if(selectedCategoryFilter.value == it.itemNumber) SelectedCategoryColor
+            else PrimaryFontColor.copy(0.75f)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
                         it.onClick()
+                        noteStateViewModel.toDefaultMode()
                     }
                     .animateItemPlacement(),
                 verticalAlignment = Alignment.CenterVertically
@@ -764,13 +784,16 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
             Box(modifier = Modifier.padding(start = 35.dp)) {
                 CategoryOptionMenu(noteStateViewModel, currentOptionMenuEnable, it)
             }
+            val backGround = if(selectedCategoryFilter.value  == it.categoryId) SelectedCategoryColor
+            else PrimaryFontColor.copy(0.75f)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateItemPlacement()
                     .combinedClickable(
                         onClick = {
-
+                            noteStateViewModel.changeCategoryFilterStatus(it.categoryId)
+                            noteStateViewModel.toDefaultMode()
                         },
                         onLongClick = {
                             currentOptionMenuEnable.value = it.categoryId
@@ -786,7 +809,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 Text(text = it.categoryName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = PrimaryFontColor.copy(0.75f),
+                    color = backGround,
                     modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                 )
             }
@@ -813,7 +836,7 @@ fun CategoryOptionMenu(noteStateViewModel: NoteStateViewModel, isShow:MutableSta
             DropdownMenuItem(onClick = {
                 noteStateViewModel.showEditCategoryDialog(category)
             }) {
-                Text(text = "Редактировать",color = PrimaryFontColor)
+                Text(text = stringResource(R.string.edit),color = PrimaryFontColor)
             }
             DropdownMenuItem(onClick = {
                 noteStateViewModel.removeCategory(category,content)

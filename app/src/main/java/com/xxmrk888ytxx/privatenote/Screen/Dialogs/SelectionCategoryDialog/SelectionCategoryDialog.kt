@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.Dialogs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher: SelectionCategoryDispatcher)
 {
     val categoryList = dialogDispatcher.getCategory().collectAsState(listOf())
+
     Dialog(onDismissRequest = { dialogDispatcher.onCanceled() },
     ) {
         Card(
@@ -41,14 +43,40 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher:
             backgroundColor = MainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
-            Column(Modifier.verticalScroll(rememberScrollState()).fillMaxSize().padding(bottom = 35.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()).fillMaxSize()
+                .padding(bottom = 35.dp)) {
+                Row(
+                    modifier = Modifier
+                        .clickable {
+                            currentSelected.value = 0
+                        }.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(selected = currentSelected.value == 0,
+                        onClick = { currentSelected.value = 0 },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = PrimaryFontColor,
+                            unselectedColor =PrimaryFontColor
+                        )
+                    )
+                    Icon(painterResource(R.drawable.ic_remove_category),
+                        contentDescription = "",
+                        tint = PrimaryFontColor,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                    Text(text = stringResource(R.string.Remove_from_category),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = PrimaryFontColor.copy(0.75f),
+                        modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                    )
+                }
                 categoryList.value.forEach {
                     Row(
                         modifier = Modifier
                             .clickable {
                                 currentSelected.value = it.categoryId
-                            }
-                            .fillMaxWidth(),
+                            }.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         RadioButton(selected = currentSelected.value == it.categoryId,
@@ -82,7 +110,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher:
                         dialogDispatcher.onCanceled()
                     },
                     modifier = Modifier
-                        .fillMaxWidth(0.5f)
+                        .fillMaxWidth(0.5f).background(MainBackGroundColor)
                         .padding(start = 5.dp, end = 5.dp),
                     shape = RoundedCornerShape(80),
                     colors = ButtonDefaults.buttonColors(
@@ -98,13 +126,11 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher:
                         backgroundColor = FloatingButtonColor,
                         disabledBackgroundColor = FloatingButtonColor.copy(0.4f)
                     ),
-                    enabled = currentSelected.value != 0,
                     onClick = {
                         dialogDispatcher.onConfirmed()
-
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth().background(MainBackGroundColor)
                         .padding(start = 5.dp, end = 5.dp),
                     shape = RoundedCornerShape(80),
                 ) {

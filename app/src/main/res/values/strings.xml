@@ -52,4 +52,6 @@
     <string name="Categoty">Категория</string>
     <string name="has_been_deleted">была удалена</string>
     <string name="Ok">Ок</string>
+    <string name="edit">Редактировать</string>
+    <string name="Remove_from_category">Удалить из категории</string>
 </resources>

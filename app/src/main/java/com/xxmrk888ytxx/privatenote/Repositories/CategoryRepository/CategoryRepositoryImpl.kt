@@ -14,7 +14,7 @@ class CategoryRepositoryImpl @Inject constructor(
         return@runBlocking categoryDao.getAllCategory()
     }
 
-    override fun getCategoryById(categoryId: Int): Flow<Category> = runBlocking(Dispatchers.IO) {
+    override fun getCategoryById(categoryId: Int): Flow<Category>? = runBlocking(Dispatchers.IO) {
         return@runBlocking categoryDao.getCategoryById(categoryId)
     }
 

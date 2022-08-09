@@ -13,7 +13,7 @@ interface CategoryDao {
     fun getAllCategory() : Flow<List<Category>>
 
     @Query("SELECT * FROM Category WHERE categoryId = :categoryId")
-    fun getCategoryById(categoryId:Int) : Flow<Category>
+    fun getCategoryById(categoryId:Int) : Flow<Category>?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCategory(category: Category)

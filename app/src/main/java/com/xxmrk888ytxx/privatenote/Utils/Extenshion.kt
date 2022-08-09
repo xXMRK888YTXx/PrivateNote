@@ -18,6 +18,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
+import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -129,5 +131,17 @@ fun List<Note>.sortNote() : List<Note> {
 
 fun Category.getColor() : Color {
     return Color(red,green,blue)
+}
+
+fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {
+     when(categoryID) {
+         IGNORE_CATEGORY -> return this
+         CHOSEN_ONLY -> {
+             return this.filter { it.isChosen }
+         }
+         else -> {
+             return this.filter { it.category == categoryID }
+         }
+    }
 }
 

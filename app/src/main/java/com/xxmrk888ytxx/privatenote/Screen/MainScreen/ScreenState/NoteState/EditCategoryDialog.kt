@@ -150,7 +150,9 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
                                 backgroundColor = FloatingButtonColor,
+                                disabledBackgroundColor = FloatingButtonColor.copy(0.3f)
                             ),
+                            enabled = nameCategoryFieldText.value.isNotEmpty(),
                             onClick = {
                                 noteStateViewModel.saveCategory(
                                     categoryName = nameCategoryFieldText.value,

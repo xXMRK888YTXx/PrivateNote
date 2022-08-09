@@ -15,6 +15,8 @@ import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepo
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
 import com.xxmrk888ytxx.privatenote.Screen.Screen
+import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
+import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
@@ -39,7 +41,13 @@ class NoteStateViewModel @Inject constructor(
 
     private val currentNoteMode = mutableStateOf<NoteScreenMode>(NoteScreenMode.Default)
 
-    val dialogState = mutableStateOf<NoteDialogState>(NoteDialogState.None)
+    private val categoryFilterStatus = mutableStateOf(IGNORE_CATEGORY)
+
+    fun getCategoryFilterStatus() = categoryFilterStatus
+
+    fun changeCategoryFilterStatus(categoryOrStatus: Int) {
+        categoryFilterStatus.value = categoryOrStatus
+    }
 
     private val showEditCategoryDialog = mutableStateOf(Pair<Boolean,Category?>(false,null))
     
@@ -179,6 +187,7 @@ class NoteStateViewModel @Inject constructor(
 
     fun removeCategory(category: Category,context: Context) {
         viewModelScope.launch {
+            changeCategoryFilterStatus(IGNORE_CATEGORY)
             categoryRepository.removeCategory(category.categoryId)
             showToast.showToast("${context.getString(R.string.Categoty)} \"${category.categoryName}\" " +
                     context.getString(R.string.has_been_deleted)
@@ -214,6 +223,14 @@ class NoteStateViewModel @Inject constructor(
             selectedNoteList.forEach {
                 noteRepository.changeCurrentCategory(it,categoryId)
             }
+        }
+    }
+
+    fun getDefaultTitle(context: Context,id:Int) : String {
+        when(id) {
+            IGNORE_CATEGORY -> return context.getString(R.string.All_Notes)
+            CHOSEN_ONLY -> return context.getString(R.string.Chosen)
+            else -> return ""
         }
     }
 }

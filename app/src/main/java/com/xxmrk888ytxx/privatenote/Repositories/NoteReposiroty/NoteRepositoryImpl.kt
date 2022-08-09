@@ -29,6 +29,6 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override fun changeCurrentCategory(noteId: Int, categoryId: Int?) = runBlocking(Dispatchers.IO) {
-        noteDao.changeCurrentCategory(noteId,categoryId)
+        noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }
 }
