@@ -187,6 +187,7 @@ class NoteStateViewModel @Inject constructor(
 
     fun removeCategory(category: Category,context: Context) {
         viewModelScope.launch {
+            if(categoryFilterStatus.value == category.categoryId)
             changeCategoryFilterStatus(IGNORE_CATEGORY)
             categoryRepository.removeCategory(category.categoryId)
             showToast.showToast("${context.getString(R.string.Categoty)} \"${category.categoryName}\" " +

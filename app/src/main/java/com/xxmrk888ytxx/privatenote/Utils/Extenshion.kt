@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Utils
 
 import android.content.Context
+import android.graphics.ColorSpace
 import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -130,7 +131,7 @@ fun List<Note>.sortNote() : List<Note> {
 }
 
 fun Category.getColor() : Color {
-    return Color(red,green,blue)
+    return Color(red,green,blue,1f)
 }
 
 fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {

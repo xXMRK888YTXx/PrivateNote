@@ -2,10 +2,13 @@ package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,7 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,12 +34,15 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
+import com.xxmrk888ytxx.privatenote.Utils.getColor
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import kotlinx.coroutines.launch
@@ -43,6 +52,12 @@ import kotlinx.coroutines.launch
 fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navController: NavController) {
     val dialogState = remember {
         editNoteViewModel.dialogShowState
+    }
+    val changeCategoryDialogStatus = remember {
+        editNoteViewModel.getChangeCategoryDialogStatus()
+    }
+    val currentSelectedItem = remember {
+        editNoteViewModel.getCurrentSelectedCategory()
     }
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
@@ -56,12 +71,15 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
             Toolbar(editNoteViewModel,navController)
             TitleEditField(editNoteViewModel,textFieldFocus)
             TimeCreated(editNoteViewModel)
+            CategorySelector(editNoteViewModel)
             NoteTextEdit(editNoteViewModel,textFieldFocus)
         }
     when(dialogState.value) {
        is ShowDialogState.EncryptDialog -> {CryptDialog(editNoteViewModel)}
         is ShowDialogState.DecryptDialog -> {DecriptDialog(editNoteViewModel,navController)}
         is ShowDialogState.ExitDialog -> { ExitDialog(editNoteViewModel,navController)}
+        is ShowDialogState.EditCategoryDialog -> {SelectionCategoryDialog(currentSelected = currentSelectedItem,
+            dialogDispatcher = editNoteViewModel.getDialogDispatcher())}
         is ShowDialogState.None -> {}
     }
     val isHaveChanges = remember {
@@ -70,6 +88,10 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
     BackPressController.setHandler(isHaveChanges.value&&editNoteViewModel.isHavePrimaryVersion()) {
         editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
     }
+//    if(changeCategoryDialogStatus.value) {
+//        SelectionCategoryDialog(currentSelected = currentSelectedItem,
+//            dialogDispatcher = editNoteViewModel.getDialogDispatcher())
+//    }
 }
 
 @Composable
@@ -609,6 +631,50 @@ fun ExitDialog(editNoteViewModel: editNoteViewModel,navController: NavController
                     }
                 }
             }
-
+    }
+}
+@Composable
+fun CategorySelector(editNoteViewModel: editNoteViewModel) {
+    val category = remember {
+        editNoteViewModel.getCategory()
+    }
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val iconColor = category.value?.getColor() ?: PrimaryFontColor
+        val icon = if(category.value != null) painterResource(R.drawable.ic_category_icon)
+        else painterResource(R.drawable.ic_add_category)
+        val categoryName = buildAnnotatedString {
+            append(category.value?.categoryName ?: "Без категории")
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = PrimaryFontColor,
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+            }
+        )
+        Icon(painter = icon,
+            contentDescription = "",
+            tint = iconColor,
+            modifier = Modifier.padding(start = 10.dp,end = 8.dp).clickable {
+                editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
+            }
+        )
+        Text(text = categoryName,
+            inlineContent = inlineContentMap,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = PrimaryFontColor.copy(0.75f),
+            modifier = Modifier.padding(top = 15.dp, bottom = 15.dp).clickable {
+                editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
+            }
+        )
     }
 }

@@ -1,16 +1,20 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
+import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
@@ -19,6 +23,7 @@ import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +31,7 @@ import javax.inject.Inject
 @HiltViewModel
 class editNoteViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
+    private val categoryRepository: CategoryRepository,
     private val securityUtils: SecurityUtils,
     private val showToast: ShowToast,
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
@@ -69,8 +75,13 @@ class editNoteViewModel @Inject constructor(
 
     private var primaryNoteVersion:Note? = null
 
+    private var currentCategory:MutableState<Category?> = mutableStateOf(null)
+
     val isChosenNoteState = mutableStateOf(false)
 
+    private val currentSelectedCategory = mutableStateOf(0)
+
+    private val isShowCategoryChangeDialog = mutableStateOf(false)
         //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
         if(primaryNoteVersion != null) return
@@ -82,6 +93,7 @@ class editNoteViewModel @Inject constructor(
         if(id != 0) {
             note = noteRepository.getNoteById(id).getData()
             savePrimaryVersion(note.copy())
+            saveCategory(note.category)
             if(!note.isEncrypted) {
                     titleTextField.value = note.title
                     textField.value = note.text
@@ -104,6 +116,16 @@ class editNoteViewModel @Inject constructor(
             }
         }
     }
+
+    private fun saveCategory(categoryID: Int?) {
+        if(categoryID == null) return
+        viewModelScope.launch(Dispatchers.IO) {
+            val category = categoryRepository.getCategoryById(categoryID)?.getData()
+            currentCategory.value = category
+            currentSelectedCategory.value = category?.categoryId ?: 0
+        }
+    }
+
     //проверяет наличие изменений
     fun checkChanges() {
         viewModelScope.launch {
@@ -133,7 +155,8 @@ class editNoteViewModel @Inject constructor(
                     noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
                         title = titleTextField.value,
                         text = textField.value,
-                        isChosen = isChosenNoteState.value
+                        isChosen = isChosenNoteState.value,
+                        category = currentCategory.value?.categoryId
                     ))
                 }
                 is SaveNoteState.RemoveNote -> {
@@ -153,7 +176,8 @@ class editNoteViewModel @Inject constructor(
                         noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
                             title = title,
                             text = text,
-                            isChosen = isChosenNoteState.value
+                            isChosen = isChosenNoteState.value,
+                            category = currentCategory.value?.categoryId
                         ))
                     }catch (e:Exception){}
 
@@ -166,6 +190,7 @@ class editNoteViewModel @Inject constructor(
 
     private fun checkChangeNoteConfiguration(): Boolean {
         if(!isHavePrimaryVersion()) return false
+        if (currentCategory.value?.categoryId != primaryNoteVersion?.category ) return true
         return primaryNoteVersion?.isChosen != isChosenNoteState.value
     }
 
@@ -261,7 +286,7 @@ class editNoteViewModel @Inject constructor(
     }
     //добавление изменений в историю
     fun addInHistoryChanges() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             inputHistoryManager.addInHistory(textField.value)
             checkHistoryState()
         }
@@ -273,5 +298,42 @@ class editNoteViewModel @Inject constructor(
 
     fun removeFromChosen() {
         isChosenNoteState.value = false
+    }
+
+    fun getCategory() = currentCategory
+
+    fun getCurrentSelectedCategory() = currentSelectedCategory
+
+    fun getChangeCategoryDialogStatus() = isShowCategoryChangeDialog
+
+    fun changeCurrentCategory(id: Int) {
+        viewModelScope.launch {
+            currentCategory.value = categoryRepository.getCategoryById(id)?.getData()
+            currentSelectedCategory.value = currentCategory.value?.categoryId ?: 0
+        }
+    }
+
+    fun getDialogDispatcher(): SelectionCategoryDispatcher {
+        return object : SelectionCategoryDispatcher {
+            override fun onCanceled() {
+                dialogShowState.value = ShowDialogState.None
+                currentSelectedCategory.value = currentCategory.value?.categoryId ?: 0
+            }
+
+            override fun onConfirmed() {
+                dialogShowState.value = ShowDialogState.None
+                changeCurrentCategory(currentSelectedCategory.value)
+            }
+
+            override fun getCategory(): Flow<List<Category>> {
+                return categoryRepository.getAllCategory()
+            }
+
+        }
+
+    }
+
+    fun changeCategoryEditDialogStatus(status:Boolean) {
+        isShowCategoryChangeDialog.value = status
     }
 }

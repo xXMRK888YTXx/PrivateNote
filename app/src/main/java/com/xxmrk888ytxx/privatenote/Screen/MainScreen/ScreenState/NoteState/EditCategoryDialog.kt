@@ -80,6 +80,7 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                         .padding(top = 5.dp)
                 ) {
                     OutlinedTextField(value = nameCategoryFieldText.value, onValueChange = {
+                        if(it.length > 20) return@OutlinedTextField
                         nameCategoryFieldText.value = it
                     },
                         modifier = Modifier.focusRequester(focus),
@@ -102,7 +103,7 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                         ),
                         textStyle = TextStyle(
                             fontWeight = FontWeight.Medium,
-                        )
+                        ),
                     )
                     Icon(painter = painterResource(R.drawable.ic_category_icon),
                         contentDescription = "",
