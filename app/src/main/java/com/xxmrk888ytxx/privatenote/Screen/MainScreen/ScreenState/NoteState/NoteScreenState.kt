@@ -39,6 +39,7 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.TopBarController
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -46,7 +47,9 @@ import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), navController: NavController) {
+fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
+                    navController: NavController,topBarController: TopBarController) {
+    noteStateViewModel.setTopBarController(topBarController)
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
@@ -69,18 +72,17 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(), na
                 .background(MainBackGroundColor)
                 .fillMaxSize(),
         ) {
-            Topbar(noteStateViewModel)
-            NoteList(noteStateViewModel,navController)
+            if(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
+                CategoryMenu(noteStateViewModel)
+            }
+            else {
+                Topbar(noteStateViewModel)
+                NoteList(noteStateViewModel,navController)
+            }
+
         }
         if(currentMode.value == SelectionScreenMode) {
             SelectionBottomBar(noteStateViewModel)
-        }
-    }
-    if(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
-        Box(
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            CategoryMenu(noteStateViewModel)
         }
     }
     if(isCategorySelectedMenuShow.value) {
@@ -101,9 +103,9 @@ fun Topbar(noteStateViewModel: NoteStateViewModel) {
         is NoteScreenMode.Default,
         is NoteScreenMode.ShowCategoryMenu -> {
             DefaultTopBar(noteStateViewModel)
-            if(!isSearchListHide.value) {
-                SearchLine(noteStateViewModel)
-            }
+//            if(!isSearchListHide.value) {
+//                SearchLine(noteStateViewModel)
+//            }
         }
         is NoteScreenMode.SearchScreenMode -> {
             SearchLine(noteStateViewModel)
@@ -309,13 +311,7 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp)
-            .focusRequester(focus)
-            .onFocusChanged {
-                if (it.isFocused) {
-                    noteStateViewModel.toSearchMode()
-                }
-            }
-        ,
+            .focusRequester(focus),
         label = { Text(text = stringResource(R.string.Search),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold
