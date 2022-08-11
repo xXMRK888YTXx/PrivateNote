@@ -14,4 +14,6 @@ interface ToDoRepository {
     fun insertToDo(toDoItem: ToDoItem)
 
     fun removeToDo(id:Int)
+
+    fun changeMarkStatus(id:Int,status:Boolean)
 }

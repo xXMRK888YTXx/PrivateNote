@@ -17,4 +17,7 @@ interface ToDoDao {
 
     @Query("DELETE FROM TODO WHERE id = :id")
     fun removeToDo(id:Int)
+
+    @Query("UPDATE TODO SET isCompleted= :status WHERE id = :id")
+    fun changeMarkStatus(id:Int,status:Boolean)
 }

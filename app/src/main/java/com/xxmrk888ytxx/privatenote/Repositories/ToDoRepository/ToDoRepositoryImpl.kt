@@ -25,4 +25,8 @@ class ToDoRepositoryImpl @Inject constructor(
     override fun removeToDo(id: Int) = runBlocking(Dispatchers.IO) {
         toDoDao.removeToDo(id)
     }
+
+    override fun changeMarkStatus(id: Int, status: Boolean) = runBlocking(Dispatchers.IO) {
+        toDoDao.changeMarkStatus(id,status)
+    }
 }

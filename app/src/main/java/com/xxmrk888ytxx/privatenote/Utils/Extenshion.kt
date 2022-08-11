@@ -18,6 +18,7 @@ import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
+import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -144,5 +145,9 @@ fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {
              return this.filter { it.category == categoryID }
          }
     }
+}
+
+fun List<ToDoItem>.sortedToDo() :List<ToDoItem> {
+    return this.sortedByDescending { it.isImportant }
 }
 
