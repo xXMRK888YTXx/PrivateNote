@@ -7,14 +7,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.github.skydoves.colorpicker.compose.ColorPickerController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
-import com.xxmrk888ytxx.privatenote.Screen.MainScreen.TopBarController
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -44,14 +43,22 @@ class NoteStateViewModel @Inject constructor(
 
     private val categoryFilterStatus = mutableStateOf(IGNORE_CATEGORY)
 
-    private var topBarController: TopBarController? = null
+    private var mainScreenController: MainScreenController? = null
 
-    fun setTopBarController(topBarController: TopBarController?) {
-        if(topBarController == null) return
-        this.topBarController = topBarController
-        topBarController.setSearchButtonOnClickListener {
+    fun setMainScreenController(mainScreenController: MainScreenController?) {
+        if(mainScreenController == null) return
+        this.mainScreenController = mainScreenController
+        mainScreenController.setSearchButtonOnClickListener {
             toSearchMode()
         }
+        SetupFloatButtonOptions()
+    }
+
+    private fun SetupFloatButtonOptions() {
+        mainScreenController?.setFloatButtonOnClickListener {
+            toEditNoteScreen(it,0)
+        }
+
     }
 
     fun getCategoryFilterStatus() = categoryFilterStatus
@@ -82,13 +89,13 @@ class NoteStateViewModel @Inject constructor(
     }
     fun toSelectionMode() {
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
-        topBarController?.changeVisibleStatus(false)
+        mainScreenController?.changeTopBarVisibleStatus(false)
     }
 
     fun toDefaultMode() {
         currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
-        topBarController?.changeVisibleStatus(true)
+        mainScreenController?.changeTopBarVisibleStatus(true)
     }
 
     private val selectedNoteList = mutableSetOf<Int>()
@@ -137,7 +144,7 @@ class NoteStateViewModel @Inject constructor(
 
     fun toSearchMode() {
         currentNoteMode.value = NoteScreenMode.SearchScreenMode
-        topBarController?.changeVisibleStatus(false)
+        mainScreenController?.changeTopBarVisibleStatus(false)
     }
     val lastNoteCount = mutableStateOf(0)
     get() = field
@@ -162,12 +169,12 @@ class NoteStateViewModel @Inject constructor(
     fun getNoteRepository() = noteRepository
 
     fun showCategoryList() {
-        topBarController?.changeVisibleStatus(false)
+        mainScreenController?.changeTopBarVisibleStatus(false)
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
-        topBarController?.changeVisibleStatus(true)
+        mainScreenController?.changeTopBarVisibleStatus(true)
         currentNoteMode.value = NoteScreenMode.Default
         showEditCategoryDialog.value = Pair(false,null)
     }
@@ -214,8 +221,8 @@ class NoteStateViewModel @Inject constructor(
 
     val savedCategory = mutableStateOf(listOf<Category>())
 
-    fun getSelectionCategoryDispatcher() : SelectionCategoryDispatcher {
-        return object : SelectionCategoryDispatcher {
+    fun getSelectionCategoryDispatcher() : SelectionCategoryController {
+        return object : SelectionCategoryController {
             override fun onCanceled() {
                 isShowSelectedCategoryMenu.value = false
                 currentSelectedCategoryId.value = 0
@@ -241,6 +248,10 @@ class NoteStateViewModel @Inject constructor(
                 noteRepository.changeCurrentCategory(it,categoryId)
             }
         }
+    }
+
+    fun changeFloatButtonVisible(isVisible:Boolean) {
+        mainScreenController?.changeEnableFloatButtonStatus(isVisible)
     }
 
     fun getDefaultTitle(context: Context,id:Int) : String {

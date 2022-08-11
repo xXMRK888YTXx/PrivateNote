@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,9 +36,9 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
-import com.xxmrk888ytxx.privatenote.Screen.MainScreen.TopBarController
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -48,14 +47,17 @@ import com.xxmrk888ytxx.privatenote.ui.theme.*
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
-                    navController: NavController,topBarController: TopBarController) {
-    noteStateViewModel.setTopBarController(topBarController)
+                    navController: NavController, mainScreenController: MainScreenController) {
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
     val isCategorySelectedMenuShow = remember {
         noteStateViewModel.isShowSelectedCategoryMenu
     }
+    LaunchedEffect(key1 = Unit, block = {
+        noteStateViewModel.setMainScreenController(mainScreenController)
+    })
+    noteStateViewModel.changeFloatButtonVisible(currentMode.value == NoteScreenMode.Default)
     BackPressController.setHandler(currentMode.value == SelectionScreenMode) {
         noteStateViewModel.toDefaultMode()
     }
@@ -64,22 +66,18 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
     }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        floatingActionButton = { FloatButton(noteStateViewModel,navController) },
-        floatingActionButtonPosition = FabPosition.End
     ) {
         Column(
             Modifier
                 .background(MainBackGroundColor)
                 .fillMaxSize(),
         ) {
-            if(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
+            if (currentMode.value == NoteScreenMode.ShowCategoryMenu) {
                 CategoryMenu(noteStateViewModel)
-            }
-            else {
+            } else {
                 Topbar(noteStateViewModel)
-                NoteList(noteStateViewModel,navController)
+                NoteList(noteStateViewModel, navController)
             }
-
         }
         if(currentMode.value == SelectionScreenMode) {
             SelectionBottomBar(noteStateViewModel)
@@ -89,7 +87,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
         noteStateViewModel.apply {
             SelectionCategoryDialog(
                 currentSelected = currentSelectedCategoryId,
-                dialogDispatcher =  getSelectionCategoryDispatcher()
+                dialogController =  getSelectionCategoryDispatcher()
             )
         }
     }
@@ -570,29 +568,11 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
 }
 
 @Composable
-fun FloatButton(noteStateViewModel: NoteStateViewModel, navController: NavController) {
-    val mode = remember {
-        noteStateViewModel.getCurrentMode()
-    }
-    if(mode.value != NoteScreenMode.Default) return
-    FloatingActionButton(
-        onClick = {noteStateViewModel.toEditNoteScreen(navController,0) },
-        backgroundColor = FloatingButtonColor,
-        modifier = Modifier.size(65.dp)
-    ){
-        Icon(painter = painterResource(id = R.drawable.ic_plus),
-            contentDescription = "plus",
-            tint = PrimaryFontColor,
-            modifier = Modifier.size(35.dp)
-        )
-    }
-}
-
-@Composable
 fun DefaultNoteItem(note: Note) {
     val backGroundAlpha = if(note.category != null) 0f else 1f
         Column(
-            Modifier.background(CardNoteColor.copy(backGroundAlpha))
+            Modifier
+                .background(CardNoteColor.copy(backGroundAlpha))
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
@@ -636,7 +616,8 @@ fun DefaultNoteItem(note: Note) {
 fun EncryptNoteItem(note: Note) {
     val backGroundAlpha = if(note.category != null) 0f else 1f
     Column(
-        Modifier.background(CardNoteColor.copy(backGroundAlpha))
+        Modifier
+            .background(CardNoteColor.copy(backGroundAlpha))
             .fillMaxWidth()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top

@@ -1,9 +1,9 @@
-package com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
+package com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
 
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import kotlinx.coroutines.flow.Flow
 
-interface SelectionCategoryDispatcher {
+interface SelectionCategoryController {
     fun onCanceled()
     fun onConfirmed()
     fun getCategory() : Flow<List<Category>>

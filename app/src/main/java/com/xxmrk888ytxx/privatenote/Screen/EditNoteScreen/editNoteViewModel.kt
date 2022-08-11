@@ -14,7 +14,7 @@ import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
@@ -313,8 +313,8 @@ class editNoteViewModel @Inject constructor(
         }
     }
 
-    fun getDialogDispatcher(): SelectionCategoryDispatcher {
-        return object : SelectionCategoryDispatcher {
+    fun getDialogDispatcher(): SelectionCategoryController {
+        return object : SelectionCategoryController {
             override fun onCanceled() {
                 dialogShowState.value = ShowDialogState.None
                 currentSelectedCategory.value = currentCategory.value?.categoryId ?: 0

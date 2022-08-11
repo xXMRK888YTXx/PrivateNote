@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.Dialogs
+package com.xxmrk888ytxx.privatenote.Screen.MultiUse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,7 +9,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,9 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog.SelectionCategoryDispatcher
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Utils.getColor
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
@@ -29,11 +27,11 @@ import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 
 @Composable
-fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher: SelectionCategoryDispatcher)
+fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController: SelectionCategoryController)
 {
-    val categoryList = dialogDispatcher.getCategory().collectAsState(listOf())
+    val categoryList = dialogController.getCategory().collectAsState(listOf())
 
-    Dialog(onDismissRequest = { dialogDispatcher.onCanceled() },
+    Dialog(onDismissRequest = { dialogController.onCanceled() },
     ) {
         Card(
             modifier = Modifier
@@ -107,7 +105,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher:
             ) {
                 OutlinedButton(
                     onClick = {
-                        dialogDispatcher.onCanceled()
+                        dialogController.onCanceled()
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.5f).background(MainBackGroundColor)
@@ -127,7 +125,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogDispatcher:
                         disabledBackgroundColor = FloatingButtonColor.copy(0.4f)
                     ),
                     onClick = {
-                        dialogDispatcher.onConfirmed()
+                        dialogController.onConfirmed()
                     },
                     modifier = Modifier
                         .fillMaxWidth().background(MainBackGroundColor)

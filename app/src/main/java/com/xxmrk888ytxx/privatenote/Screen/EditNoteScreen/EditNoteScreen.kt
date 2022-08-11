@@ -34,10 +34,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.Dialogs.SelectionCategoryDialog
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
@@ -79,7 +78,7 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
         is ShowDialogState.DecryptDialog -> {DecriptDialog(editNoteViewModel,navController)}
         is ShowDialogState.ExitDialog -> { ExitDialog(editNoteViewModel,navController)}
         is ShowDialogState.EditCategoryDialog -> {SelectionCategoryDialog(currentSelected = currentSelectedItem,
-            dialogDispatcher = editNoteViewModel.getDialogDispatcher())}
+            dialogController = editNoteViewModel.getDialogDispatcher())}
         is ShowDialogState.None -> {}
     }
     val isHaveChanges = remember {

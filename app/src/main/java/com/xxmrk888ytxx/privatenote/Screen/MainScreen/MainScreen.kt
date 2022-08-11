@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.FabPosition
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,6 +17,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton.FloatButton
 import com.xxmrk888ytxx.privatenote.Utils.Const.SEARCH_BUTTON_KEY
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
@@ -30,18 +32,24 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
     val toolbarState = remember {
         mainViewModel.getShowToolBarStatus()
     }
-    Column(
-        modifier = Modifier.fillMaxSize()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        floatingActionButton = { FloatButton(mainViewModel,navController) },
+        floatingActionButtonPosition = FabPosition.End
     ) {
-        if(toolbarState.value) {
-            TopNavigationBar(mainViewModel)
-        }
-        when(state.value) {
-            is MainScreenState.NoteScreen -> {
-                NoteScreenState(navController = navController, topBarController = mainViewModel)
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            if (toolbarState.value) {
+                TopNavigationBar(mainViewModel)
             }
-            is MainScreenState.ToDoScreen -> {
-
+            when (state.value) {
+                is MainScreenState.NoteScreen -> {
+                    NoteScreenState(navController = navController, mainScreenController = mainViewModel)
+                }
+                is MainScreenState.ToDoScreen -> {
+                    ToDoScreen(mainScreenController = mainViewModel)
+                }
             }
         }
     }
