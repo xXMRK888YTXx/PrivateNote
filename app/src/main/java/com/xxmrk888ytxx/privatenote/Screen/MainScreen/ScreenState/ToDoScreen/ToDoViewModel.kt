@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton.FloatButtonController
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ToDoViewModel @Inject constructor(
-    private val showToast: ShowToast
+    private val showToast: ShowToast,
+    private val toDoRepository: ToDoRepository
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 

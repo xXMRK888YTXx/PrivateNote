@@ -54,4 +54,6 @@
     <string name="Ok">Ок</string>
     <string name="edit">Редактировать</string>
     <string name="Remove_from_category">Удалить из категории</string>
+    <string name="Sorry_but_is_empty">К сожалению, здесь пусто</string>
+    <string name="Add_category">Добавить категорию</string>
 </resources>

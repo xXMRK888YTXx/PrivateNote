@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "77e37d83de89cdde006ade2b41d58aa9",
+    "identityHash": "6b747963d6e8bd6f659d74229960ba1d",
     "entities": [
       {
         "tableName": "Note",
@@ -153,12 +153,66 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "TODO",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `todoText` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `isImportant` INTEGER NOT NULL, `todoTime` INTEGER)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todoText",
+            "columnName": "todoText",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isCompleted",
+            "columnName": "isCompleted",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isImportant",
+            "columnName": "isImportant",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todoTime",
+            "columnName": "todoTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_TODO_id",
+            "unique": true,
+            "columnNames": [
+              "id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_TODO_id` ON `${TABLE_NAME}` (`id`)"
+          }
+        ],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '77e37d83de89cdde006ade2b41d58aa9')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b747963d6e8bd6f659d74229960ba1d')"
     ]
   }
 }

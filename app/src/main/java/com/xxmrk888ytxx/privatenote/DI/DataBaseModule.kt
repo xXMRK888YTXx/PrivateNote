@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.xxmrk888ytxx.privatenote.DB.AppDataBase
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
+import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,6 +32,12 @@ class DataBaseModule {
     @Singleton
     fun getCategoryDao(dataBase: AppDataBase) : CategoryDao {
         return dataBase.getCategoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun getToDoDao(dataBase: AppDataBase) : ToDoDao {
+        return dataBase.getToDoItemDao()
     }
 
 }

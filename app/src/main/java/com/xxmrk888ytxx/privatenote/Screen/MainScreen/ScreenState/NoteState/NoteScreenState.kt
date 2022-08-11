@@ -529,8 +529,8 @@ fun Stub() {
 fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
     Column(
         Modifier
-            .fillMaxSize()
-            .padding(top = 20.dp),
+            .fillMaxWidth()
+            .padding(top = 25.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -539,7 +539,7 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
             tint = PrimaryFontColor,
             modifier = Modifier.size(75.dp)
         )
-        Text(text = "К сожалению, здесь пусто",
+        Text(text = stringResource(R.string.Sorry_but_is_empty),
             fontSize = 20.sp,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.Medium,
@@ -560,7 +560,7 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
                 .padding(start = 35.dp, end = 35.dp),
             shape = RoundedCornerShape(80),
         ) {
-            Text(text = "Добавить категорию",
+            Text(text = stringResource(R.string.Add_category),
                 color = PrimaryFontColor
             )
         }
@@ -693,56 +693,62 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
             noteStateViewModel.changeCategoryFilterStatus(CHOSEN_ONLY)
         },
     )
-    LazyColumn(
-        modifier = Modifier
-            .background(MainBackGroundColor)
-            .fillMaxWidth()
-            .fillMaxHeight()
-    ){
-        itemsIndexed(defaultCategoryItems) { index,it ->
-            val backGround = if(selectedCategoryFilter.value == it.itemNumber) SelectedCategoryColor
-            else PrimaryFontColor.copy(0.75f)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        it.onClick()
-                        noteStateViewModel.toDefaultMode()
-                    }
-                    .animateItemPlacement(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(painterResource(it.icon),
-                    contentDescription = "",
-                    tint = PrimaryFontColor,
-                    modifier = Modifier.padding(15.dp)
-                )
-                Text(text = it.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = backGround,
-                    modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
-                )
-            }
-            if(index == defaultCategoryItems.lastIndex) {
-                Divider(thickness = 3.dp,color = SecondoryFontColor)
-            }
-        }
-        itemsIndexed(categoryList.value) { index,it ->
-            if(index == 0) {
+    Column(Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .background(MainBackGroundColor)
+                .fillMaxWidth()
+        ) {
+            itemsIndexed(defaultCategoryItems) { index, it ->
+                val backGround =
+                    if (selectedCategoryFilter.value == it.itemNumber) SelectedCategoryColor
+                    else PrimaryFontColor.copy(0.75f)
                 Row(
-                    Modifier
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 10.dp)
-                ){
-                    Text(text = stringResource(R.string.Categoryes),
-                        modifier = Modifier.padding(start = 15.dp,top = 10.dp),
-                        fontWeight = FontWeight.Medium,
-                        color = SecondoryFontColor,
-                        fontSize = 16.sp
+                        .clickable {
+                            it.onClick()
+                            noteStateViewModel.toDefaultMode()
+                        }
+                        .animateItemPlacement(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painterResource(it.icon),
+                        contentDescription = "",
+                        tint = PrimaryFontColor,
+                        modifier = Modifier.padding(15.dp)
                     )
-                    Box(contentAlignment = Alignment.CenterEnd,
-                    modifier = Modifier.fillMaxWidth()
+                    Text(
+                        text = it.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = backGround,
+                        modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                    )
+                }
+                if (index == defaultCategoryItems.lastIndex) {
+                    Divider(thickness = 3.dp, color = SecondoryFontColor)
+                }
+            }
+
+            itemsIndexed(categoryList.value) { index, it ->
+                if (index == 0) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth().animateItemPlacement()
+                            .padding(bottom = 10.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.Categoryes),
+                            modifier = Modifier.padding(start = 15.dp, top = 10.dp),
+                            fontWeight = FontWeight.Medium,
+                            color = SecondoryFontColor,
+                            fontSize = 16.sp
+                        )
+                        Box(
+                            contentAlignment = Alignment.CenterEnd,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(text = stringResource(R.string.Add),
                                 modifier = Modifier
@@ -756,44 +762,48 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                                 fontSize = 16.sp
                             )
                         }
+                    }
+                }
+                Box(modifier = Modifier.padding(start = 35.dp)) {
+                    CategoryOptionMenu(noteStateViewModel, currentOptionMenuEnable, it)
+                }
+                val backGround =
+                    if (selectedCategoryFilter.value == it.categoryId) SelectedCategoryColor
+                    else PrimaryFontColor.copy(0.75f)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItemPlacement()
+                        .combinedClickable(
+                            onClick = {
+                                noteStateViewModel.changeCategoryFilterStatus(it.categoryId)
+                                noteStateViewModel.toDefaultMode()
+                            },
+                            onLongClick = {
+                                currentOptionMenuEnable.value = it.categoryId
+                            }
+                        ),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painterResource(R.drawable.ic_category_icon),
+                        contentDescription = "",
+                        tint = it.getColor(),
+                        modifier = Modifier.padding(15.dp)
+                    )
+                    Text(
+                        text = it.categoryName,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = backGround,
+                        modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                    )
                 }
             }
-            Box(modifier = Modifier.padding(start = 35.dp)) {
-                CategoryOptionMenu(noteStateViewModel, currentOptionMenuEnable, it)
-            }
-            val backGround = if(selectedCategoryFilter.value  == it.categoryId) SelectedCategoryColor
-            else PrimaryFontColor.copy(0.75f)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()
-                    .combinedClickable(
-                        onClick = {
-                            noteStateViewModel.changeCategoryFilterStatus(it.categoryId)
-                            noteStateViewModel.toDefaultMode()
-                        },
-                        onLongClick = {
-                            currentOptionMenuEnable.value = it.categoryId
-                        }
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                    Icon(painterResource(R.drawable.ic_category_icon),
-                    contentDescription = "",
-                    tint = it.getColor(),
-                    modifier = Modifier.padding(15.dp)
-                )
-                Text(text = it.categoryName,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = backGround,
-                    modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
-                )
-            }
         }
-    }
-    if(categoryList.value.isEmpty()) {
-        CategoryMenuStub(noteStateViewModel)
+        if(categoryList.value.isEmpty()) {
+            CategoryMenuStub(noteStateViewModel)
+        }
     }
     SideEffect {
         noteStateViewModel.savedCategory.value = categoryList.value
