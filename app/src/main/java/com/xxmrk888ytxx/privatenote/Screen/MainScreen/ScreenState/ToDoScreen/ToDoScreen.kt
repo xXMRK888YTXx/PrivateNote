@@ -1,5 +1,11 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
+import android.app.DatePickerDialog
+import android.content.Context
+import android.os.Build
+import android.util.Log
+import android.widget.DatePicker
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,14 +16,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -32,6 +36,9 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Utils.sortedToDo
 import com.xxmrk888ytxx.privatenote.ui.theme.*
+import java.time.temporal.Temporal
+import java.time.temporal.TemporalField
+import java.util.*
 
 @Composable
 fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenController: MainScreenController) {
@@ -60,6 +67,10 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     val currentToDoImpotent = remember {
         toDoViewModel.getIsCurrentEditableToDoImportantStatus()
     }
+    val showDataPickerDialog = remember {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
     val toDoEditItems = listOf(
         ToDoEditItem(
             icon = R.drawable.ic_priority_high,
@@ -70,7 +81,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         },
         ToDoEditItem(
             icon = R.drawable.ic_timer
-        ) {},
+        ) {
+            toDoViewModel.showDataPickerDialog(context)
+        },
         ToDoEditItem(
             icon = R.drawable.ic_notifications
         ) {},
@@ -155,6 +168,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
             }
         }
     }
+    if(showDataPickerDialog.value) {
+
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -169,7 +185,8 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(10.dp).combinedClickable(
+                    .padding(10.dp)
+                    .combinedClickable(
                         onClick = {
                             toDoViewModel.toEditToDoState(it)
                         }

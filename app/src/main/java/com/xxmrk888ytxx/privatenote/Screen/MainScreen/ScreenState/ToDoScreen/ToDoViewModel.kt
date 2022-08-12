@@ -1,5 +1,8 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
+import android.app.DatePickerDialog
+import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,6 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -16,8 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ToDoViewModel @Inject constructor(
     private val showToast: ShowToast,
-    private val toDoRepository: ToDoRepository
+    private val toDoRepository: ToDoRepository,
 ) : ViewModel() {
+    init {
+
+    }
     private var mainScreenController: MainScreenController? = null
 
     private val currentState:MutableState<ToDoScreenState> = mutableStateOf(ToDoScreenState.Default)
@@ -32,7 +40,10 @@ class ToDoViewModel @Inject constructor(
 
     private val currentToDoIsCompleted = mutableStateOf(false)
 
+
     fun getIsCurrentEditableToDoImportantStatus() = isCurrentEditableToDoImportant
+
+    private val dataTimePicker = DataTimePicker()
 
     fun changeImpotentStatus() {
         isCurrentEditableToDoImportant.value = !isCurrentEditableToDoImportant.value
@@ -101,5 +112,21 @@ class ToDoViewModel @Inject constructor(
             )
         }
         toDefaultMode()
+    }
+
+
+    fun showDataPickerDialog(context: Context) {
+        dataTimePicker.createDataPickerDialog(context,
+            object : DataTimePickerController {
+                override fun onComplete(time: Long) {
+                    Log.d("MyLog",time.toString())
+                }
+
+                override fun onCancel() {
+                    Log.d("MyLog","cancel")
+                }
+
+            }
+        )
     }
 }
