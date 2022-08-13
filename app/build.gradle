@@ -91,4 +91,6 @@ dependencies {
 
     //color picker
     implementation "com.github.skydoves:colorpicker-compose:1.0.0"
+
+    implementation "me.saket.swipe:swipe:1.0.0"
 }

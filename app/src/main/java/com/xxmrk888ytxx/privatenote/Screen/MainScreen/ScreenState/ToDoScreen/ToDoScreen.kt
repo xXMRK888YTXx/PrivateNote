@@ -34,8 +34,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
+import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.Utils.sortedToDo
 import com.xxmrk888ytxx.privatenote.ui.theme.*
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
+import me.saket.swipe.rememberSwipeableActionsState
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalField
 import java.util.*
@@ -47,6 +51,7 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
     }
     LaunchedEffect(key1 = Unit, block = {
         toDoViewModel.setMainScreenController(mainScreenController)
+        toDoViewModel.checkPicker()
     })
     Column(
         modifier = Modifier
@@ -70,6 +75,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     val showDataPickerDialog = remember {
         mutableStateOf(false)
     }
+    val currentToDoTime = remember {
+        toDoViewModel.getCurrentToDoTime()
+    }
     val context = LocalContext.current
     val toDoEditItems = listOf(
         ToDoEditItem(
@@ -80,7 +88,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
           toDoViewModel.changeImpotentStatus()
         },
         ToDoEditItem(
-            icon = R.drawable.ic_timer
+            icon = R.drawable.ic_timer,
+            activate = currentToDoTime.value != null,
+            activateColor = FloatingButtonColor
         ) {
             toDoViewModel.showDataPickerDialog(context)
         },
@@ -181,7 +191,15 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(sortedToDo) {
+        items(sortedToDo,key = {it.id}) {
+            val removeSwipeAction = SwipeAction(
+                icon = painterResource(R.drawable.ic_backet),
+                background = Color.Red.copy(0.9f),
+                onSwipe = {
+                    toDoViewModel.removeToDo(it.id)
+                },
+                isUndo = true
+                )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -193,9 +211,17 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     )
                     .animateItemPlacement(),
                 shape = RoundedCornerShape(15),
-                backgroundColor = CardNoteColor.copy(0.3f)
+                backgroundColor = CardNoteColor
             ) {
-                ToDoItem(it,toDoViewModel)
+                SwipeableActionsBox(
+                    startActions = listOf(removeSwipeAction),
+                    endActions = listOf(removeSwipeAction),
+                    backgroundUntilSwipeThreshold = Color.Transparent,
+                    swipeThreshold = 70.dp
+                ) {
+                    ToDoItem(it,toDoViewModel)
+                }
+
             }
         }
     }
@@ -204,38 +230,52 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
 @Composable
 fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
     val fontColor = if(todo.isCompleted) PrimaryFontColor.copy(0.3f) else PrimaryFontColor
-    Row(
-        modifier = Modifier
-            .padding(top = 10.dp, bottom = 10.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(checked = todo.isCompleted,
-            onCheckedChange = { toDoViewModel.changeMarkStatus(it,todo.id)},
-            modifier = Modifier.padding(start = 0.dp),
-            colors = CheckboxDefaults.colors(
-                checkedColor = FloatingButtonColor,
-                checkmarkColor = PrimaryFontColor,
-                uncheckedColor = FloatingButtonColor
-            )
-        )
-        if(todo.isImportant) {
-            Icon(painter = painterResource(R.drawable.ic_priority_high),
-                contentDescription = "",
-                tint = Color.Red.copy(0.9f),
-                modifier = Modifier.size(22.dp)
-                )
-        }
-        Text(
-            text = todo.todoText,
+    val todoTimeText = if(todo.todoTime == null) "Без времени на выполнение" else "Выполнить до" +
+            " ${todo.todoTime.secondToData(LocalContext.current)}"
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 5.dp, bottom = 5.dp)) {
+        Row(
             modifier = Modifier
-                .padding(start = 5.dp)
                 .fillMaxWidth(),
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Black,
-            color = fontColor,
-            fontStyle = FontStyle.Italic,
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = todo.isCompleted,
+                onCheckedChange = { toDoViewModel.changeMarkStatus(it, todo.id) },
+                modifier = Modifier.padding(start = 0.dp),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = FloatingButtonColor,
+                    checkmarkColor = PrimaryFontColor,
+                    uncheckedColor = FloatingButtonColor
+                )
+            )
+            if (todo.isImportant) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_priority_high),
+                    contentDescription = "",
+                    tint = Color.Red.copy(0.9f),
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+            Text(
+                text = todo.todoText,
+                modifier = Modifier
+                    .padding(start = 5.dp)
+                    .fillMaxWidth(),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Black,
+                color = fontColor,
+                fontStyle = FontStyle.Italic,
+            )
+        }
+        Row(modifier = Modifier.padding(start = 5.dp)) {
+            Text(text = todoTimeText,
+                fontSize = 12.sp,
+                color = SecondoryFontColor,
+                fontStyle = FontStyle.Italic
+            )
+        }
     }
 }
 

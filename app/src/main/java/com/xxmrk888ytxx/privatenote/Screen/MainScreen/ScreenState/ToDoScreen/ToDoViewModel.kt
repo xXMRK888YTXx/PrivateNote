@@ -13,6 +13,7 @@ import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -40,10 +41,18 @@ class ToDoViewModel @Inject constructor(
 
     private val currentToDoIsCompleted = mutableStateOf(false)
 
+    private val selectDataTimeState = mutableStateOf(false)
+
+    private val currentToDoTime:MutableState<Long?> = mutableStateOf(null)
+
+    fun getCurrentToDoTime() = currentToDoTime
 
     fun getIsCurrentEditableToDoImportantStatus() = isCurrentEditableToDoImportant
 
-    private val dataTimePicker = DataTimePicker()
+    fun checkPicker() {
+        if(!selectDataTimeState.value) return
+        cancelDataTimePicker()
+    }
 
     fun changeImpotentStatus() {
         isCurrentEditableToDoImportant.value = !isCurrentEditableToDoImportant.value
@@ -67,6 +76,7 @@ class ToDoViewModel @Inject constructor(
             dialogTextField.value = currentEditToDo.todoText
             isCurrentEditableToDoImportant.value = currentEditToDo.isImportant
             currentToDoIsCompleted.value = currentEditToDo.isCompleted
+            currentToDoTime.value = currentEditToDo.todoTime
         }
         else{
             currentEditableToDoId = 0
@@ -101,32 +111,45 @@ class ToDoViewModel @Inject constructor(
         val currentText = dialogTextField.value
         val currentImportantState = isCurrentEditableToDoImportant.value
         val currentIsComplited = currentToDoIsCompleted.value
+        val currentToDoTime = currentToDoTime.value
         viewModelScope.launch {
             toDoRepository.insertToDo(
                 toDoItem = ToDoItem(
                     id = currentId,
                     todoText = currentText,
                     isImportant = currentImportantState,
-                    isCompleted = currentIsComplited
+                    isCompleted = currentIsComplited,
+                    todoTime = currentToDoTime
                 )
             )
         }
         toDefaultMode()
     }
 
-
     fun showDataPickerDialog(context: Context) {
-        dataTimePicker.createDataPickerDialog(context,
+        selectDataTimeState.value = true
+        DataTimePicker().createDataPickerDialog(context,
             object : DataTimePickerController {
                 override fun onComplete(time: Long) {
-                    Log.d("MyLog",time.toString())
+                    currentToDoTime.value = time
                 }
 
                 override fun onCancel() {
-                    Log.d("MyLog","cancel")
+                    cancelDataTimePicker()
                 }
 
             }
         )
+    }
+
+    private fun cancelDataTimePicker() {
+        selectDataTimeState.value = false
+        Log.d("MyLog","cancel")
+    }
+
+    fun removeToDo(id: Int) {
+        viewModelScope.launch {
+            toDoRepository.removeToDo(id)
+        }
     }
 }
