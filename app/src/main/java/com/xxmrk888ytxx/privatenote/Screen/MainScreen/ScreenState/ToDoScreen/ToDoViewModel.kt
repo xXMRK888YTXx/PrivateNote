@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
@@ -132,6 +133,8 @@ class ToDoViewModel @Inject constructor(
             object : DataTimePickerController {
                 override fun onComplete(time: Long) {
                     currentToDoTime.value = time
+                    showToast.showToast(context.getString(R.string.move_time_set) + " "
+                            + time.secondToData(context))
                 }
 
                 override fun onCancel() {
@@ -151,5 +154,10 @@ class ToDoViewModel @Inject constructor(
         viewModelScope.launch {
             toDoRepository.removeToDo(id)
         }
+    }
+
+    fun removeCurrentToDoTime() {
+        currentToDoTime.value = null
+        showToast.showToast(R.string.move_time_delete)
     }
 }

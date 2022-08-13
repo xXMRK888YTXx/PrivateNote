@@ -88,11 +88,13 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
           toDoViewModel.changeImpotentStatus()
         },
         ToDoEditItem(
-            icon = R.drawable.ic_timer,
+            icon = R.drawable.ic_calendar,
             activate = currentToDoTime.value != null,
             activateColor = FloatingButtonColor
         ) {
+            if(currentToDoTime.value == null)
             toDoViewModel.showDataPickerDialog(context)
+            else toDoViewModel.removeCurrentToDoTime()
         },
         ToDoEditItem(
             icon = R.drawable.ic_notifications
@@ -102,7 +104,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         toDoViewModel.dialogTextField
     }
     Dialog(onDismissRequest = { toDoViewModel.toDefaultMode()},
-        //properties = DialogProperties(usePlatformDefaultWidth = false)
+
     ) {
         Card(modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -143,35 +145,40 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                     ) {
                         items(toDoEditItems) {
                             val tint = if(it.activate) it.activateColor else it.deActivateColor
-                            Icon(painter = painterResource(it.icon),
-                                contentDescription = "",
-                                tint = tint,
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .size(30.dp)
-                                    .clickable {
-                                        it.onClick()
-                                    }
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable {
+                                    it.onClick()
+                                }
+                            ) {
+                                Icon(painter = painterResource(it.icon),
+                                    contentDescription = "",
+                                    tint = tint,
+                                    modifier = Modifier
+                                        .padding(5.dp)
+                                        .size(30.dp)
+                                )
+                            }
                         }
                     }
-                    OutlinedButton(
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = FloatingButtonColor,
-                            disabledBackgroundColor = FloatingButtonColor.copy(0.3f)
-                        ),
-                        enabled = textField.value.isNotEmpty(),
-                        onClick = {
-                            toDoViewModel.saveToDo()
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 5.dp, end = 5.dp),
-                        shape = RoundedCornerShape(80),
-                    ) {
-                        Text(text = stringResource(R.string.Save),
-                            color = PrimaryFontColor
-                        )
+                    Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = FloatingButtonColor,
+                                disabledBackgroundColor = FloatingButtonColor.copy(0.3f)
+                            ),
+                            enabled = textField.value.isNotEmpty(),
+                            onClick = {
+                                toDoViewModel.saveToDo()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth(0.65f)
+                                .padding(start = 5.dp, end = 5.dp),
+                            shape = RoundedCornerShape(80),
+                        ) {
+                            Text(text = stringResource(R.string.Save),
+                                color = PrimaryFontColor
+                            )
+                        }
                     }
                 }
 
@@ -217,7 +224,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     startActions = listOf(removeSwipeAction),
                     endActions = listOf(removeSwipeAction),
                     backgroundUntilSwipeThreshold = Color.Transparent,
-                    swipeThreshold = 70.dp
+                    swipeThreshold = 150.dp
                 ) {
                     ToDoItem(it,toDoViewModel)
                 }
@@ -230,8 +237,16 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
 @Composable
 fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
     val fontColor = if(todo.isCompleted) PrimaryFontColor.copy(0.3f) else PrimaryFontColor
-    val todoTimeText = if(todo.todoTime == null) "Без времени на выполнение" else "Выполнить до" +
-            " ${todo.todoTime.secondToData(LocalContext.current)}"
+    val todoTimeText:String = when(todo.todoTime){
+        null -> {"Без времени на выполнение"}
+         in 0..System.currentTimeMillis() -> {"Просрочено"}
+        else -> {"Выполнить до " + todo.todoTime.secondToData(LocalContext.current)}
+    }
+    val subTextColor:Color = when(todo.todoTime) {
+        in 0..System.currentTimeMillis() -> {Color.Red.copy(0.9f)}
+        null -> { SecondoryFontColor }
+        else -> { Color.Cyan.copy(0.7f) }
+    }
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 5.dp, bottom = 5.dp)) {
@@ -269,11 +284,12 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 fontStyle = FontStyle.Italic,
             )
         }
-        Row(modifier = Modifier.padding(start = 5.dp)) {
+        Row(modifier = Modifier.padding(start = 10.dp)) {
             Text(text = todoTimeText,
                 fontSize = 12.sp,
-                color = SecondoryFontColor,
-                fontStyle = FontStyle.Italic
+                color = subTextColor,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold
             )
         }
     }
