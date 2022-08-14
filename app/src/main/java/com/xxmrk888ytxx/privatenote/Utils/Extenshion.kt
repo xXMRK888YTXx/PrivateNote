@@ -1,20 +1,10 @@
 package com.xxmrk888ytxx.privatenote.Utils
 
 import android.content.Context
-import android.graphics.ColorSpace
-import android.util.Log
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
-import androidx.compose.foundation.gestures.PressGestureScope
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.AwaitPointerEventScope
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
@@ -22,12 +12,10 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.util.*
-import kotlin.time.Duration.Companion.hours
 
 fun String.getFirstChars() : String {
     if(this.length <= 25) return this
@@ -147,7 +135,7 @@ fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {
     }
 }
 
-fun List<ToDoItem>.sortedToDo() :List<ToDoItem> {
-    return this.sortedByDescending { it.isImportant }
+fun List<ToDoItem>.sortedToDo(getCompleted:Boolean) :List<ToDoItem> {
+    return this.filter { it.isCompleted == getCompleted }.sortedByDescending { it.isImportant }
 }
 

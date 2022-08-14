@@ -46,6 +46,14 @@ class ToDoViewModel @Inject constructor(
 
     private val currentToDoTime:MutableState<Long?> = mutableStateOf(null)
 
+    private val isCompletedToDoVisible = mutableStateOf(true)
+
+    fun isCompletedToDoVisible() = isCompletedToDoVisible
+
+    fun changeCompletedToDoVisible() {
+        isCompletedToDoVisible.value = !isCompletedToDoVisible.value
+    }
+
     fun getCurrentToDoTime() = currentToDoTime
 
     fun getIsCurrentEditableToDoImportantStatus() = isCurrentEditableToDoImportant

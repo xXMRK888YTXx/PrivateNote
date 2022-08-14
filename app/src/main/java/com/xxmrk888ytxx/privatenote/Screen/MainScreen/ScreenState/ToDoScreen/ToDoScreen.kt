@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,7 +22,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -186,11 +192,41 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
 @Composable
 fun ToDoList(toDoViewModel: ToDoViewModel) {
     val toDoList = toDoViewModel.getToDoList().collectAsState(listOf())
-    val sortedToDo = toDoList.value.sortedToDo()
+    val isCompletedToDoVisible = remember {
+       toDoViewModel.isCompletedToDoVisible()
+    }
+    val annotatedLabelString = buildAnnotatedString {
+        append("Завершено")
+        if(isCompletedToDoVisible.value)
+        appendInlineContent("visible")
+        else appendInlineContent("invisible")
+    }
+    val inlineContentMap = mapOf(
+        "visible" to InlineTextContent(
+            Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
+        ) {
+            Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+        },
+        "invisible" to InlineTextContent(
+            Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
+        ) {
+            Icon(painter = painterResource(R.drawable.ic_arrow_drop_up),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.padding(top = 12.dp)
+            )
+        }
+    )
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(sortedToDo,key = {it.id}) {
+        itemsIndexed(toDoList.value.sortedToDo(false), key = {
+            _,it -> it.id
+        }) { index, it ->
             val removeSwipeAction = SwipeAction(
                 icon = painterResource(R.drawable.ic_backet),
                 background = Color.Red.copy(0.9f),
@@ -198,7 +234,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     toDoViewModel.removeToDo(it.id)
                 },
                 isUndo = true
-                )
+            )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -218,9 +254,61 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     backgroundUntilSwipeThreshold = Color.Transparent,
                     swipeThreshold = 150.dp
                 ) {
-                    ToDoItem(it,toDoViewModel)
+                    ToDoItem(it, toDoViewModel)
                 }
 
+            }
+        }
+        itemsIndexed(toDoList.value.sortedToDo(true),key = {
+            _,it ->it.id+1000
+        }) { index, it ->
+            if (index == 0) {
+                Text(
+                    text = annotatedLabelString,
+                    inlineContent = inlineContentMap,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = PrimaryFontColor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            toDoViewModel.changeCompletedToDoVisible()
+                        }
+                        .padding(15.dp)
+                )
+            }
+            if (isCompletedToDoVisible.value) {
+                val removeSwipeAction = SwipeAction(
+                    icon = painterResource(R.drawable.ic_backet),
+                    background = Color.Red.copy(0.9f),
+                    onSwipe = {
+                        toDoViewModel.removeToDo(it.id)
+                    },
+                    isUndo = true
+                )
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .combinedClickable(
+                            onClick = {
+                                toDoViewModel.toEditToDoState(it)
+                            }
+                        )
+                        .animateItemPlacement(),
+                    shape = RoundedCornerShape(15),
+                    backgroundColor = CardNoteColor
+                ) {
+                    SwipeableActionsBox(
+                        startActions = listOf(removeSwipeAction),
+                        endActions = listOf(removeSwipeAction),
+                        backgroundUntilSwipeThreshold = Color.Transparent,
+                        swipeThreshold = 150.dp
+                    ) {
+                        ToDoItem(it, toDoViewModel)
+                    }
+
+                }
             }
         }
     }
@@ -237,9 +325,6 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
     }
     todoTimeText.value = getTodoSubText(todo, LocalContext.current)
     subTextColor.value = getTodoSubTextColor(todo)
-    val textDecorate = if(todo.todoTime != null&&todo.todoTime in 0..System.currentTimeMillis()&&
-            !todo.isCompleted)
-        TextDecoration.LineThrough else TextDecoration.None
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 5.dp, bottom = 5.dp)) {
@@ -266,41 +351,41 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                     modifier = Modifier.size(22.dp)
                 )
             }
-            Text(
-                text = todo.todoText,
-                modifier = Modifier
-                    .padding(start = 5.dp)
-                    .fillMaxWidth(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Black,
-                color = fontColor,
-                fontStyle = FontStyle.Italic,
-            )
+
+                Text(
+                    text = todo.todoText,
+                    modifier = Modifier
+                        .padding(start = 5.dp)
+                        .fillMaxWidth(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Black,
+                    color = fontColor,
+                    fontStyle = FontStyle.Italic,
+                )
         }
-        Row(modifier = Modifier.padding(start = 10.dp)) {
-            Text(text = todoTimeText.value,
-                fontSize = 12.sp,
-                color = subTextColor.value,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                textDecoration = textDecorate
-            )
+        if(todo.todoTime != null||todo.isCompleted) {
+            Row(modifier = Modifier.padding(start = 10.dp)) {
+                Text(text = todoTimeText.value,
+                    fontSize = 12.sp,
+                    color = subTextColor.value,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
         }
     }
 }
 @Composable
 fun getTodoSubText(todo: ToDoItem, context: Context): String {
-    if(!todo.isCompleted&&todo.todoTime != null) return "До ${todo.todoTime.secondToData(context)}"
-    if(todo.completedTime != null&&todo.isCompleted) return "Выполнено в " +
-            todo.completedTime.secondToData(context)
-    return "Без времени"
+    if(!todo.isCompleted&&todo.todoTime != null) return "${todo.todoTime.secondToData(context)}"
+    if(todo.completedTime != null&&todo.isCompleted) return todo.completedTime.secondToData(context)
+    return ""
 }
 @Composable
 fun getTodoSubTextColor(todo: ToDoItem) : Color {
-    if(todo.isCompleted) return Color.Green.copy(0.7f)
+    if(todo.isCompleted) return Color.Green.copy(0.4f)
     if(!todo.isCompleted&&todo.todoTime != null) {
         if(todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
-        else return Color.Cyan.copy(0.7f)
+      //  else return Color.Cyan.copy(0.7f)
     }
     return SecondoryFontColor
 }
