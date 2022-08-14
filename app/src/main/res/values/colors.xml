@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="MainBackGroundColor">#FF121212</color>
     <color name="Blue">#016CDE</color>
+    <color name="PrimaryFontColor">#E6FFFFFF</color>
 </resources>

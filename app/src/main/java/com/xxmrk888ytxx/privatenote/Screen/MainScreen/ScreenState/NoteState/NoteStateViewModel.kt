@@ -77,6 +77,14 @@ class NoteStateViewModel @Inject constructor(
 
     val currentSelectedCategoryId = mutableStateOf(0)
 
+    private val isShowDeleteDialog = mutableStateOf(false)
+
+    fun getDeleteDialogState() = isShowDeleteDialog
+
+    fun changeDeleteDialogState(state:Boolean) {
+        isShowDeleteDialog.value = true
+    }
+
     fun getCurrentMode() = currentNoteMode
 
     fun getNoteList() : Flow<List<Note>> {

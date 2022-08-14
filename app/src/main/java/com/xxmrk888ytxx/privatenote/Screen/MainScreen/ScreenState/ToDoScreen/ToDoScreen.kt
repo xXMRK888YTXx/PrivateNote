@@ -1,6 +1,9 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +35,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
@@ -193,30 +198,34 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
 fun ToDoList(toDoViewModel: ToDoViewModel) {
     val toDoList = toDoViewModel.getToDoList().collectAsState(listOf())
     val isCompletedToDoVisible = remember {
-       toDoViewModel.isCompletedToDoVisible()
+        toDoViewModel.isCompletedToDoVisible()
     }
     val annotatedLabelString = buildAnnotatedString {
         append("Завершено")
-        if(isCompletedToDoVisible.value)
-        appendInlineContent("visible")
+        if (isCompletedToDoVisible.value)
+            appendInlineContent("visible")
         else appendInlineContent("invisible")
     }
+    val complited = toDoList.value.sortedToDo(false)
+    val uncomplited = toDoList.value.sortedToDo(true)
     val inlineContentMap = mapOf(
         "visible" to InlineTextContent(
             Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
         ) {
-            Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+            Icon(
+                painter = painterResource(R.drawable.ic_drop_down_triangle),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = SecondoryFontColor,
                 modifier = Modifier.padding(top = 12.dp)
             )
         },
         "invisible" to InlineTextContent(
             Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
         ) {
-            Icon(painter = painterResource(R.drawable.ic_arrow_drop_up),
+            Icon(
+                painter = painterResource(R.drawable.ic_arrow_drop_up),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = SecondoryFontColor,
                 modifier = Modifier.padding(top = 12.dp)
             )
         }
@@ -224,16 +233,23 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        itemsIndexed(toDoList.value.sortedToDo(false), key = {
-            _,it -> it.id
+        itemsIndexed(complited, key = { _, it ->
+            it.id
         }) { index, it ->
             val removeSwipeAction = SwipeAction(
-                icon = painterResource(R.drawable.ic_backet),
-                background = Color.Red.copy(0.9f),
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_backet),
+                        contentDescription = "",
+                        tint = PrimaryFontColor,
+                        modifier = Modifier.padding(end = 50.dp)
+                    )
+                },
+                background = DeleteOverSwapColor,
                 onSwipe = {
                     toDoViewModel.removeToDo(it.id)
                 },
-                isUndo = true
+                isUndo = true,
             )
             Card(
                 modifier = Modifier
@@ -252,15 +268,15 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     startActions = listOf(removeSwipeAction),
                     endActions = listOf(removeSwipeAction),
                     backgroundUntilSwipeThreshold = Color.Transparent,
-                    swipeThreshold = 150.dp
+                    swipeThreshold = 90.dp
                 ) {
                     ToDoItem(it, toDoViewModel)
                 }
 
             }
         }
-        itemsIndexed(toDoList.value.sortedToDo(true),key = {
-            _,it ->it.id+1000
+        itemsIndexed(uncomplited, key = { _, it ->
+            it.id
         }) { index, it ->
             if (index == 0) {
                 Text(
@@ -268,9 +284,10 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     inlineContent = inlineContentMap,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryFontColor,
+                    color = SecondoryFontColor,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .animateItemPlacement()
                         .clickable {
                             toDoViewModel.changeCompletedToDoVisible()
                         }
@@ -279,8 +296,15 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             }
             if (isCompletedToDoVisible.value) {
                 val removeSwipeAction = SwipeAction(
-                    icon = painterResource(R.drawable.ic_backet),
-                    background = Color.Red.copy(0.9f),
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_backet),
+                            contentDescription = "",
+                            tint = PrimaryFontColor,
+                            modifier = Modifier.padding(start = 50.dp)
+                        )
+                    },
+                    background = DeleteOverSwapColor,
                     onSwipe = {
                         toDoViewModel.removeToDo(it.id)
                     },
@@ -303,7 +327,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                         startActions = listOf(removeSwipeAction),
                         endActions = listOf(removeSwipeAction),
                         backgroundUntilSwipeThreshold = Color.Transparent,
-                        swipeThreshold = 150.dp
+                        swipeThreshold = 90.dp
                     ) {
                         ToDoItem(it, toDoViewModel)
                     }
@@ -363,7 +387,7 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                     fontStyle = FontStyle.Italic,
                 )
         }
-        if(todo.todoTime != null||todo.isCompleted) {
+        if(!todo.isCompleted&&todo.todoTime != null) {
             Row(modifier = Modifier.padding(start = 10.dp)) {
                 Text(text = todoTimeText.value,
                     fontSize = 12.sp,
@@ -377,12 +401,10 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
 @Composable
 fun getTodoSubText(todo: ToDoItem, context: Context): String {
     if(!todo.isCompleted&&todo.todoTime != null) return "${todo.todoTime.secondToData(context)}"
-    if(todo.completedTime != null&&todo.isCompleted) return todo.completedTime.secondToData(context)
     return ""
 }
 @Composable
 fun getTodoSubTextColor(todo: ToDoItem) : Color {
-    if(todo.isCompleted) return Color.Green.copy(0.4f)
     if(!todo.isCompleted&&todo.todoTime != null) {
         if(todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
       //  else return Color.Cyan.copy(0.7f)

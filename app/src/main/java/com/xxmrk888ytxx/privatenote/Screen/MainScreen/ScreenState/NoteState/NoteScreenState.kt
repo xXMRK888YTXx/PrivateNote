@@ -43,6 +43,8 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.ui.theme.*
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -388,86 +390,132 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                 .fillMaxSize()
                 .padding(bottom = ListPadding.dp)
         ) {
-            items(sortedNoteList,key = {it.id}) {
+            items(sortedNoteList, key = { it.id }) {
                 val check = remember {
                     mutableStateOf(false)
                 }
-                val cardSize = if(mode.value == SelectionScreenMode) 0.9f else 1f
+                val cardSize = if (mode.value == SelectionScreenMode) 0.9f else 1f
                 val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
-                val backGroundColor = if(category?.value != null) category.value!!.getColor()
-                else CardNoteColor
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .animateItemPlacement()) {
-                    Card(
+                val backGroundColor =  category?.value?.getColor() ?: CardNoteColor
+                val alpha = if(category?.value?.getColor() != null) 0.25f else 1f
+                val removeSwipeAction = SwipeAction(
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_backet),
+                            contentDescription = "",
+                            tint = PrimaryFontColor,
+                            modifier = Modifier.padding(start = 50.dp)
+                        )
+                    },
+                    background = DeleteOverSwapColor,
+                    onSwipe = {
+
+                    },
+                    isUndo = true,
+                )
+                val chosenSwipeAction = SwipeAction(
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_star),
+                            contentDescription = "",
+                            tint = PrimaryFontColor,
+                            modifier = Modifier.padding(end = 50.dp)
+                        )
+                    },
+                    background = Color.Yellow.copy(0.6f),
+                    onSwipe = {
+
+                    },
+                    isUndo = true,
+                )
+                    Row(
                         Modifier
-                            .fillMaxWidth(cardSize)
-                            .padding(10.dp)
+                            .fillMaxWidth()
                             .animateItemPlacement()
-                            .combinedClickable(
-                                onClick = {
-                                    if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
-                                        noteStateViewModel.toEditNoteScreen(navController, it.id)
-                                    } else {
-                                        check.value = !check.value
-                                        noteStateViewModel.changeSelectedState(it.id, check.value)
-                                    }
-                                },
-                                onLongClick = {
-                                    check.value = true
-                                    noteStateViewModel.changeSelectedState(it.id, check.value)
-                                    noteStateViewModel.toSelectionMode()
-
-                                }
-                            ),
-                        shape = RoundedCornerShape(15),
-                        backgroundColor = backGroundColor.copy(0.3f)
                     ) {
-                        if(!it.isEncrypted) {
-                            DefaultNoteItem(it)
-                        }
-                        else {
-                            EncryptNoteItem(it)
-                        }
-                    }
-                    if(mode.value == SelectionScreenMode) {
-                        LaunchedEffect(key1 = selectedItemCount.value, block = {
-                            check.value = noteStateViewModel.isItemSelected(it.id)
-                        })
-                        val padding = if(it.isEncrypted) 85 else 100
-                        check.value = noteStateViewModel.isItemSelected(it.id)
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.End,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(padding.dp)
-                        ) {
-                            Checkbox(checked = check.value,
-                                onCheckedChange = {checkState ->
-                                    check.value =  checkState
-                                    noteStateViewModel.changeSelectedState(it.id,checkState)
-                                },
-                                modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
-                                colors = CheckboxDefaults.colors(
-                                    checkedColor = FloatingButtonColor,
-                                    checkmarkColor = PrimaryFontColor,
-                                    uncheckedColor = FloatingButtonColor
-                                )
+                        Card(
+                            Modifier
+                                .fillMaxWidth(cardSize)
+                                .padding(10.dp)
+                                .animateItemPlacement()
+                                .combinedClickable(
+                                    onClick = {
+                                        if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
+                                            noteStateViewModel.toEditNoteScreen(
+                                                navController,
+                                                it.id
+                                            )
+                                        } else {
+                                            check.value = !check.value
+                                            noteStateViewModel.changeSelectedState(
+                                                it.id,
+                                                check.value
+                                            )
+                                        }
+                                    },
+                                    onLongClick = {
+                                        check.value = true
+                                        noteStateViewModel.changeSelectedState(it.id, check.value)
+                                        noteStateViewModel.toSelectionMode()
 
-                            )
+                                    }
+                                ),
+                            shape = RoundedCornerShape(15),
+                            backgroundColor = backGroundColor.copy(alpha)
+                        ) {
+                            SwipeableActionsBox(
+                                startActions = if(mode.value != SelectionScreenMode)
+                                    listOf(chosenSwipeAction)
+                                else listOf(),
+                                endActions = if(mode.value != SelectionScreenMode)
+                                    listOf(removeSwipeAction) else listOf(),
+                                backgroundUntilSwipeThreshold = Color.Transparent.copy(0f),
+                                swipeThreshold = 190.dp,
+                            ) {
+                                if (!it.isEncrypted) {
+                                    DefaultNoteItem(it)
+                                } else {
+                                    EncryptNoteItem(it)
+                                }
+                            }
+                        }
+                        if (mode.value == SelectionScreenMode) {
+                            LaunchedEffect(key1 = selectedItemCount.value, block = {
+                                check.value = noteStateViewModel.isItemSelected(it.id)
+                            })
+                            val padding = if (it.isEncrypted) 85 else 100
+                            check.value = noteStateViewModel.isItemSelected(it.id)
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.End,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(padding.dp)
+                            ) {
+                                Checkbox(
+                                    checked = check.value,
+                                    onCheckedChange = { checkState ->
+                                        check.value = checkState
+                                        noteStateViewModel.changeSelectedState(it.id, checkState)
+                                    },
+                                    modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = FloatingButtonColor,
+                                        checkmarkColor = PrimaryFontColor,
+                                        uncheckedColor = FloatingButtonColor
+                                    )
+
+                                )
+                            }
+                        } else {
+                            check.value = false
                         }
                     }
-                    else {
-                        check.value = false
-                    }
+
                 }
 
             }
-
         }
-    }
 }
 
 @Composable
@@ -569,10 +617,8 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
 
 @Composable
 fun DefaultNoteItem(note: Note) {
-    val backGroundAlpha = if(note.category != null) 0f else 1f
         Column(
             Modifier
-                .background(CardNoteColor.copy(backGroundAlpha))
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
@@ -614,10 +660,8 @@ fun DefaultNoteItem(note: Note) {
 }
 @Composable
 fun EncryptNoteItem(note: Note) {
-    val backGroundAlpha = if(note.category != null) 0f else 1f
     Column(
         Modifier
-            .background(CardNoteColor.copy(backGroundAlpha))
             .fillMaxWidth()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top

@@ -58,4 +58,5 @@
     <string name="Add_category">Добавить категорию</string>
     <string name="move_time_delete">Время выполнения удалено</string>
     <string name="move_time_set">Время выполнения установлено на</string>
+    <string name="cancel">Отмена</string>
 </resources>

@@ -27,9 +27,6 @@ class ToDoRepositoryImpl @Inject constructor(
     }
 
     override fun changeMarkStatus(id: Int, status: Boolean) = runBlocking(Dispatchers.IO) {
-        if(status)
-            toDoDao.setCompletedTime(id,System.currentTimeMillis())
-        else toDoDao.setCompletedTime(id,null)
         toDoDao.changeMarkStatus(id,status)
     }
 }
