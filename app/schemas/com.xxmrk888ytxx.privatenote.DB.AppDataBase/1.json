@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6b747963d6e8bd6f659d74229960ba1d",
+    "identityHash": "9b91715de6f7974cb5de8f00b1479c04",
     "entities": [
       {
         "tableName": "Note",
@@ -156,7 +156,7 @@
       },
       {
         "tableName": "TODO",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `todoText` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `isImportant` INTEGER NOT NULL, `todoTime` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `todoText` TEXT NOT NULL, `isCompleted` INTEGER NOT NULL, `isImportant` INTEGER NOT NULL, `todoTime` INTEGER, `completedTime` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -187,6 +187,12 @@
             "columnName": "todoTime",
             "affinity": "INTEGER",
             "notNull": false
+          },
+          {
+            "fieldPath": "completedTime",
+            "columnName": "completedTime",
+            "affinity": "INTEGER",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -212,7 +218,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b747963d6e8bd6f659d74229960ba1d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9b91715de6f7974cb5de8f00b1479c04')"
     ]
   }
 }

@@ -69,6 +69,7 @@ class ToDoViewModel @Inject constructor(
         dialogTextField.value = ""
         isCurrentEditableToDoImportant.value = false
         currentToDoIsCompleted.value = false
+        currentToDoTime.value = null
     }
 
     fun toEditToDoState(currentEditToDo:ToDoItem? = null) {

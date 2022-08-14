@@ -1,11 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
-import android.app.DatePickerDialog
 import android.content.Context
-import android.os.Build
-import android.util.Log
-import android.widget.DatePicker
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -39,10 +35,6 @@ import com.xxmrk888ytxx.privatenote.Utils.sortedToDo
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
-import me.saket.swipe.rememberSwipeableActionsState
-import java.time.temporal.Temporal
-import java.time.temporal.TemporalField
-import java.util.*
 
 @Composable
 fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenController: MainScreenController) {
@@ -237,16 +229,17 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
 @Composable
 fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
     val fontColor = if(todo.isCompleted) PrimaryFontColor.copy(0.3f) else PrimaryFontColor
-    val todoTimeText:String = when(todo.todoTime){
-        null -> {"Без времени на выполнение"}
-         in 0..System.currentTimeMillis() -> {"Просрочено"}
-        else -> {"Выполнить до " + todo.todoTime.secondToData(LocalContext.current)}
+    val todoTimeText = remember {
+        mutableStateOf("")
     }
-    val subTextColor:Color = when(todo.todoTime) {
-        in 0..System.currentTimeMillis() -> {Color.Red.copy(0.9f)}
-        null -> { SecondoryFontColor }
-        else -> { Color.Cyan.copy(0.7f) }
+    val subTextColor:MutableState<Color> = remember {
+        mutableStateOf(SecondoryFontColor)
     }
+    todoTimeText.value = getTodoSubText(todo, LocalContext.current)
+    subTextColor.value = getTodoSubTextColor(todo)
+    val textDecorate = if(todo.todoTime != null&&todo.todoTime in 0..System.currentTimeMillis()&&
+            !todo.isCompleted)
+        TextDecoration.LineThrough else TextDecoration.None
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 5.dp, bottom = 5.dp)) {
@@ -285,14 +278,31 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
             )
         }
         Row(modifier = Modifier.padding(start = 10.dp)) {
-            Text(text = todoTimeText,
+            Text(text = todoTimeText.value,
                 fontSize = 12.sp,
-                color = subTextColor,
+                color = subTextColor.value,
                 fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textDecoration = textDecorate
             )
         }
     }
+}
+@Composable
+fun getTodoSubText(todo: ToDoItem, context: Context): String {
+    if(!todo.isCompleted&&todo.todoTime != null) return "До ${todo.todoTime.secondToData(context)}"
+    if(todo.completedTime != null&&todo.isCompleted) return "Выполнено в " +
+            todo.completedTime.secondToData(context)
+    return "Без времени"
+}
+@Composable
+fun getTodoSubTextColor(todo: ToDoItem) : Color {
+    if(todo.isCompleted) return Color.Green.copy(0.7f)
+    if(!todo.isCompleted&&todo.todoTime != null) {
+        if(todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
+        else return Color.Cyan.copy(0.7f)
+    }
+    return SecondoryFontColor
 }
 
 @Composable

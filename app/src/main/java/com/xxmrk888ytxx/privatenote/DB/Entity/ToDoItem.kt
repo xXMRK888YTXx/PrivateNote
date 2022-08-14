@@ -15,5 +15,6 @@ data class ToDoItem(
     val todoText:String,
     val isCompleted:Boolean = false,
     val isImportant:Boolean,
-    val todoTime:Long? = null
+    val todoTime:Long? = null,
+    val completedTime:Long? = null
 )
