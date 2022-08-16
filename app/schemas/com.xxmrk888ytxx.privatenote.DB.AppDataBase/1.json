@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6b747963d6e8bd6f659d74229960ba1d",
+    "identityHash": "af8d37411ac406cbed34a1776ae56b66",
     "entities": [
       {
         "tableName": "Note",
@@ -207,12 +207,87 @@
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "Notify_Tasks",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`taskId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `todoId` INTEGER NOT NULL, `enable` INTEGER NOT NULL, `time` INTEGER NOT NULL, `isPriority` INTEGER NOT NULL, FOREIGN KEY(`todoId`) REFERENCES `TODO`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "taskId",
+            "columnName": "taskId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "todoId",
+            "columnName": "todoId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "enable",
+            "columnName": "enable",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPriority",
+            "columnName": "isPriority",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "taskId"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_Notify_Tasks_taskId",
+            "unique": true,
+            "columnNames": [
+              "taskId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Notify_Tasks_taskId` ON `${TABLE_NAME}` (`taskId`)"
+          },
+          {
+            "name": "index_Notify_Tasks_todoId",
+            "unique": true,
+            "columnNames": [
+              "todoId"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Notify_Tasks_todoId` ON `${TABLE_NAME}` (`todoId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "TODO",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "todoId"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6b747963d6e8bd6f659d74229960ba1d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'af8d37411ac406cbed34a1776ae56b66')"
     ]
   }
 }

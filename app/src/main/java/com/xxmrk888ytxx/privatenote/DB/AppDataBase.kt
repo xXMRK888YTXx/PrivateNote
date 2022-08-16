@@ -4,9 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
+import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
+import com.xxmrk888ytxx.privatenote.DB.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import javax.inject.Singleton
 
@@ -15,7 +17,8 @@ import javax.inject.Singleton
     entities = [
         Note::class,
         Category::class,
-        ToDoItem::class
+        ToDoItem::class,
+        NotifyTask::class
     ]
 )
 @Singleton
@@ -23,4 +26,5 @@ abstract class AppDataBase : RoomDatabase() {
     abstract fun getNoteDao() : NoteDao
     abstract fun getCategoryDao() : CategoryDao
     abstract fun getToDoItemDao() : ToDoDao
+    abstract fun getNotifyTaskDao() : NotifyTaskDao
 }

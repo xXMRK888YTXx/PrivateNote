@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.xxmrk888ytxx.privatenote"
-        minSdk 24
+        minSdk 23
         targetSdk 33
         versionCode 1
         versionName "alpha 0.6"

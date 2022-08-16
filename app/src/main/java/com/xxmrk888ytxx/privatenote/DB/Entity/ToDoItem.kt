@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "TODO",
     indices = [
         Index("id", unique = true)
-    ]
+    ],
 )
 data class ToDoItem(
     @PrimaryKey(autoGenerate = true) val id:Int = 0,

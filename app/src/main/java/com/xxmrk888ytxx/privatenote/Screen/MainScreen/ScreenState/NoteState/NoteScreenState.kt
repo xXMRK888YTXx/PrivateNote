@@ -39,6 +39,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -55,6 +56,9 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
     }
     val isCategorySelectedMenuShow = remember {
         noteStateViewModel.isShowSelectedCategoryMenu
+    }
+    val deleteDialogState = remember {
+        noteStateViewModel.getDeleteDialogState()
     }
     LaunchedEffect(key1 = Unit, block = {
         noteStateViewModel.setMainScreenController(mainScreenController)
@@ -91,6 +95,13 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
                 currentSelected = currentSelectedCategoryId,
                 dialogController =  getSelectionCategoryDispatcher()
             )
+        }
+    }
+    if(deleteDialogState.value.first) {
+        YesNoDialog(title = stringResource(R.string.Вelete_this_note),
+            onCancel = { noteStateViewModel.hideDeleteDialog() }) {
+            noteStateViewModel.removeNote(deleteDialogState.value.second)
+            noteStateViewModel.hideDeleteDialog()
         }
     }
 }
@@ -409,7 +420,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                     },
                     background = DeleteOverSwapColor,
                     onSwipe = {
-
+                        noteStateViewModel.showDeleteDialog(it.id)
                     },
                     isUndo = true,
                 )
@@ -424,7 +435,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                     },
                     background = Color.Yellow.copy(0.6f),
                     onSwipe = {
-
+                        noteStateViewModel.changeChosenStatus(it.id,it.isChosen)
                     },
                     isUndo = true,
                 )
@@ -780,7 +791,8 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 if (index == 0) {
                     Row(
                         Modifier
-                            .fillMaxWidth().animateItemPlacement()
+                            .fillMaxWidth()
+                            .animateItemPlacement()
                             .padding(bottom = 10.dp)
                     ) {
                         Text(

@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -22,9 +24,12 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject lateinit var LifecycleState: MutableStateFlow<LifeCycleState>
+    @Inject lateinit var notificationManager: NotificationAppManager
+
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        notificationManager.createNotificationChannels()
         setContent {
             val navController = rememberNavController()
             Scaffold() {

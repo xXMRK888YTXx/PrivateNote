@@ -2,11 +2,14 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
+import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepositoryImpl
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepositoryImpl
+import com.xxmrk888ytxx.privatenote.Repositories.NotifyTaskRepository.NotifyTaskRepository
+import com.xxmrk888ytxx.privatenote.Repositories.NotifyTaskRepository.NotifyTaskRepositoryImpl
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepositoryImpl
 import dagger.Module
@@ -46,5 +49,11 @@ class RepositoryModule {
     @Singleton
     fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao) : ToDoRepository {
         return ToDoRepositoryImpl(toDoDao)
+    }
+
+    @Provides
+    @Singleton
+    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao) : NotifyTaskRepository {
+        return NotifyTaskRepositoryImpl(notifyTaskDao)
     }
 }

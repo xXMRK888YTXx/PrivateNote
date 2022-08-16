@@ -59,4 +59,10 @@
     <string name="move_time_delete">Время выполнения удалено</string>
     <string name="move_time_set">Время выполнения установлено на</string>
     <string name="cancel">Отмена</string>
+    <string name="Вelete_this_note">Вы действительно хотите удалить данную заметку?</string>
+    <string name="Task">Задача</string>
+    <string name="Channel_name_default">Напоминания(Приоритет по умолчанию)</string>
+    <string name="Channel_description_default">Отправка напоминаний о задачах</string>
+    <string name="Channel_name_HP">Напоминания(Высокий приоритет)</string>
+    <string name="Channel_description_HP">Отправка напоминаний о задачах</string>
 </resources>

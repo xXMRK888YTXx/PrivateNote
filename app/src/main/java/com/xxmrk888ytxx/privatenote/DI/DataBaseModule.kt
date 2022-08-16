@@ -6,6 +6,7 @@ import androidx.room.Room
 import com.xxmrk888ytxx.privatenote.DB.AppDataBase
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
+import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
 import dagger.Module
 import dagger.Provides
@@ -38,6 +39,12 @@ class DataBaseModule {
     @Singleton
     fun getToDoDao(dataBase: AppDataBase) : ToDoDao {
         return dataBase.getToDoItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun getNotifyTaskDao(dataBase: AppDataBase) : NotifyTaskDao {
+        return dataBase.getNotifyTaskDao()
     }
 
 }

@@ -77,12 +77,23 @@ class NoteStateViewModel @Inject constructor(
 
     val currentSelectedCategoryId = mutableStateOf(0)
 
-    private val isShowDeleteDialog = mutableStateOf(false)
+    private val isShowDeleteDialog = mutableStateOf(Pair<Boolean,Int?>(false,null))
 
     fun getDeleteDialogState() = isShowDeleteDialog
 
-    fun changeDeleteDialogState(state:Boolean) {
-        isShowDeleteDialog.value = true
+    fun showDeleteDialog(id:Int) {
+        isShowDeleteDialog.value = Pair(true,id)
+    }
+
+    fun hideDeleteDialog() {
+        isShowDeleteDialog.value = Pair(false,null)
+    }
+
+    fun removeNote(id:Int?) {
+        if(id == null) return
+        viewModelScope.launch {
+            noteRepository.removeNote(id)
+        }
     }
 
     fun getCurrentMode() = currentNoteMode
@@ -268,5 +279,9 @@ class NoteStateViewModel @Inject constructor(
             CHOSEN_ONLY -> return context.getString(R.string.Chosen)
             else -> return ""
         }
+    }
+
+    fun changeChosenStatus(id: Int,currentStatus:Boolean) {
+        noteRepository.changeChosenStatus(!currentStatus,id)
     }
 }

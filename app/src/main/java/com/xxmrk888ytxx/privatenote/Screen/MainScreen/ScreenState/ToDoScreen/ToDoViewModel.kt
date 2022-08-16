@@ -1,19 +1,22 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
-import android.app.DatePickerDialog
+import android.app.AlarmManager
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xxmrk888ytxx.privatenote.DB.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -24,10 +27,8 @@ import javax.inject.Inject
 class ToDoViewModel @Inject constructor(
     private val showToast: ShowToast,
     private val toDoRepository: ToDoRepository,
+    private val notifyTaskManager: NotifyTaskManager
 ) : ViewModel() {
-    init {
-
-    }
     private var mainScreenController: MainScreenController? = null
 
     private val currentState:MutableState<ToDoScreenState> = mutableStateOf(ToDoScreenState.Default)
@@ -48,6 +49,39 @@ class ToDoViewModel @Inject constructor(
 
     private val isCompletedToDoVisible = mutableStateOf(true)
 
+    private val isNotifyDialogShow = mutableStateOf(false)
+
+    private val isShowNotifyDropDown = mutableStateOf(false)
+
+    private val isPickerNotifyTimeShow = mutableStateOf(false)
+
+    fun geIsPickerNotifyTimeShow() = isPickerNotifyTimeShow
+
+    private val currentNotifyTime:MutableState<Long?> = mutableStateOf(null)
+
+    fun getCurrentNotifyTime() = currentNotifyTime
+
+
+    fun getNotifyDropDownState() = isShowNotifyDropDown
+
+    fun hideNotifyDropDown() {
+        isShowNotifyDropDown.value = false
+    }
+
+    fun showNotifyDropDown() {
+        isShowNotifyDropDown.value = true
+    }
+
+    fun getNotifyDialogState() = isNotifyDialogShow
+
+    fun showNotifyDialog() {
+        isNotifyDialogShow.value = true
+    }
+
+    fun hideNotifyDialog() {
+        isNotifyDialogShow.value = false
+    }
+
     fun isCompletedToDoVisible() = isCompletedToDoVisible
 
     fun changeCompletedToDoVisible() {
@@ -58,9 +92,12 @@ class ToDoViewModel @Inject constructor(
 
     fun getIsCurrentEditableToDoImportantStatus() = isCurrentEditableToDoImportant
 
-    fun checkPicker() {
-        if(!selectDataTimeState.value) return
+    fun checkPickers() {
+        if(selectDataTimeState.value)
         cancelDataTimePicker()
+        if(isPickerNotifyTimeShow.value) {
+            cancelNotifyTimePicker()
+        }
     }
 
     fun changeImpotentStatus() {
@@ -78,6 +115,7 @@ class ToDoViewModel @Inject constructor(
         isCurrentEditableToDoImportant.value = false
         currentToDoIsCompleted.value = false
         currentToDoTime.value = null
+        currentNotifyTime.value = null
     }
 
     fun toEditToDoState(currentEditToDo:ToDoItem? = null) {
@@ -87,6 +125,10 @@ class ToDoViewModel @Inject constructor(
             isCurrentEditableToDoImportant.value = currentEditToDo.isImportant
             currentToDoIsCompleted.value = currentEditToDo.isCompleted
             currentToDoTime.value = currentEditToDo.todoTime
+            viewModelScope.launch {
+                currentNotifyTime.value =
+                    notifyTaskManager.getNotifyTaskByTodoId(currentEditToDo.id).getData()?.time
+            }
         }
         else{
             currentEditableToDoId = 0
@@ -122,6 +164,7 @@ class ToDoViewModel @Inject constructor(
         val currentImportantState = isCurrentEditableToDoImportant.value
         val currentIsComplited = currentToDoIsCompleted.value
         val currentToDoTime = currentToDoTime.value
+        val currentNotifyTime = currentNotifyTime.value
         viewModelScope.launch {
             toDoRepository.insertToDo(
                 toDoItem = ToDoItem(
@@ -132,6 +175,17 @@ class ToDoViewModel @Inject constructor(
                     todoTime = currentToDoTime
                 )
             )
+           if(currentNotifyTime != null) {
+               val realId = if(currentId == 0) toDoRepository.getAllToDo().getData().last().id
+               else currentId
+               notifyTaskManager.newTask(NotifyTask(
+                   taskId = 0,
+                   todoId = realId,
+                   enable = true,
+                   time = currentNotifyTime,
+                   isPriority = true
+               ))
+           }
         }
         toDefaultMode()
     }
@@ -150,6 +204,10 @@ class ToDoViewModel @Inject constructor(
                     cancelDataTimePicker()
                 }
 
+                override fun onError() {
+
+                }
+
             }
         )
     }
@@ -157,6 +215,11 @@ class ToDoViewModel @Inject constructor(
     private fun cancelDataTimePicker() {
         selectDataTimeState.value = false
         Log.d("MyLog","cancel")
+    }
+
+    private fun cancelNotifyTimePicker() {
+        isPickerNotifyTimeShow.value = false
+        Log.d("MyLog","canceln")
     }
 
     fun removeToDo(id: Int) {
@@ -168,5 +231,31 @@ class ToDoViewModel @Inject constructor(
     fun removeCurrentToDoTime() {
         currentToDoTime.value = null
         showToast.showToast(R.string.move_time_delete)
+    }
+
+
+    fun showPickerNotifyTimeDialog(context: Context) {
+        isPickerNotifyTimeShow.value = true
+        DataTimePicker().createDataPickerDialog(context,
+            object : DataTimePickerController {
+                override fun onComplete(time: Long) {
+                    isPickerNotifyTimeShow.value = false
+                    currentNotifyTime.value = time
+                }
+
+                override fun onCancel() {
+                    cancelNotifyTimePicker()
+                }
+
+                override fun onError() {
+                    showToast.showToast("Невозмножно установить дату, которая уже прошла!")
+                    cancelNotifyTimePicker()
+                }
+
+            },
+            validator = {
+                System.currentTimeMillis() < it
+            }
+        )
     }
 }
