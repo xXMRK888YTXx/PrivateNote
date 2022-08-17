@@ -20,4 +20,7 @@ interface NotifyTaskDao {
 
     @Query("DELETE FROM NOTIFY_TASKS WHERE taskId = :taskId")
     fun removeTask(taskId:Int)
+
+    @Query("SELECT enable From NOTIFY_TASKS WHERE taskId = :taskId")
+    fun getTaskEnableStatus(taskId: Int) : Boolean?
 }

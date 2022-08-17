@@ -13,9 +13,11 @@ class DataTimePicker{
     private var controller:DataTimePickerController? = null
     private var calendar:Calendar? = null
     private var validator:((time:Long) -> Boolean)? = null
+    private var isDropLattesDays:Boolean? = null
 
     fun createDataPickerDialog(context:Context,
                                controller: DataTimePickerController,
+                               dropLattesDays:Boolean = true,
                                validator:((time:Long) -> Boolean)? = null
     ) {
         try {
@@ -23,6 +25,7 @@ class DataTimePicker{
             this.controller = controller
             calendar = Calendar.getInstance()
             this.validator = validator
+            this.isDropLattesDays = dropLattesDays
             dataPicker()
         }catch (e:Exception) {
             Log.d("MyLog",e.message.toString())
@@ -48,6 +51,10 @@ class DataTimePicker{
             }, currentYear, currentMonth, currentDay
         )
         datePicker.setCanceledOnTouchOutside(true)
+        if(isDropLattesDays == true) {
+            val dateToday = Date()
+            datePicker.datePicker.minDate = dateToday.time
+        }
         datePicker.setOnCancelListener{
             onCancel()
         }

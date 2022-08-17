@@ -25,4 +25,8 @@ class NotifyTaskRepositoryImpl @Inject constructor(
     override fun removeTask(taskId: Int) = runBlocking(Dispatchers.IO) {
         notifyTaskDao.removeTask(taskId)
     }
+
+    override fun getTaskEnableStatus(taskId: Int): Boolean?  = runBlocking(Dispatchers.IO) {
+        return@runBlocking notifyTaskDao.getTaskEnableStatus(taskId)
+    }
 }

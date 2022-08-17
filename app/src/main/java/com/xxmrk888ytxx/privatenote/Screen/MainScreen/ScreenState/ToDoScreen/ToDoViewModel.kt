@@ -59,6 +59,10 @@ class ToDoViewModel @Inject constructor(
 
     private val currentNotifyTime:MutableState<Long?> = mutableStateOf(null)
 
+    private val isCurrentNotifyEnable:MutableState<Boolean> = mutableStateOf(false)
+
+    fun getNotifyEnableStatus() = isCurrentNotifyEnable
+
     fun getCurrentNotifyTime() = currentNotifyTime
 
 
@@ -208,7 +212,8 @@ class ToDoViewModel @Inject constructor(
 
                 }
 
-            }
+            },
+            dropLattesDays = false
         )
     }
 
@@ -225,6 +230,7 @@ class ToDoViewModel @Inject constructor(
     fun removeToDo(id: Int) {
         viewModelScope.launch {
             toDoRepository.removeToDo(id)
+            notifyTaskManager.cancelTask(id)
         }
     }
 

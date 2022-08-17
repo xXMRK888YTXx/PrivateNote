@@ -58,7 +58,6 @@ class NotificationAppManager @Inject constructor(
             .setSmallIcon(R.drawable.ic_main_note_icon)
             .setContentTitle(title)
             .setContentText(text)
-            .setColor(android.graphics.Color.BLACK)
             .setAutoCancel(true)
         notificationManager.notify(id, notification.build())
     }

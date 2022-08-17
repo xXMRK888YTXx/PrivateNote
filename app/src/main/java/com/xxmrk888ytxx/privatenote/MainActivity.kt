@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -25,11 +26,13 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject lateinit var LifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
+    @Inject lateinit var notifyTaskManager: NotifyTaskManager
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         notificationManager.createNotificationChannels()
+        restoreTasks()
         setContent {
             val navController = rememberNavController()
             Scaffold() {
@@ -53,6 +56,13 @@ class MainActivity : ComponentActivity() {
         super.onPause()
         lifecycleScope.launch{
             LifecycleState.emit(LifeCycleState.onPause)
+        }
+    }
+
+    fun restoreTasks() {
+        lifecycleScope.launch{
+            notifyTaskManager.checkForOld()
+            notifyTaskManager.sendNextTask()
         }
     }
 }

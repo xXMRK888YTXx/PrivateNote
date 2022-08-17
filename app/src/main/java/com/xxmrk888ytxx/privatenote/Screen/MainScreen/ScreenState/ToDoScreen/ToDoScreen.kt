@@ -454,6 +454,10 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
     val currentNotifyTime = remember {
         toDoViewModel.getCurrentNotifyTime()
     }
+    val notifyEnabled = remember {
+        toDoViewModel.getNotifyEnableStatus()
+    }
+    val textAlpha = if(notifyEnabled.value) 1f else 0.3f
     val context = LocalContext.current
     val timeText = if(currentNotifyTime.value != null) currentNotifyTime.value!!.secondToData(context)
     else "Выберете время"
@@ -480,9 +484,9 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         Switch(
-                            checked = temp.value,
+                            checked = notifyEnabled.value,
                             onCheckedChange = {
-                                temp.value = it
+                                notifyEnabled.value = it
                             },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = FloatingButtonColor,
@@ -500,15 +504,16 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                     Text(text = "Напомнить в",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
-                        color = PrimaryFontColor
+                        color = PrimaryFontColor.copy(textAlpha)
                     )
                     Box(Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                         ) {
                         Text(text = timeText,
                             fontSize = 14.sp,
-                            color = PrimaryFontColor,
+                            color = PrimaryFontColor.copy(textAlpha),
                             modifier = Modifier.clickable {
+                                if(!notifyEnabled.value) return@clickable
                                 toDoViewModel.showPickerNotifyTimeDialog(context)
                             }
                         )
