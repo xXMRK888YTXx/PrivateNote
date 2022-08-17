@@ -14,8 +14,8 @@ class NotifyTaskRepositoryImpl @Inject constructor(
         return@runBlocking notifyTaskDao.getAllTasks()
     }
 
-    override fun getTaskByTodoId(taskId: Int): Flow<NotifyTask?> = runBlocking(Dispatchers.IO) {
-         return@runBlocking notifyTaskDao.getTaskByTodoId(taskId)
+    override fun getTaskByTodoId(todoId: Int): Flow<NotifyTask?> = runBlocking(Dispatchers.IO) {
+         return@runBlocking notifyTaskDao.getTaskByTodoId(todoId)
     }
 
     override fun insertTask(task: NotifyTask) = runBlocking(Dispatchers.IO) {
@@ -24,6 +24,10 @@ class NotifyTaskRepositoryImpl @Inject constructor(
 
     override fun removeTask(taskId: Int) = runBlocking(Dispatchers.IO) {
         notifyTaskDao.removeTask(taskId)
+    }
+
+    override fun removeTaskByTodoId(todoId: Int) = runBlocking(Dispatchers.IO) {
+        notifyTaskDao.removeTaskByTodoID(todoId)
     }
 
     override fun getTaskEnableStatus(taskId: Int): Boolean?  = runBlocking(Dispatchers.IO) {

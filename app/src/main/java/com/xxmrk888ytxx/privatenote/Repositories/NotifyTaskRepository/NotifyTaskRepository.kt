@@ -15,5 +15,7 @@ interface NotifyTaskRepository {
 
     fun removeTask(taskId:Int)
 
+    fun removeTaskByTodoId(todoId:Int)
+
     fun getTaskEnableStatus(taskId: Int) : Boolean?
 }

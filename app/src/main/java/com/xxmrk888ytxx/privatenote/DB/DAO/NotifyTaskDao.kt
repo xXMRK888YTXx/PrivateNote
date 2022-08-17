@@ -12,8 +12,8 @@ interface NotifyTaskDao {
     @Query("SELECT * FROM NOTIFY_TASKS")
     fun getAllTasks() : Flow<List<NotifyTask>>
 
-    @Query("SELECT * FROM NOTIFY_TASKS WHERE todoId = :taskId")
-    fun getTaskByTodoId(taskId:Int) : Flow<NotifyTask?>
+    @Query("SELECT * FROM NOTIFY_TASKS WHERE todoId = :todoId")
+    fun getTaskByTodoId(todoId:Int) : Flow<NotifyTask?>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTask(task:NotifyTask)
@@ -21,6 +21,10 @@ interface NotifyTaskDao {
     @Query("DELETE FROM NOTIFY_TASKS WHERE taskId = :taskId")
     fun removeTask(taskId:Int)
 
+    @Query("DELETE FROM NOTIFY_TASKS WHERE todoId = :todoId")
+    fun removeTaskByTodoID(todoId: Int)
+
     @Query("SELECT enable From NOTIFY_TASKS WHERE taskId = :taskId")
     fun getTaskEnableStatus(taskId: Int) : Boolean?
+
 }

@@ -31,6 +31,9 @@ class NotifyTaskManager @Inject constructor(
     }
 
     fun newTask(notifyTask: NotifyTask) {
+        if(getNotifyTaskByTodoId(notifyTask.todoId).getData() != null) {
+            notifyTaskRepository.removeTaskByTodoId(notifyTask.todoId)
+        }
         notifyTaskRepository.insertTask(notifyTask)
         sendNextTask()
     }
@@ -54,7 +57,7 @@ class NotifyTaskManager @Inject constructor(
         Log.d("MyLog","Send alarm ${tasks.first()}  ${tasks.first().time.secondToData(context)}")
     }
 
-    fun cancelTask(taskId: Int) {
+    fun cancelTask(todoId: Int) {
         val tasks = getAllTasks().getData().sortedBy { it.time }
         if(tasks.isEmpty()) return
         if(tasks.size-1 <= 0) {
@@ -66,7 +69,7 @@ class NotifyTaskManager @Inject constructor(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             alarmManager.cancel(pendingIntent)
         }
-        notifyTaskRepository.removeTask(taskId)
+        notifyTaskRepository.removeTaskByTodoId(todoId)
         sendNextTask()
     }
 

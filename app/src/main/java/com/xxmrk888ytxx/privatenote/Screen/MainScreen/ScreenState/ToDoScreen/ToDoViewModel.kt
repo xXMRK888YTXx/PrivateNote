@@ -61,6 +61,16 @@ class ToDoViewModel @Inject constructor(
 
     private val isCurrentNotifyEnable:MutableState<Boolean> = mutableStateOf(false)
 
+    private val isCurrentNotifyPriority = mutableStateOf(true)
+
+    fun isCurrentNotifyPriority() = isCurrentNotifyPriority
+
+    private var savedNotifyTime:Long? = null
+
+    private var savedIsCurrentNotifyEnable:Boolean = false
+
+    private var savedIsCurrentNotifyPriority = true
+
     fun getNotifyEnableStatus() = isCurrentNotifyEnable
 
     fun getCurrentNotifyTime() = currentNotifyTime
@@ -80,10 +90,27 @@ class ToDoViewModel @Inject constructor(
 
     fun showNotifyDialog() {
         isNotifyDialogShow.value = true
+        savedNotifyTime = currentNotifyTime.value
+        savedIsCurrentNotifyEnable = isCurrentNotifyEnable.value
+        savedIsCurrentNotifyPriority = isCurrentNotifyPriority.value
     }
 
     fun hideNotifyDialog() {
         isNotifyDialogShow.value = false
+    }
+
+    fun cancelNotifyDialog() {
+        currentNotifyTime.value = savedNotifyTime
+        isNotifyDialogShow.value = savedIsCurrentNotifyEnable
+        isCurrentNotifyPriority.value = savedIsCurrentNotifyPriority
+        hideNotifyDialog()
+    }
+
+    fun confirmNotifyDialog() {
+        if(!isCurrentNotifyEnable.value) {
+            currentNotifyTime.value = null
+        }
+        hideNotifyDialog()
     }
 
     fun isCompletedToDoVisible() = isCompletedToDoVisible
@@ -120,6 +147,8 @@ class ToDoViewModel @Inject constructor(
         currentToDoIsCompleted.value = false
         currentToDoTime.value = null
         currentNotifyTime.value = null
+        isCurrentNotifyEnable.value = false
+        isCurrentNotifyPriority.value = true
     }
 
     fun toEditToDoState(currentEditToDo:ToDoItem? = null) {
@@ -130,8 +159,10 @@ class ToDoViewModel @Inject constructor(
             currentToDoIsCompleted.value = currentEditToDo.isCompleted
             currentToDoTime.value = currentEditToDo.todoTime
             viewModelScope.launch {
-                currentNotifyTime.value =
-                    notifyTaskManager.getNotifyTaskByTodoId(currentEditToDo.id).getData()?.time
+                val task = notifyTaskManager.getNotifyTaskByTodoId(currentEditToDo.id).getData()
+                currentNotifyTime.value = task?.time
+                isCurrentNotifyPriority.value = task?.isPriority ?: false
+                isCurrentNotifyEnable.value = currentNotifyTime.value != null
             }
         }
         else{
@@ -159,6 +190,7 @@ class ToDoViewModel @Inject constructor(
     fun changeMarkStatus(status:Boolean,id:Int) {
         viewModelScope.launch {
             toDoRepository.changeMarkStatus(id,status)
+            notifyTaskManager.cancelTask(id)
         }
     }
 
@@ -169,6 +201,7 @@ class ToDoViewModel @Inject constructor(
         val currentIsComplited = currentToDoIsCompleted.value
         val currentToDoTime = currentToDoTime.value
         val currentNotifyTime = currentNotifyTime.value
+        val currentNotifyPriority = isCurrentNotifyPriority.value
         viewModelScope.launch {
             toDoRepository.insertToDo(
                 toDoItem = ToDoItem(
@@ -179,16 +212,21 @@ class ToDoViewModel @Inject constructor(
                     todoTime = currentToDoTime
                 )
             )
+            val realId = if(currentId == 0) toDoRepository.getAllToDo().getData().last().id
+            else currentId
            if(currentNotifyTime != null) {
-               val realId = if(currentId == 0) toDoRepository.getAllToDo().getData().last().id
-               else currentId
                notifyTaskManager.newTask(NotifyTask(
                    taskId = 0,
                    todoId = realId,
                    enable = true,
                    time = currentNotifyTime,
-                   isPriority = true
+                   isPriority = currentNotifyPriority
                ))
+           }
+            else {
+              if(notifyTaskManager.getNotifyTaskByTodoId(realId).getData() != null) {
+                  notifyTaskManager.cancelTask(realId)
+              }
            }
         }
         toDefaultMode()

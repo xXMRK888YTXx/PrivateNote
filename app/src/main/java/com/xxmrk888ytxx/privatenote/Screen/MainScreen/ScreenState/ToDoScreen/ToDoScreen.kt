@@ -442,9 +442,6 @@ fun TopLabel() {
 
 @Composable
 fun NotifyDialog(toDoViewModel: ToDoViewModel) {
-    val temp = remember {
-        mutableStateOf(false)
-    }
     val dropDownState = remember {
         toDoViewModel.getNotifyDropDownState()
     }
@@ -457,6 +454,12 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
     val notifyEnabled = remember {
         toDoViewModel.getNotifyEnableStatus()
     }
+    val isCurrentNotifyPriority = remember {
+        toDoViewModel.isCurrentNotifyPriority()
+    }
+    LaunchedEffect(key1 = Unit, block = {
+        notifyEnabled.value = currentNotifyTime.value != null
+    })
     val textAlpha = if(notifyEnabled.value) 1f else 0.3f
     val context = LocalContext.current
     val timeText = if(currentNotifyTime.value != null) currentNotifyTime.value!!.secondToData(context)
@@ -512,17 +515,46 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                         Text(text = timeText,
                             fontSize = 14.sp,
                             color = PrimaryFontColor.copy(textAlpha),
-                            modifier = Modifier.clickable {
-                                if(!notifyEnabled.value) return@clickable
+                            modifier = Modifier.clickable(
+                                enabled = notifyEnabled.value
+                            ) {
                                 toDoViewModel.showPickerNotifyTimeDialog(context)
                             }
                         )
                     }
                 }
-                YesNoButton(onCancel = { toDoViewModel.hideNotifyDialog() },
-                modifier = Modifier.padding(top = 20.dp)
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "Приоритет",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = PrimaryFontColor.copy(textAlpha)
+                    )
+                    Box(modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
                     ) {
-
+                        Switch(
+                            checked = isCurrentNotifyPriority.value,
+                            onCheckedChange = {
+                                isCurrentNotifyPriority.value = it
+                            },
+                            enabled = notifyEnabled.value,
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = FloatingButtonColor,
+                                uncheckedThumbColor = SecondoryFontColor
+                            ),
+                            modifier = Modifier.padding(start = 10.dp)
+                        )
+                    }
+                }
+                YesNoButton(onCancel = { toDoViewModel.cancelNotifyDialog() },
+                modifier = Modifier.padding(top = 20.dp),
+                    isOkButtonEnable = currentNotifyTime.value != null
+                    ) {
+                    toDoViewModel.confirmNotifyDialog()
                 }
             }
         }

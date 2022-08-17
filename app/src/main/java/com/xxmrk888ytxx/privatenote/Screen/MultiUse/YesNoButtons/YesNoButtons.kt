@@ -9,6 +9,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -22,6 +24,7 @@ import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
                 confirmButtonText:String = stringResource(R.string.Ok),
                 modifier:Modifier = Modifier,
+                isOkButtonEnable:Boolean = true,
                 onCancel:() -> Unit,
                 onConfirm:() -> Unit,
 ) {
@@ -49,7 +52,9 @@ fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
         OutlinedButton(
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = FloatingButtonColor,
+                disabledBackgroundColor = FloatingButtonColor.copy(0.6f)
             ),
+            enabled = isOkButtonEnable,
             onClick = {
                 onConfirm()
             },
