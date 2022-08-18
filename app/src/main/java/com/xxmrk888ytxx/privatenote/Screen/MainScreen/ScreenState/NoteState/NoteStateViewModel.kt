@@ -14,6 +14,7 @@ import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepo
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
@@ -55,7 +56,7 @@ class NoteStateViewModel @Inject constructor(
     }
 
     private fun SetupFloatButtonOptions() {
-        mainScreenController?.setFloatButtonOnClickListener {
+        mainScreenController?.setFloatButtonOnClickListener(SCREEN_ID) {
             toEditNoteScreen(it,0)
         }
 
@@ -283,5 +284,8 @@ class NoteStateViewModel @Inject constructor(
 
     fun changeChosenStatus(id: Int,currentStatus:Boolean) {
         noteRepository.changeChosenStatus(!currentStatus,id)
+    }
+    companion object {
+        val SCREEN_ID = MainScreenState.NoteScreen.id
     }
 }

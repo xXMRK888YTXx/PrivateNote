@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen
 
-sealed class MainScreenState {
-    object NoteScreen : MainScreenState()
-    object ToDoScreen : MainScreenState()
+sealed class MainScreenState(val id:Int) {
+    object NoteScreen : MainScreenState(0)
+    object ToDoScreen : MainScreenState(1)
 }

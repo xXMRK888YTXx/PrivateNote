@@ -13,6 +13,7 @@ import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
+import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
@@ -182,7 +183,7 @@ class ToDoViewModel @Inject constructor(
     }
 
     private fun SetupFloatButtonOptions() {
-        mainScreenController?.setFloatButtonOnClickListener {
+        mainScreenController?.setFloatButtonOnClickListener(SCREEN_ID) {
             toEditToDoState()
         }
     }
@@ -305,5 +306,8 @@ class ToDoViewModel @Inject constructor(
                 System.currentTimeMillis() < it
             }
         )
+    }
+    companion object {
+         val SCREEN_ID = MainScreenState.ToDoScreen.id
     }
 }

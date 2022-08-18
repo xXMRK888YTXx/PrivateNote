@@ -7,6 +7,6 @@ interface MainScreenController {
     fun changeTopBarVisibleStatus(isVisible:Boolean)
     fun setSearchButtonOnClickListener(onClick:() -> Unit)
     fun searchButtonOnClick()
-    fun setFloatButtonOnClickListener(onClick: (navController: NavController) -> Unit)
+    fun setFloatButtonOnClickListener(screenKey:Int,onClick: (navController: NavController) -> Unit)
     fun changeEnableFloatButtonStatus(enable:Boolean)
 }
