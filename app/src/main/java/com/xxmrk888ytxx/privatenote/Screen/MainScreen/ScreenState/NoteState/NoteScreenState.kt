@@ -2,6 +2,8 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -87,7 +89,10 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
                 NoteList(noteStateViewModel, navController)
             }
         }
-        if(currentMode.value == SelectionScreenMode) {
+        AnimatedVisibility(visible = currentMode.value == SelectionScreenMode,
+            enter = expandHorizontally(),
+            exit = shrinkHorizontally()
+        ) {
             SelectionBottomBar(noteStateViewModel)
         }
     }
@@ -262,10 +267,6 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier.fillMaxSize()
     ) {
-        AnimatedVisibility(
-            visible = true
-        )
-        {
             Row(
                 modifier = Modifier
                     .background(SearchColor)
@@ -276,7 +277,7 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
             ) {
                 LazyRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                     items(items) {
-                        val enableColor = if(it.enable) 1f else 0.4f
+                        val enableColor = animateFloatAsState(if(it.enable) 1f else 0.4f)
                         Column(
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally,
@@ -288,7 +289,7 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
                                         noteStateViewModel.toDefaultMode()
                                 }
                                 .padding(start = 15.dp)
-                                .alpha(enableColor)
+                                .alpha(enableColor.value)
                         ) {
                             Icon(painter = painterResource(it.icon),
                                 contentDescription = it.title,
@@ -303,8 +304,6 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
                     }
                 }
             }
-        }
-
     }
 }
 
@@ -407,7 +406,11 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                 val check = remember {
                     mutableStateOf(false)
                 }
-                val cardSize = if (mode.value == SelectionScreenMode) 0.9f else 1f
+                val cardSize : Float by animateFloatAsState(
+                   targetValue =  if (mode.value == SelectionScreenMode) 0.9f else 1f,
+                    animationSpec = tween(250)
+                )
+                //if (mode.value == SelectionScreenMode) 0.9f else 1f
                 val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
                 val backGroundColor =  category?.value?.getColor() ?: CardNoteColor
                 val alpha = if(category?.value?.getColor() != null) 0.25f else 1f

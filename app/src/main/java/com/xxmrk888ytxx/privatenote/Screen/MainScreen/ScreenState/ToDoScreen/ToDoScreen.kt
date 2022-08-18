@@ -419,7 +419,7 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 }
             }
         }
-        if(!todo.isCompleted&&todo.todoTime != null&&task.value != null) {
+        if(!todo.isCompleted&&todo.todoTime != null) {
             Row(modifier = Modifier.padding(start = 10.dp)) {
                 Text(text = todoTimeText.value,
                     fontSize = 12.sp,

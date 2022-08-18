@@ -4,10 +4,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.NotificationManager.IMPORTANCE_HIGH
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
+import com.xxmrk888ytxx.privatenote.MainActivity
 import com.xxmrk888ytxx.privatenote.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -53,12 +56,17 @@ class NotificationAppManager @Inject constructor(
                          text:String,
                          id:Int = Random(System.currentTimeMillis()).nextInt(),
                          channel:String) {
+        val intent = Intent(context, MainActivity::class.java)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification =  NotificationCompat.Builder(context,channel)
-            .setSmallIcon(R.drawable.ic_main_note_icon)
+            .setSmallIcon(R.drawable.ic_todo_icon)
             .setContentTitle(title)
             .setContentText(text)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
         notificationManager.notify(id, notification.build())
     }
     companion object Channels{

@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -15,21 +16,28 @@ import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.Note
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun FloatButton(floatButtonController: FloatButtonController,navController: NavController) {
     val isEnable = remember {
         floatButtonController.isEnable()
     }
-    if(!isEnable.value) return
-    FloatingActionButton(
-        onClick = { floatButtonController.setOnClickListener(navController) },
-        backgroundColor = FloatingButtonColor,
-        modifier = Modifier.size(65.dp)
-    ){
-        Icon(painter = painterResource(id = R.drawable.ic_plus),
-            contentDescription = "plus",
-            tint = PrimaryFontColor,
-            modifier = Modifier.size(35.dp)
-        )
+    AnimatedVisibility(visible = isEnable.value,
+        enter = scaleIn(),
+        exit = scaleOut()
+    ) {
+        FloatingActionButton(
+            onClick = { floatButtonController.setOnClickListener(navController) },
+            backgroundColor = FloatingButtonColor,
+            modifier = Modifier.size(65.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_plus),
+                contentDescription = "plus",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(35.dp)
+            )
+        }
     }
+
 }
