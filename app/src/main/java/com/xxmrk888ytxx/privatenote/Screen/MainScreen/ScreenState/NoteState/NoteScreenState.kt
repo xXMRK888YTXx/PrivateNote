@@ -78,9 +78,11 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
                 .background(MainBackGroundColor)
                 .fillMaxSize(),
         ) {
-            if (currentMode.value == NoteScreenMode.ShowCategoryMenu) {
-                CategoryMenu(noteStateViewModel)
-            } else {
+
+                AnimatedVisibility(visible = currentMode.value == NoteScreenMode.ShowCategoryMenu) {
+                    CategoryMenu(noteStateViewModel)
+                }
+            if (currentMode.value != NoteScreenMode.ShowCategoryMenu) {
                 Topbar(noteStateViewModel)
                 NoteList(noteStateViewModel, navController)
             }
@@ -490,7 +492,8 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                                 }
                             }
                         }
-                        if (mode.value == SelectionScreenMode) {
+
+                        AnimatedVisibility(visible = mode.value == SelectionScreenMode) {
                             LaunchedEffect(key1 = selectedItemCount.value, block = {
                                 check.value = noteStateViewModel.isItemSelected(it.id)
                             })
@@ -518,7 +521,8 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
 
                                 )
                             }
-                        } else {
+                        }
+                        if(mode.value != SelectionScreenMode) {
                             check.value = false
                         }
                     }

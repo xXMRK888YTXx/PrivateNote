@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -41,6 +42,7 @@ import com.xxmrk888ytxx.privatenote.Utils.sortedToDo
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
+import me.saket.swipe.rememberSwipeableActionsState
 
 @Composable
 fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenController: MainScreenController) {
@@ -258,6 +260,21 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 },
                 isUndo = true,
             )
+            val removeSwipeAction2 = SwipeAction(
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_backet),
+                        contentDescription = "",
+                        tint = PrimaryFontColor,
+                        modifier = Modifier.padding(end = 50.dp)
+                    )
+                },
+                background = Color.Green,
+                onSwipe = {
+                    toDoViewModel.removeToDo(it.id)
+                },
+                isUndo = true,
+            )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -275,7 +292,8 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     startActions = listOf(removeSwipeAction),
                     endActions = listOf(removeSwipeAction),
                     backgroundUntilSwipeThreshold = Color.Transparent,
-                    swipeThreshold = 90.dp
+                    swipeThreshold = 90.dp,
+                    state = rememberSwipeableActionsState(),
                 ) {
                     ToDoItem(it, toDoViewModel)
                 }
@@ -394,7 +412,9 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                     Icon(painter = painterResource(R.drawable.ic_notifications),
                         contentDescription = "",
                         tint = Yellow,
-                        modifier = Modifier.padding(end = 5.dp).size(20.dp)
+                        modifier = Modifier
+                            .padding(end = 5.dp)
+                            .size(20.dp)
                     )
                 }
             }
