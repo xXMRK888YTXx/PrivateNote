@@ -70,7 +70,6 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     val currentToDoImpotent = remember {
@@ -106,7 +105,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         ToDoEditItem(
             icon = R.drawable.ic_notifications,
             activate = currentNotifyTime.value != null,
-            activateColor = Color.Yellow.copy(0.9f)
+            activateColor = Yellow
         ) {
           toDoViewModel.showNotifyDialog()
         },
@@ -266,7 +265,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     .combinedClickable(
                         onClick = {
                             toDoViewModel.toEditToDoState(it)
-                        }
+                        },
                     )
                     .animateItemPlacement(),
                 shape = RoundedCornerShape(15),
@@ -322,11 +321,6 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
-                        .combinedClickable(
-                            onClick = {
-                                toDoViewModel.toEditToDoState(it)
-                            }
-                        )
                         .animateItemPlacement(),
                     shape = RoundedCornerShape(15),
                     backgroundColor = CardNoteColor
@@ -355,14 +349,14 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
     val subTextColor:MutableState<Color> = remember {
         mutableStateOf(SecondoryFontColor)
     }
+    val task = toDoViewModel.getTask(todo.id).collectAsState(null)
     todoTimeText.value = getTodoSubText(todo, LocalContext.current)
     subTextColor.value = getTodoSubTextColor(todo)
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(top = 5.dp, bottom = 5.dp)) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
@@ -388,20 +382,38 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                     text = todo.todoText,
                     modifier = Modifier
                         .padding(start = 5.dp)
-                        .fillMaxWidth(),
+                        ,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     color = fontColor,
                     fontStyle = FontStyle.Italic,
                 )
+            if(task.value != null&&todo.todoTime == null&&!todo.isCompleted) {
+                Box(Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd) {
+                    Icon(painter = painterResource(R.drawable.ic_notifications),
+                        contentDescription = "",
+                        tint = Yellow,
+                        modifier = Modifier.padding(end = 5.dp).size(20.dp)
+                    )
+                }
+            }
         }
-        if(!todo.isCompleted&&todo.todoTime != null) {
+        if(!todo.isCompleted&&todo.todoTime != null&&task.value != null) {
             Row(modifier = Modifier.padding(start = 10.dp)) {
                 Text(text = todoTimeText.value,
                     fontSize = 12.sp,
                     color = subTextColor.value,
                     fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(end = 5.dp)
                 )
+                if(task.value != null) {
+                    Icon(painter = painterResource(R.drawable.ic_notifications),
+                        contentDescription = "",
+                        tint = Yellow,
+                        modifier = Modifier.size(15.dp)
+                    )
+                }
             }
         }
     }

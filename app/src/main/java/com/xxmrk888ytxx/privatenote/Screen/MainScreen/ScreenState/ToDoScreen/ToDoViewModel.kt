@@ -73,6 +73,10 @@ class ToDoViewModel @Inject constructor(
 
     fun getNotifyEnableStatus() = isCurrentNotifyEnable
 
+    fun getTask(todoId:Int) : Flow<NotifyTask?> {
+        return notifyTaskManager.getNotifyTaskByTodoId(todoId)
+    }
+
     fun getCurrentNotifyTime() = currentNotifyTime
 
 

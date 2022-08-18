@@ -19,3 +19,4 @@ val PrimaryFontColor = Color.White.copy(0.9f)
 val SecondoryFontColor = Color.Gray
 val SelectedCategoryColor = Color.Cyan.copy(0.80f)
 val DeleteOverSwapColor = Color.Red.copy(0.6f)
+val Yellow = Color.Yellow.copy(0.6f)
