@@ -135,7 +135,3 @@ fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {
     }
 }
 
-fun List<ToDoItem>.sortedToDo(getCompleted:Boolean) :List<ToDoItem> {
-    return this.filter { it.isCompleted == getCompleted }.sortedByDescending { it.isImportant }
-}
-

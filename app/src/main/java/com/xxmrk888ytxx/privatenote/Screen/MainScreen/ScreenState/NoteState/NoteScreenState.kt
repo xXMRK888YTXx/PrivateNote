@@ -105,7 +105,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
         }
     }
     if(deleteDialogState.value.first) {
-        YesNoDialog(title = stringResource(R.string.Вelete_this_note),
+        YesNoDialog(title = stringResource(R.string.Delete_this_note),
             onCancel = { noteStateViewModel.hideDeleteDialog() }) {
             noteStateViewModel.removeNote(deleteDialogState.value.second)
             noteStateViewModel.hideDeleteDialog()

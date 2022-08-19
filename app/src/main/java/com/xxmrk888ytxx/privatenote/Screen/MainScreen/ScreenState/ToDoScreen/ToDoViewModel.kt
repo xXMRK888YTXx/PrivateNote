@@ -1,6 +1,5 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
-import android.app.AlarmManager
 import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -48,15 +47,11 @@ class ToDoViewModel @Inject constructor(
 
     private val currentToDoTime:MutableState<Long?> = mutableStateOf(null)
 
-    private val isCompletedToDoVisible = mutableStateOf(true)
-
     private val isNotifyDialogShow = mutableStateOf(false)
 
     private val isShowNotifyDropDown = mutableStateOf(false)
 
     private val isPickerNotifyTimeShow = mutableStateOf(false)
-
-    fun geIsPickerNotifyTimeShow() = isPickerNotifyTimeShow
 
     private val currentNotifyTime:MutableState<Long?> = mutableStateOf(null)
 
@@ -71,6 +66,50 @@ class ToDoViewModel @Inject constructor(
     private var savedIsCurrentNotifyEnable:Boolean = false
 
     private var savedIsCurrentNotifyPriority = true
+
+    private val isCompletedToDoVisible = mutableStateOf(true)
+
+    private val isToDoWithDateVisible = mutableStateOf(true)
+
+    private val isToDoWithoutDateVisible = mutableStateOf(true)
+
+    private val isMissedToDoVisible = mutableStateOf(true)
+
+    private val removeDialogState = mutableStateOf(Pair<Boolean,Int?>(false,null))
+
+    fun isRemoveDialogShow() = removeDialogState
+
+    fun showRemoveDialog(id:Int) {
+        removeDialogState.value = Pair(true,id)
+    }
+
+    fun hideRemoveDialog() {
+        removeDialogState.value = Pair(false,null)
+    }
+
+    fun isCompletedToDoVisible() = isCompletedToDoVisible
+
+    fun changeCompletedToDoVisible() {
+        isCompletedToDoVisible.value = !isCompletedToDoVisible.value
+    }
+
+    fun isToDoWithDateVisible() = isToDoWithDateVisible
+
+    fun changeToDoWithDateVisible() {
+        isToDoWithDateVisible.value = !isToDoWithDateVisible.value
+    }
+
+    fun isToDoWithoutDateVisible() = isToDoWithoutDateVisible
+
+    fun changeToDoWithoutDateVisible() {
+        isToDoWithoutDateVisible.value = !isToDoWithoutDateVisible.value
+    }
+
+    fun isMissedToDoVisible() = isMissedToDoVisible
+
+    fun changeMissedToDoVisible() {
+        isMissedToDoVisible.value = !isMissedToDoVisible.value
+    }
 
     fun getNotifyEnableStatus() = isCurrentNotifyEnable
 
@@ -116,12 +155,6 @@ class ToDoViewModel @Inject constructor(
             currentNotifyTime.value = null
         }
         hideNotifyDialog()
-    }
-
-    fun isCompletedToDoVisible() = isCompletedToDoVisible
-
-    fun changeCompletedToDoVisible() {
-        isCompletedToDoVisible.value = !isCompletedToDoVisible.value
     }
 
     fun getCurrentToDoTime() = currentToDoTime

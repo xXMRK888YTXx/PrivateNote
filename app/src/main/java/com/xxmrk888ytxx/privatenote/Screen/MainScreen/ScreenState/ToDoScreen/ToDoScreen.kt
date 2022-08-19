@@ -38,8 +38,8 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoButtons.YesNoButton
+import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
-import com.xxmrk888ytxx.privatenote.Utils.sortedToDo
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -52,6 +52,9 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
     }
     val notifyDialogState = remember {
         toDoViewModel.getNotifyDialogState()
+    }
+    val isRemoveDialogShow = remember {
+        toDoViewModel.isRemoveDialogShow()
     }
     LaunchedEffect(key1 = Unit, block = {
         toDoViewModel.setMainScreenController(mainScreenController)
@@ -69,6 +72,14 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
         EditToDoDialog(toDoViewModel)
         if(notifyDialogState.value) {
            NotifyDialog(toDoViewModel)
+        }
+    }
+    if(isRemoveDialogShow.value.first) {
+        YesNoDialog(title = stringResource(R.string.Remove_this_todo),
+            onCancel = { toDoViewModel.hideRemoveDialog() }) {
+            if(isRemoveDialogShow.value.second == null) return@YesNoDialog
+            toDoViewModel.removeToDo(isRemoveDialogShow.value.second!!)
+            toDoViewModel.hideRemoveDialog()
         }
     }
 }
@@ -210,14 +221,63 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     val isCompletedToDoVisible = remember {
         toDoViewModel.isCompletedToDoVisible()
     }
-    val annotatedLabelString = buildAnnotatedString {
-        append("Завершено")
-        if (isCompletedToDoVisible.value)
-            appendInlineContent("visible")
-        else appendInlineContent("invisible")
+    val isToDoWithDateVisible = remember {
+        toDoViewModel.isToDoWithDateVisible()
     }
-    val complited = toDoList.value.sortedToDo(false)
-    val uncomplited = toDoList.value.sortedToDo(true)
+    val isToDoWithoutDateVisible = remember {
+        toDoViewModel.isToDoWithoutDateVisible()
+    }
+    val isMissedToDoVisible = remember {
+        toDoViewModel.isMissedToDoVisible()
+    }
+    val categoryList = listOf<TodoCategory>(
+        TodoCategory(
+            categoryName = stringResource(R.string.Overdue),
+            toDoList.value,
+            isMissedToDoVisible.value,
+            onVisibleChange = {
+                toDoViewModel.changeMissedToDoVisible()
+            },
+            validator = {
+                return@TodoCategory it.filter { it.todoTime != null&&
+                        !it.isCompleted&&it.todoTime < System.currentTimeMillis() }
+            }
+        ),
+        TodoCategory(
+            categoryName = stringResource(R.string.Later),
+            toDoList.value,
+            isToDoWithDateVisible.value,
+            onVisibleChange = {
+                toDoViewModel.changeToDoWithDateVisible()
+            },
+            validator = {
+                return@TodoCategory it.filter { it.todoTime != null
+                        &&!it.isCompleted&&it.todoTime > System.currentTimeMillis() }
+            }
+        ),
+        TodoCategory(
+            categoryName = stringResource(R.string.No_date),
+            toDoList.value,
+            isToDoWithoutDateVisible.value,
+            onVisibleChange = {
+                toDoViewModel.changeToDoWithoutDateVisible()
+            },
+            validator = {
+                return@TodoCategory it.filter { it.todoTime == null&&!it.isCompleted }
+            }
+        ),
+        TodoCategory(
+            categoryName = stringResource(R.string.Completed),
+            toDoList.value,
+            isCompletedToDoVisible.value,
+            onVisibleChange = {
+                toDoViewModel.changeCompletedToDoVisible()
+            },
+            validator = {
+                return@TodoCategory it.filter { it.isCompleted }
+            }
+        ),
+    )
     val inlineContentMap = mapOf(
         "visible" to InlineTextContent(
             Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
@@ -243,101 +303,72 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     LazyColumn(
         modifier = Modifier.fillMaxWidth()
     ) {
-        itemsIndexed(complited, key = { _, it ->
-            it.id
-        }) { index, it ->
-            val removeSwipeAction = SwipeAction(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_backet),
-                        contentDescription = "",
-                        tint = PrimaryFontColor,
-                        modifier = Modifier.padding(end = 50.dp)
-                    )
-                },
-                background = DeleteOverSwapColor,
-                onSwipe = {
-                    toDoViewModel.removeToDo(it.id)
-                },
-                isUndo = true,
-            )
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .combinedClickable(
-                        onClick = {
-                            toDoViewModel.toEditToDoState(it)
-                        },
-                    )
-                    .animateItemPlacement(),
-                shape = RoundedCornerShape(15),
-                backgroundColor = CardNoteColor
-            ) {
-                SwipeableActionsBox(
-                    startActions = listOf(removeSwipeAction),
-                    endActions = listOf(removeSwipeAction),
-                    backgroundUntilSwipeThreshold = Color.Transparent,
-                    swipeThreshold = 90.dp,
-                    state = rememberSwipeableActionsState(),
-                ) {
-                    ToDoItem(it, toDoViewModel)
+        categoryList.forEach { category ->
+            val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
+            itemsIndexed(sortedList, key = { _, it ->
+                it.id
+            }) { index, it ->
+                val annotatedLabelString = buildAnnotatedString {
+                    append(category.categoryName)
+                    if (category.visible)
+                        appendInlineContent("visible")
+                    else appendInlineContent("invisible")
                 }
-
-            }
-        }
-        itemsIndexed(uncomplited, key = { _, it ->
-            it.id
-        }) { index, it ->
-            if (index == 0) {
-                Text(
-                    text = annotatedLabelString,
-                    inlineContent = inlineContentMap,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = SecondoryFontColor,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .animateItemPlacement()
-                        .clickable {
-                            toDoViewModel.changeCompletedToDoVisible()
-                        }
-                        .padding(15.dp)
-                )
-            }
-            if (isCompletedToDoVisible.value) {
-                val removeSwipeAction = SwipeAction(
-                    icon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_backet),
-                            contentDescription = "",
-                            tint = PrimaryFontColor,
-                            modifier = Modifier.padding(start = 50.dp)
-                        )
-                    },
-                    background = DeleteOverSwapColor,
-                    onSwipe = {
-                        toDoViewModel.removeToDo(it.id)
-                    },
-                    isUndo = true
-                )
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .animateItemPlacement(),
-                    shape = RoundedCornerShape(15),
-                    backgroundColor = CardNoteColor
-                ) {
-                    SwipeableActionsBox(
-                        startActions = listOf(removeSwipeAction),
-                        endActions = listOf(removeSwipeAction),
-                        backgroundUntilSwipeThreshold = Color.Transparent,
-                        swipeThreshold = 90.dp
+                if (index == 0) {
+                    Text(
+                        text = annotatedLabelString,
+                        inlineContent = inlineContentMap,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = PrimaryFontColor,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItemPlacement()
+                            .clickable {
+                                category.onVisibleChange()
+                            }
+                            .padding(start = 15.dp, top = 0.dp, bottom = 0.dp)
+                    )
+                }
+                if (category.visible) {
+                    val removeSwipeAction = SwipeAction(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_backet),
+                                contentDescription = "",
+                                tint = PrimaryFontColor,
+                                modifier = Modifier.padding(start = 50.dp)
+                            )
+                        },
+                        background = DeleteOverSwapColor,
+                        onSwipe = {
+                            toDoViewModel.showRemoveDialog(it.id)
+                        },
+                        isUndo = true
+                    )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                            .clickable(
+                                enabled = !it.isCompleted
+                            ) {
+                                toDoViewModel.toEditToDoState(it)
+                            }
+                            .animateItemPlacement(),
+                        shape = RoundedCornerShape(15),
+                        backgroundColor = CardNoteColor
                     ) {
-                        ToDoItem(it, toDoViewModel)
-                    }
+                        SwipeableActionsBox(
+                            startActions = listOf(removeSwipeAction),
+                            endActions = listOf(removeSwipeAction),
+                            backgroundUntilSwipeThreshold = Color.Transparent,
+                            swipeThreshold = 90.dp
+                        ) {
+                            ToDoItem(it, toDoViewModel)
+                        }
 
+                    }
                 }
             }
         }
