@@ -166,7 +166,7 @@ class ToDoViewModel @Inject constructor(
             viewModelScope.launch {
                 val task = notifyTaskManager.getNotifyTaskByTodoId(currentEditToDo.id).getData()
                 currentNotifyTime.value = task?.time
-                isCurrentNotifyPriority.value = task?.isPriority ?: false
+                isCurrentNotifyPriority.value = task?.isPriority ?: true
                 isCurrentNotifyEnable.value = currentNotifyTime.value != null
             }
         }
@@ -297,7 +297,7 @@ class ToDoViewModel @Inject constructor(
                 }
 
                 override fun onError() {
-                    showToast.showToast("Невозмножно установить дату, которая уже прошла!")
+                    showToast.showToast(context.getString(R.string.data_is_passed))
                     cancelNotifyTimePicker()
                 }
 

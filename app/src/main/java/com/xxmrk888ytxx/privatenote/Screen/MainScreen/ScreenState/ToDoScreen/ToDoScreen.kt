@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -61,7 +62,7 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
             .fillMaxSize()
             .background(MainBackGroundColor)
     ) {
-        TopLabel()
+        TopLabel(toDoViewModel)
         ToDoList(toDoViewModel)
     }
     if(state.value == ToDoScreenState.EditToDoDialog) {
@@ -260,21 +261,6 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 },
                 isUndo = true,
             )
-            val removeSwipeAction2 = SwipeAction(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_backet),
-                        contentDescription = "",
-                        tint = PrimaryFontColor,
-                        modifier = Modifier.padding(end = 50.dp)
-                    )
-                },
-                background = Color.Green,
-                onSwipe = {
-                    toDoViewModel.removeToDo(it.id)
-                },
-                isUndo = true,
-            )
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -453,9 +439,14 @@ fun getTodoSubTextColor(todo: ToDoItem) : Color {
 }
 
 @Composable
-fun TopLabel() {
+fun TopLabel(toDoViewModel: ToDoViewModel) {
+    val todo = toDoViewModel.getToDoList().collectAsState(listOf()).value.filter {
+        !it.isCompleted
+    }
+    val subtext = if(todo.isEmpty()) stringResource(R.string.all_task_complited) else
+          "${todo.size} ${stringResource(R.string.Tasks_left)}"
     Column(modifier = Modifier.padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
-        Text(text = "Всё задачи",
+        Text(text = "Все задачи",
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
             color = PrimaryFontColor,
@@ -463,7 +454,7 @@ fun TopLabel() {
             }
         )
         Text(
-            text = "Всё задачи выполнены",
+            text = subtext,
             fontStyle = FontStyle.Italic,
             fontSize = 18.sp,
             color = SecondoryFontColor,
@@ -492,10 +483,12 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
     LaunchedEffect(key1 = Unit, block = {
         notifyEnabled.value = currentNotifyTime.value != null
     })
-    val textAlpha = if(notifyEnabled.value) 1f else 0.3f
+    val textAlpha:Float by animateFloatAsState(
+        if(notifyEnabled.value) 1f else 0.3f
+    )
     val context = LocalContext.current
     val timeText = if(currentNotifyTime.value != null) currentNotifyTime.value!!.secondToData(context)
-    else "Выберете время"
+    else stringResource(R.string.Select_time)
     Dialog(onDismissRequest = { toDoViewModel.hideNotifyDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -510,7 +503,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                     .padding(top = 0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Напоминание включено",
+                    Text(text = stringResource(R.string.Reminder_on),
                         fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
                         color = PrimaryFontColor
@@ -536,7 +529,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                     .padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Напомнить в",
+                    Text(text = stringResource(R.string.Reminder_in),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
                         color = PrimaryFontColor.copy(textAlpha)
@@ -560,7 +553,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                     .padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Приоритет",
+                    Text(text = stringResource(R.string.Priority),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
                         color = PrimaryFontColor.copy(textAlpha)
@@ -592,120 +585,3 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
         }
     }
 }
-
-//@Composable
-//fun NotifyDropDown(toDoViewModel: ToDoViewModel,haveToDoTime:Boolean) {
-//    val dropDownState = remember {
-//        toDoViewModel.getNotifyDropDownState()
-//    }
-//    val customItems = remember {
-//        toDoViewModel.getCustomTimeList()
-//    }
-//    val context = LocalContext.current
-//    val items = listOf(
-//        NotifyDropDownItem(
-//            id = 1,
-//            title = "За 5 минут",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 2,
-//            title = "За 15 минут",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 3,
-//            title = "За 30 минут",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 4,
-//            title = "За 1 час",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 5,
-//            title = "За 3 часа",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 6,
-//            title = "За 6 часов",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 7,
-//            title = "За 12 часов",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 8,
-//            title = "За 1 день",
-//            isVisible = haveToDoTime
-//        ),
-//        NotifyDropDownItem(
-//            id = 9,
-//            title = "За 3 дня",
-//            isVisible = haveToDoTime
-//        ),
-//    )
-//    DropdownMenu(expanded = dropDownState.value,
-//        onDismissRequest = { toDoViewModel.hideNotifyDropDown() },
-//        modifier = Modifier
-//            .background(DropDownMenuColor)
-//            .heightIn(max = 200.dp)
-//    ){
-//        items.forEach {
-//            NotifyDropDownItem(toDoViewModel,it)
-//        }
-//        customItems.value.forEach{
-//            NotifyDropDownItem(toDoViewModel,it)
-//        }
-//        Text(text = "Своё время",
-//            fontSize = 15.sp,
-//            color = Color.Cyan.copy(0.9f),
-//            modifier = Modifier
-//                .padding()
-//                .clickable {
-//                    toDoViewModel.hideNotifyDropDown()
-//                    toDoViewModel.showCreateCustomNotifyTimeDialog(context)
-//                }
-//                .fillMaxWidth(),
-//            textAlign = TextAlign.Center
-//        )
-//    }
-//}
-//
-//@Composable
-//fun NotifyDropDownItem(toDoViewModel: ToDoViewModel, item:NotifyDropDownItem) {
-//    val selectedTime = remember {
-//        toDoViewModel.getselectedNotifyTimes()
-//    }
-//    val selected = remember {
-//        mutableStateOf(false)
-//    }
-//    SideEffect{
-//        selected.value = selectedTime.value.any{item.id == it.id }
-//    }
-//
-//    if(item.isVisible) {
-//        Row(verticalAlignment = Alignment.CenterVertically) {
-//            Checkbox(checked = selected.value,
-//                onCheckedChange = {
-//                toDoViewModel.changeNotifyTimeSelectedStatus(item)
-//                    selected.value = it
-//            },
-//                colors = CheckboxDefaults.colors(
-//                    checkedColor = FloatingButtonColor,
-//                    checkmarkColor = PrimaryFontColor,
-//                    uncheckedColor = FloatingButtonColor
-//                )
-//            )
-//            Text(text = item.title,
-//                fontSize = 15.sp,
-//                color = PrimaryFontColor,
-//                modifier = Modifier.padding(end = 10.dp)
-//            )
-//        }
-//    }
-//}

@@ -9,6 +9,7 @@ import com.xxmrk888ytxx.privatenote.BroadcastReceiver.Receiver
 import com.xxmrk888ytxx.privatenote.DB.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -49,12 +50,12 @@ class NotifyTaskManager @Inject constructor(
         val todo = toDoRepository.getToDoById(tasks.first().todoId).getData()
         val intent = Intent(context, Receiver::class.java)
         intent.action = NOTIFY_TASK_ACTION
-        intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.todoText))
+        intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.todoText,todo.id))
         val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         alarmManager.setAlarmClock(AlarmManager
             .AlarmClockInfo(tasks.first().time,pendingIntent),pendingIntent)
-        Log.d("MyLog","Send alarm ${tasks.first()}  ${tasks.first().time.secondToData(context)}")
+        //Log.d("MyLog","Send alarm ${tasks.first()}  ${tasks.first().time.secondToData(context)}")
     }
 
     fun cancelTask(todoId: Int) {
@@ -64,7 +65,8 @@ class NotifyTaskManager @Inject constructor(
             val todo = toDoRepository.getToDoById(tasks.first().todoId)
             val intent = Intent(context, Receiver::class.java)
             intent.action = NOTIFY_TASK_ACTION
-            intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.getData().todoText))
+            intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.getData().todoText,
+            todo.getData().id))
             val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             alarmManager.cancel(pendingIntent)
@@ -84,10 +86,12 @@ class NotifyTaskManager @Inject constructor(
             todo.add(toDoRepository.getToDoById(it.todoId).getData())
         }
         todo.forEachIndexed { index,it ->
-            notificationManager.sendNotification(
-                "Напоминание",
-                text = it.todoText,
+            notificationManager.sendTaskNotification(
+                title = it.todoText,
+                text = context.getString(R.string.Reminder),
                 id = oldTask[index].taskId,
+                intentNotifyTask = IntentNotifyTask.fromTask(oldTask[index],
+                    todo[index].todoText,todo[index].id),
                 channel = if(oldTask[index].isPriority) NotificationAppManager.PRIORITY_HIGH
                 else NotificationAppManager.PRIORITY_DEFAULT
             )
@@ -95,7 +99,10 @@ class NotifyTaskManager @Inject constructor(
         oldTask.forEach {
             removeTask(it.taskId)
         }
+    }
 
+    fun markCompletedAction(todoId: Int) {
+        toDoRepository.changeMarkStatus(todoId,true)
     }
     companion object {
         const val TASK_KEY = "TASK_KEY"

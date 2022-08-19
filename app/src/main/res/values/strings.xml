@@ -65,4 +65,13 @@
     <string name="Channel_description_default">Отправка напоминаний о задачах</string>
     <string name="Channel_name_HP">Напоминания(Высокий приоритет)</string>
     <string name="Channel_description_HP">Отправка напоминаний о задачах</string>
+    <string name="Reminder">Напоминание</string>
+    <string name="Mark_done">Пометить выполненым</string>
+    <string name="Select_time">Выберете время</string>
+    <string name="Reminder_on">Напоминание включено</string>
+    <string name="Reminder_in">Напомнить в</string>
+    <string name="Priority">Приоритет</string>
+    <string name="data_is_passed">Невозмножно установить дату, которая уже прошла!</string>
+    <string name="all_task_complited">Все задачи выполнены</string>
+    <string name="Tasks_left">задач осталось</string>
 </resources>

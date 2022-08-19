@@ -10,7 +10,9 @@ import android.content.Intent
 import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.NotificationCompat
+import com.xxmrk888ytxx.privatenote.BroadcastReceiver.Receiver
 import com.xxmrk888ytxx.privatenote.MainActivity
+import com.xxmrk888ytxx.privatenote.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -52,22 +54,44 @@ class NotificationAppManager @Inject constructor(
             notificationManager_HP.createNotificationChannel(mChannel_HP)
         }
     }
-    fun sendNotification(title:String,
-                         text:String,
-                         id:Int = Random(System.currentTimeMillis()).nextInt(),
-                         channel:String) {
+    fun sendTaskNotification(title:String?,
+                             text:String?,
+                             id:Int = Random(System.currentTimeMillis()).nextInt(),
+                             intentNotifyTask: IntentNotifyTask,
+                             channel:String) {
+        //открытие activity
         val intent = Intent(context, MainActivity::class.java)
             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         val pendingIntent = PendingIntent.getActivity(context, 0, intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            //пометить выполеным
+        val intentMarkCompleted = Intent(context, Receiver::class.java)
+        intentMarkCompleted.action = Receiver.MARK_COMPLETED_ACTION
+        intentMarkCompleted.putExtra(Receiver.ACTION_BUTTONS_KEY,intentNotifyTask)
+        val pendingIntentMarkCompleted = PendingIntent.getBroadcast(context,1,
+            intentMarkCompleted,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        //отложить задачу
+//        val intentDelay = Intent(context, Receiver::class.java)
+//        intentDelay.action = Receiver.DELAY_TASK
+//        intentMarkCompleted.putExtra(Receiver.ACTION_BUTTONS_KEY,intentNotifyTask)
+//        val pendingIntentDelay = PendingIntent.getBroadcast(context,2,
+//            intentDelay,PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification =  NotificationCompat.Builder(context,channel)
             .setSmallIcon(R.drawable.ic_todo_icon)
             .setContentTitle(title)
-            .setContentText(text)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
+            .addAction(R.drawable.ic_todo_icon,context.getString(R.string.Mark_done),pendingIntentMarkCompleted)
+        if(text != null) {
+            notification.setContentText(text)
+        }
         notificationManager.notify(id, notification.build())
+    }
+    fun cancelNotification(notificationId:Int) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancel(notificationId)
     }
     companion object Channels{
         const val PRIORITY_DEFAULT = "RemindersDefaultChannel"
