@@ -10,6 +10,7 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
@@ -27,7 +28,8 @@ import javax.inject.Inject
 class ToDoViewModel @Inject constructor(
     private val showToast: ShowToast,
     private val toDoRepository: ToDoRepository,
-    private val notifyTaskManager: NotifyTaskManager
+    private val notifyTaskManager: NotifyTaskManager,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 
@@ -87,28 +89,36 @@ class ToDoViewModel @Inject constructor(
         removeDialogState.value = Pair(false,null)
     }
 
-    fun isCompletedToDoVisible() = isCompletedToDoVisible
+    fun isCompletedToDoVisible() = settingsRepository.getCompletedToDoVisible()
 
     fun changeCompletedToDoVisible() {
-        isCompletedToDoVisible.value = !isCompletedToDoVisible.value
+        viewModelScope.launch {
+            settingsRepository.changeCompletedToDoVisible()
+        }
     }
 
-    fun isToDoWithDateVisible() = isToDoWithDateVisible
+    fun isToDoWithDateVisible() = settingsRepository.getToDoWithDateVisible()
 
     fun changeToDoWithDateVisible() {
-        isToDoWithDateVisible.value = !isToDoWithDateVisible.value
+        viewModelScope.launch {
+            settingsRepository.changeToDoWithDateVisible()
+        }
     }
 
-    fun isToDoWithoutDateVisible() = isToDoWithoutDateVisible
+    fun isToDoWithoutDateVisible() = settingsRepository.getToDoWithoutDateVisible()
 
     fun changeToDoWithoutDateVisible() {
-        isToDoWithoutDateVisible.value = !isToDoWithoutDateVisible.value
+        viewModelScope.launch {
+            settingsRepository.changeToDoWithoutDateVisible()
+        }
     }
 
-    fun isMissedToDoVisible() = isMissedToDoVisible
+    fun isMissedToDoVisible() = settingsRepository.getMissedToDoVisible()
 
     fun changeMissedToDoVisible() {
-        isMissedToDoVisible.value = !isMissedToDoVisible.value
+        viewModelScope.launch {
+            settingsRepository.changeMissedToDoVisible()
+        }
     }
 
     fun getNotifyEnableStatus() = isCurrentNotifyEnable

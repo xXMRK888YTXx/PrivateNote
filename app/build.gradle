@@ -95,4 +95,7 @@ dependencies {
     implementation "me.saket.swipe:swipe:1.0.0"
     //pager
     implementation "com.google.accompanist:accompanist-pager:0.26.1-alpha"
+    //JP DataStore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 }

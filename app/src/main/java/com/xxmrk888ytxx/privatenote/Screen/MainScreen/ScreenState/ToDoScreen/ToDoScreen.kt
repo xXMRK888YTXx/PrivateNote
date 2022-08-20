@@ -218,18 +218,10 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
 @Composable
 fun ToDoList(toDoViewModel: ToDoViewModel) {
     val toDoList = toDoViewModel.getToDoList().collectAsState(listOf())
-    val isCompletedToDoVisible = remember {
-        toDoViewModel.isCompletedToDoVisible()
-    }
-    val isToDoWithDateVisible = remember {
-        toDoViewModel.isToDoWithDateVisible()
-    }
-    val isToDoWithoutDateVisible = remember {
-        toDoViewModel.isToDoWithoutDateVisible()
-    }
-    val isMissedToDoVisible = remember {
-        toDoViewModel.isMissedToDoVisible()
-    }
+    val isCompletedToDoVisible = toDoViewModel.isCompletedToDoVisible().collectAsState(true)
+    val isToDoWithDateVisible = toDoViewModel.isToDoWithDateVisible().collectAsState(true)
+    val isToDoWithoutDateVisible = toDoViewModel.isToDoWithoutDateVisible().collectAsState(true)
+    val isMissedToDoVisible =  toDoViewModel.isMissedToDoVisible().collectAsState(true)
     val categoryList = listOf<TodoCategory>(
         TodoCategory(
             categoryName = stringResource(R.string.Overdue),

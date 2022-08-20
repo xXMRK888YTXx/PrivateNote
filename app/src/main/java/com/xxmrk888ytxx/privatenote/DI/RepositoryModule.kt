@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.DI
 
+import android.content.Context
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
@@ -10,11 +11,14 @@ import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepositoryImpl
 import com.xxmrk888ytxx.privatenote.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NotifyTaskRepository.NotifyTaskRepositoryImpl
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepositoryImpl
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -55,5 +59,11 @@ class RepositoryModule {
     @Singleton
     fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao) : NotifyTaskRepository {
         return NotifyTaskRepositoryImpl(notifyTaskDao)
+    }
+
+    @Provides
+    @Singleton
+    fun getSettingsRepositoryImpl(@ApplicationContext context:Context ) : SettingsRepository {
+        return SettingsRepositoryImpl(context)
     }
 }
