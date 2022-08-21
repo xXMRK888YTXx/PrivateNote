@@ -79,4 +79,6 @@
     <string name="No_date">НЕТ ДАТЫ</string>
     <string name="Completed">ВЫПОЛНЕНЫЕ</string>
     <string name="Remove_this_todo">Удалить задачу?</string>
+    <string name="Settings">Настройки</string>
+    <string name="Chose_client">Выберете клиент</string>
 </resources>

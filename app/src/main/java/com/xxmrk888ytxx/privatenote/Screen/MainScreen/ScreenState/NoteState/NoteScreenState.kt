@@ -38,10 +38,10 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
+import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode.SelectionScreenMode
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoDialog.YesNoDialog
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY

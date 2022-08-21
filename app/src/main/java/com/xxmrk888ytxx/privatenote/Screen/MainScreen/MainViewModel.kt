@@ -1,22 +1,21 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton.FloatButtonController
-import com.xxmrk888ytxx.privatenote.Utils.Const.FLOAT_BUTTON_KEY
+import com.xxmrk888ytxx.privatenote.MultiUse.FloatButton.FloatButtonController
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Utils.Const.SEARCH_BUTTON_KEY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val settingsRepository: SettingsRepository
 ) : ViewModel(),MainScreenController,FloatButtonController {
 
     @OptIn(ExperimentalPagerApi::class)
@@ -68,5 +67,13 @@ class MainViewModel @Inject constructor(
     override fun isEnable(): MutableState<Boolean> {
         return isFloatButtonEnable
     }
+
+    fun toSettingsScreen(navController: NavController) {
+        navController.navigate(Screen.SettingsScreen.route) {
+            launchSingleTop = true
+        }
+    }
+
+    fun getNavigationSwipeState() = settingsRepository.getNavigationSwipeState()
 
 }

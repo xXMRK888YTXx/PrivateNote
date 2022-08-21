@@ -6,4 +6,5 @@ object Const {
     const val CHOSEN_ONLY = -1
     const val SEARCH_BUTTON_KEY = 0
     const val FLOAT_BUTTON_KEY = 1
+    const val DEVELOPER_EMAIL = "xxmrk888ytxx.rlc@gmail.com"
 }

@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
+package com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import kotlinx.coroutines.flow.Flow

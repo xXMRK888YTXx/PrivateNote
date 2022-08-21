@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoDialog
+package com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,10 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
-import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.editNoteViewModel
 import com.xxmrk888ytxx.privatenote.ui.theme.CardNoteColor
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor

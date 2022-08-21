@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
+import com.xxmrk888ytxx.privatenote.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.SplashScreen.route) {SplashScreen(navController)}
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
                     composable(Screen.EditNoteScreen.route) {EditNoteScreen(navController = navController)}
+                    composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
                 }
             }
         }

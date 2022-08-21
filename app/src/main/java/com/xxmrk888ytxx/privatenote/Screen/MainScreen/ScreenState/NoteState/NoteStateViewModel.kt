@@ -12,7 +12,7 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.Screen.Screen

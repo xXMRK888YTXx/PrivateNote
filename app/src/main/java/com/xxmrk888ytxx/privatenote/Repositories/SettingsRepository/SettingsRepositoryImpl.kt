@@ -23,6 +23,7 @@ class SettingsRepositoryImpl (
     private val completedToDoVisible = booleanPreferencesKey("CompletedToDoVisible")
     private val toDoWithoutDateVisible = booleanPreferencesKey("ToDoWithoutDateVisible")
     private val missedToDoVisible = booleanPreferencesKey("MissedToDoVisible")
+    private val navigationSwipeState = booleanPreferencesKey("NavigationSwipeState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -73,6 +74,18 @@ class SettingsRepositoryImpl (
         val currentState = getMissedToDoVisible()
         context.dataStore.edit {
             it[missedToDoVisible] = !currentState.first()
+        }
+    }
+
+    override fun getNavigationSwipeState(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
+        return@runBlocking context.dataStore.data.map {
+            it[navigationSwipeState] ?: true
+        }
+    }
+
+    override suspend fun setNavigationSwipeState(state: Boolean) {
+        context.dataStore.edit {
+            it[navigationSwipeState] = state
         }
     }
 }

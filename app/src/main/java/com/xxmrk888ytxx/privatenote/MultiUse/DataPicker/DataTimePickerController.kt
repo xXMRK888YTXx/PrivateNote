@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker
+package com.xxmrk888ytxx.privatenote.MultiUse.DataPicker
 
 interface DataTimePickerController {
     fun onComplete(time:Long)

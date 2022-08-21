@@ -14,8 +14,8 @@ import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepo
 import com.xxmrk888ytxx.privatenote.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePicker
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker.DataTimePickerController
+import com.xxmrk888ytxx.privatenote.MultiUse.DataPicker.DataTimePicker
+import com.xxmrk888ytxx.privatenote.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.secondToData

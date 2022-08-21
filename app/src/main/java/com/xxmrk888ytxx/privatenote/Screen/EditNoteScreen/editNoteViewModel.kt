@@ -14,7 +14,7 @@ import com.xxmrk888ytxx.privatenote.LifeCycleState
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils

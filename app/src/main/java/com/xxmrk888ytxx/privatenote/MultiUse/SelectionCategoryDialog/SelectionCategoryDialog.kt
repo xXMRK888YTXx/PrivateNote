@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse
+package com.xxmrk888ytxx.privatenote.MultiUse
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Utils.getColor
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor

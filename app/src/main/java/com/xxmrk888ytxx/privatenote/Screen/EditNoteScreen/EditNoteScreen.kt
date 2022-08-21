@@ -36,7 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.SelectionCategoryDialog
+import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId

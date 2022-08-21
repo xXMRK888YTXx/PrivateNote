@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,22 +9,21 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton.FloatButton
+import com.xxmrk888ytxx.privatenote.MultiUse.FloatButton.FloatButton
 import com.xxmrk888ytxx.privatenote.Utils.Const.SEARCH_BUTTON_KEY
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
@@ -41,6 +39,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
     val toolbarState = remember {
         mainViewModel.getShowToolBarStatus()
     }
+    val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = { FloatButton(mainViewModel,navController) },
@@ -51,11 +50,11 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
             modifier = Modifier.fillMaxSize()
         ) {
             if (toolbarState.value) {
-                TopNavigationBar(mainViewModel)
+                TopNavigationBar(mainViewModel,navController)
             }
             HorizontalPager(count = 2,
                 state = state.value,
-                userScrollEnabled = false
+                userScrollEnabled = navigationSwipeState.value
             ) {
                 when(it) {
                      MainScreenState.NoteScreen.id -> {
@@ -73,7 +72,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun TopNavigationBar(mainViewModel: MainViewModel) {
+fun TopNavigationBar(mainViewModel: MainViewModel,navController: NavController) {
     val state = remember {
         mainViewModel.screenState
     }
@@ -91,7 +90,9 @@ fun TopNavigationBar(mainViewModel: MainViewModel) {
                 mainViewModel.changeScreenState(MainScreenState.ToDoScreen)
             }
         },
-        NavigationIconItem(R.drawable.ic_settings, isNavigation = false){},
+        NavigationIconItem(R.drawable.ic_settings, isNavigation = false){
+             mainViewModel.toSettingsScreen(navController)
+        },
         NavigationIconItem(R.drawable.ic_baseline_search_24,
             isNavigation = false,
             isVisible = state.value.currentPage == MainScreenState.NoteScreen.id

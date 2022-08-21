@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse.FloatButton
+package com.xxmrk888ytxx.privatenote.MultiUse.FloatButton
 
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.size
@@ -11,8 +11,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
-import com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.NoteState.NoteStateViewModel
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 

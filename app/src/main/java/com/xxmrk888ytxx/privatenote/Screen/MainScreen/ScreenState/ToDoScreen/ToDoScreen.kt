@@ -1,12 +1,10 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,7 +16,6 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -37,13 +34,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoButtons.YesNoButton
-import com.xxmrk888ytxx.privatenote.Screen.MultiUse.YesNoDialog.YesNoDialog
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoButtons.YesNoButton
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
-import me.saket.swipe.rememberSwipeableActionsState
 
 @Composable
 fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenController: MainScreenController) {
@@ -469,12 +465,10 @@ fun TopLabel(toDoViewModel: ToDoViewModel) {
     val subtext = if(todo.isEmpty()) stringResource(R.string.all_task_complited) else
           "${todo.size} ${stringResource(R.string.Tasks_left)}"
     Column(modifier = Modifier.padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
-        Text(text = "Все задачи",
+        Text(text = "Мои задачи",
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
             color = PrimaryFontColor,
-            modifier = Modifier.clickable {
-            }
         )
         Text(
             text = subtext,

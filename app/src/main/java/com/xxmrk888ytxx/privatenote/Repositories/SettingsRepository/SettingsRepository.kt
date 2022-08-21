@@ -18,4 +18,8 @@ interface SettingsRepository {
     fun getMissedToDoVisible() : Flow<Boolean>
 
     suspend fun changeMissedToDoVisible()
+
+    fun getNavigationSwipeState() : Flow<Boolean>
+
+    suspend fun setNavigationSwipeState(state:Boolean)
 }

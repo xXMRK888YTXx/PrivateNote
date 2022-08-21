@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Screen.MultiUse.DataPicker
+package com.xxmrk888ytxx.privatenote.MultiUse.DataPicker
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
