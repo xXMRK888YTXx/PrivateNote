@@ -22,8 +22,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import kotlinx.coroutines.delay
@@ -58,7 +60,9 @@ fun Splash(alpha:Float) {
         Image(
             painter = painterResource(R.drawable.ic_main_note_icon),
             contentDescription = "note",
-            modifier = Modifier.size(175.dp).alpha(alpha),
+            modifier = Modifier
+                .size(175.dp)
+                .alpha(alpha),
         )
     }
 }

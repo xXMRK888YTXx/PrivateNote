@@ -62,7 +62,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                         tint = PrimaryFontColor,
                         modifier = Modifier.padding(10.dp)
                     )
-                    Text(text = stringResource(R.string.Remove_from_category),
+                    Text(text = stringResource(R.string.Without_category),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = PrimaryFontColor.copy(0.75f),

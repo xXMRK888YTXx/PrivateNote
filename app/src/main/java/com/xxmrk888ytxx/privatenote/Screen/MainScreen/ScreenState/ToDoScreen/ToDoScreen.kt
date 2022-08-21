@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -210,7 +212,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ToDoList(toDoViewModel: ToDoViewModel) {
     val toDoList = toDoViewModel.getToDoList().collectAsState(listOf())
@@ -288,78 +290,113 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             )
         }
     )
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth()
+    AnimatedVisibility(visible = toDoList.value.isNotEmpty(),
+        enter = slideInVertically(),
+        exit = slideOutVertically()
     ) {
-        categoryList.forEach { category ->
-            val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
-            itemsIndexed(sortedList, key = { _, it ->
-                it.id
-            }) { index, it ->
-                val annotatedLabelString = buildAnnotatedString {
-                    append(category.categoryName)
-                    if (category.visible)
-                        appendInlineContent("visible")
-                    else appendInlineContent("invisible")
-                }
-                if (index == 0) {
-                    Text(
-                        text = annotatedLabelString,
-                        inlineContent = inlineContentMap,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = PrimaryFontColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateItemPlacement()
-                            .clickable {
-                                category.onVisibleChange()
-                            }
-                            .padding(start = 15.dp, top = 0.dp, bottom = 0.dp)
-                    )
-                }
-                if (category.visible) {
-                    val removeSwipeAction = SwipeAction(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_backet),
-                                contentDescription = "",
-                                tint = PrimaryFontColor,
-                                modifier = Modifier.padding(start = 50.dp)
-                            )
-                        },
-                        background = DeleteOverSwapColor,
-                        onSwipe = {
-                            toDoViewModel.showRemoveDialog(it.id)
-                        },
-                        isUndo = true
-                    )
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
-                            .clickable(
-                                enabled = !it.isCompleted
-                            ) {
-                                toDoViewModel.toEditToDoState(it)
-                            }
-                            .animateItemPlacement(),
-                        shape = RoundedCornerShape(15),
-                        backgroundColor = CardNoteColor
-                    ) {
-                        SwipeableActionsBox(
-                            startActions = listOf(removeSwipeAction),
-                            endActions = listOf(removeSwipeAction),
-                            backgroundUntilSwipeThreshold = Color.Transparent,
-                            swipeThreshold = 90.dp
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            categoryList.forEach { category ->
+                val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
+                itemsIndexed(sortedList, key = { _, it ->
+                    it.id
+                }) { index, it ->
+                    val annotatedLabelString = buildAnnotatedString {
+                        append(category.categoryName)
+                        if (category.visible)
+                            appendInlineContent("visible")
+                        else appendInlineContent("invisible")
+                    }
+                    if (index == 0) {
+                        Text(
+                            text = annotatedLabelString,
+                            inlineContent = inlineContentMap,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = PrimaryFontColor,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItemPlacement()
+                                .clickable {
+                                    category.onVisibleChange()
+                                }
+                                .padding(start = 15.dp, top = 0.dp, bottom = 0.dp)
+                        )
+                    }
+                    if (category.visible) {
+                        val removeSwipeAction = SwipeAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_backet),
+                                    contentDescription = "",
+                                    tint = PrimaryFontColor,
+                                    modifier = Modifier.padding(start = 50.dp)
+                                )
+                            },
+                            background = DeleteOverSwapColor,
+                            onSwipe = {
+                                toDoViewModel.showRemoveDialog(it.id)
+                            },
+                            isUndo = true
+                        )
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .clickable(
+                                    enabled = !it.isCompleted
+                                ) {
+                                    toDoViewModel.toEditToDoState(it)
+                                }
+                                .animateItemPlacement(),
+                            shape = RoundedCornerShape(15),
+                            backgroundColor = CardNoteColor
                         ) {
-                            ToDoItem(it, toDoViewModel)
-                        }
+                            SwipeableActionsBox(
+                                startActions = listOf(removeSwipeAction),
+                                endActions = listOf(removeSwipeAction),
+                                backgroundUntilSwipeThreshold = Color.Transparent,
+                                swipeThreshold = 90.dp
+                            ) {
+                                ToDoItem(it, toDoViewModel)
+                            }
 
+                        }
                     }
                 }
             }
         }
+    }
+    AnimatedVisibility(visible = toDoList.value.isEmpty(),
+        enter = scaleIn(),
+        exit = scaleOut()
+    ) {
+        ToDoStub()
+    }
+
+}
+@Composable
+fun ToDoStub() {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(painter = painterResource(R.drawable.ic_todo_icon),
+            contentDescription = "",
+            tint = PrimaryFontColor,
+            modifier = Modifier.size(100.dp)
+        )
+        Text(text = stringResource(R.string.Todo_stub_text),
+            fontSize = 20.sp,
+            fontStyle = FontStyle.Italic,
+            fontWeight = FontWeight.Medium,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }
 

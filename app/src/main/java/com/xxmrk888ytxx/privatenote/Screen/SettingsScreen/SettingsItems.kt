@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,7 +39,36 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Переключение свайпом\nмежду экранами",
+            text = stringResource(R.string.NavigationSwipeState),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Switch(
+                checked = currentState.value,
+                onCheckedChange = {
+                    onChangeState(it)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = FloatingButtonColor,
+                    uncheckedThumbColor = SecondoryFontColor
+                ),
+            )
+        }
+    }
+}
+
+@Composable
+fun SplashScreenSettings(currentState: State<Boolean>,
+                         onChangeState:(state:Boolean) -> Unit) {
+    Row(Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.SplashScreenVisibleState),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
             color = PrimaryFontColor,
@@ -66,7 +96,7 @@ fun AppVersion() {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Версия приложения",
+            text = stringResource(R.string.App_Version),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
             color = PrimaryFontColor,
@@ -92,7 +122,7 @@ fun Email(onSend:() -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = "Написать\nразработчику",
+            text = stringResource(R.string.Write_developer),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
             color = PrimaryFontColor,
@@ -102,6 +132,53 @@ fun Email(onSend:() -> Unit) {
         ) {
             Text(
                 text = DEVELOPER_EMAIL,
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = SecondoryFontColor,
+            )
+        }
+    }
+}
+
+@Composable
+fun AboutMainDeveloper_Me() {
+    Row(Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.Main_Developer),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Text(
+                text = stringResource(R.string.xXMRK888YTXx),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = SecondoryFontColor,
+            )
+        }
+    }
+}
+@Composable
+fun AboutSubDeveloper() {
+    Row(Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.Design_assistant),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Text(
+                text = stringResource(R.string.xXKoksMenXx),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 color = SecondoryFontColor,

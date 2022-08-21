@@ -39,6 +39,9 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
     val toolbarState = remember {
         mainViewModel.getShowToolBarStatus()
     }
+    val getScrollBetweenScreenEnabled = remember {
+        mainViewModel.getScrollBetweenScreenEnabled()
+    }
     val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -54,7 +57,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
             }
             HorizontalPager(count = 2,
                 state = state.value,
-                userScrollEnabled = navigationSwipeState.value
+                userScrollEnabled = navigationSwipeState.value && getScrollBetweenScreenEnabled.value
             ) {
                 when(it) {
                      MainScreenState.NoteScreen.id -> {

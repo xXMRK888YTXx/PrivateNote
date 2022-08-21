@@ -26,6 +26,12 @@ class MainViewModel @Inject constructor(
 
     private val isFloatButtonEnable = mutableStateOf(true)
 
+    //отвечает за то доступен ли скрол в данном состоянии приложении, имеет силу только при включённом
+    // параметре NavigationSwipeState
+    private val isScrollBetweenScreenEnabled = mutableStateOf(true)
+
+    fun getScrollBetweenScreenEnabled() = isScrollBetweenScreenEnabled
+
     private var onClickFloatButton:MutableMap<Int,(navController: NavController) -> Unit> = mutableMapOf()
 
     fun getShowToolBarStatus() = topBarVisibleStatus
@@ -56,6 +62,10 @@ class MainViewModel @Inject constructor(
 
     override fun changeEnableFloatButtonStatus(enable: Boolean) {
         isFloatButtonEnable.value = enable
+    }
+
+    override fun changeScrollBetweenScreenState(state: Boolean) {
+        isScrollBetweenScreenEnabled.value = state
     }
 
     @OptIn(ExperimentalPagerApi::class)

@@ -48,7 +48,18 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
     val context = LocalContext.current
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
-            "Навигация",
+            stringResource(R.string.General),
+            listOf {
+                SplashScreenSettings(
+                    settingsViewModel.getSplashScreenVisible().collectAsState(true),
+                    onChangeState = {
+                        settingsViewModel.changeSplashScreenVisible(it)
+                    }
+                )
+            }
+        ),
+        SettingsCategory(
+            stringResource(R.string.Navigation),
             listOf {
                 ScrollWithScreenSettings(settingsViewModel.getNavigationSwipeState().collectAsState(
                     initial = true
@@ -59,7 +70,8 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                 )
             },
         ),
-        SettingsCategory("О приложении",
+        SettingsCategory(
+                    stringResource(R.string.About_app),
             listOf(
                 {
                     Email() {
@@ -68,6 +80,12 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                 },
                 {
                     AppVersion()
+                },
+                {
+                    AboutMainDeveloper_Me()
+                },
+                {
+                    AboutSubDeveloper()
                 }
             )
         )
@@ -82,13 +100,13 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                         color = SecondoryFontColor,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 15.dp, bottom = 15.dp)
+                            .padding(start = 15.dp, bottom = 13.dp)
                     )
                 }
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 10.dp, bottom = 10.dp),
+                        .padding(start = 20.dp, end = 10.dp, bottom = 20.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     it()

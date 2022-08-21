@@ -14,11 +14,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
+import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
+import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -29,6 +32,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var LifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
+    @Inject lateinit var settingsRepository: SettingsRepository
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +41,11 @@ class MainActivity : ComponentActivity() {
         restoreTasks()
         setContent {
             val navController = rememberNavController()
-            Scaffold() {
-                NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
+            val startScreen = getStartScreen()
+            Scaffold(
+                backgroundColor = MainBackGroundColor
+            ) {
+                NavHost(navController = navController, startDestination = startScreen.route) {
                     composable(Screen.SplashScreen.route) {SplashScreen(navController)}
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
                     composable(Screen.EditNoteScreen.route) {EditNoteScreen(navController = navController)}
@@ -46,6 +53,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun getStartScreen(): Screen {
+       val state = settingsRepository.getSplashScreenVisibleState()
+        if(state.getData()) return Screen.SplashScreen
+        else return Screen.MainScreen
     }
 
     override fun onResume() {

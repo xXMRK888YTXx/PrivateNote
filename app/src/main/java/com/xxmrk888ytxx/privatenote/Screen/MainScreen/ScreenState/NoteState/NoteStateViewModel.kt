@@ -110,12 +110,14 @@ class NoteStateViewModel @Inject constructor(
     fun toSelectionMode() {
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
         mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeScrollBetweenScreenState(false)
     }
 
     fun toDefaultMode() {
         currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
         mainScreenController?.changeTopBarVisibleStatus(true)
+        mainScreenController?.changeScrollBetweenScreenState(true)
     }
 
     private val selectedNoteList = mutableSetOf<Int>()
@@ -165,6 +167,7 @@ class NoteStateViewModel @Inject constructor(
     fun toSearchMode() {
         currentNoteMode.value = NoteScreenMode.SearchScreenMode
         mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeScrollBetweenScreenState(false)
     }
     val lastNoteCount = mutableStateOf(0)
     get() = field
@@ -186,15 +189,15 @@ class NoteStateViewModel @Inject constructor(
 
     fun getAllCategory() = categoryRepository.getAllCategory()
 
-    fun getNoteRepository() = noteRepository
-
     fun showCategoryList() {
         mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeScrollBetweenScreenState(false)
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
         mainScreenController?.changeTopBarVisibleStatus(true)
+        mainScreenController?.changeScrollBetweenScreenState(true)
         currentNoteMode.value = NoteScreenMode.Default
         showEditCategoryDialog.value = Pair(false,null)
     }

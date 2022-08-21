@@ -8,4 +8,5 @@ interface MainScreenController {
     fun searchButtonOnClick()
     fun setFloatButtonOnClickListener(screenKey:Int,onClick: (navController: NavController) -> Unit)
     fun changeEnableFloatButtonStatus(enable:Boolean)
+    fun changeScrollBetweenScreenState(state:Boolean)
 }

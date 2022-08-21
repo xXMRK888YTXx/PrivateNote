@@ -53,7 +53,7 @@
     <string name="has_been_deleted">была удалена</string>
     <string name="Ok">Ок</string>
     <string name="edit">Редактировать</string>
-    <string name="Remove_from_category">Удалить из категории</string>
+    <string name="Without_category">Без категории</string>
     <string name="Sorry_but_is_empty">К сожалению, здесь пусто</string>
     <string name="Add_category">Добавить категорию</string>
     <string name="move_time_delete">Время выполнения удалено</string>
@@ -81,4 +81,17 @@
     <string name="Remove_this_todo">Удалить задачу?</string>
     <string name="Settings">Настройки</string>
     <string name="Chose_client">Выберете клиент</string>
+    <string name="Todo_stub_text">Задач пока нет,но вы можете это исправить.</string>
+    <string name="Add_in">Добавить в</string>
+    <string name="General">Общее</string>
+    <string name="Navigation">Навигация</string>
+    <string name="About_app">О приложении</string>
+    <string name="NavigationSwipeState">Переключение свайпом\nмежду экранами</string>
+    <string name="SplashScreenVisibleState">Показывать анимацию при входе</string>
+    <string name="App_Version">Версия приложения</string>
+    <string name="Write_developer">Написать\nразработчику</string>
+    <string name="Main_Developer">Главный разработчик</string>
+    <string name="xXMRK888YTXx">xXMRK888YTXx</string>
+    <string name="Design_assistant">Помощник по дизайну</string>
+    <string name="xXKoksMenXx">xXKoksMenXx</string>
 </resources>

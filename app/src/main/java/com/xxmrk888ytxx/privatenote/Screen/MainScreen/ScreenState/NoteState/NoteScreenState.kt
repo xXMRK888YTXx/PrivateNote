@@ -254,7 +254,7 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
             noteStateViewModel.addInChosenSelected()
         },
         SelectionBarItem(
-            title = "Добавить в",
+            title = stringResource(R.string.Add_in),
             icon = R.drawable.ic_add_category,
             enable = isSelectedItemNotEmpty.value,
             closeAfterClick = false,

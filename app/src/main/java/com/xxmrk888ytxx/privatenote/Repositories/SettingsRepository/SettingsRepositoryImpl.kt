@@ -24,6 +24,7 @@ class SettingsRepositoryImpl (
     private val toDoWithoutDateVisible = booleanPreferencesKey("ToDoWithoutDateVisible")
     private val missedToDoVisible = booleanPreferencesKey("MissedToDoVisible")
     private val navigationSwipeState = booleanPreferencesKey("NavigationSwipeState")
+    private val splashScreenVisibleState = booleanPreferencesKey("SplashScreenVisibleState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -86,6 +87,18 @@ class SettingsRepositoryImpl (
     override suspend fun setNavigationSwipeState(state: Boolean) {
         context.dataStore.edit {
             it[navigationSwipeState] = state
+        }
+    }
+
+    override fun getSplashScreenVisibleState(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
+        return@runBlocking context.dataStore.data.map {
+            it[splashScreenVisibleState] ?: true
+        }
+    }
+
+    override suspend fun setSplashScreenVisibleState(state: Boolean) {
+        context.dataStore.edit {
+            it[splashScreenVisibleState] = state
         }
     }
 }

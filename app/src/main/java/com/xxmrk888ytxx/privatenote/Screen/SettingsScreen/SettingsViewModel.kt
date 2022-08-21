@@ -32,6 +32,14 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun getSplashScreenVisible() = settingsRepository.getSplashScreenVisibleState()
+
+    fun changeSplashScreenVisible(state: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setSplashScreenVisibleState(state)
+        }
+    }
+
     fun openEmailClient(context: Context) {
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$DEVELOPER_EMAIL"))
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.Chose_client)))

@@ -22,4 +22,8 @@ interface SettingsRepository {
     fun getNavigationSwipeState() : Flow<Boolean>
 
     suspend fun setNavigationSwipeState(state:Boolean)
+
+    fun getSplashScreenVisibleState() : Flow<Boolean>
+
+    suspend fun setSplashScreenVisibleState(state: Boolean)
 }
