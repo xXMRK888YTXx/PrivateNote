@@ -272,7 +272,7 @@ class editNoteViewModel @Inject constructor(
             textField.value = inputHistoryManager.getRedo()
             checkHistoryState()
         }catch (e:IndexOutOfBoundsException) {
-            showToast.showToast("Ошибка отката теста")
+            showToast.showToast(R.string.Text_rollback_error)
         }
     }
     //перемещает указатель истории изменений назад
@@ -281,7 +281,7 @@ class editNoteViewModel @Inject constructor(
             textField.value = inputHistoryManager.getUndo()
             checkHistoryState()
         }catch (e:IndexOutOfBoundsException) {
-            showToast.showToast("Ошибка отката теста")
+            showToast.showToast(R.string.Text_rollback_error)
         }
     }
     //добавление изменений в историю

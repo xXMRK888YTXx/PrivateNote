@@ -38,6 +38,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
+import com.xxmrk888ytxx.privatenote.Utils.fillList
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import me.saket.swipe.SwipeAction
@@ -215,7 +216,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ToDoList(toDoViewModel: ToDoViewModel) {
-    val toDoList = toDoViewModel.getToDoList().collectAsState(listOf())
+    val toDoList = toDoViewModel.getToDoList().collectAsState(toDoViewModel.cachedToDoList)
     val isCompletedToDoVisible = toDoViewModel.isCompletedToDoVisible().collectAsState(true)
     val isToDoWithDateVisible = toDoViewModel.isToDoWithDateVisible().collectAsState(true)
     val isToDoWithoutDateVisible = toDoViewModel.isToDoWithoutDateVisible().collectAsState(true)
@@ -374,12 +375,17 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     ) {
         ToDoStub()
     }
+    SideEffect {
+        toDoViewModel.cachedToDoList = toDoList.value
+    }
 
 }
 @Composable
 fun ToDoStub() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 100.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -502,7 +508,7 @@ fun TopLabel(toDoViewModel: ToDoViewModel) {
     val subtext = if(todo.isEmpty()) stringResource(R.string.all_task_complited) else
           "${todo.size} ${stringResource(R.string.Tasks_left)}"
     Column(modifier = Modifier.padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
-        Text(text = "Мои задачи",
+        Text(text = stringResource(R.string.My_tasks),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
             color = PrimaryFontColor,

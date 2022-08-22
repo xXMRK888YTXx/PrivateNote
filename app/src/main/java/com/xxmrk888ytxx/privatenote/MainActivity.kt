@@ -1,13 +1,13 @@
 package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
-import android.app.NotificationManager
-import android.content.Intent
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,12 +20,16 @@ import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.setAppLocale
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -37,6 +41,18 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val languageCode = settingsRepository.getAppLanguage().getData()
+        if(languageCode != SYSTEM_LANGUAGE_CODE) {
+            val locale = Locale(languageCode)
+            Locale.setDefault(locale)
+            val config = Configuration()
+            config.locale = locale
+            baseContext.resources.updateConfiguration(
+                config,
+                baseContext.resources.displayMetrics
+            )
+        }
+
         notificationManager.createNotificationChannels()
         restoreTasks()
         setContent {
@@ -76,7 +92,7 @@ class MainActivity : ComponentActivity() {
     }
 
     fun restoreTasks() {
-        lifecycleScope.launch{
+        lifecycleScope.launch {
             notifyTaskManager.checkForOld()
             notifyTaskManager.sendNextTask()
         }

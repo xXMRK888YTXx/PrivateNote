@@ -5,7 +5,9 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +27,7 @@ class SettingsRepositoryImpl (
     private val missedToDoVisible = booleanPreferencesKey("MissedToDoVisible")
     private val navigationSwipeState = booleanPreferencesKey("NavigationSwipeState")
     private val splashScreenVisibleState = booleanPreferencesKey("SplashScreenVisibleState")
+    private val appLanguage = stringPreferencesKey("AppLanguage")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -99,6 +102,18 @@ class SettingsRepositoryImpl (
     override suspend fun setSplashScreenVisibleState(state: Boolean) {
         context.dataStore.edit {
             it[splashScreenVisibleState] = state
+        }
+    }
+
+    override fun getAppLanguage(): Flow<String> = runBlocking(Dispatchers.IO) {
+       return@runBlocking  context.dataStore.data.map {
+            it[appLanguage] ?: SYSTEM_LANGUAGE_CODE
+        }
+    }
+
+    override suspend fun setAppLanguage(languageCode: String) {
+        context.dataStore.edit {
+            it[appLanguage] = languageCode
         }
     }
 }

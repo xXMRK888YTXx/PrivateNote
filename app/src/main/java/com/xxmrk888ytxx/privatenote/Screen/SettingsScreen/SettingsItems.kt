@@ -1,16 +1,11 @@
 package com.xxmrk888ytxx.privatenote.Screen.SettingsScreen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.Icon
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,10 +19,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.BuildConfig
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
+import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
 
@@ -116,9 +114,12 @@ fun AppVersion() {
 
 @Composable
 fun Email(onSend:() -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable {
-         onSend()
-    },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                onSend()
+            },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -183,6 +184,92 @@ fun AboutSubDeveloper() {
                 fontSize = 16.sp,
                 color = SecondoryFontColor,
             )
+        }
+    }
+}
+
+@Composable
+fun LanguageChose(currentLanguage:State<String>,onShowLanguageDialog: () -> Unit) {
+        Row(Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = stringResource(R.string.Language),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        val annotatedLabelString = buildAnnotatedString {
+            append(getLanguageName(currentLanguage.value))
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        Text(text = annotatedLabelString,
+            inlineContent = inlineContentMap,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowLanguageDialog()
+                }
+        )
+
+    }
+}
+
+@Composable
+fun LanguageChoseDialog(
+    languageList:List<LanguageItem>,
+    currentSelected:MutableState<String>,
+    onNewSelected:(languageCode:String) -> Unit,
+    onCancel:() -> Unit,
+    onComplete:() -> Unit
+) {
+    Dialog(onDismissRequest = {
+        onCancel()
+    }) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(MainBackGroundColor)) {
+            languageList.forEach {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onNewSelected(it.languageCode)
+                        }
+                ) {
+                    RadioButton(selected = currentSelected.value == it.languageCode ,
+                        onClick = { onNewSelected(it.languageCode) },
+                        colors = RadioButtonDefaults.colors(
+                            selectedColor = PrimaryFontColor,
+                            unselectedColor =PrimaryFontColor
+                        ),
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
+                    Text(text = it.name,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = PrimaryFontColor.copy(0.75f),
+                        modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                    )
+                }
+            }
+            YesNoButton(onCancel = { onCancel() }) {
+                onComplete()
+            }
         }
     }
 }

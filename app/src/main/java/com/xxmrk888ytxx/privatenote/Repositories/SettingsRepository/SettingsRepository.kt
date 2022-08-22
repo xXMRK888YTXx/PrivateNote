@@ -26,4 +26,8 @@ interface SettingsRepository {
     fun getSplashScreenVisibleState() : Flow<Boolean>
 
     suspend fun setSplashScreenVisibleState(state: Boolean)
+
+    fun getAppLanguage() : Flow<String>
+
+    suspend fun setAppLanguage(languageCode:String)
 }

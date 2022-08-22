@@ -645,7 +645,7 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
         val icon = if(category.value != null) painterResource(R.drawable.ic_category_icon)
         else painterResource(R.drawable.ic_add_category)
         val categoryName = buildAnnotatedString {
-            append(category.value?.categoryName ?: "Без категории")
+            append(category.value?.categoryName ?: stringResource(R.string.Without_category))
             appendInlineContent("drop_down_triangle")
         }
         val inlineContentMap = mapOf(
@@ -662,18 +662,22 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
         Icon(painter = icon,
             contentDescription = "",
             tint = iconColor,
-            modifier = Modifier.padding(start = 10.dp,end = 8.dp).clickable {
-                editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
-            }
+            modifier = Modifier
+                .padding(start = 10.dp, end = 8.dp)
+                .clickable {
+                    editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
+                }
         )
         Text(text = categoryName,
             inlineContent = inlineContentMap,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
             color = PrimaryFontColor.copy(0.75f),
-            modifier = Modifier.padding(top = 15.dp, bottom = 15.dp).clickable {
-                editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
-            }
+            modifier = Modifier
+                .padding(top = 15.dp, bottom = 15.dp)
+                .clickable {
+                    editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
+                }
         )
     }
 }

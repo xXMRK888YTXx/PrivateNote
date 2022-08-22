@@ -79,6 +79,8 @@ class ToDoViewModel @Inject constructor(
 
     private val removeDialogState = mutableStateOf(Pair<Boolean,Int?>(false,null))
 
+    var cachedToDoList:List<ToDoItem> = listOf()
+
     fun isRemoveDialogShow() = removeDialogState
 
     fun showRemoveDialog(id:Int) {

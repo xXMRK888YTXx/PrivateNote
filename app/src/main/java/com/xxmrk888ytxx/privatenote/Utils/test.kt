@@ -26,3 +26,6 @@ fun getInt() = GlobalScope.async {
     return@async 1
 }
 
+
+
+

@@ -10,6 +10,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -21,12 +22,21 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
 
 @Composable
 fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navController: NavController) {
+    val languageDialogState = remember {
+        settingsViewModel.getShowLanguageDialogState()
+    }
+    val currentSelectedLanguage = remember {
+        settingsViewModel.getCurrentSelectedLanguage()
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -41,11 +51,21 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
         )
         SettingsList(settingsViewModel)
     }
+    if(languageDialogState.value) {
+        LanguageChoseDialog(
+            languageList = getLanguages(),
+            currentSelected = currentSelectedLanguage,
+            onNewSelected = {settingsViewModel.changeCurrentSelectedLanguage(it) },
+            onCancel = {settingsViewModel.hideLanguageDialog()},
+            onComplete = {settingsViewModel.changeAppLanguage()}
+        )
+    }
 }
 
 @Composable
 fun SettingsList(settingsViewModel: SettingsViewModel) {
     val context = LocalContext.current
+    val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -56,6 +76,12 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                         settingsViewModel.changeSplashScreenVisible(it)
                     }
                 )
+            }
+        ),
+        SettingsCategory(
+            stringResource(R.string.Localization),
+            listOf() {
+                LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
             }
         ),
         SettingsCategory(
@@ -136,4 +162,17 @@ fun TopBar(settingsViewModel: SettingsViewModel,navController: NavController) {
             )
         }
     }
+}
+@Composable
+fun getLanguageName(languageCode:String) : String {
+    return getLanguages().first { it.languageCode == languageCode }.name
+}
+
+@Composable
+fun getLanguages() : List<LanguageItem> {
+    return listOf(
+        LanguageItem(stringResource(R.string.System),SYSTEM_LANGUAGE_CODE),
+        LanguageItem(stringResource(R.string.English),EN_CODE),
+        LanguageItem(stringResource(R.string.Russian),RU_CODE)
+    )
 }

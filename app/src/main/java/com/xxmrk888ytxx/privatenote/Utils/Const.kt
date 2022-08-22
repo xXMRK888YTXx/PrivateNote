@@ -8,3 +8,4 @@ object Const {
     const val FLOAT_BUTTON_KEY = 1
     const val DEVELOPER_EMAIL = "xxmrk888ytxx.rlc@gmail.com"
 }
+

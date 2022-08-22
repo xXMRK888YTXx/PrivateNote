@@ -3,6 +3,8 @@ package com.xxmrk888ytxx.privatenote.Screen.SettingsScreen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,15 +12,56 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
+import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val showToast: ShowToast
 ) : ViewModel() {
+
+    private val showLanguageDialogState = mutableStateOf(false)
+
+    fun getShowLanguageDialogState() = showLanguageDialogState
+
+    private val currentSelectedLanguage:MutableState<String> = mutableStateOf("")
+
+    fun getCurrentSelectedLanguage() = currentSelectedLanguage
+
+    fun changeCurrentSelectedLanguage(languageCode:String) {
+        currentSelectedLanguage.value = languageCode
+    }
+
+    fun showLanguageDialog() {
+        viewModelScope.launch {
+            currentSelectedLanguage.value = getAppLanguage().getData()
+            showLanguageDialogState.value = true
+        }
+
+    }
+
+    fun getAppLanguage() : Flow<String> {
+        return settingsRepository.getAppLanguage()
+    }
+
+    fun hideLanguageDialog() {
+        showLanguageDialogState.value = false
+        currentSelectedLanguage.value = ""
+    }
+
+    fun changeAppLanguage() {
+        viewModelScope.launch {
+            settingsRepository.setAppLanguage(currentSelectedLanguage.value)
+            hideLanguageDialog()
+            showToast.showToast(R.string.Notify_Language_Changed)
+        }
+    }
 
     fun leaveFromSettingScreen(navController: NavController) {
         navController.navigateUp()
