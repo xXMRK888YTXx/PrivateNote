@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -23,12 +24,17 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val showToast: ShowToast
+    private val showToast: ShowToast,
+    private val securityUtils: SecurityUtils
 ) : ViewModel() {
 
     private val showLanguageDialogState = mutableStateOf(false)
 
     fun getShowLanguageDialogState() = showLanguageDialogState
+
+    private val showAppPasswordDialog = mutableStateOf(false)
+
+    fun getShowAppPasswordState() = showAppPasswordDialog
 
     private val currentSelectedLanguage:MutableState<String> = mutableStateOf("")
 
@@ -38,12 +44,23 @@ class SettingsViewModel @Inject constructor(
         currentSelectedLanguage.value = languageCode
     }
 
+    private val currentWarmingPasswordDisableState = mutableStateOf(false)
+
+    fun currentWarmingPasswordDisableState() = currentWarmingPasswordDisableState
+
+    fun showWarmingPasswordDisableDialog() {
+        currentWarmingPasswordDisableState.value = true
+    }
+
+    fun hideWarmingPasswordDisableDialog() {
+        currentWarmingPasswordDisableState.value = false
+    }
+
     fun showLanguageDialog() {
         viewModelScope.launch {
             currentSelectedLanguage.value = getAppLanguage().getData()
             showLanguageDialogState.value = true
         }
-
     }
 
     fun getAppLanguage() : Flow<String> {
@@ -53,6 +70,13 @@ class SettingsViewModel @Inject constructor(
     fun hideLanguageDialog() {
         showLanguageDialogState.value = false
         currentSelectedLanguage.value = ""
+    }
+
+    fun showAppPasswordDialog() {
+        showAppPasswordDialog.value = true
+    }
+    fun hideAppPasswordDialog() {
+        showAppPasswordDialog.value = false
     }
 
     fun changeAppLanguage() {
@@ -86,5 +110,21 @@ class SettingsViewModel @Inject constructor(
     fun openEmailClient(context: Context) {
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$DEVELOPER_EMAIL"))
         context.startActivity(Intent.createChooser(emailIntent, context.getString(R.string.Chose_client)))
+    }
+
+    fun isAppPasswordEnable() = settingsRepository.isAppPasswordEnable()
+
+    fun enableAppPassword(password:String) {
+        viewModelScope.launch {
+            hideAppPasswordDialog()
+            val hashPassword = securityUtils.passwordToHash(password,0)
+            settingsRepository.setupAppPassword(hashPassword)
+        }
+    }
+
+    fun disableAppPassword() {
+        viewModelScope.launch {
+            settingsRepository.removeAppPassword()
+        }
     }
 }

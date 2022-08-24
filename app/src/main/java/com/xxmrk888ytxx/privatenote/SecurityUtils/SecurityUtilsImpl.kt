@@ -28,9 +28,11 @@ class SecurityUtilsImpl : SecurityUtils {
 
     override fun passwordToHash(password:String, limit:Int) : String {
         if(password.isEmpty()) return ""
-        return MessageDigest
+        val text =  MessageDigest
             .getInstance("SHA-256")
             .digest(password.toByteArray())
-            .fold("", { str, it -> str + "%02x".format(it) }).take(limit)
+            .fold("", { str, it -> str + "%02x".format(it) })
+        if(limit > 0) return text.take(limit)
+        else return text
     }
 }

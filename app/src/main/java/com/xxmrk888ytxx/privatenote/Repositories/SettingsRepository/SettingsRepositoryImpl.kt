@@ -28,6 +28,7 @@ class SettingsRepositoryImpl (
     private val navigationSwipeState = booleanPreferencesKey("NavigationSwipeState")
     private val splashScreenVisibleState = booleanPreferencesKey("SplashScreenVisibleState")
     private val appLanguage = stringPreferencesKey("AppLanguage")
+    private val appPassword = stringPreferencesKey("AppId")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -114,6 +115,25 @@ class SettingsRepositoryImpl (
     override suspend fun setAppLanguage(languageCode: String) {
         context.dataStore.edit {
             it[appLanguage] = languageCode
+        }
+    }
+
+    override fun isAppPasswordEnable(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
+        return@runBlocking context.dataStore.data.map {
+            it[appPassword] != null
+        }
+
+    }
+
+    override suspend fun setupAppPassword(password: String) {
+        context.dataStore.edit {
+            it[appPassword] = password
+        }
+    }
+
+    override suspend fun removeAppPassword() {
+        context.dataStore.edit {
+            it.remove(appPassword)
         }
     }
 }

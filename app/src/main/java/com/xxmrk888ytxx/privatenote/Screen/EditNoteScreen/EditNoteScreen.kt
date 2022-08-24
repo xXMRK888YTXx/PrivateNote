@@ -3,12 +3,15 @@ package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,6 +40,7 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
+import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
@@ -343,7 +347,9 @@ fun CryptDialog(editNoteViewModel: editNoteViewModel) {
     Dialog(onDismissRequest = {editNoteViewModel.dialogShowState.value = ShowDialogState.None },
         ) {
         Card(
-            Modifier.fillMaxWidth(),
+            Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             shape = RoundedCornerShape(10)
         ) {
             Column(
@@ -441,27 +447,6 @@ fun RepitPasswordTextEdit(editNoteViewModel: editNoteViewModel, repitPassword:Mu
         ),
         visualTransformation = PasswordVisualTransformation()
     )
-}
-@Composable
-fun WarmingText(text:String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(painter = painterResource(id = R.drawable.ic_error),
-            contentDescription = "Error",
-            tint = Color.Red,
-            modifier = Modifier.padding(end = 10.dp)
-            )
-        Text(text = text,
-                color = PrimaryFontColor,
-            fontSize = 18.sp,
-            fontStyle = FontStyle.Italic,
-            )
-
-    }
 }
 
 @Composable

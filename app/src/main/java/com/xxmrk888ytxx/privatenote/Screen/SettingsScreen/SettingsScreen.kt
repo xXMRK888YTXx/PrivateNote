@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
@@ -34,8 +35,14 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
     val languageDialogState = remember {
         settingsViewModel.getShowLanguageDialogState()
     }
+    val appPasswordDialogState = remember {
+        settingsViewModel.getShowAppPasswordState()
+    }
     val currentSelectedLanguage = remember {
         settingsViewModel.getCurrentSelectedLanguage()
+    }
+    val disablePasswordDialogState = remember {
+        settingsViewModel.currentWarmingPasswordDisableState()
     }
     Column(
         Modifier
@@ -60,6 +67,19 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
             onComplete = {settingsViewModel.changeAppLanguage()}
         )
     }
+    if(appPasswordDialogState.value) {
+        EnterLoginPasswordDialog(
+            onCancel = {settingsViewModel.hideAppPasswordDialog()},
+            onComplete = {settingsViewModel.enableAppPassword(it)}
+        )
+    }
+    if(disablePasswordDialogState.value) {
+        YesNoDialog(title = stringResource(R.string.Warming_disable_app_password),
+            onCancel = { settingsViewModel.hideWarmingPasswordDisableDialog() }) {
+            settingsViewModel.disableAppPassword()
+            settingsViewModel.hideWarmingPasswordDisableDialog()
+        }
+    }
 }
 
 @Composable
@@ -82,6 +102,19 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
             stringResource(R.string.Localization),
             listOf() {
                 LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
+            }
+        ),
+        SettingsCategory(
+            stringResource(R.string.Security),
+            listOf() {
+                SecureLoginSettings(settingsViewModel.isAppPasswordEnable().collectAsState(initial = false))
+                {
+                    if(it) {
+                        settingsViewModel.showAppPasswordDialog()
+                    }else {
+                        settingsViewModel.showWarmingPasswordDisableDialog()
+                    }
+                }
             }
         ),
         SettingsCategory(

@@ -4,8 +4,10 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
     id 'dagger.hilt.android.plugin'
+    id 'com.google.firebase.crashlytics'
 }
 apply plugin: 'kotlin-android-extensions'
+
 android {
     compileSdk 33
 
@@ -81,7 +83,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1")
 
     //firebase
-    implementation platform('com.google.firebase:firebase-bom:30.3.0')
+    implementation platform('com.google.firebase:firebase-bom:30.3.1')
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
     implementation 'com.google.firebase:firebase-analytics'
     //room
     implementation "androidx.room:room-runtime:$room_version"

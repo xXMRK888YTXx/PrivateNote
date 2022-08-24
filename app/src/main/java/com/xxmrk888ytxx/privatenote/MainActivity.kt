@@ -1,13 +1,11 @@
 package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Scaffold
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +20,6 @@ import com.xxmrk888ytxx.privatenote.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
-import com.xxmrk888ytxx.privatenote.Utils.setAppLocale
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +29,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
-    @Inject lateinit var LifecycleState: MutableStateFlow<LifeCycleState>
+class MainActivity : FragmentActivity() {
+    @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
@@ -52,7 +49,6 @@ class MainActivity : ComponentActivity() {
                 baseContext.resources.displayMetrics
             )
         }
-
         notificationManager.createNotificationChannels()
         restoreTasks()
         setContent {
@@ -80,18 +76,18 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch{
-            LifecycleState.emit(LifeCycleState.onResume)
+            lifecycleState.emit(LifeCycleState.onResume)
         }
     }
 
     override fun onPause() {
         super.onPause()
-        lifecycleScope.launch{
-            LifecycleState.emit(LifeCycleState.onPause)
+        lifecycleScope.launch {
+            lifecycleState.emit(LifeCycleState.onPause)
         }
     }
 
-    fun restoreTasks() {
+    private fun restoreTasks() {
         lifecycleScope.launch {
             notifyTaskManager.checkForOld()
             notifyTaskManager.sendNextTask()
