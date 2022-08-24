@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -135,5 +136,12 @@ class SettingsRepositoryImpl (
         context.dataStore.edit {
             it.remove(appPassword)
         }
+    }
+
+    override suspend fun checkAppPassword(enterPassword: String) : Boolean {
+        val password =  context.dataStore.data.map {
+            it[appPassword]
+        }.getData()
+        return password == enterPassword
     }
 }

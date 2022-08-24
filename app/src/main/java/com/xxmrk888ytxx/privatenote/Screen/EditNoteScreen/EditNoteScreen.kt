@@ -38,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
+import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
@@ -473,7 +474,7 @@ fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavControl
                 Modifier.background(MainBackGroundColor)
 
             ) {
-                PasswordTextEdit(titleText,passwordText,)
+                PasswordEditText(titleText,passwordText)
                 if(!isLoad.value) {
                     OutlinedButton(
                         modifier = Modifier
@@ -511,42 +512,6 @@ fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavControl
             }
         }
     }
-}
-//use in decrypt dialog
-@Composable
-fun PasswordTextEdit(titleText:MutableState<String>, password: MutableState<String>) {
-    val context = LocalContext.current
-    OutlinedTextField(value = password.value,
-        onValueChange = {password.value = it;
-                      if(titleText.value == context.getString(R.string.Invalid_password))
-                          titleText.value = context.getString(R.string.Enter_password)
-                        },
-        singleLine = true,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(100))
-            .padding(15.dp),
-        label = { Text(text = titleText.value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
-        },
-        isError = titleText.value == stringResource(id = R.string.Invalid_password),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
-        ),
-        textStyle = TextStyle(fontSize = 16.sp),
-        keyboardOptions = KeyboardOptions(autoCorrect = false,
-            keyboardType = KeyboardType.Password,
-        ),
-        visualTransformation = PasswordVisualTransformation()
-    )
 }
 
 @Composable

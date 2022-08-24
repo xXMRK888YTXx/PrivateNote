@@ -36,4 +36,6 @@ interface SettingsRepository {
     suspend fun setupAppPassword(password:String)
 
     suspend fun removeAppPassword()
+
+    suspend fun  checkAppPassword(enterPassword:String) : Boolean
 }

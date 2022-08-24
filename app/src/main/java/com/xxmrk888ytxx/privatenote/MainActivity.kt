@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
+import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
@@ -34,6 +35,8 @@ class MainActivity : FragmentActivity() {
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
+    private var appPasswordState by Delegates.notNull<Boolean>()
+    private var animationShowState by Delegates.notNull<Boolean>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +61,12 @@ class MainActivity : FragmentActivity() {
                 backgroundColor = MainBackGroundColor
             ) {
                 NavHost(navController = navController, startDestination = startScreen.route) {
-                    composable(Screen.SplashScreen.route) {SplashScreen(navController)}
+                    composable(Screen.SplashScreen.route) {
+                        SplashScreen(navController,
+                            isAppPasswordInstalled = appPasswordState,
+                            animationShowState = animationShowState
+                        )
+                    }
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
                     composable(Screen.EditNoteScreen.route) {EditNoteScreen(navController = navController)}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
@@ -68,8 +76,9 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun getStartScreen(): Screen {
-       val state = settingsRepository.getSplashScreenVisibleState()
-        if(state.getData()) return Screen.SplashScreen
+        animationShowState = settingsRepository.getSplashScreenVisibleState().getData()
+        appPasswordState = settingsRepository.isAppPasswordEnable().getData()
+        if(animationShowState||appPasswordState) return Screen.SplashScreen
         else return Screen.MainScreen
     }
 

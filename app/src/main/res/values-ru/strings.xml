@@ -104,4 +104,5 @@
     <string name="Security">Безопасность</string>
     <string name="Entering_password_login">Ввод пароля при входе</string>
     <string name="Confirm">Подтвердить</string>
+    <string name="Login">Войти</string>
 </resources>
