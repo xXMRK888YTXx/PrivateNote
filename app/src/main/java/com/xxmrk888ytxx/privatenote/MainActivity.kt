@@ -2,14 +2,19 @@ package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.hardware.fingerprint.FingerprintManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
@@ -30,13 +35,15 @@ import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
+    @Inject lateinit var authorizationManager: BiometricAuthorizationManager
     private var appPasswordState by Delegates.notNull<Boolean>()
     private var animationShowState by Delegates.notNull<Boolean>()
+    private var isBiometricAuthorizationEnable:Boolean by Delegates.notNull<Boolean>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +61,10 @@ class MainActivity : FragmentActivity() {
         }
         notificationManager.createNotificationChannels()
         restoreTasks()
+        val startScreen = getStartScreen()
+        isBiometricAuthorizationEnable = checkBiometricAuthorization()
         setContent {
             val navController = rememberNavController()
-            val startScreen = getStartScreen()
             Scaffold(
                 backgroundColor = MainBackGroundColor
             ) {
@@ -64,7 +72,9 @@ class MainActivity : FragmentActivity() {
                     composable(Screen.SplashScreen.route) {
                         SplashScreen(navController,
                             isAppPasswordInstalled = appPasswordState,
-                            animationShowState = animationShowState
+                            animationShowState = animationShowState,
+                            isBiometricAuthorizationEnable = isBiometricAuthorizationEnable,
+                            onAuthorization = {authorizationRequest(it)}
                         )
                     }
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
@@ -75,11 +85,25 @@ class MainActivity : FragmentActivity() {
         }
     }
 
+    private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
+        val executor = ContextCompat.getMainExecutor(this)
+        authorizationManager.biometricAuthorizationRequest(this,executor,callBack)
+    }
+
     private fun getStartScreen(): Screen {
         animationShowState = settingsRepository.getSplashScreenVisibleState().getData()
         appPasswordState = settingsRepository.isAppPasswordEnable().getData()
         if(animationShowState||appPasswordState) return Screen.SplashScreen
         else return Screen.MainScreen
+    }
+
+    private fun checkBiometricAuthorization() : Boolean {
+        if(!appPasswordState) return false
+        if(!authorizationManager.isHaveFingerPrint()) return false
+        if(!(getSystemService(FINGERPRINT_SERVICE) as FingerprintManager).hasEnrolledFingerprints())
+            return false
+        if(!settingsRepository.getBiometricAuthorizationState().getData()) return false
+        return true
     }
 
     override fun onResume() {

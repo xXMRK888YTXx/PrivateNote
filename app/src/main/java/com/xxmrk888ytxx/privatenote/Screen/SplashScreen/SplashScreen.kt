@@ -1,19 +1,20 @@
 package com.xxmrk888ytxx.privatenote.Screen.SplashScreen
 
+import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -22,11 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,9 @@ import kotlinx.coroutines.launch
 fun SplashScreen(navController: NavController,
                  splashViewModel: SplashViewModel = hiltViewModel(),
                  isAppPasswordInstalled:Boolean,
-                 animationShowState:Boolean
+                 animationShowState:Boolean,
+                 isBiometricAuthorizationEnable:Boolean,
+                 onAuthorization:(callBack: BiometricPrompt.AuthenticationCallback) -> Unit
 ) {
     val startAnimation = remember {
         mutableStateOf(false)
@@ -68,9 +71,35 @@ fun SplashScreen(navController: NavController,
         enter = scaleIn(),
         exit =  scaleOut()
     ) {
-        Authorization(splashViewModel,navController)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Authorization(splashViewModel, navController)
+            if (isBiometricAuthorizationEnable) {
+                FingerPrintButton(onAuthorization,splashViewModel.getAuthorizationCallBack(navController))
+            }
+        }
     }
 
+}
+
+@Composable
+fun FingerPrintButton(onAuthorization: (callBack: BiometricPrompt.AuthenticationCallback) -> Unit,
+                      callBack: BiometricPrompt.AuthenticationCallback
+) {
+    IconButton(
+        onClick = { onAuthorization(callBack) },
+        modifier = Modifier.size(60.dp)
+            .clip(RoundedCornerShape(40)).background(SecondoryFontColor)
+    ) {
+        Icon(painter = painterResource(R.drawable.ic_fingerprint),
+            contentDescription = "",
+            tint = PrimaryFontColor,
+            modifier = Modifier.size(70.dp)
+        )
+    }
 }
 
 @Composable
@@ -84,7 +113,7 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController)
         mutableStateOf("")
     }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

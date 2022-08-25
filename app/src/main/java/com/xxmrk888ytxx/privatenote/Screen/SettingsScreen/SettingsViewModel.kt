@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val showToast: ShowToast,
-    private val securityUtils: SecurityUtils
+    private val securityUtils: SecurityUtils,
+    private val authorizationManager: BiometricAuthorizationManager
 ) : ViewModel() {
 
     private val showLanguageDialogState = mutableStateOf(false)
@@ -37,6 +39,18 @@ class SettingsViewModel @Inject constructor(
     fun getShowAppPasswordState() = showAppPasswordDialog
 
     private val currentSelectedLanguage:MutableState<String> = mutableStateOf("")
+
+    var cashedAppPasswordState = false
+    get() = field
+    set(value){
+        field = value
+    }
+
+    var cashedBiometricAuthorizationState = false
+        get() = field
+        set(value){
+            field = value
+        }
 
     fun getCurrentSelectedLanguage() = currentSelectedLanguage
 
@@ -125,6 +139,16 @@ class SettingsViewModel @Inject constructor(
     fun disableAppPassword() {
         viewModelScope.launch {
             settingsRepository.removeAppPassword()
+        }
+    }
+
+    fun getBiometricAuthorizationState() = settingsRepository.getBiometricAuthorizationState()
+
+    fun isFingerPrintAvailable() = authorizationManager.isHaveFingerPrint()
+
+    fun changeBiometricAuthorizationState(state:Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setBiometricAuthorizationState(state)
         }
     }
 }

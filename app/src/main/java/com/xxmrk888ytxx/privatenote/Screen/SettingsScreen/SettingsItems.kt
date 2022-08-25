@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.SettingsScreen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,7 @@ import com.xxmrk888ytxx.privatenote.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.editNoteViewModel
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 
 
@@ -329,7 +331,7 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
         Card(modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
-            backgroundColor = CardNoteColor,
+            backgroundColor = MainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(modifier = Modifier
@@ -427,6 +429,42 @@ fun RepitPassword(repitPassword:MutableState<String>,
         visualTransformation = PasswordVisualTransformation()
     )
 }
+@Composable
+@MustBeLocalization
+fun BiometricAuthorizationSettings(
+    BioMetricAuthorizationEnable:State<Boolean>,
+    onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit,
+    appPasswordEnable:State<Boolean>,
+    isFingerPrintAvailable:Boolean = true
+) {
+    if(appPasswordEnable.value&&isFingerPrintAvailable) {
+       Row(Modifier.fillMaxWidth(),
+           verticalAlignment = Alignment.CenterVertically,
+       ) {
+           Text(
+               text = stringResource(R.string.Biometric_login),
+               fontWeight = FontWeight.Medium,
+               fontSize = 16.sp,
+               color = PrimaryFontColor,
+           )
+           Box(Modifier.fillMaxWidth(),
+               contentAlignment = Alignment.CenterEnd
+           ) {
+               Switch(
+                   checked = BioMetricAuthorizationEnable.value,
+                   onCheckedChange = {
+                       onChangeBioMetricAuthorizationState(it)
+                   },
+                   colors = SwitchDefaults.colors(
+                       checkedThumbColor = FloatingButtonColor,
+                       uncheckedThumbColor = SecondoryFontColor
+                   ),
+               )
+           }
+       }
+   }
+}
+
 @Preview
 @Composable
 fun Preview() {

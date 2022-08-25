@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.PrivateNote" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.PrivateNote" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/MainBackGroundColor</item>
+        <item name="colorPrimary">#0A6312</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 </resources>

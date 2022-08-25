@@ -105,4 +105,8 @@
     <string name="Entering_password_login">Ввод пароля при входе</string>
     <string name="Confirm">Подтвердить</string>
     <string name="Login">Войти</string>
+    <string name="Biometric_login">Вход по биометрии</string>
+    <string name="Verify_your_identity">Подтвердите свои личность</string>
+    <string name="Use_biometric_data">Воспользуйтесь биометрическими данными</string>
+    <string name="Use_password">Использовать пароль</string>
 </resources>

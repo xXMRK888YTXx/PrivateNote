@@ -110,4 +110,8 @@
     <string name="Entering_password_login">Entering a password at login</string>
     <string name="Confirm">Confirm</string>
     <string name="Login">Login</string>
+    <string name="Biometric_login">Biometric Login</string>
+    <string name="Verify_your_identity">Verify your identity</string>
+    <string name="Use_biometric_data">Use biometric data</string>
+    <string name="Use_password">Use password</string>
 </resources>

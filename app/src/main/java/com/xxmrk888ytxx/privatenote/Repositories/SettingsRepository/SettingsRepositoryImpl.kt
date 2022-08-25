@@ -30,6 +30,7 @@ class SettingsRepositoryImpl (
     private val splashScreenVisibleState = booleanPreferencesKey("SplashScreenVisibleState")
     private val appLanguage = stringPreferencesKey("AppLanguage")
     private val appPassword = stringPreferencesKey("AppId")
+    private val biometricAuthorizationState = booleanPreferencesKey("BiometricAuthorizationState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -135,6 +136,7 @@ class SettingsRepositoryImpl (
     override suspend fun removeAppPassword() {
         context.dataStore.edit {
             it.remove(appPassword)
+            it.remove(biometricAuthorizationState)
         }
     }
 
@@ -143,5 +145,17 @@ class SettingsRepositoryImpl (
             it[appPassword]
         }.getData()
         return password == enterPassword
+    }
+
+    override fun getBiometricAuthorizationState(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
+       return@runBlocking context.dataStore.data.map {
+            it[biometricAuthorizationState] ?: false
+        }
+    }
+
+    override suspend fun setBiometricAuthorizationState(state: Boolean) {
+        context.dataStore.edit {
+            it[biometricAuthorizationState] = state
+        }
     }
 }

@@ -37,5 +37,9 @@ interface SettingsRepository {
 
     suspend fun removeAppPassword()
 
-    suspend fun  checkAppPassword(enterPassword:String) : Boolean
+    suspend fun checkAppPassword(enterPassword:String) : Boolean
+
+    fun getBiometricAuthorizationState() : Flow<Boolean>
+
+    suspend fun setBiometricAuthorizationState(state:Boolean)
 }

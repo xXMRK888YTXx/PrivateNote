@@ -9,6 +9,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -86,6 +87,10 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
 fun SettingsList(settingsViewModel: SettingsViewModel) {
     val context = LocalContext.current
     val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
+    val appPasswordEnable = settingsViewModel.isAppPasswordEnable()
+        .collectAsState(initial = settingsViewModel.cashedAppPasswordState)
+    val bioMetricAuthorizationState = settingsViewModel.getBiometricAuthorizationState()
+        .collectAsState(settingsViewModel.cashedBiometricAuthorizationState)
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -106,16 +111,27 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
         ),
         SettingsCategory(
             stringResource(R.string.Security),
-            listOf() {
-                SecureLoginSettings(settingsViewModel.isAppPasswordEnable().collectAsState(initial = false))
+            listOf(
                 {
-                    if(it) {
-                        settingsViewModel.showAppPasswordDialog()
-                    }else {
-                        settingsViewModel.showWarmingPasswordDisableDialog()
+                    SecureLoginSettings(appPasswordEnable)
+                    {
+                        if(it) {
+                            settingsViewModel.showAppPasswordDialog()
+                        }else {
+                            settingsViewModel.showWarmingPasswordDisableDialog()
+                        }
                     }
-                }
-            }
+                },
+                {
+                  BiometricAuthorizationSettings(
+                      BioMetricAuthorizationEnable = bioMetricAuthorizationState,
+                      onChangeBioMetricAuthorizationState =
+                      {settingsViewModel.changeBiometricAuthorizationState(it)},
+                      appPasswordEnable = appPasswordEnable,
+                      isFingerPrintAvailable = settingsViewModel.isFingerPrintAvailable()
+                  )
+                },
+            )
         ),
         SettingsCategory(
             stringResource(R.string.Navigation),
@@ -173,6 +189,10 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
 
             }
         }
+    }
+    SideEffect {
+        settingsViewModel.cashedAppPasswordState = appPasswordEnable.value
+        settingsViewModel.cashedBiometricAuthorizationState = bioMetricAuthorizationState.value
     }
 }
 

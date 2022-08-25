@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 33
         versionCode 1
-        versionName "Alpha 0.8"
+        versionName "Alpha 0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -100,5 +100,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-pager:0.26.1-alpha"
     //JP DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+    //biometric
+    implementation 'androidx.biometric:biometric-ktx:1.2.0-alpha04'
 
 }
