@@ -2,12 +2,14 @@ package com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager
 
 import android.content.Context
 import android.content.res.Configuration
+import android.hardware.fingerprint.FingerprintManager
 import android.widget.Toast
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
+import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
@@ -19,7 +21,8 @@ import javax.inject.Inject
 
 class BiometricAuthorizationManagerImpl @Inject constructor(
     private val context: Context,
-    settingsRepository: SettingsRepository
+    settingsRepository: SettingsRepository,
+    private val fingerprintManager: FingerprintManager
 ) : BiometricAuthorizationManager {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
@@ -35,11 +38,13 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
         }
     }
     override fun isHaveFingerPrint() : Boolean {
-        val biometricManager = BiometricManager.from(context)
-        when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> return true
-            else -> return false
-        }
+//        val biometricManager = BiometricManager.from(context)
+//        when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
+//            BiometricManager.BIOMETRIC_SUCCESS -> return true
+//            else -> return false
+//        }
+        BuildConfig.DEBUG
+        return fingerprintManager.hasEnrolledFingerprints()
     }
 
     override fun biometricAuthorizationRequest(

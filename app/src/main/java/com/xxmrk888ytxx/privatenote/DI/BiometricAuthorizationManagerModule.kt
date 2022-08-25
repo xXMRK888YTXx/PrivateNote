@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
+import android.hardware.fingerprint.FingerprintManager
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManagerImpl
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
@@ -16,8 +17,11 @@ import javax.inject.Singleton
 class BiometricAuthorizationManagerModule {
     @Provides
     @Singleton
-    fun getBiometricAuthorizationManager(@ApplicationContext context: Context,settingsRepository: SettingsRepository )
+    fun getBiometricAuthorizationManager(@ApplicationContext context: Context,
+                                         settingsRepository: SettingsRepository,
+                                         fingerprintManager: FingerprintManager
+    )
     : BiometricAuthorizationManager {
-        return BiometricAuthorizationManagerImpl(context,settingsRepository)
+        return BiometricAuthorizationManagerImpl(context,settingsRepository,fingerprintManager)
     }
 }
