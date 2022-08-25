@@ -43,7 +43,6 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
 //            BiometricManager.BIOMETRIC_SUCCESS -> return true
 //            else -> return false
 //        }
-        BuildConfig.DEBUG
         return fingerprintManager.hasEnrolledFingerprints()
     }
 

@@ -4,32 +4,34 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.Exception.InvalidPasswordException
+import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.ui.theme.CardNoteColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
+import kotlinx.coroutines.launch
 
 @Composable
 fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navController: NavController) {
@@ -42,8 +44,8 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
     val currentSelectedLanguage = remember {
         settingsViewModel.getCurrentSelectedLanguage()
     }
-    val disablePasswordDialogState = remember {
-        settingsViewModel.currentWarmingPasswordDisableState()
+    val enterAppPasswordDialogState = remember {
+        settingsViewModel.getEnterAppPasswordDialogState()
     }
     Column(
         Modifier
@@ -74,11 +76,61 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
             onComplete = {settingsViewModel.enableAppPassword(it)}
         )
     }
-    if(disablePasswordDialogState.value) {
-        YesNoDialog(title = stringResource(R.string.Warming_disable_app_password),
-            onCancel = { settingsViewModel.hideWarmingPasswordDisableDialog() }) {
-            settingsViewModel.disableAppPassword()
-            settingsViewModel.hideWarmingPasswordDisableDialog()
+    if(enterAppPasswordDialogState.value) {
+        EnterAppPasswordDialog(settingsViewModel)
+    }
+}
+
+@Composable
+fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
+    Dialog(onDismissRequest = { settingsViewModel.hideEnterAppPasswordDialog() }) {
+        val context = LocalContext.current
+        val coroutineScope = rememberCoroutineScope()
+        val titleText = remember {
+            mutableStateOf(context.getString(R.string.Enter_password))
+        }
+        val password = remember {
+            mutableStateOf("")
+        }
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = MainBackGroundColor,
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                PasswordEditText(titleText = titleText, password = password)
+                OutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.CenterHorizontally)
+                        .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
+                    onClick =  {
+                        coroutineScope.launch{
+                            try{
+                                settingsViewModel.disableAppPassword(password.value)
+                            }catch (e:InvalidPasswordException) {
+                                titleText.value = context.getString(R.string.Invalid_password)
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(50),
+                    enabled = password.value.isNotEmpty(),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = PrimaryFontColor,
+                        disabledContentColor = Color.Black.copy(0.3f),
+                        disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                    )
+                ){
+                    Text(text = stringResource(R.string.Disable),
+                        fontSize = 18.sp,
+                        color = Color.Black
+                    )
+                }
+            }
         }
     }
 }
@@ -118,9 +170,15 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                         if(it) {
                             settingsViewModel.showAppPasswordDialog()
                         }else {
-                            settingsViewModel.showWarmingPasswordDisableDialog()
+                            settingsViewModel.showEnterAppPasswordDialog()
                         }
                     }
+                },
+                {
+                    LockWhenLeaveScreen(settingsViewModel.isLockWhenLeaveEnable().collectAsState(
+                        initial = false
+                    )
+                    ) { settingsViewModel.changeLockWhenLeaveState(it) }
                 },
                 {
                   BiometricAuthorizationSettings(

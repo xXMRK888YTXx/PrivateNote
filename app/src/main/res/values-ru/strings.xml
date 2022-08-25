@@ -109,4 +109,5 @@
     <string name="Verify_your_identity">Подтвердите свои личность</string>
     <string name="Use_biometric_data">Воспользуйтесь биометрическими данными</string>
     <string name="Use_password">Использовать пароль</string>
+    <string name="Disable">Отключить</string>
 </resources>

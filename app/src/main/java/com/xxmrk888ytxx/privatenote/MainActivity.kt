@@ -61,9 +61,9 @@ class MainActivity : AppCompatActivity() {
         }
         notificationManager.createNotificationChannels()
         restoreTasks()
-        val startScreen = getStartScreen()
-        isBiometricAuthorizationEnable = checkBiometricAuthorization()
         setContent {
+            val startScreen = getStartScreen()
+            isBiometricAuthorizationEnable = checkBiometricAuthorization()
             val navController = rememberNavController()
             Scaffold(
                 backgroundColor = MainBackGroundColor

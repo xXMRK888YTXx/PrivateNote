@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
+import com.xxmrk888ytxx.privatenote.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
@@ -40,6 +41,18 @@ class SettingsViewModel @Inject constructor(
 
     private val currentSelectedLanguage:MutableState<String> = mutableStateOf("")
 
+    private val enterAppPasswordDialogState = mutableStateOf(false)
+
+    fun getEnterAppPasswordDialogState() = enterAppPasswordDialogState
+
+    fun showEnterAppPasswordDialog() {
+        enterAppPasswordDialogState.value = true
+    }
+
+    fun hideEnterAppPasswordDialog() {
+        enterAppPasswordDialogState.value = false
+    }
+
     var cashedAppPasswordState = false
     get() = field
     set(value){
@@ -56,18 +69,6 @@ class SettingsViewModel @Inject constructor(
 
     fun changeCurrentSelectedLanguage(languageCode:String) {
         currentSelectedLanguage.value = languageCode
-    }
-
-    private val currentWarmingPasswordDisableState = mutableStateOf(false)
-
-    fun currentWarmingPasswordDisableState() = currentWarmingPasswordDisableState
-
-    fun showWarmingPasswordDisableDialog() {
-        currentWarmingPasswordDisableState.value = true
-    }
-
-    fun hideWarmingPasswordDisableDialog() {
-        currentWarmingPasswordDisableState.value = false
     }
 
     fun showLanguageDialog() {
@@ -136,10 +137,11 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun disableAppPassword() {
-        viewModelScope.launch {
-            settingsRepository.removeAppPassword()
-        }
+    suspend fun disableAppPassword(enterPassword:String) {
+        if(enterPassword.isEmpty()) return
+                val passwordHash = securityUtils.passwordToHash(enterPassword,0)
+                settingsRepository.removeAppPassword(passwordHash)
+                hideEnterAppPasswordDialog()
     }
 
     fun getBiometricAuthorizationState() = settingsRepository.getBiometricAuthorizationState()
@@ -149,6 +151,14 @@ class SettingsViewModel @Inject constructor(
     fun changeBiometricAuthorizationState(state:Boolean) {
         viewModelScope.launch {
             settingsRepository.setBiometricAuthorizationState(state)
+        }
+    }
+
+    fun isLockWhenLeaveEnable() = settingsRepository.getLockWhenLeaveState()
+
+    fun changeLockWhenLeaveState(state: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setLockWhenLeaveState(state)
         }
     }
 }

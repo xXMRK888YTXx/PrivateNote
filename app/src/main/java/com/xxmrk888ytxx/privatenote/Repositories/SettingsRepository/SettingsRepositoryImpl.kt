@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.xxmrk888ytxx.privatenote.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -31,6 +32,7 @@ class SettingsRepositoryImpl (
     private val appLanguage = stringPreferencesKey("AppLanguage")
     private val appPassword = stringPreferencesKey("AppId")
     private val biometricAuthorizationState = booleanPreferencesKey("BiometricAuthorizationState")
+    private val lockWhenLeaveState = booleanPreferencesKey("LockWhenLeaveState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -133,7 +135,8 @@ class SettingsRepositoryImpl (
         }
     }
 
-    override suspend fun removeAppPassword() {
+    override suspend fun removeAppPassword(passwordHash: String) {
+        if(!checkAppPassword(passwordHash)) throw InvalidPasswordException("")
         context.dataStore.edit {
             it.remove(appPassword)
             it.remove(biometricAuthorizationState)
@@ -144,6 +147,7 @@ class SettingsRepositoryImpl (
         val password =  context.dataStore.data.map {
             it[appPassword]
         }.getData()
+
         return password == enterPassword
     }
 
@@ -156,6 +160,18 @@ class SettingsRepositoryImpl (
     override suspend fun setBiometricAuthorizationState(state: Boolean) {
         context.dataStore.edit {
             it[biometricAuthorizationState] = state
+        }
+    }
+
+    override fun getLockWhenLeaveState(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
+       return@runBlocking context.dataStore.data.map {
+            it[lockWhenLeaveState] ?: false
+        }
+    }
+
+    override suspend fun setLockWhenLeaveState(state: Boolean) {
+        context.dataStore.edit {
+            it[lockWhenLeaveState] = state
         }
     }
 }

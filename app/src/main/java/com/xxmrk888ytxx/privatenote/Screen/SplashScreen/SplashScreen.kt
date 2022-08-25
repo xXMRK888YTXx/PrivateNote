@@ -78,6 +78,9 @@ fun SplashScreen(navController: NavController,
         ) {
             Authorization(splashViewModel, navController)
             if (isBiometricAuthorizationEnable) {
+                LaunchedEffect(key1 = true, block = {
+                    onAuthorization(splashViewModel.getAuthorizationCallBack(navController))
+                })
                 FingerPrintButton(onAuthorization,splashViewModel.getAuthorizationCallBack(navController))
             }
         }
@@ -91,8 +94,10 @@ fun FingerPrintButton(onAuthorization: (callBack: BiometricPrompt.Authentication
 ) {
     IconButton(
         onClick = { onAuthorization(callBack) },
-        modifier = Modifier.size(60.dp)
-            .clip(RoundedCornerShape(40)).background(SecondoryFontColor)
+        modifier = Modifier
+            .size(60.dp)
+            .clip(RoundedCornerShape(40))
+            .background(SecondoryFontColor)
     ) {
         Icon(painter = painterResource(R.drawable.ic_fingerprint),
             contentDescription = "",
