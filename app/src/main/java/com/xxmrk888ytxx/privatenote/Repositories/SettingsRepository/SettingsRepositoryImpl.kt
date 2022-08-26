@@ -2,10 +2,7 @@ package com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
@@ -33,6 +30,7 @@ class SettingsRepositoryImpl (
     private val appPassword = stringPreferencesKey("AppId")
     private val biometricAuthorizationState = booleanPreferencesKey("BiometricAuthorizationState")
     private val lockWhenLeaveState = booleanPreferencesKey("LockWhenLeaveState")
+    private val lockWhenLeaveTime = intPreferencesKey("lockWhenLeaveTime")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -141,6 +139,7 @@ class SettingsRepositoryImpl (
             it.remove(appPassword)
             it.remove(biometricAuthorizationState)
             it.remove(lockWhenLeaveState)
+            it.remove(lockWhenLeaveTime)
         }
     }
 
@@ -173,6 +172,18 @@ class SettingsRepositoryImpl (
     override suspend fun setLockWhenLeaveState(state: Boolean) {
         context.dataStore.edit {
             it[lockWhenLeaveState] = state
+        }
+    }
+
+    override fun getLockWhenLeaveTime(): Flow<Int> = runBlocking(Dispatchers.IO) {
+       return@runBlocking context.dataStore.data.map {
+            it[lockWhenLeaveTime] ?: 0
+        }
+    }
+
+    override suspend fun setLockWhenLeaveTime(time: Int) {
+        context.dataStore.edit {
+            it[lockWhenLeaveTime] = time
         }
     }
 }

@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var authorizationManager: BiometricAuthorizationManager
     lateinit var navController: NavHostController
-    val mainActivityViewModel by viewModels<MainActivityViewModel>()
+    private val mainActivityViewModel by viewModels<MainActivityViewModel>()
     private var appPasswordState by Delegates.notNull<Boolean>()
     private var animationShowState by Delegates.notNull<Boolean>()
     private var isBiometricAuthorizationEnable:Boolean by Delegates.notNull<Boolean>()
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                             isBiometricAuthorizationEnable = isBiometricAuthorizationEnable,
                             onAuthorization = {authorizationRequest(it)},
                             isFirstStart = mainActivityViewModel.isFirstStart,
-                            onCompletedAuth = mainActivityViewModel.CompletedAuthCallBack(),
+                            onCompletedAuth = mainActivityViewModel.completedAuthCallBack(),
                             finishApp = {this@MainActivity.finish() }
                         )
                     }

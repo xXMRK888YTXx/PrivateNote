@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.Screen.SettingsScreen
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -467,7 +468,7 @@ fun BiometricAuthorizationSettings(
 
 @MustBeLocalization
 @Composable
-fun LockWhenLeaveScreen(
+fun LockWhenLeaveSettings(
     currentState: State<Boolean>,
     isAppPasswordEnabled:State<Boolean>,
     onChangeState: (state: Boolean) -> Unit){
@@ -497,6 +498,106 @@ fun LockWhenLeaveScreen(
            }
        }
    }
+}
+
+@MustBeLocalization
+fun getLockWhenLeaveItems() : List<Pair<String,Int>> {
+    return listOf(
+        Pair("Немедленно",0),
+        Pair("10 Секунд",10_000),
+        Pair("30 Секунд",30_000),
+        Pair("1 Минута",60_000),
+        Pair("2 Минуты",120_000),
+        Pair("5 Минут",300_000),
+    )
+}
+
+
+@Composable
+@MustBeLocalization
+fun TimerLockWhenLeave(
+    isLockWhenLeaveEnable:State<Boolean>,
+    currentTime:State<Int>,
+    dropDownState:State<Boolean>,
+    onShowDropDown:() -> Unit,
+    onCancelDropDown: () -> Unit,
+    onTimeChanged:(time:Int) -> Unit
+) {
+    val dropDownItems = getLockWhenLeaveItems()
+    val current:Pair<String,Int> = dropDownItems.first { it.second == currentTime.value }
+    if(isLockWhenLeaveEnable.value) {
+        val annotatedLabelString = buildAnnotatedString {
+            append(current.first)
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        Row(Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Время до блокировки",
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = PrimaryFontColor,
+            )
+            Box() {
+                DropdownMenu(expanded = dropDownState.value,
+                    onDismissRequest = {onCancelDropDown()},
+                    modifier = Modifier
+                        .background(DropDownMenuColor)
+                        .verticalScroll(
+                            rememberScrollState()
+                        )
+                        .heightIn(max = 200.dp)
+                ) {
+                    dropDownItems.forEach {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            DropdownMenuItem(onClick = {
+                                onTimeChanged(it.second)
+                                onCancelDropDown() }) {
+                                Row {
+                                    Text(text = it.first,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = PrimaryFontColor
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Box(Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Text(text = annotatedLabelString,
+                    inlineContent = inlineContentMap,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    color = SecondoryFontColor,
+                    textAlign = TextAlign.End,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onShowDropDown()
+                        }
+                )
+            }
+        }
+    }
 }
 
 @Preview

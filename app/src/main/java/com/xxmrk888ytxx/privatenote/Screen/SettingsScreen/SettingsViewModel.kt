@@ -45,6 +45,18 @@ class SettingsViewModel @Inject constructor(
 
     fun getEnterAppPasswordDialogState() = enterAppPasswordDialogState
 
+    private val timeLockWhenLeaveDropDownState:MutableState<Boolean> = mutableStateOf(false)
+
+    fun getTimeLockWhenLeaveDropDownState() = timeLockWhenLeaveDropDownState
+
+    fun showTimeLockWhenLeaveDropDown() {
+        timeLockWhenLeaveDropDownState.value = true
+    }
+
+    fun hideTimeLockWhenLeaveDropDown() {
+        timeLockWhenLeaveDropDownState.value = false
+    }
+
     fun showEnterAppPasswordDialog() {
         enterAppPasswordDialogState.value = true
     }
@@ -155,6 +167,14 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun isLockWhenLeaveEnable() = settingsRepository.getLockWhenLeaveState()
+
+    fun getLockWhenLeaveTime() = settingsRepository.getLockWhenLeaveTime()
+
+    fun setLockWhenLeaveTime(time:Int) {
+        viewModelScope.launch {
+            settingsRepository.setLockWhenLeaveTime(time)
+        }
+    }
 
     fun changeLockWhenLeaveState(state: Boolean) {
         viewModelScope.launch {

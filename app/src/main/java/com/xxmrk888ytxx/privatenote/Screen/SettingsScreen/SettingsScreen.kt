@@ -17,17 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.graphics.drawable.toDrawable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
-import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
-import com.xxmrk888ytxx.privatenote.ui.theme.CardNoteColor
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
@@ -141,8 +139,14 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
     val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
     val appPasswordEnable = settingsViewModel.isAppPasswordEnable()
         .collectAsState(initial = settingsViewModel.cashedAppPasswordState)
+    val lockWhenLeave = settingsViewModel.isLockWhenLeaveEnable().collectAsState(
+        initial = false
+    )
     val bioMetricAuthorizationState = settingsViewModel.getBiometricAuthorizationState()
         .collectAsState(settingsViewModel.cashedBiometricAuthorizationState)
+    val timeLockWhenLeaveDropDownState = remember {
+        settingsViewModel.getTimeLockWhenLeaveDropDownState()
+    }
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -175,9 +179,20 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                     }
                 },
                 {
-                    LockWhenLeaveScreen(settingsViewModel.isLockWhenLeaveEnable().collectAsState(
-                        initial = false
-                    ), appPasswordEnable) { settingsViewModel.changeLockWhenLeaveState(it) }
+                    LockWhenLeaveSettings(lockWhenLeave, appPasswordEnable)
+                    { settingsViewModel.changeLockWhenLeaveState(it) }
+                },
+                {
+                    TimerLockWhenLeave(
+                        isLockWhenLeaveEnable = lockWhenLeave,
+                        currentTime = settingsViewModel.getLockWhenLeaveTime().collectAsState(
+                            initial = 0
+                        ),
+                        dropDownState = timeLockWhenLeaveDropDownState,
+                        onShowDropDown = {settingsViewModel.showTimeLockWhenLeaveDropDown()},
+                        onCancelDropDown = {settingsViewModel.hideTimeLockWhenLeaveDropDown()},
+                        onTimeChanged = {settingsViewModel.setLockWhenLeaveTime(it)}
+                    )
                 },
                 {
                   BiometricAuthorizationSettings(

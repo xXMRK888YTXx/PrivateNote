@@ -38,6 +38,11 @@ class SplashViewModel @Inject constructor(
         isShowAnimation.value = state
     }
 
+    @MustBeLocalization
+    fun showToastForLeaveApp() {
+        showToast.showToast("Нажмите ещё раз для выхода")
+    }
+
     fun getAuthorizationCallBack(
         navController: NavController,
         isFirstStart:Boolean,

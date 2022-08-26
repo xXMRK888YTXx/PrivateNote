@@ -13,7 +13,7 @@ class MainActivityViewModel @Inject constructor() : ViewModel() {
         isFirstStart = false
     }
 
-    fun CompletedAuthCallBack(): (navigate:() -> Unit) -> Unit {
+    fun completedAuthCallBack(): (navigate:() -> Unit) -> Unit {
         return {
             it()
             markStart()

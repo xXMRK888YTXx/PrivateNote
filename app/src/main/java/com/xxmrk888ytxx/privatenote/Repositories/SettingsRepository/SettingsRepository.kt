@@ -46,4 +46,8 @@ interface SettingsRepository {
     fun getLockWhenLeaveState() : Flow<Boolean>
 
     suspend fun setLockWhenLeaveState(state: Boolean)
+
+    fun getLockWhenLeaveTime() : Flow<Int>
+
+    suspend fun setLockWhenLeaveTime(time:Int)
 }

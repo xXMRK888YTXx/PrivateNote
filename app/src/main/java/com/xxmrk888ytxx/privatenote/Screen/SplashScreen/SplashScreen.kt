@@ -46,7 +46,7 @@ fun SplashScreen(
     onCompletedAuth:(navigate:() -> Unit) -> Unit,
     finishApp:() -> Unit
 ) {
-
+    val scope = rememberCoroutineScope()
     val startAnimation = remember {
         mutableStateOf(false)
     }
@@ -57,9 +57,18 @@ fun SplashScreen(
         targetValue = if (startAnimation.value) 1f else 0f,
         animationSpec = tween(2500)
     )
-    val isNextBackPressLeaveApp = false
+    var isNextBackPressLeaveApp = false
     BackPressController.setHandler(!isFirstStart) {
+        if(isNextBackPressLeaveApp)
         finishApp()
+        else {
+            splashViewModel.showToastForLeaveApp()
+            isNextBackPressLeaveApp = true
+            scope.launch {
+                delay(3000)
+                isNextBackPressLeaveApp = false
+            }
+        }
     }
     LaunchedEffect(key1 = true, block = {
         splashViewModel.setupState(animationShowState)
