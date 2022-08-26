@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.SplashScreen
 
+import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
@@ -25,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SecondoryFontColor
@@ -33,13 +35,18 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun SplashScreen(navController: NavController,
-                 splashViewModel: SplashViewModel = hiltViewModel(),
-                 isAppPasswordInstalled:Boolean,
-                 animationShowState:Boolean,
-                 isBiometricAuthorizationEnable:Boolean,
-                 onAuthorization:(callBack: BiometricPrompt.AuthenticationCallback) -> Unit
+fun SplashScreen(
+    navController: NavController,
+    splashViewModel: SplashViewModel = hiltViewModel(),
+    isAppPasswordInstalled: Boolean,
+    animationShowState: Boolean,
+    isBiometricAuthorizationEnable: Boolean,
+    onAuthorization: (callBack: BiometricPrompt.AuthenticationCallback) -> Unit,
+    isFirstStart: Boolean,
+    onCompletedAuth:(navigate:() -> Unit) -> Unit,
+    finishApp:() -> Unit
 ) {
+
     val startAnimation = remember {
         mutableStateOf(false)
     }
@@ -50,14 +57,21 @@ fun SplashScreen(navController: NavController,
         targetValue = if (startAnimation.value) 1f else 0f,
         animationSpec = tween(2500)
     )
+    val isNextBackPressLeaveApp = false
+    BackPressController.setHandler(!isFirstStart) {
+        finishApp()
+    }
     LaunchedEffect(key1 = true, block = {
         splashViewModel.setupState(animationShowState)
         if(animationShowState) {
             startAnimation.value = true
             delay(2500)
         }
-        if (!isAppPasswordInstalled)
-        splashViewModel.toMainScreen(navController)
+        if (!isAppPasswordInstalled) {
+            if(isFirstStart)
+            onCompletedAuth { splashViewModel.toMainScreen(navController) }
+            else onCompletedAuth { navController.navigateUp() }
+        }
         else isShowAnimation.value = false
     })
     AnimatedVisibility(visible = isShowAnimation.value,
@@ -79,9 +93,11 @@ fun SplashScreen(navController: NavController,
             Authorization(splashViewModel, navController)
             if (isBiometricAuthorizationEnable) {
                 LaunchedEffect(key1 = true, block = {
-                    onAuthorization(splashViewModel.getAuthorizationCallBack(navController))
+                    onAuthorization(splashViewModel
+                        .getAuthorizationCallBack(navController,isFirstStart,onCompletedAuth))
                 })
-                FingerPrintButton(onAuthorization,splashViewModel.getAuthorizationCallBack(navController))
+                FingerPrintButton(onAuthorization,splashViewModel
+                    .getAuthorizationCallBack(navController,isFirstStart,onCompletedAuth))
             }
         }
     }

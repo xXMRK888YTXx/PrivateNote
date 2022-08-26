@@ -140,6 +140,7 @@ class SettingsRepositoryImpl (
         context.dataStore.edit {
             it.remove(appPassword)
             it.remove(biometricAuthorizationState)
+            it.remove(lockWhenLeaveState)
         }
     }
 

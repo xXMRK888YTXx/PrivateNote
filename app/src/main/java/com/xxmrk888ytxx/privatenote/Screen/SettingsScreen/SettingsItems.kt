@@ -467,31 +467,36 @@ fun BiometricAuthorizationSettings(
 
 @MustBeLocalization
 @Composable
-fun LockWhenLeaveScreen(currentState: State<Boolean>,onChangeState: (state: Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = "Блокировать при сворачивании",
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            color = PrimaryFontColor,
-        )
-        Box(Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            Switch(
-                checked = currentState.value,
-                onCheckedChange = {
-                    onChangeState(it)
-                },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = FloatingButtonColor,
-                    uncheckedThumbColor = SecondoryFontColor
-                ),
-            )
-        }
-    }
+fun LockWhenLeaveScreen(
+    currentState: State<Boolean>,
+    isAppPasswordEnabled:State<Boolean>,
+    onChangeState: (state: Boolean) -> Unit){
+   if(isAppPasswordEnabled.value) {
+       Row(Modifier.fillMaxWidth(),
+           verticalAlignment = Alignment.CenterVertically,
+       ) {
+           Text(
+               text = "Блокировать при сворачивании",
+               fontWeight = FontWeight.Medium,
+               fontSize = 16.sp,
+               color = PrimaryFontColor,
+           )
+           Box(Modifier.fillMaxWidth(),
+               contentAlignment = Alignment.CenterEnd
+           ) {
+               Switch(
+                   checked = currentState.value,
+                   onCheckedChange = {
+                       onChangeState(it)
+                   },
+                   colors = SwitchDefaults.colors(
+                       checkedThumbColor = FloatingButtonColor,
+                       uncheckedThumbColor = SecondoryFontColor
+                   ),
+               )
+           }
+       }
+   }
 }
 
 @Preview

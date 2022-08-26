@@ -5,12 +5,13 @@ import android.content.res.Configuration
 import android.hardware.fingerprint.FingerprintManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -41,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var authorizationManager: BiometricAuthorizationManager
+    lateinit var navController: NavHostController
+    val mainActivityViewModel by viewModels<MainActivityViewModel>()
     private var appPasswordState by Delegates.notNull<Boolean>()
     private var animationShowState by Delegates.notNull<Boolean>()
     private var isBiometricAuthorizationEnable:Boolean by Delegates.notNull<Boolean>()
@@ -64,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val startScreen = getStartScreen()
             isBiometricAuthorizationEnable = checkBiometricAuthorization()
-            val navController = rememberNavController()
+            navController = rememberNavController()
             Scaffold(
                 backgroundColor = MainBackGroundColor
             ) {
@@ -74,7 +77,10 @@ class MainActivity : AppCompatActivity() {
                             isAppPasswordInstalled = appPasswordState,
                             animationShowState = animationShowState,
                             isBiometricAuthorizationEnable = isBiometricAuthorizationEnable,
-                            onAuthorization = {authorizationRequest(it)}
+                            onAuthorization = {authorizationRequest(it)},
+                            isFirstStart = mainActivityViewModel.isFirstStart,
+                            onCompletedAuth = mainActivityViewModel.CompletedAuthCallBack(),
+                            finishApp = {this@MainActivity.finish() }
                         )
                     }
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
@@ -117,6 +123,11 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         lifecycleScope.launch {
             lifecycleState.emit(LifeCycleState.onPause)
+        }
+        lifecycleScope.launch {
+            if(settingsRepository.getLockWhenLeaveState().getData()&&
+                navController.currentDestination?.route != Screen.SplashScreen.route)
+            navController.navigate(Screen.SplashScreen.route){launchSingleTop = true}
         }
     }
 

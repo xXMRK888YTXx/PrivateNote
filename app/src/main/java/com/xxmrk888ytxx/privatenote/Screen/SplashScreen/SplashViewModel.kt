@@ -38,7 +38,11 @@ class SplashViewModel @Inject constructor(
         isShowAnimation.value = state
     }
 
-    fun getAuthorizationCallBack(navController: NavController) : BiometricPrompt.AuthenticationCallback {
+    fun getAuthorizationCallBack(
+        navController: NavController,
+        isFirstStart:Boolean,
+        onCompletedAuth:(navigate:() -> Unit) -> Unit
+    ) : BiometricPrompt.AuthenticationCallback {
         return object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
@@ -46,7 +50,9 @@ class SplashViewModel @Inject constructor(
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                toMainScreen(navController)
+                if(isFirstStart)
+                onCompletedAuth {toMainScreen(navController)}
+                else onCompletedAuth {navController.navigateUp()}
             }
 
             override fun onAuthenticationFailed() {

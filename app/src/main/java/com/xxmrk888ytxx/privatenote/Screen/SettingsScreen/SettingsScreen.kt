@@ -177,8 +177,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                 {
                     LockWhenLeaveScreen(settingsViewModel.isLockWhenLeaveEnable().collectAsState(
                         initial = false
-                    )
-                    ) { settingsViewModel.changeLockWhenLeaveState(it) }
+                    ), appPasswordEnable) { settingsViewModel.changeLockWhenLeaveState(it) }
                 },
                 {
                   BiometricAuthorizationSettings(
@@ -239,7 +238,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
                 Row(
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 10.dp, bottom = 20.dp),
+                        .padding(start = 20.dp, end = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     it()
