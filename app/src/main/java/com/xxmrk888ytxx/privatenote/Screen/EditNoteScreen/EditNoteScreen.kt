@@ -228,7 +228,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
             horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .fillMaxWidth(0.9f)
+                .fillMaxWidth(0.75f)
                 .padding(end = 45.dp)
         ) {
             IconButton(
@@ -261,6 +261,15 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                    verticalAlignment = Alignment.CenterVertically,
                    horizontalArrangement = Arrangement.End
                ) {
+                   IconButton(onClick = { /*TODO*/ }) {
+                       Icon(
+                           painter = painterResource(id = R.drawable.ic_attach),
+                           contentDescription = "",
+                           modifier = Modifier
+                               .size(35.dp),
+                           tint = PrimaryFontColor
+                       )
+                   }
                    IconButton(
                        onClick = {
                            isDropDownMenuShow.value = true

@@ -58,7 +58,7 @@ fun SplashScreen(
         animationSpec = tween(2500)
     )
     var isNextBackPressLeaveApp = false
-    BackPressController.setHandler(!isFirstStart) {
+    BackPressController.setHandler(true) {
         if(isNextBackPressLeaveApp)
         finishApp()
         else {
@@ -71,7 +71,6 @@ fun SplashScreen(
         }
     }
     LaunchedEffect(key1 = true, block = {
-        splashViewModel.setupState(animationShowState)
         if(animationShowState) {
             startAnimation.value = true
             delay(2500)
@@ -99,7 +98,7 @@ fun SplashScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Authorization(splashViewModel, navController)
+            Authorization(splashViewModel, navController,onCompletedAuth)
             if (isBiometricAuthorizationEnable) {
                 LaunchedEffect(key1 = true, block = {
                     onAuthorization(splashViewModel
@@ -133,7 +132,8 @@ fun FingerPrintButton(onAuthorization: (callBack: BiometricPrompt.Authentication
 }
 
 @Composable
-fun Authorization(splashViewModel: SplashViewModel,navController: NavController) {
+fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
+                  onCompletedAuth: (navigate: () -> Unit) -> Unit) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val titleText = remember {
@@ -156,7 +156,7 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController)
             onClick =  {
                 coroutineScope.launch{
                     if(splashViewModel.checkPassword(password.value)) {
-                        splashViewModel.toMainScreen(navController)
+                        onCompletedAuth() {splashViewModel.toMainScreen(navController)}
                     }else {
                         titleText.value = context.getString(R.string.Invalid_password)
                     }

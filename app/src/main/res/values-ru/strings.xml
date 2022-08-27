@@ -110,4 +110,13 @@
     <string name="Use_biometric_data">Воспользуйтесь биометрическими данными</string>
     <string name="Use_password">Использовать пароль</string>
     <string name="Disable">Отключить</string>
+    <string name="Block_on_collapse">Блокировать при сворачивании</string>
+    <string name="Immediately">Немедленно</string>
+    <string name="Ten_seconds">10 Секунд</string>
+    <string name="thirty_seconds">30 Секунд</string>
+    <string name="one_minute">1 Минута</string>
+    <string name="two_minutes">2 Минуты</string>
+    <string name="five_minutes">5 Минут</string>
+    <string name="Time_to_block">Время до блокировки</string>
+    <string name="Press_again_to_exit">Нажмите ещё раз для выхода</string>
 </resources>

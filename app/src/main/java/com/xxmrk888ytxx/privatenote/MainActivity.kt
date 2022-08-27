@@ -28,6 +28,8 @@ import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
@@ -40,18 +42,13 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
-    @Inject lateinit var settingsRepository: SettingsRepository
-    @Inject lateinit var authorizationManager: BiometricAuthorizationManager
     lateinit var navController: NavHostController
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
-    private var appPasswordState by Delegates.notNull<Boolean>()
-    private var animationShowState by Delegates.notNull<Boolean>()
-    private var isBiometricAuthorizationEnable:Boolean by Delegates.notNull<Boolean>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val languageCode = settingsRepository.getAppLanguage().getData()
+        val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {
             val locale = Locale(languageCode)
             Locale.setDefault(locale)
@@ -66,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         restoreTasks()
         setContent {
             val startScreen = getStartScreen()
-            isBiometricAuthorizationEnable = checkBiometricAuthorization()
             navController = rememberNavController()
             Scaffold(
                 backgroundColor = MainBackGroundColor
@@ -74,9 +70,10 @@ class MainActivity : AppCompatActivity() {
                 NavHost(navController = navController, startDestination = startScreen.route) {
                     composable(Screen.SplashScreen.route) {
                         SplashScreen(navController,
-                            isAppPasswordInstalled = appPasswordState,
-                            animationShowState = animationShowState,
-                            isBiometricAuthorizationEnable = isBiometricAuthorizationEnable,
+                            isAppPasswordInstalled = mainActivityViewModel.getAppPasswordState(),
+                            animationShowState = mainActivityViewModel.getAnimationShowState(),
+                            isBiometricAuthorizationEnable =
+                            mainActivityViewModel.checkBiometricAuthorization(),
                             onAuthorization = {authorizationRequest(it)},
                             isFirstStart = mainActivityViewModel.isFirstStart,
                             onCompletedAuth = mainActivityViewModel.completedAuthCallBack(),
@@ -93,29 +90,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
         val executor = ContextCompat.getMainExecutor(this)
-        authorizationManager.biometricAuthorizationRequest(this,executor,callBack)
+        mainActivityViewModel.biometricAuthorizationRequest(this,executor,callBack)
     }
 
     private fun getStartScreen(): Screen {
-        animationShowState = settingsRepository.getSplashScreenVisibleState().getData()
-        appPasswordState = settingsRepository.isAppPasswordEnable().getData()
-        if(animationShowState||appPasswordState) return Screen.SplashScreen
-        else return Screen.MainScreen
-    }
-
-    private fun checkBiometricAuthorization() : Boolean {
-        if(!appPasswordState) return false
-        if(!authorizationManager.isHaveFingerPrint()) return false
-        if(!(getSystemService(FINGERPRINT_SERVICE) as FingerprintManager).hasEnrolledFingerprints())
-            return false
-        if(!settingsRepository.getBiometricAuthorizationState().getData()) return false
-        return true
+        mainActivityViewModel.apply {
+            if(getAnimationShowState()||getAppPasswordState()) return Screen.SplashScreen
+            else return Screen.MainScreen
+        }
     }
 
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch{
             lifecycleState.emit(LifeCycleState.onResume)
+        }
+        GlobalScope.launch(Dispatchers.Main) {
+            mainActivityViewModel.stopTimer()
         }
     }
 
@@ -124,10 +115,15 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             lifecycleState.emit(LifeCycleState.onPause)
         }
-        lifecycleScope.launch {
-            if(settingsRepository.getLockWhenLeaveState().getData()&&
+        GlobalScope.launch(Dispatchers.Main) {
+            if(mainActivityViewModel.getLockWhenLeaveState()&&
                 navController.currentDestination?.route != Screen.SplashScreen.route)
-            navController.navigate(Screen.SplashScreen.route){launchSingleTop = true}
+            {
+                val time = mainActivityViewModel.getLockWhenLeaveTime()
+                mainActivityViewModel.startTimer(time) {
+                    navController.navigate(Screen.SplashScreen.route){launchSingleTop = true}
+                }
+            }
         }
     }
 

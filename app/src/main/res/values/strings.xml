@@ -115,4 +115,13 @@
     <string name="Use_biometric_data">Use biometric data</string>
     <string name="Use_password">Use password</string>
     <string name="Disable">Disable</string>
+    <string name="Block_on_collapse">Block on collapse</string>
+    <string name="Immediately">Immediately</string>
+    <string name="Ten_seconds">10 Seconds</string>
+    <string name="thirty_seconds">30 Seconds</string>
+    <string name="one_minute">1 Minute</string>
+    <string name="two_minutes">2 Minutes</string>
+    <string name="five_minutes">5 Minutes</string>
+    <string name="Time_to_block">Time to block</string>
+    <string name="Press_again_to_exit">Press again to exit</string>
 </resources>

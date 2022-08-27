@@ -177,7 +177,7 @@ class SettingsRepositoryImpl (
 
     override fun getLockWhenLeaveTime(): Flow<Int> = runBlocking(Dispatchers.IO) {
        return@runBlocking context.dataStore.data.map {
-            it[lockWhenLeaveTime] ?: 0
+            it[lockWhenLeaveTime] ?: 1000
         }
     }
 

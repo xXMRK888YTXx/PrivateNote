@@ -1,9 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.SettingsScreen
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +33,6 @@ import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.editNoteViewModel
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.ui.theme.*
@@ -431,7 +428,6 @@ fun RepitPassword(repitPassword:MutableState<String>,
     )
 }
 @Composable
-@MustBeLocalization
 fun BiometricAuthorizationSettings(
     BioMetricAuthorizationEnable:State<Boolean>,
     onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit,
@@ -466,7 +462,6 @@ fun BiometricAuthorizationSettings(
    }
 }
 
-@MustBeLocalization
 @Composable
 fun LockWhenLeaveSettings(
     currentState: State<Boolean>,
@@ -477,7 +472,7 @@ fun LockWhenLeaveSettings(
            verticalAlignment = Alignment.CenterVertically,
        ) {
            Text(
-               text = "Блокировать при сворачивании",
+               text = stringResource(R.string.Block_on_collapse),
                fontWeight = FontWeight.Medium,
                fontSize = 16.sp,
                color = PrimaryFontColor,
@@ -500,21 +495,27 @@ fun LockWhenLeaveSettings(
    }
 }
 
-@MustBeLocalization
+@Composable
 fun getLockWhenLeaveItems() : List<Pair<String,Int>> {
     return listOf(
-        Pair("Немедленно",0),
-        Pair("10 Секунд",10_000),
-        Pair("30 Секунд",30_000),
-        Pair("1 Минута",60_000),
-        Pair("2 Минуты",120_000),
-        Pair("5 Минут",300_000),
+        Pair(stringResource(R.string.Immediately),1_000),
+        Pair(stringResource(R.string.Ten_seconds),10_000),
+        Pair(stringResource(R.string.thirty_seconds),30_000),
+        Pair(stringResource(R.string.one_minute),60_000),
+        Pair(stringResource(R.string.two_minutes),120_000),
+        Pair(stringResource(R.string.five_minutes),300_000),
     )
 }
-
+@Composable
+fun getCurrent(currentTime:Int) : Pair<String,Int> {
+    val list = getLockWhenLeaveItems()
+    list.forEach {
+        if(it.second == currentTime) return it
+    }
+    return list[0]
+}
 
 @Composable
-@MustBeLocalization
 fun TimerLockWhenLeave(
     isLockWhenLeaveEnable:State<Boolean>,
     currentTime:State<Int>,
@@ -524,7 +525,7 @@ fun TimerLockWhenLeave(
     onTimeChanged:(time:Int) -> Unit
 ) {
     val dropDownItems = getLockWhenLeaveItems()
-    val current:Pair<String,Int> = dropDownItems.first { it.second == currentTime.value }
+    val current:Pair<String,Int> = getCurrent(currentTime.value)
     if(isLockWhenLeaveEnable.value) {
         val annotatedLabelString = buildAnnotatedString {
             append(current.first)
@@ -545,7 +546,7 @@ fun TimerLockWhenLeave(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Время до блокировки",
+                text = stringResource(R.string.Time_to_block),
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 color = PrimaryFontColor,
