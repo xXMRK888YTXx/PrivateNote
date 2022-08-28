@@ -3,7 +3,7 @@ package com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import kotlinx.coroutines.flow.Flow
 
-interface NoteRepository {
+interface NoteRepository : NoteResourceRepository {
     fun getAllNote() : Flow<List<Note>>
 
     fun insertNote(note: Note)

@@ -5,6 +5,7 @@ import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
+import com.xxmrk888ytxx.privatenote.NoteFileManager.NoteFileManager
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepositoryImpl
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
@@ -27,8 +28,8 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Singleton
     @Provides
-    fun getNoteRepositoryImpl(noteDao: NoteDao) : NoteRepositoryImpl {
-        return NoteRepositoryImpl(noteDao)
+    fun getNoteRepositoryImpl(noteDao: NoteDao,noteFileManager: NoteFileManager) : NoteRepositoryImpl {
+        return NoteRepositoryImpl(noteDao,noteFileManager)
     }
 
     @Provides

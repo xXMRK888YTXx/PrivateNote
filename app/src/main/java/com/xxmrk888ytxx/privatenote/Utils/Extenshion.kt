@@ -6,6 +6,7 @@ import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.text.isDigitsOnly
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
@@ -15,6 +16,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import java.io.File
 import java.util.*
 
 fun String.getFirstChars() : String {
@@ -142,4 +144,17 @@ fun Context.setAppLocale(language: String): Context {
     config.setLocale(locale)
     config.setLayoutDirection(locale)
     return createConfigurationContext(config)
+}
+
+fun File.fileNameToLong() : Long {
+    if(this.name.isDigitsOnly()) return this.name.toLong()
+    var finalString = ""
+    this.name.forEach {
+        if(it.isDigit()) {
+            finalString += it
+        }else {
+            return finalString.toLong()
+        }
+    }
+    return 0
 }

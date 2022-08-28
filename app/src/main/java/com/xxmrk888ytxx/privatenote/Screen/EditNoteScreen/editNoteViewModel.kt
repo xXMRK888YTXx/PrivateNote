@@ -17,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
@@ -27,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -96,6 +98,9 @@ class editNoteViewModel @Inject constructor(
             note = noteRepository.getNoteById(id).getData()
             savePrimaryVersion(note.copy())
             saveCategory(note.category)
+            viewModelScope.launch(Dispatchers.IO) {
+                noteRepository.loadImages(id)
+            }
             if(!note.isEncrypted) {
                     titleTextField.value = note.title
                     textField.value = note.text
@@ -254,6 +259,9 @@ class editNoteViewModel @Inject constructor(
     override fun onCleared() {
         saveNote()
         inputHistoryManager.clearBuffer()
+        GlobalScope.launch(Dispatchers.IO) {
+            noteRepository.clearLoadImages()
+        }
         super.onCleared()
     }
     fun getToast() = showToast
@@ -339,15 +347,16 @@ class editNoteViewModel @Inject constructor(
         isShowCategoryChangeDialog.value = status
     }
 
-    fun getNoteBitmap() : List<Bitmap> {
-        return listOf()
+    fun getNoteImage() : SharedFlow<List<Image>> {
+        return noteRepository.getNoteImages(note.id)
     }
 
     fun addImage(activityController: ActivityController) {
+        val password = notePassword
         activityController.pickImage(
             onComplete = {
-                viewModelScope.launch(Dispatchers.Main) {
-                    showToast.showToast(it.toString())
+                viewModelScope.launch(Dispatchers.IO) {
+                    noteRepository.addImage(it,note.id,password)
                 }
             },
             onError = {
