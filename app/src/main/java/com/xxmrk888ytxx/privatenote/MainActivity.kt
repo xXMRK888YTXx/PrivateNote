@@ -1,10 +1,14 @@
 package com.xxmrk888ytxx.privatenote
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.content.res.Configuration
-import android.hardware.fingerprint.FingerprintManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
@@ -15,17 +19,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
+import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
-import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
-import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -34,16 +36,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ActivityController {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     lateinit var navController: NavHostController
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
+
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,7 +83,11 @@ class MainActivity : AppCompatActivity() {
                         )
                     }
                     composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
-                    composable(Screen.EditNoteScreen.route) {EditNoteScreen(navController = navController)}
+                    composable(Screen.EditNoteScreen.route) {
+                        EditNoteScreen(
+                            navController = navController,
+                            activityController = this@MainActivity
+                    )}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
                 }
             }
@@ -117,7 +123,8 @@ class MainActivity : AppCompatActivity() {
         }
         GlobalScope.launch(Dispatchers.Main) {
             if(mainActivityViewModel.getLockWhenLeaveState()&&
-                navController.currentDestination?.route != Screen.SplashScreen.route)
+                navController.currentDestination?.route != Screen.SplashScreen.route&&
+                !mainActivityViewModel.isNotLockApp)
             {
                 val time = mainActivityViewModel.getLockWhenLeaveTime()
                 mainActivityViewModel.startTimer(time) {
@@ -133,5 +140,33 @@ class MainActivity : AppCompatActivity() {
             notifyTaskManager.sendNextTask()
         }
     }
-}
 
+    override fun pickImage(onComplete: (image: Bitmap) -> Unit, onError: (e:Exception) -> Unit) {
+        try{
+            mainActivityViewModel.registerImagePickCallBacks(onComplete, onError)
+            val photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*";
+            imagePickCallBack.launch(photoPickerIntent)
+        }catch (e:CallBackAlreadyRegisteredException) {
+            onError(e)
+        }
+    }
+
+    private val imagePickCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK) {
+            val uri = it.data?.data
+            try {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val bitmap = MediaStore.Images.Media
+                        .getBitmap(this@MainActivity.contentResolver, uri)
+                    mainActivityViewModel.onPickComplete(bitmap)
+                }
+
+            }catch (e:Exception) {
+                mainActivityViewModel.onPickError(e)
+            }
+        }else {
+            mainActivityViewModel.onPickError(java.lang.Exception("User Cancel"))
+        }
+    }
+}

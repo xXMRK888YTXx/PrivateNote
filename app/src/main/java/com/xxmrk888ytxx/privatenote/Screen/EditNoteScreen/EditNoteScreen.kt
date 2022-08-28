@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
@@ -54,7 +55,11 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navController: NavController) {
+fun EditNoteScreen(
+    editNoteViewModel: editNoteViewModel = hiltViewModel(),
+    navController: NavController,
+    activityController: ActivityController
+) {
     val dialogState = remember {
         editNoteViewModel.dialogShowState
     }
@@ -86,7 +91,7 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
         is ShowDialogState.EditCategoryDialog -> {SelectionCategoryDialog(currentSelected = currentSelectedItem,
             dialogController = editNoteViewModel.getDialogDispatcher())}
         is ShowDialogState.FileDialog -> {
-            FilesDialog(editNoteViewModel)
+            FilesDialog(editNoteViewModel,activityController)
         }
         is ShowDialogState.None -> {}
     }
@@ -647,7 +652,7 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
 
 @Composable
 @MustBeLocalization
-fun FilesDialog(editNoteViewModel: editNoteViewModel) {
+fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: ActivityController) {
     val context = LocalContext.current
     val images = editNoteViewModel.getNoteBitmap()
     Box(
@@ -700,7 +705,7 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel) {
                         modifier = Modifier.padding(start = 10.dp)
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
                             Icon(painter = painterResource(R.drawable.ic_plus),
                                 contentDescription = "",
                                 tint = PrimaryFontColor,

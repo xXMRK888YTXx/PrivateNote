@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
@@ -340,5 +341,18 @@ class editNoteViewModel @Inject constructor(
 
     fun getNoteBitmap() : List<Bitmap> {
         return listOf()
+    }
+
+    fun addImage(activityController: ActivityController) {
+        activityController.pickImage(
+            onComplete = {
+                viewModelScope.launch(Dispatchers.Main) {
+                    showToast.showToast(it.toString())
+                }
+            },
+            onError = {
+                showToast.showToast(it.message.toString())
+            }
+        )
     }
 }
