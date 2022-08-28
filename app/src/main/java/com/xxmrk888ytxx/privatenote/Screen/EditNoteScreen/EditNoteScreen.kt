@@ -1,17 +1,19 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import android.widget.ImageButton
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +22,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -43,11 +47,8 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
-import com.xxmrk888ytxx.privatenote.Utils.BackPressController
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
-import com.xxmrk888ytxx.privatenote.Utils.NavArguments
-import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -84,6 +85,9 @@ fun EditNoteScreen(editNoteViewModel: editNoteViewModel = hiltViewModel(), navCo
         is ShowDialogState.ExitDialog -> { ExitDialog(editNoteViewModel,navController)}
         is ShowDialogState.EditCategoryDialog -> {SelectionCategoryDialog(currentSelected = currentSelectedItem,
             dialogController = editNoteViewModel.getDialogDispatcher())}
+        is ShowDialogState.FileDialog -> {
+            FilesDialog(editNoteViewModel)
+        }
         is ShowDialogState.None -> {}
     }
     val isHaveChanges = remember {
@@ -261,7 +265,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
                    verticalAlignment = Alignment.CenterVertically,
                    horizontalArrangement = Arrangement.End
                ) {
-                   IconButton(onClick = { /*TODO*/ }) {
+                   IconButton(onClick = { editNoteViewModel.dialogShowState.value = ShowDialogState.FileDialog }) {
                        Icon(
                            painter = painterResource(id = R.drawable.ic_attach),
                            contentDescription = "",
@@ -638,5 +642,91 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
                     editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
                 }
         )
+    }
+}
+
+@Composable
+@MustBeLocalization
+fun FilesDialog(editNoteViewModel: editNoteViewModel) {
+    val context = LocalContext.current
+    val images = editNoteViewModel.getNoteBitmap()
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = CardNoteColor,
+            shape = RoundedCornerShape(25.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Файлы",
+                        fontSize = 24.sp,
+                        color = PrimaryFontColor,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(start = 30.dp)
+                    )
+                    Box(modifier = Modifier.fillMaxWidth(),contentAlignment = Alignment.CenterEnd) {
+                        IconButton(onClick = { editNoteViewModel.dialogShowState.value = ShowDialogState.None}) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_cancel),
+                                contentDescription = "",
+                                tint = PrimaryFontColor,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Изображения",
+                        fontSize = 24.sp,
+                        color = PrimaryFontColor,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(painter = painterResource(R.drawable.ic_plus),
+                                contentDescription = "",
+                                tint = PrimaryFontColor,
+                                modifier = Modifier.size(30.dp)
+                            )
+                        }
+                    }
+                }
+                if(images.isNotEmpty()) {
+                    LazyRow() {
+
+                    }
+                }
+                else {
+                    Text(
+                        text = "Нет изображений",
+                        fontSize = 26.sp,
+                        color = SecondoryFontColor.copy(1f),
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp)
+                    )
+                }
+            }
+        }
     }
 }

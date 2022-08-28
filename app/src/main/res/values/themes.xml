@@ -6,5 +6,6 @@
         <item name="colorPrimary">#0A6312</item>
         <item name="colorOnPrimary">@color/Blue</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:navigationBarColor">@color/MainBackGroundColor</item>
     </style>
 </resources>

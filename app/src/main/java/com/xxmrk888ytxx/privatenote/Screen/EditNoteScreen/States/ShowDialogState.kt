@@ -5,5 +5,6 @@ sealed class ShowDialogState {
     object DecryptDialog : ShowDialogState()
     object ExitDialog : ShowDialogState()
     object EditCategoryDialog : ShowDialogState()
+    object FileDialog : ShowDialogState()
     object None : ShowDialogState()
 }

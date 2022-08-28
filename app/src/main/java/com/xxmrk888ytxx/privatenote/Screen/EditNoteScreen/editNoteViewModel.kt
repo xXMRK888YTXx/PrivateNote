@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -335,5 +336,9 @@ class editNoteViewModel @Inject constructor(
 
     fun changeCategoryEditDialogStatus(status:Boolean) {
         isShowCategoryChangeDialog.value = status
+    }
+
+    fun getNoteBitmap() : List<Bitmap> {
+        return listOf()
     }
 }
