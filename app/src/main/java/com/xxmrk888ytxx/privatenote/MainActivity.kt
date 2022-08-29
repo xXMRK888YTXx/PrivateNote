@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -112,7 +113,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
             lifecycleState.emit(LifeCycleState.onResume)
         }
         GlobalScope.launch(Dispatchers.Main) {
-            mainActivityViewModel.stopTimer()
+            mainActivityViewModel.checkAndLockApp()
         }
     }
 
@@ -127,7 +128,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
                 !mainActivityViewModel.isNotLockApp)
             {
                 val time = mainActivityViewModel.getLockWhenLeaveTime()
-                mainActivityViewModel.startTimer(time) {
+                mainActivityViewModel.saveExitLockInfo(time) {
                     navController.navigate(Screen.SplashScreen.route){launchSingleTop = true}
                 }
             }
@@ -150,6 +151,18 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }catch (e:CallBackAlreadyRegisteredException) {
             onError(e)
         }
+    }
+
+    override suspend fun sendShowImageIntent(image: Bitmap) {
+        val uri = mainActivityViewModel.saveInCache(image,this) ?: return
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.setDataAndType(uri,"image/*")
+        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
+    }
+
+    override suspend fun clearShareDir() {
+        mainActivityViewModel.clearShareDir(this)
     }
 
     private val imagePickCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

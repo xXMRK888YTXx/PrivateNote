@@ -16,7 +16,7 @@ import javax.inject.Singleton
 class FileManagerModule {
     @Provides
     @Singleton
-    fun getFileManager(@ApplicationContext context: Context,securityUtils: SecurityUtils) : NoteFileManager {
-        return NoteFileManagerImpl(context,securityUtils)
+    fun getFileManager(@ApplicationContext context: Context) : NoteFileManager {
+        return NoteFileManagerImpl(context)
     }
 }

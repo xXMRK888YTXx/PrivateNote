@@ -1,14 +1,22 @@
 package com.xxmrk888ytxx.privatenote
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.biometric.BiometricPrompt
+import androidx.core.content.FileProvider.getUriForFile
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import java.io.FileOutputStream
+import java.security.AccessController.getContext
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -19,6 +27,8 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
+
+    private var exitLockInfo:Pair<Long,() -> Unit>? = null
 
     private var timer: CountDownTimer? = null
     private fun markStart() {
@@ -37,23 +47,16 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun startTimer(time:Int, onComplete:() -> Unit) {
-        stopTimer()
-        timer = object : CountDownTimer(time.toLong(),1000) {
-            override fun onTick(p0: Long) {
-
-            }
-
-            override fun onFinish() {
-                onComplete()
-            }
-
-        }.start()
+    fun saveExitLockInfo(time:Int, onComplete:() -> Unit) {
+        exitLockInfo = Pair(System.currentTimeMillis()+time,onComplete)
     }
 
-    fun stopTimer() {
-        timer?.cancel()
-        timer = null
+    fun checkAndLockApp() {
+        if(exitLockInfo == null) return
+        if(System.currentTimeMillis() >= exitLockInfo!!.first) {
+            exitLockInfo!!.second()
+        }
+        exitLockInfo = null
     }
 
     fun getAppPasswordState() : Boolean {
@@ -110,6 +113,28 @@ class MainActivityViewModel @Inject constructor(
         if(pickImageCallBacks == null) return
         pickImageCallBacks!!.second(e)
         unRegisterImagePickCallBacks()
+    }
+
+    suspend fun saveInCache(image: Bitmap, context: Context) : Uri? {
+        return try {
+            val shareImageDir: File = File(context.cacheDir, "share_files")
+            shareImageDir.mkdir()
+            val imageFile = File(shareImageDir, "temp.png")
+            val stream = FileOutputStream(imageFile)
+            image.compress(Bitmap.CompressFormat.PNG, 100,stream)
+            stream.close()
+            getUriForFile(context, BuildConfig.APPLICATION_ID, imageFile)
+        }catch (e:Exception) {
+            Log.d("MyLog",e.message.toString())
+            null
+        }
+    }
+
+    suspend fun clearShareDir(context:Context) {
+        val shareImageDir: File = File(context.cacheDir, "share_files")
+        shareImageDir.listFiles().forEach {
+            it.delete()
+        }
     }
 
 }

@@ -714,7 +714,9 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                         items(images.value) {
                             Image(bitmap = it.image.asImageBitmap(),
                                 contentDescription = "",
-                                modifier = Modifier.size(100.dp).animateItemPlacement()
+                                modifier = Modifier.size(100.dp).animateItemPlacement().clickable {
+                                    editNoteViewModel.openImageInImageViewer(it.image,activityController)
+                                }
                             )
                         }
                     }

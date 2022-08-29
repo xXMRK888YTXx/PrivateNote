@@ -16,8 +16,7 @@ import javax.inject.Inject
 
 
 class NoteFileManagerImpl @Inject constructor(
-    private val context: Context,
-    private val securityUtils: SecurityUtils
+    private val context: Context
 ) : NoteFileManager {
     override suspend fun addImage(image: Bitmap, noteId: Int) {
         saveBitmap(getNoteImageDir(noteId,context),image,null)
@@ -71,7 +70,7 @@ class NoteFileManagerImpl @Inject constructor(
 
     private fun getNoteImageDir(noteId: Int,context: Context) : String {
         val contextWrapper = ContextWrapper(context)
-        val rootDir = contextWrapper.getDir("Note_Images", Context.MODE_APPEND)
+        val rootDir = contextWrapper.getDir("Note_Images", Context.MODE_PRIVATE)
         val noteDir = File(rootDir,"$noteId")
         noteDir.mkdir()
         return noteDir.absolutePath

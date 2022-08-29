@@ -43,16 +43,23 @@ class editNoteViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
+        //очистка фото заметки добавление которой небыло завершино
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.clearTempDir()
         }
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
             lifeCycleState.collect() {
-                if(isNotLock) {
-                    if(note.id != 0) saveNote()
-                    return@collect
-                }
+                try {
+                    if(isNotLock.first) {
+                        if(it == LifeCycleState.onPause){
+                            if(note.id != 0) saveNote()
+                            return@collect
+                        }
+                        isNotLock.second()
+                        isNotLock = Pair(false){}
+                    }
+                }catch (e:Exception) {}
                 if(it == LifeCycleState.onPause) {
                     if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
                         isHideText.value = true
@@ -91,7 +98,7 @@ class editNoteViewModel @Inject constructor(
 
     private val currentSelectedCategory = mutableStateOf(0)
 
-    private var isNotLock:Boolean = false
+    private var isNotLock:Pair<Boolean,suspend () -> Unit> = Pair(false){}
 
     private val isShowCategoryChangeDialog = mutableStateOf(false)
         //сохроняет версию до изменений
@@ -368,18 +375,27 @@ class editNoteViewModel @Inject constructor(
     }
 
     fun addImage(activityController: ActivityController) {
-        isNotLock = true
+        isNotLock = Pair(true){}
         activityController.pickImage(
             onComplete = {
                 viewModelScope.launch(Dispatchers.IO) {
                     noteRepository.addImage(it,note.id)
                 }
-                isNotLock = false
+                isNotLock = Pair(false){}
             },
             onError = {
                 showToast.showToast(it.message.toString())
-                isNotLock = false
+                isNotLock = Pair(false){}
             }
         )
+    }
+
+    fun openImageInImageViewer(image:Bitmap,activityController: ActivityController) {
+        viewModelScope.launch(Dispatchers.IO) {
+            isNotLock = Pair(true){
+                activityController.clearShareDir()
+            }
+            activityController.sendShowImageIntent(image)
+        }
     }
 }
