@@ -43,10 +43,16 @@ class editNoteViewModel @Inject constructor(
 ) : ViewModel() {
 
     init {
-        Log.d("MyLog",inputHistoryManager.hashCode().toString())
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.clearTempDir()
+        }
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
             lifeCycleState.collect() {
+                if(isNotLock) {
+                    if(note.id != 0) saveNote()
+                    return@collect
+                }
                 if(it == LifeCycleState.onPause) {
                     if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
                         isHideText.value = true
@@ -85,6 +91,8 @@ class editNoteViewModel @Inject constructor(
 
     private val currentSelectedCategory = mutableStateOf(0)
 
+    private var isNotLock:Boolean = false
+
     private val isShowCategoryChangeDialog = mutableStateOf(false)
         //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
@@ -98,10 +106,10 @@ class editNoteViewModel @Inject constructor(
             note = noteRepository.getNoteById(id).getData()
             savePrimaryVersion(note.copy())
             saveCategory(note.category)
-            viewModelScope.launch(Dispatchers.IO) {
-                noteRepository.loadImages(id)
-            }
             if(!note.isEncrypted) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    noteRepository.loadImages(id)
+                }
                     titleTextField.value = note.title
                     textField.value = note.text
                 saveNoteState.value = SaveNoteState.DefaultSaveNote
@@ -154,6 +162,7 @@ class editNoteViewModel @Inject constructor(
     get() = field
         //сохрание заметки(зависит от режима)
     fun saveNote() {
+            val noteId = note.id
         GlobalScope.launch(Dispatchers.IO) {
             when(saveNoteState.value) {
                 is SaveNoteState.DefaultSaveNote -> {
@@ -191,6 +200,10 @@ class editNoteViewModel @Inject constructor(
                 }
 
                 is SaveNoteState.None -> return@launch
+            }
+            if(noteId == 0) {
+                val newNoteId = noteRepository.getAllNote().getData().maxBy { it.id }.id
+                noteRepository.tempDirToImageDir(newNoteId)
             }
         }
     }
@@ -235,6 +248,9 @@ class editNoteViewModel @Inject constructor(
             titleTextField.value = securityUtils.decrypt(note.title,hashPassword)
             textField.value = securityUtils.decrypt(note.text,hashPassword)
             notePassword = hashPassword
+            viewModelScope.launch(Dispatchers.IO) {
+                noteRepository.loadImages(note.id)
+            }
             saveNoteState.value = SaveNoteState.CryptSaveNote
             dialogShowState.value = ShowDialogState.None
         }catch (e:Exception) {
@@ -348,19 +364,21 @@ class editNoteViewModel @Inject constructor(
     }
 
     fun getNoteImage() : SharedFlow<List<Image>> {
-        return noteRepository.getNoteImages(note.id)
+        return noteRepository.getNoteImages()
     }
 
     fun addImage(activityController: ActivityController) {
-        val password = notePassword
+        isNotLock = true
         activityController.pickImage(
             onComplete = {
                 viewModelScope.launch(Dispatchers.IO) {
-                    noteRepository.addImage(it,note.id,password)
+                    noteRepository.addImage(it,note.id)
                 }
+                isNotLock = false
             },
             onError = {
                 showToast.showToast(it.message.toString())
+                isNotLock = false
             }
         )
     }

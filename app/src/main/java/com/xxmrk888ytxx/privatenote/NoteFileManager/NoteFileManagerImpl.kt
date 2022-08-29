@@ -5,41 +5,34 @@ import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.security.crypto.EncryptedFile
+import androidx.security.crypto.MasterKey
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.runBlocking
 import java.io.*
-import java.security.MessageDigest
-import java.util.*
-import javax.crypto.Cipher
-import javax.crypto.CipherOutputStream
-import javax.crypto.spec.SecretKeySpec
 import javax.inject.Inject
+
 
 class NoteFileManagerImpl @Inject constructor(
     private val context: Context,
     private val securityUtils: SecurityUtils
 ) : NoteFileManager {
-    override suspend fun addImage(image: Bitmap, noteId: Int, password: String?) {
-       val file = saveImage(image,getNoteImageDir(noteId,context))
-        if(password != null&&file != null) {
-            securityUtils.encryptFile(file,password)
-        }
-        loadImages(noteId)
+    override suspend fun addImage(image: Bitmap, noteId: Int) {
+        saveBitmap(getNoteImageDir(noteId,context),image,null)
+        loadImagesInBuffer(noteId)
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
         1,1,BufferOverflow.DROP_OLDEST
     )
     private val noteImageList:SharedFlow<List<Image>> = _noteImageList
 
-    override fun getNoteImages(noteId: Int): SharedFlow<List<Image>>  {
+    override fun getNoteImages(): SharedFlow<List<Image>>  {
        return noteImageList
     }
 
-    override suspend fun loadImages(noteId: Int) {
+    override suspend fun loadImagesInBuffer(noteId: Int) {
         val noteImagePath = getNoteImageDir(noteId,context)
         val imageDir = File(noteImagePath)
         val imageList = mutableListOf<Image>()
@@ -53,28 +46,28 @@ class NoteFileManagerImpl @Inject constructor(
         _noteImageList.tryEmit(imageList)
     }
 
-    override suspend fun clearImages() {
+    override suspend fun clearBufferImages() {
         _noteImageList.tryEmit(listOf())
     }
 
-    private suspend fun saveImage(image: Bitmap, folderPath:String) : String? {
-        val filePath = File(folderPath, "${System.currentTimeMillis()}")
-        var fileStream:FileOutputStream? = null
-        try {
-            fileStream = FileOutputStream(filePath)
-            image.compress(Bitmap.CompressFormat.PNG, 100,fileStream)
-            return filePath.absolutePath
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            return null
-        } finally {
-            try {
-                fileStream?.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+    override suspend fun clearNoteImages(noteId: Int) {
+        val imageDir = File(getNoteImageDir(noteId,context))
+        imageDir.listFiles().forEach {
+            it.delete()
         }
+        imageDir.delete()
     }
+
+    override suspend fun tempDirToImageDir(noteId: Int) {
+        val tempDir = File(getNoteImageDir(0,context))
+        val newImageDir = File(getNoteImageDir(noteId,context))
+        tempDir.renameTo(newImageDir)
+    }
+
+    override suspend fun clearTempDir() {
+        clearNoteImages(0)
+    }
+
 
     private fun getNoteImageDir(noteId: Int,context: Context) : String {
         val contextWrapper = ContextWrapper(context)
@@ -84,16 +77,42 @@ class NoteFileManagerImpl @Inject constructor(
         return noteDir.absolutePath
     }
 
-       override suspend fun getBitmap(filePath:String) : Bitmap? {
-        return try {
-            val bitmap = BitmapFactory.decodeStream(FileInputStream(filePath))
-            bitmap
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-            null
+     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap, password: String?) {
+        try {
+            val fileDir = File(imageDir,"${System.currentTimeMillis()}.png")
+            val mainKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            val file: EncryptedFile =  EncryptedFile.Builder(
+                context,fileDir, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build()
+            val stream: OutputStream = file.openFileOutput()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            stream.flush()
+            stream.close()
+        }catch (e:Exception) {
+            Log.d("MyLog",e.message.toString())
         }
     }
 
 
+    private suspend fun getBitmap(filePath: String): Bitmap? {
+        try {
+            val mainKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
 
+            val file = EncryptedFile.Builder(
+                context,
+                File(filePath),mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build()
+
+            val stream: InputStream = file.openFileInput()
+            val bitmap = BitmapFactory.decodeStream(stream)
+            return bitmap
+        }catch (e:Exception) {
+            Log.d("MyLog",e.message.toString())
+            return null
+        }
+    }
 }

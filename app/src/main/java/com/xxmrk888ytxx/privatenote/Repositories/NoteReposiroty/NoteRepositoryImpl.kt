@@ -27,6 +27,7 @@ class NoteRepositoryImpl @Inject constructor(
 
     override fun removeNote(id:Int) = runBlocking(Dispatchers.IO) {
         noteDao.removeNote(id)
+        noteFileManager.clearNoteImages(id)
     }
 
     override fun changeChosenStatus(isChosen:Boolean,id:Int) = runBlocking(Dispatchers.IO) {
@@ -37,19 +38,27 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }
 
-    override suspend fun addImage(image: Bitmap, noteId: Int, password: String?) {
-        noteFileManager.addImage(image, noteId, password)
+    override suspend fun addImage(image: Bitmap, noteId: Int) {
+        noteFileManager.addImage(image, noteId)
     }
 
-    override fun getNoteImages(noteId: Int): SharedFlow<List<Image>> {
-        return noteFileManager.getNoteImages(noteId)
+    override fun getNoteImages(): SharedFlow<List<Image>> {
+        return noteFileManager.getNoteImages()
     }
 
     override suspend fun loadImages(noteId: Int) {
-        noteFileManager.loadImages(noteId)
+        noteFileManager.loadImagesInBuffer(noteId)
     }
 
     override suspend fun clearLoadImages() {
-        noteFileManager.clearImages()
+        noteFileManager.clearBufferImages()
+    }
+
+    override suspend fun clearTempDir() {
+        noteFileManager.clearTempDir()
+    }
+
+    override suspend fun tempDirToImageDir(noteId: Int) {
+        noteFileManager.tempDirToImageDir(noteId)
     }
 }

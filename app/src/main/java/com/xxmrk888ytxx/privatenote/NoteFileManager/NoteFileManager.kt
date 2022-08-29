@@ -5,9 +5,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 interface NoteFileManager {
-    suspend fun addImage(image:Bitmap,noteId:Int, password:String? = null)
-    suspend fun getBitmap(filePath:String) : Bitmap?
-    fun getNoteImages(noteId: Int) : SharedFlow<List<Image>>
-    suspend fun loadImages(noteId: Int)
-    suspend fun clearImages()
+    suspend fun addImage(image:Bitmap,noteId:Int)
+    fun getNoteImages() : SharedFlow<List<Image>>
+    suspend fun loadImagesInBuffer(noteId: Int)
+    suspend fun clearBufferImages()
+    suspend fun clearNoteImages(noteId: Int)
+    suspend fun tempDirToImageDir(noteId: Int)
+    suspend fun clearTempDir()
 }
