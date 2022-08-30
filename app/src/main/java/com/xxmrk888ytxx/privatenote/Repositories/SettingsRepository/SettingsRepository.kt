@@ -50,4 +50,8 @@ interface SettingsRepository {
     fun getLockWhenLeaveTime() : Flow<Int>
 
     suspend fun setLockWhenLeaveTime(time:Int)
+
+    suspend fun setSaveLockTime(time:Long?)
+
+    fun getSaveLockTime() : Flow<Long?>
 }

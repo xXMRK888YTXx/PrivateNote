@@ -7,16 +7,18 @@ import android.os.CountDownTimer
 import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider.getUriForFile
-import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.security.AccessController.getContext
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -28,9 +30,8 @@ class MainActivityViewModel @Inject constructor(
      var isFirstStart:Boolean = true
     get() = field
 
-    private var exitLockInfo:Pair<Long,() -> Unit>? = null
 
-    private var timer: CountDownTimer? = null
+
     private fun markStart() {
         isFirstStart = false
     }
@@ -47,16 +48,20 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    fun saveExitLockInfo(time:Int, onComplete:() -> Unit) {
-        exitLockInfo = Pair(System.currentTimeMillis()+time,onComplete)
+    fun saveExitLockInfo(time:Int) {
+        GlobalScope.launch(Dispatchers.IO) {
+            settingsRepository.setSaveLockTime(System.currentTimeMillis()+time)
+        }
     }
 
-    fun checkAndLockApp() {
-        if(exitLockInfo == null) return
-        if(System.currentTimeMillis() >= exitLockInfo!!.first) {
-            exitLockInfo!!.second()
+    fun checkAndLockApp(onLock:() -> Unit) {
+        val lockTime = settingsRepository.getSaveLockTime().getData() ?: return
+        if(System.currentTimeMillis() >= lockTime) {
+            onLock()
         }
-        exitLockInfo = null
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsRepository.setSaveLockTime(null)
+        }
     }
 
     fun getAppPasswordState() : Boolean {
@@ -121,7 +126,7 @@ class MainActivityViewModel @Inject constructor(
             shareImageDir.mkdir()
             val imageFile = File(shareImageDir, "temp.png")
             val stream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.PNG, 100,stream)
+            image.compress(Bitmap.CompressFormat.PNG, 80,stream)
             stream.close()
             getUriForFile(context, BuildConfig.APPLICATION_ID, imageFile)
         }catch (e:Exception) {

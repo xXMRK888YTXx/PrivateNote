@@ -113,7 +113,10 @@ class MainActivity : AppCompatActivity(), ActivityController {
             lifecycleState.emit(LifeCycleState.onResume)
         }
         GlobalScope.launch(Dispatchers.Main) {
-            mainActivityViewModel.checkAndLockApp()
+            mainActivityViewModel.checkAndLockApp() {
+                navController.popBackStack()
+                navController.navigate(Screen.SplashScreen.route) {launchSingleTop = true}
+            }
         }
     }
 
@@ -128,9 +131,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
                 !mainActivityViewModel.isNotLockApp)
             {
                 val time = mainActivityViewModel.getLockWhenLeaveTime()
-                mainActivityViewModel.saveExitLockInfo(time) {
-                    navController.navigate(Screen.SplashScreen.route){launchSingleTop = true}
-                }
+                mainActivityViewModel.saveExitLockInfo(time)
             }
         }
     }

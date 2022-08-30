@@ -61,4 +61,8 @@ class NoteRepositoryImpl @Inject constructor(
     override suspend fun tempDirToImageDir(noteId: Int) {
         noteFileManager.tempDirToImageDir(noteId)
     }
+
+    override suspend fun removeImage(noteId: Int, imageId: Long) {
+        noteFileManager.removeImage(noteId,imageId)
+    }
 }

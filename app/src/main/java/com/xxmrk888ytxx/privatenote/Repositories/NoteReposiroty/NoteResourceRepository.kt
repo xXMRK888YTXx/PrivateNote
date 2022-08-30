@@ -11,4 +11,5 @@ interface NoteResourceRepository {
     suspend fun clearLoadImages()
     suspend fun clearTempDir()
     suspend fun tempDirToImageDir(noteId: Int)
+    suspend fun removeImage(noteId: Int,imageId:Long)
 }

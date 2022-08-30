@@ -31,6 +31,7 @@ class SettingsRepositoryImpl (
     private val biometricAuthorizationState = booleanPreferencesKey("BiometricAuthorizationState")
     private val lockWhenLeaveState = booleanPreferencesKey("LockWhenLeaveState")
     private val lockWhenLeaveTime = intPreferencesKey("lockWhenLeaveTime")
+    private val saveLockTime = longPreferencesKey("saveLockTime")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -184,6 +185,20 @@ class SettingsRepositoryImpl (
     override suspend fun setLockWhenLeaveTime(time: Int) {
         context.dataStore.edit {
             it[lockWhenLeaveTime] = time
+        }
+    }
+
+    override suspend fun setSaveLockTime(time: Long?) {
+        context.dataStore.edit {
+            if(time != null)
+            it[saveLockTime] = time
+            else it.remove(saveLockTime)
+        }
+    }
+
+    override fun getSaveLockTime(): Flow<Long?> = runBlocking(Dispatchers.IO) {
+        context.dataStore.data.map {
+           it[saveLockTime]
         }
     }
 }

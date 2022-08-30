@@ -12,4 +12,5 @@ interface NoteFileManager {
     suspend fun clearNoteImages(noteId: Int)
     suspend fun tempDirToImageDir(noteId: Int)
     suspend fun clearTempDir()
+    suspend fun removeImage(noteId: Int,imageId:Long)
 }

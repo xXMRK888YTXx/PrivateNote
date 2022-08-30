@@ -5,6 +5,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.KeyboardActions
@@ -19,6 +20,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -41,6 +43,7 @@ import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
+import com.xxmrk888ytxx.privatenote.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
@@ -49,6 +52,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
+@MustBeLocalization
 fun EditNoteScreen(
     editNoteViewModel: editNoteViewModel = hiltViewModel(),
     navController: NavController,
@@ -56,6 +60,9 @@ fun EditNoteScreen(
 ) {
     val dialogState = remember {
         editNoteViewModel.dialogShowState
+    }
+    val removeImageDialogState = remember {
+        editNoteViewModel.getShowRemoveImageState()
     }
     val changeCategoryDialogStatus = remember {
         editNoteViewModel.getChangeCategoryDialogStatus()
@@ -95,10 +102,13 @@ fun EditNoteScreen(
     BackPressController.setHandler(isHaveChanges.value&&editNoteViewModel.isHavePrimaryVersion()) {
         editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
     }
-//    if(changeCategoryDialogStatus.value) {
-//        SelectionCategoryDialog(currentSelected = currentSelectedItem,
-//            dialogDispatcher = editNoteViewModel.getDialogDispatcher())
-//    }
+    if(removeImageDialogState.value.first) {
+        YesNoDialog(title = "Удалить изображение?",
+            onCancel = { editNoteViewModel.hideRemoveImageDialog() }) {
+            removeImageDialogState.value.second()
+            editNoteViewModel.hideRemoveImageDialog()
+        }
+    }
 }
 
 @Composable
@@ -710,15 +720,32 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                     }
                 }
                 if(images.value.isNotEmpty()) {
-                    LazyRow() {
+                    LazyRow(
+                        modifier = Modifier.padding(7.dp)
+                    ) {
                         items(images.value) {
-                            Image(bitmap = it.image.asImageBitmap(),
-                                contentDescription = "",
-                                modifier = Modifier.size(100.dp).animateItemPlacement().clickable {
-                                    editNoteViewModel.openImageInImageViewer(it.image,activityController)
-                                }
-                            )
-                        }
+                              Image(
+                                  bitmap = it.image.asImageBitmap(),
+                                  contentDescription = "",
+                                  contentScale = ContentScale.Crop,
+                                  modifier = Modifier
+                                      .combinedClickable(
+                                          onClick = {
+                                              editNoteViewModel
+                                                  .openImageInImageViewer(
+                                                      it.image,
+                                                      activityController
+                                                  )
+                                          },
+                                          onLongClick = {
+                                              editNoteViewModel.showRemoveImageDialog(it.id)
+                                          }
+                                      )
+                                      .padding(end = 10.dp)
+                                      .size(100.dp)
+                                      .clip(RoundedCornerShape(10))
+                              )
+                          }
                     }
                 }
                 else {

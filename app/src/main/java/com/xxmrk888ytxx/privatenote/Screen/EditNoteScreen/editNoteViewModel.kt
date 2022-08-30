@@ -90,6 +90,20 @@ class editNoteViewModel @Inject constructor(
 
     val isHideText = mutableStateOf(false)
 
+    private val isShowRemoveImageDialog = mutableStateOf(Pair(false){})
+
+    fun getShowRemoveImageState() = isShowRemoveImageDialog
+
+    fun showRemoveImageDialog(imageId: Long) {
+        isShowRemoveImageDialog.value = Pair(true) {
+            removeImage(imageId)
+        }
+    }
+
+    fun hideRemoveImageDialog() {
+        isShowRemoveImageDialog.value = Pair(false){}
+    }
+
     private var primaryNoteVersion:Note? = null
 
     private var currentCategory:MutableState<Category?> = mutableStateOf(null)
@@ -396,6 +410,12 @@ class editNoteViewModel @Inject constructor(
                 activityController.clearShareDir()
             }
             activityController.sendShowImageIntent(image)
+        }
+    }
+
+    fun removeImage(imageId:Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            noteRepository.removeImage(note.id,imageId)
         }
     }
 }

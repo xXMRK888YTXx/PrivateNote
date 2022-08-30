@@ -19,7 +19,7 @@ class NoteFileManagerImpl @Inject constructor(
     private val context: Context
 ) : NoteFileManager {
     override suspend fun addImage(image: Bitmap, noteId: Int) {
-        saveBitmap(getNoteImageDir(noteId,context),image,null)
+        saveBitmap(getNoteImageDir(noteId,context),image)
         loadImagesInBuffer(noteId)
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
@@ -67,6 +67,13 @@ class NoteFileManagerImpl @Inject constructor(
         clearNoteImages(0)
     }
 
+    override suspend fun removeImage(noteId: Int, imageId: Long) {
+        val imageDir = getNoteImageDir(noteId,context)
+        val image = File(imageDir,"$imageId.png")
+        image.delete()
+        loadImagesInBuffer(noteId)
+    }
+
 
     private fun getNoteImageDir(noteId: Int,context: Context) : String {
         val contextWrapper = ContextWrapper(context)
@@ -76,7 +83,7 @@ class NoteFileManagerImpl @Inject constructor(
         return noteDir.absolutePath
     }
 
-     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap, password: String?) {
+     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap) {
         try {
             val fileDir = File(imageDir,"${System.currentTimeMillis()}.png")
             val mainKey = MasterKey.Builder(context)
@@ -86,7 +93,7 @@ class NoteFileManagerImpl @Inject constructor(
                 context,fileDir, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build()
             val stream: OutputStream = file.openFileOutput()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 80, stream)
             stream.flush()
             stream.close()
         }catch (e:Exception) {
