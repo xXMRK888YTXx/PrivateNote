@@ -49,9 +49,6 @@ class NoteStateViewModel @Inject constructor(
     fun setMainScreenController(mainScreenController: MainScreenController?) {
         if(mainScreenController == null) return
         this.mainScreenController = mainScreenController
-        mainScreenController.setSearchButtonOnClickListener {
-            toSearchMode()
-        }
         SetupFloatButtonOptions()
     }
 
@@ -109,14 +106,14 @@ class NoteStateViewModel @Inject constructor(
     }
     fun toSelectionMode() {
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
-        mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
     }
 
     fun toDefaultMode() {
         currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
-        mainScreenController?.changeTopBarVisibleStatus(true)
+        mainScreenController?.changeBottomBarVisibleStatus(true)
         mainScreenController?.changeScrollBetweenScreenState(true)
     }
 
@@ -166,7 +163,7 @@ class NoteStateViewModel @Inject constructor(
 
     fun toSearchMode() {
         currentNoteMode.value = NoteScreenMode.SearchScreenMode
-        mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
     }
     val lastNoteCount = mutableStateOf(0)
@@ -190,13 +187,13 @@ class NoteStateViewModel @Inject constructor(
     fun getAllCategory() = categoryRepository.getAllCategory()
 
     fun showCategoryList() {
-        mainScreenController?.changeTopBarVisibleStatus(false)
+        mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
-        mainScreenController?.changeTopBarVisibleStatus(true)
+        mainScreenController?.changeBottomBarVisibleStatus(true)
         mainScreenController?.changeScrollBetweenScreenState(true)
         currentNoteMode.value = NoteScreenMode.Default
         showEditCategoryDialog.value = Pair(false,null)

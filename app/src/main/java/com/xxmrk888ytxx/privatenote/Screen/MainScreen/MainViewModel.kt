@@ -34,7 +34,7 @@ class MainViewModel @Inject constructor(
 
     private var onClickFloatButton:MutableMap<Int,(navController: NavController) -> Unit> = mutableMapOf()
 
-    fun getShowToolBarStatus() = topBarVisibleStatus
+    fun getShowBottomBarStatus() = topBarVisibleStatus
 
     fun getButtonListener(key:Int) = onClickHolder.get(key) ?: {}
 
@@ -44,16 +44,8 @@ class MainViewModel @Inject constructor(
     }
     private val onClickHolder = mutableMapOf<Int,() -> Unit>()
 
-    override fun changeTopBarVisibleStatus(isVisible: Boolean) {
+    override fun changeBottomBarVisibleStatus(isVisible: Boolean) {
         topBarVisibleStatus.value = isVisible
-    }
-
-    override fun setSearchButtonOnClickListener(onClick: () -> Unit) {
-        onClickHolder.set(SEARCH_BUTTON_KEY,onClick)
-    }
-
-    override fun searchButtonOnClick() {
-        onClickHolder.getOrDefault(SEARCH_BUTTON_KEY,{})()
     }
 
     override fun setFloatButtonOnClickListener(screenKey:Int,onClick: (navController: NavController) -> Unit) {
