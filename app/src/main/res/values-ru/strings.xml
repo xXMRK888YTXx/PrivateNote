@@ -119,4 +119,10 @@
     <string name="five_minutes">5 Минут</string>
     <string name="Time_to_block">Время до блокировки</string>
     <string name="Press_again_to_exit">Нажмите ещё раз для выхода</string>
+    <string name="Remove_image">Удалить изображение?</string>
+    <string name="Files">Файлы</string>
+    <string name="Images">Изображения</string>
+    <string name="No_Images">Нет изображений</string>
+    <string name="Note">Заметки</string>
+    <string name="ToDo">Список дел</string>
 </resources>

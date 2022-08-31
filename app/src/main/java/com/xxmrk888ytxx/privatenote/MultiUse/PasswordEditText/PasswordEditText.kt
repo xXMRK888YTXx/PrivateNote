@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -15,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -25,7 +27,8 @@ import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.SearchColor
 
 @Composable
-fun PasswordEditText(titleText: MutableState<String>, password: MutableState<String>) {
+fun PasswordEditText(titleText: MutableState<String>,
+                     password: MutableState<String>,onDoneClick:() -> Unit = {}) {
     val context = LocalContext.current
     OutlinedTextField(value = password.value,
         onValueChange = {password.value = it;
@@ -56,6 +59,13 @@ fun PasswordEditText(titleText: MutableState<String>, password: MutableState<Str
         keyboardOptions = KeyboardOptions(autoCorrect = false,
             keyboardType = KeyboardType.Password,
         ),
-        visualTransformation = PasswordVisualTransformation()
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardActions = KeyboardActions(
+            onDone = {
+                onDoneClick()
+            }
+        ) {
+            this.defaultKeyboardAction(ImeAction.Done)
+        },
     )
 }

@@ -100,7 +100,15 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                PasswordEditText(titleText = titleText, password = password)
+                PasswordEditText(titleText = titleText, password = password) {
+                    coroutineScope.launch{
+                        try{
+                            settingsViewModel.disableAppPassword(password.value)
+                        }catch (e:InvalidPasswordException) {
+                            titleText.value = context.getString(R.string.Invalid_password)
+                        }
+                    }
+                }
                 OutlinedButton(
                     modifier = Modifier
                         .fillMaxWidth()

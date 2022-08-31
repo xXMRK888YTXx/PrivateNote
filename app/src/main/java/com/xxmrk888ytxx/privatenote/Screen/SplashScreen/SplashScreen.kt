@@ -147,7 +147,18 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        PasswordEditText(titleText = titleText, password = password)
+        PasswordEditText(titleText = titleText,
+            password = password,
+            onDoneClick = {
+                coroutineScope.launch{
+                    if(splashViewModel.checkPassword(password.value)) {
+                        onCompletedAuth() {splashViewModel.toMainScreen(navController)}
+                    }else {
+                        titleText.value = context.getString(R.string.Invalid_password)
+                    }
+                }
+            }
+        )
         OutlinedButton(
             modifier = Modifier
                 .fillMaxWidth()

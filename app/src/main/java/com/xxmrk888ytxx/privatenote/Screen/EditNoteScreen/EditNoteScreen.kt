@@ -52,7 +52,6 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-@MustBeLocalization
 fun EditNoteScreen(
     editNoteViewModel: editNoteViewModel = hiltViewModel(),
     navController: NavController,
@@ -103,7 +102,7 @@ fun EditNoteScreen(
         editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
     }
     if(removeImageDialogState.value.first) {
-        YesNoDialog(title = "Удалить изображение?",
+        YesNoDialog(title = stringResource(R.string.Remove_image),
             onCancel = { editNoteViewModel.hideRemoveImageDialog() }) {
             removeImageDialogState.value.second()
             editNoteViewModel.hideRemoveImageDialog()
@@ -496,7 +495,18 @@ fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavControl
                 Modifier.background(MainBackGroundColor)
 
             ) {
-                PasswordEditText(titleText,passwordText)
+                PasswordEditText(titleText,passwordText) {
+                    coroutineScope.launch{
+                        isLoad.value = true
+                        try {
+                            editNoteViewModel.decrypt(passwordText.value)
+                        }catch (e:FailedDecryptException) {
+                            titleText.value = context.getString(R.string.Invalid_password)
+                        }
+                        isLoad.value = false
+                    }
+                }
+
                 if(!isLoad.value) {
                     OutlinedButton(
                         modifier = Modifier
@@ -656,7 +666,6 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-@MustBeLocalization
 fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: ActivityController) {
     val context = LocalContext.current
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf())
@@ -678,7 +687,7 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Файлы",
+                        text = stringResource(R.string.Files),
                         fontSize = 24.sp,
                         color = PrimaryFontColor,
                         fontWeight = FontWeight.Medium,
@@ -703,7 +712,7 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Изображения",
+                        text = stringResource(R.string.Images),
                         fontSize = 24.sp,
                         color = PrimaryFontColor,
                         fontWeight = FontWeight.Medium,
@@ -750,7 +759,7 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                 }
                 else {
                     Text(
-                        text = "Нет изображений",
+                        text = stringResource(R.string.No_Images),
                         fontSize = 26.sp,
                         color = SecondoryFontColor.copy(1f),
                         fontWeight = FontWeight.Medium,

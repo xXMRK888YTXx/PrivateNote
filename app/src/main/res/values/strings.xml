@@ -124,4 +124,10 @@
     <string name="five_minutes">5 Minutes</string>
     <string name="Time_to_block">Time to block</string>
     <string name="Press_again_to_exit">Press again to exit</string>
+    <string name="Remove_image">Delete image?</string>
+    <string name="Files">Files</string>
+    <string name="Images">Images</string>
+    <string name="No_Images">No images</string>
+    <string name="Note">Notes</string>
+    <string name="ToDo">To-do list</string>
 </resources>

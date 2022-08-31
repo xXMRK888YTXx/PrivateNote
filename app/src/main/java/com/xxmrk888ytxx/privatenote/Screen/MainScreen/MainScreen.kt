@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -162,7 +163,7 @@ fun BottomBar(
     val scope = rememberCoroutineScope()
     val items = listOf<BottomMenuItems>(
         BottomMenuItems(
-            name = "Заметки",
+            name = stringResource(R.string.Note),
             icon = R.drawable.ic_notes,
             id = MainScreenState.NoteScreen.id,
             onClick = {
@@ -172,7 +173,7 @@ fun BottomBar(
             }
         ),
         BottomMenuItems(
-            name = "Дела",
+            name = stringResource(R.string.ToDo),
             icon = R.drawable.ic_todo_icon,
             id = MainScreenState.ToDoScreen.id,
             onClick = {
@@ -182,7 +183,7 @@ fun BottomBar(
             }
         ),
         BottomMenuItems(
-            name = "Настройки",
+            name = stringResource(R.string.Settings),
             icon = R.drawable.ic_settings,
             id = -1,
             onClick = {
