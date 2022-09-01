@@ -153,7 +153,6 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
 //}
 
 @OptIn(ExperimentalPagerApi::class)
-@MustBeLocalization
 @Composable
 fun BottomBar(
     mainViewModel: MainViewModel,

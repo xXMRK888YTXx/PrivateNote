@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
@@ -28,8 +29,8 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Singleton
     @Provides
-    fun getNoteRepositoryImpl(noteDao: NoteDao,noteFileManager: NoteFileManager) : NoteRepositoryImpl {
-        return NoteRepositoryImpl(noteDao,noteFileManager)
+    fun getNoteRepositoryImpl(noteDao: NoteDao,noteFileManager: NoteFileManager,analytics: FirebaseAnalytics) : NoteRepositoryImpl {
+        return NoteRepositoryImpl(noteDao,noteFileManager,analytics)
     }
 
     @Provides
@@ -40,8 +41,8 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getCategoryRepositoryImpl(categoryDao: CategoryDao) : CategoryRepositoryImpl {
-        return CategoryRepositoryImpl(categoryDao)
+    fun getCategoryRepositoryImpl(categoryDao: CategoryDao,analytics: FirebaseAnalytics) : CategoryRepositoryImpl {
+        return CategoryRepositoryImpl(categoryDao,analytics)
     }
 
     @Provides
@@ -52,14 +53,14 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao) : ToDoRepository {
-        return ToDoRepositoryImpl(toDoDao)
+    fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao,analytics: FirebaseAnalytics) : ToDoRepository {
+        return ToDoRepositoryImpl(toDoDao,analytics)
     }
 
     @Provides
     @Singleton
-    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao) : NotifyTaskRepository {
-        return NotifyTaskRepositoryImpl(notifyTaskDao)
+    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao,analytics: FirebaseAnalytics) : NotifyTaskRepository {
+        return NotifyTaskRepositoryImpl(notifyTaskDao,analytics)
     }
 
     @Provides

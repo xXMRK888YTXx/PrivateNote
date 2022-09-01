@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
 import android.hardware.fingerprint.FingerprintManager
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManagerImpl
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
@@ -19,9 +20,11 @@ class BiometricAuthorizationManagerModule {
     @Singleton
     fun getBiometricAuthorizationManager(@ApplicationContext context: Context,
                                          settingsRepository: SettingsRepository,
-                                         fingerprintManager: FingerprintManager
+                                         fingerprintManager: FingerprintManager,
+                                         analytics: FirebaseAnalytics
     )
     : BiometricAuthorizationManager {
-        return BiometricAuthorizationManagerImpl(context,settingsRepository,fingerprintManager)
+        return BiometricAuthorizationManagerImpl(context,settingsRepository,
+            fingerprintManager,analytics)
     }
 }

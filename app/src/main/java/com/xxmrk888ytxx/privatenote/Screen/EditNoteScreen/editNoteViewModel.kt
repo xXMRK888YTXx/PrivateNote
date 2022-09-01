@@ -1,12 +1,14 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
@@ -21,6 +23,9 @@ import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,7 +44,8 @@ class editNoteViewModel @Inject constructor(
     private val securityUtils: SecurityUtils,
     private val showToast: ShowToast,
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
-    private val inputHistoryManager: InputHistoryManager
+    private val inputHistoryManager: InputHistoryManager,
+    private val analytics: FirebaseAnalytics
 ) : ViewModel() {
 
     init {
@@ -390,16 +396,19 @@ class editNoteViewModel @Inject constructor(
 
     fun addImage(activityController: ActivityController) {
         isNotLock = Pair(true){}
+        analytics.logEvent(SELECT_IMAGE_EVENT, Bundle())
         activityController.pickImage(
             onComplete = {
                 viewModelScope.launch(Dispatchers.IO) {
                     noteRepository.addImage(it,note.id)
                 }
                 isNotLock = Pair(false){}
+                analytics.logEvent(SELECT_IMAGE_EVENT_OK,Bundle())
             },
             onError = {
                 showToast.showToast(it.message.toString())
                 isNotLock = Pair(false){}
+                analytics.logEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
             }
         )
     }

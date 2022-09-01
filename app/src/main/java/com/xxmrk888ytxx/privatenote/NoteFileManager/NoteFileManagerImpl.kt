@@ -4,10 +4,15 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Bundle
 import android.util.Log
+import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
@@ -16,7 +21,8 @@ import javax.inject.Inject
 
 
 class NoteFileManagerImpl @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val analytics: FirebaseAnalytics
 ) : NoteFileManager {
     override suspend fun addImage(image: Bitmap, noteId: Int) {
         saveBitmap(getNoteImageDir(noteId,context),image)
@@ -42,6 +48,7 @@ class NoteFileManagerImpl @Inject constructor(
                 imageList.add(Image(id,bitmap))
             }
         }
+        analytics.logEvent(Load_Images_Event, bundleOf(Pair("Count_Load_Images",imageList.size)))
         _noteImageList.tryEmit(imageList)
     }
 

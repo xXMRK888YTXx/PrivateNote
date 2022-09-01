@@ -20,6 +20,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.connector.AnalyticsConnector
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.app
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager

@@ -8,21 +8,27 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Check_Available_FingerPrint
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Send_Biometric_Authorization_Request
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.*
 import java.util.concurrent.Executor
 import javax.inject.Inject
-
+@SendAnalytics
 class BiometricAuthorizationManagerImpl @Inject constructor(
     private val context: Context,
     settingsRepository: SettingsRepository,
-    private val fingerprintManager: FingerprintManager
+    private val fingerprintManager: FingerprintManager,
+    private val analytics: FirebaseAnalytics
 ) : BiometricAuthorizationManager {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
@@ -43,7 +49,10 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
 //            BiometricManager.BIOMETRIC_SUCCESS -> return true
 //            else -> return false
 //        }
-        return fingerprintManager.hasEnrolledFingerprints()
+        val state = fingerprintManager.hasEnrolledFingerprints()
+        analytics.logEvent(Check_Available_FingerPrint,
+            bundleOf(Pair("is_FingerPrint_Available",state)))
+        return state
     }
 
     override fun biometricAuthorizationRequest(
@@ -51,6 +60,7 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
         executor: Executor,
         callBack: BiometricPrompt.AuthenticationCallback
     ) {
+        analytics.logEvent(Send_Biometric_Authorization_Request,null)
         val biometricPrompt = BiometricPrompt(fragmentActivity,executor,callBack)
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(context.getString(R.string.Verify_your_identity))
