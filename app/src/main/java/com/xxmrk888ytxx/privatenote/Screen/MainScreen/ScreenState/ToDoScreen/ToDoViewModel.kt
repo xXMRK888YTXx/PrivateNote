@@ -307,12 +307,10 @@ class ToDoViewModel @Inject constructor(
 
     private fun cancelDataTimePicker() {
         selectDataTimeState.value = false
-        Log.d("MyLog","cancel")
     }
 
     private fun cancelNotifyTimePicker() {
         isPickerNotifyTimeShow.value = false
-        Log.d("MyLog","canceln")
     }
 
     fun removeToDo(id: Int) {

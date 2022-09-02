@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
@@ -16,10 +17,19 @@ import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCa
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.Screen.Screen
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.BackToDefaultMode_In_NoteScreen
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Hide_Category_List
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Hide_EditCategory_Dialog
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_Category
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SearchMode_In_NoteScreen
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SelectionMode_In_NoteScreen
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_Category_List
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_EditCategory_Dialog
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,11 +38,13 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@SendAnalytics
 @HiltViewModel
 class NoteStateViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val showToast: ShowToast,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val analytics: FirebaseAnalytics
 ) : ViewModel() {
     val searchFieldText = mutableStateOf("")
         get() = field
@@ -105,12 +117,14 @@ class NoteStateViewModel @Inject constructor(
         navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
     }
     fun toSelectionMode() {
+        analytics.logEvent(SelectionMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
     }
 
     fun toDefaultMode() {
+        analytics.logEvent(BackToDefaultMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
         mainScreenController?.changeBottomBarVisibleStatus(true)
@@ -131,7 +145,6 @@ class NoteStateViewModel @Inject constructor(
             selectedNoteList.add(noteId)
         }
         isSelectedItemNotEmpty.value = isSelectedNotEmpty()
-        Log.d("MyLog",selectedNoteList.toString())
         selectionItemCount.value = selectedNoteList.size
     }
     var isSelectedItemNotEmpty = mutableStateOf(false)
@@ -162,6 +175,7 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun toSearchMode() {
+        analytics.logEvent(SearchMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.SearchScreenMode
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
@@ -187,12 +201,14 @@ class NoteStateViewModel @Inject constructor(
     fun getAllCategory() = categoryRepository.getAllCategory()
 
     fun showCategoryList() {
+        analytics.logEvent(Show_Category_List,null)
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
+        analytics.logEvent(Hide_Category_List,null)
         mainScreenController?.changeBottomBarVisibleStatus(true)
         mainScreenController?.changeScrollBetweenScreenState(true)
         currentNoteMode.value = NoteScreenMode.Default
@@ -200,10 +216,12 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun showEditCategoryDialog(changedCategory:Category? = null) {
+        analytics.logEvent(Show_EditCategory_Dialog,null)
         showEditCategoryDialog.value = Pair(true,changedCategory)
     }
 
     fun hideEditCategoryDialog() {
+        analytics.logEvent(Hide_EditCategory_Dialog,null)
         showEditCategoryDialog.value = Pair(false,null)
         nameCategoryFieldText.value = ""
         currentCategoryColor.value = PrimaryFontColor
@@ -229,6 +247,7 @@ class NoteStateViewModel @Inject constructor(
 
 
     fun removeCategory(category: Category,context: Context) {
+        analytics.logEvent(Remove_Category,null)
         viewModelScope.launch {
             if(categoryFilterStatus.value == category.categoryId)
             changeCategoryFilterStatus(IGNORE_CATEGORY)

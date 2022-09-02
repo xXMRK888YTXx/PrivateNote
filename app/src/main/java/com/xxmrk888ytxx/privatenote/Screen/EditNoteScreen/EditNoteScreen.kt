@@ -719,12 +719,21 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                         modifier = Modifier.padding(start = 10.dp)
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                        IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
-                            Icon(painter = painterResource(R.drawable.ic_plus),
-                                contentDescription = "",
-                                tint = PrimaryFontColor,
-                                modifier = Modifier.size(30.dp)
-                            )
+                        Row {
+                            IconButton(onClick = {  }) {
+                                Icon(painter = painterResource(R.drawable.ic_baseline_draw_24),
+                                    contentDescription = "",
+                                    tint = PrimaryFontColor,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                            IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
+                                Icon(painter = painterResource(R.drawable.ic_plus),
+                                    contentDescription = "",
+                                    tint = PrimaryFontColor,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
                         }
                     }
                 }

@@ -26,4 +26,12 @@ object AnalyticsEvents {
     const val Biometric_Authorization_Error = "Biometric_Authorization_Error"
     const val Biometric_Authorization_Succeeded = "Biometric_Authorization_Succeeded"
     const val Biometric_Authorization_Failed = "Biometric_Authorization_Failed"
+    const val Show_Category_List = "Show_Category_List"
+    const val Hide_Category_List = "Hide_Category_List"
+    const val Show_EditCategory_Dialog = "Show_EditCategory_Dialog"
+    const val Hide_EditCategory_Dialog = "Hide_EditCategory_Dialog"
+    const val Remove_Category = "Remove_Category"
+    const val SearchMode_In_NoteScreen = "SearchMode_In_NoteScreen"
+    const val BackToDefaultMode_In_NoteScreen = "BackToDefaultMode_In_NoteScreen"
+    const val SelectionMode_In_NoteScreen = "SelectionMode_In_NoteScreen"
 }
