@@ -5,5 +5,5 @@ sealed class Screen(val route:String) {
     object MainScreen : Screen("MainScreen")
     object EditNoteScreen : Screen("EditNoteScreen")
     object SettingsScreen : Screen("SettingsScreen")
-
+    object DrawScreen : Screen("DrawScreen")
 }

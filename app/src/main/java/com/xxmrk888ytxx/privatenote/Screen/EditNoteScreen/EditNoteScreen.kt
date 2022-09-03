@@ -91,7 +91,7 @@ fun EditNoteScreen(
         is ShowDialogState.EditCategoryDialog -> {SelectionCategoryDialog(currentSelected = currentSelectedItem,
             dialogController = editNoteViewModel.getDialogDispatcher())}
         is ShowDialogState.FileDialog -> {
-            FilesDialog(editNoteViewModel,activityController)
+            FilesDialog(editNoteViewModel,activityController,navController)
         }
         is ShowDialogState.None -> {}
     }
@@ -666,7 +666,11 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: ActivityController) {
+fun FilesDialog(
+    editNoteViewModel: editNoteViewModel,
+    activityController: ActivityController,
+    navController: NavController
+) {
     val context = LocalContext.current
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf())
     Box(
@@ -720,7 +724,7 @@ fun FilesDialog(editNoteViewModel: editNoteViewModel,activityController: Activit
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row {
-                            IconButton(onClick = {  }) {
+                            IconButton(onClick = { editNoteViewModel.toDrawScreen(navController) }) {
                                 Icon(painter = painterResource(R.drawable.ic_baseline_draw_24),
                                     contentDescription = "",
                                     tint = PrimaryFontColor,

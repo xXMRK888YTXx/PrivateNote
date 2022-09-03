@@ -27,6 +27,7 @@ import com.google.firebase.ktx.app
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.NotifyTaskManager.NotifyTaskManager
+import com.xxmrk888ytxx.privatenote.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -35,6 +36,7 @@ import com.xxmrk888ytxx.privatenote.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.ui.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
+import io.ak1.drawbox.rememberDrawController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -94,6 +96,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
                             activityController = this@MainActivity
                     )}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
+                    composable(Screen.DrawScreen.route) { DrawScreen(navController =  navController) }
                 }
             }
         }
@@ -184,7 +187,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
                 mainActivityViewModel.onPickError(e)
             }
         }else {
-            mainActivityViewModel.onPickError(java.lang.Exception("User Cancel"))
+            mainActivityViewModel.onPickError(Exception())
         }
     }
 }

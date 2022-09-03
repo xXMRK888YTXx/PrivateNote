@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.navigation.navArgument
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
@@ -22,10 +23,12 @@ import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCa
 import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
+import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
+import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -119,6 +122,8 @@ class editNoteViewModel @Inject constructor(
     private val currentSelectedCategory = mutableStateOf(0)
 
     private var isNotLock:Pair<Boolean,suspend () -> Unit> = Pair(false){}
+    //отвечает за блокировку при выходе из приложения, лямба будет выполнена после возвращаения
+    // в приложение
 
     private val isShowCategoryChangeDialog = mutableStateOf(false)
         //сохроняет версию до изменений
@@ -406,7 +411,6 @@ class editNoteViewModel @Inject constructor(
                 analytics.logEvent(SELECT_IMAGE_EVENT_OK,Bundle())
             },
             onError = {
-                showToast.showToast(it.message.toString())
                 isNotLock = Pair(false){}
                 analytics.logEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
             }
@@ -422,9 +426,13 @@ class editNoteViewModel @Inject constructor(
         }
     }
 
-    fun removeImage(imageId:Long) {
+    private fun removeImage(imageId:Long) {
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.removeImage(note.id,imageId)
         }
+    }
+
+    fun toDrawScreen(navController: NavController) {
+        navController.navigate(Screen.DrawScreen.route) {launchSingleTop = true}
     }
 }

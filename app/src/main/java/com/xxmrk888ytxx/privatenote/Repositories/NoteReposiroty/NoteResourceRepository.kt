@@ -3,9 +3,10 @@ package com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty
 import android.graphics.Bitmap
 import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
 import kotlinx.coroutines.flow.SharedFlow
+import java.lang.Error
 
 interface NoteResourceRepository {
-    suspend fun addImage(image:Bitmap,noteId:Int)
+    suspend fun addImage(image:Bitmap,noteId:Int,onError:(e:Exception) -> Unit = {})
     fun getNoteImages() : SharedFlow<List<Image>>
     suspend fun loadImages(noteId: Int)
     suspend fun clearLoadImages()

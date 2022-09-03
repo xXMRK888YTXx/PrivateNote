@@ -24,8 +24,8 @@ class NoteFileManagerImpl @Inject constructor(
     private val context: Context,
     private val analytics: FirebaseAnalytics
 ) : NoteFileManager {
-    override suspend fun addImage(image: Bitmap, noteId: Int) {
-        saveBitmap(getNoteImageDir(noteId,context),image)
+    override suspend fun addImage(image: Bitmap, noteId: Int,onError:(e:Exception) -> Unit) {
+        saveBitmap(getNoteImageDir(noteId,context),image,onError)
         loadImagesInBuffer(noteId)
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
@@ -90,7 +90,7 @@ class NoteFileManagerImpl @Inject constructor(
         return noteDir.absolutePath
     }
 
-     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap) {
+     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap,onError:(e:Exception) -> Unit) {
         try {
             val fileDir = File(imageDir,"${System.currentTimeMillis()}.png")
             val mainKey = MasterKey.Builder(context)
@@ -104,7 +104,7 @@ class NoteFileManagerImpl @Inject constructor(
             stream.flush()
             stream.close()
         }catch (e:Exception) {
-            Log.d("MyLog",e.message.toString())
+            onError(e)
         }
     }
 

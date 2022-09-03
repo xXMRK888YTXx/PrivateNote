@@ -5,6 +5,7 @@ plugins {
     id 'com.google.gms.google-services'
     id 'dagger.hilt.android.plugin'
     id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.firebase-perf'
 }
 apply plugin: 'kotlin-android-extensions'
 
@@ -104,5 +105,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     //biometric
     implementation 'androidx.biometric:biometric-ktx:1.2.0-alpha04'
+    //draw box
+    implementation 'io.ak1:drawbox:1.0.2'
 
 }

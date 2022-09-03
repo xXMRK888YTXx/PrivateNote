@@ -54,9 +54,9 @@ class NoteRepositoryImpl @Inject constructor(
         noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }
 
-    override suspend fun addImage(image: Bitmap, noteId: Int) {
+    override suspend fun addImage(image: Bitmap, noteId: Int,onError:(e:Exception) -> Unit) {
         analytics.logEvent(Add_Note_Image_Event,null)
-        noteFileManager.addImage(image, noteId)
+        noteFileManager.addImage(image, noteId,onError)
     }
 
     override fun getNoteImages(): SharedFlow<List<Image>> {
