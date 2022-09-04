@@ -51,7 +51,6 @@ class MainActivity : AppCompatActivity(), ActivityController {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManager
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
-    lateinit var navController: NavHostController
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
 
@@ -73,7 +72,8 @@ class MainActivity : AppCompatActivity(), ActivityController {
         restoreTasks()
         setContent {
             val startScreen = getStartScreen()
-            navController = rememberNavController()
+            val navController = rememberNavController()
+            mainActivityViewModel.saveNavController(navController)
             Scaffold(
                 backgroundColor = MainBackGroundColor
             ) {
@@ -123,10 +123,11 @@ class MainActivity : AppCompatActivity(), ActivityController {
         lifecycleScope.launch{
             lifecycleState.emit(LifeCycleState.onResume)
         }
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {
             mainActivityViewModel.checkAndLockApp {
-                navController.popBackStack()
-                navController.navigate(Screen.SplashScreen.route) {launchSingleTop = true}
+                val navController = mainActivityViewModel.getNavController()
+                navController?.popBackStack()
+                navController?.navigate(Screen.SplashScreen.route) {launchSingleTop = true}
             }
         }
     }
@@ -136,9 +137,10 @@ class MainActivity : AppCompatActivity(), ActivityController {
         lifecycleScope.launch {
             lifecycleState.emit(LifeCycleState.onPause)
         }
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            val navController = mainActivityViewModel.getNavController()
             if(mainActivityViewModel.getLockWhenLeaveState()&&
-                navController.currentDestination?.route != Screen.SplashScreen.route&&
+                navController?.currentDestination?.route != Screen.SplashScreen.route&&
                 !mainActivityViewModel.isNotLockApp)
             {
                 val time = mainActivityViewModel.getLockWhenLeaveTime()

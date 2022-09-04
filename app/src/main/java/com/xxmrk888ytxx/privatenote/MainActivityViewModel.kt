@@ -10,6 +10,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
@@ -32,7 +33,14 @@ class MainActivityViewModel @Inject constructor(
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
+   private var navController:NavController? = null
 
+    fun saveNavController(navController: NavController) {
+        if(this.navController != null) return
+        this.navController = navController
+    }
+
+    fun getNavController() = navController
 
 
     private fun markStart() {

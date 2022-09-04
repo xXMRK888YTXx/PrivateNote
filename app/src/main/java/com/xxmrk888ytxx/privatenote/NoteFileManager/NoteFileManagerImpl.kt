@@ -14,6 +14,7 @@ import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import java.io.*
@@ -26,11 +27,12 @@ class NoteFileManagerImpl @Inject constructor(
 ) : NoteFileManager {
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
-        saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError)
-        loadImagesInBuffer(noteId)
+        val newFilePath =  saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError)
+        newImageNotify(newFilePath)
+
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
-        1,1,BufferOverflow.DROP_OLDEST
+        1
     )
     private val noteImageList:SharedFlow<List<Image>> = _noteImageList
 
@@ -53,8 +55,25 @@ class NoteFileManagerImpl @Inject constructor(
         _noteImageList.tryEmit(imageList)
     }
 
+    private suspend fun newImageNotify(newFilePath:String) {
+        if(newFilePath.isEmpty()) return
+        val bitmap = getBitmap(newFilePath) ?: return
+        val id:Long = File(newFilePath).fileNameToLong()
+        val newList = _noteImageList.first().toMutableList()
+        newList.add(Image(id,bitmap))
+        _noteImageList.tryEmit(newList)
+    }
+
+    private suspend fun removeImageNotify(imageId:Long) {
+        var newList = _noteImageList.first()
+        newList = newList.filter { it.id != imageId }
+        _noteImageList.tryEmit(newList)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearBufferImages() {
         _noteImageList.tryEmit(listOf())
+        _noteImageList.resetReplayCache()
     }
 
     override suspend fun clearNoteImages(noteId: Int) {
@@ -79,7 +98,7 @@ class NoteFileManagerImpl @Inject constructor(
         val imageDir = getNoteImageDir(noteId,context)
         val image = File(imageDir,"$imageId")
         image.delete()
-        loadImagesInBuffer(noteId)
+        removeImageNotify(imageId)
     }
 
 
@@ -94,7 +113,7 @@ class NoteFileManagerImpl @Inject constructor(
      private suspend fun saveBitmap(imageDir:String,
                                     bitmap: Bitmap,
                                     saveInPng:Boolean,
-                                    onError:(e:Exception) -> Unit) {
+                                    onError:(e:Exception) -> Unit) : String {
         try {
             val fileDir = File(imageDir,"${System.currentTimeMillis()}")
             val mainKey = MasterKey.Builder(context)
@@ -108,8 +127,10 @@ class NoteFileManagerImpl @Inject constructor(
             else bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
             stream.flush()
             stream.close()
+            return fileDir.absolutePath
         }catch (e:Exception) {
             onError(e)
+            return ""
         }
     }
 

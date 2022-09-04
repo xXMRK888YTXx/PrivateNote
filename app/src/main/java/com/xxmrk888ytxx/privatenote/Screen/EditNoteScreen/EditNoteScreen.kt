@@ -672,7 +672,8 @@ fun FilesDialog(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val images = editNoteViewModel.getNoteImage().collectAsState(listOf())
+    val scope = rememberCoroutineScope()
+    val images = editNoteViewModel.getNoteImage().collectAsState(listOf(),scope.coroutineContext)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
