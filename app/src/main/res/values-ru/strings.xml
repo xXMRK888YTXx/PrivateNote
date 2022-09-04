@@ -125,4 +125,5 @@
     <string name="No_Images">Нет изображений</string>
     <string name="Note">Заметки</string>
     <string name="ToDo">Список дел</string>
+    <string name="Save_Image">Сохранить рисунок?</string>
 </resources>

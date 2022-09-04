@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -96,7 +97,10 @@ class MainActivity : AppCompatActivity(), ActivityController {
                             activityController = this@MainActivity
                     )}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
-                    composable(Screen.DrawScreen.route) { DrawScreen(navController =  navController) }
+                    composable(Screen.DrawScreen.route) {
+                        DrawScreen(navController =  navController,
+                        activityController = this@MainActivity,
+                        ) }
                 }
             }
         }
@@ -120,7 +124,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
             lifecycleState.emit(LifeCycleState.onResume)
         }
         GlobalScope.launch(Dispatchers.Main) {
-            mainActivityViewModel.checkAndLockApp() {
+            mainActivityViewModel.checkAndLockApp {
                 navController.popBackStack()
                 navController.navigate(Screen.SplashScreen.route) {launchSingleTop = true}
             }
@@ -154,7 +158,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
         try{
             mainActivityViewModel.registerImagePickCallBacks(onComplete, onError)
             val photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*";
+            photoPickerIntent.type = "image/*"
             imagePickCallBack.launch(photoPickerIntent)
         }catch (e:CallBackAlreadyRegisteredException) {
             onError(e)
@@ -173,6 +177,11 @@ class MainActivity : AppCompatActivity(), ActivityController {
         mainActivityViewModel.clearShareDir(this)
     }
 
+    override fun changeOrientationLockState(state: Boolean) {
+        if(state) lockOrientation()
+        else unLockOrientation()
+    }
+
     private val imagePickCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK) {
             val uri = it.data?.data
@@ -189,6 +198,14 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }else {
             mainActivityViewModel.onPickError(Exception())
         }
+    }
+
+    fun lockOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    fun unLockOrientation() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 }
 

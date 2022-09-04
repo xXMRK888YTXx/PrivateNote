@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -23,9 +24,78 @@ class DrawViewModel @Inject constructor(
 ) : ViewModel() {
     private val currentController:MutableState<DrawController?> = mutableStateOf(null)
 
+    private val currentStrokeWidth = mutableStateOf(5f)
+
+    private val currentBrushColor = mutableStateOf(Color.Red)
+
+    private val currentSelectedColor = mutableStateOf(Color.White)
+
+    fun getCurrentBrushColor() = currentBrushColor
+
+    fun getCurrentStrokeWidth() = currentStrokeWidth
+
+    fun changeCurrentStrokeWidth(newValue: Float) {
+        currentStrokeWidth.value = newValue
+        currentController.value?.setStrokeWidth(newValue)
+    }
+
     private var noteId = 0
 
     private val saveLoadDialogState = mutableStateOf(false)
+
+    private val isStrokeWidthSliderShow = mutableStateOf(false)
+
+    private val isSelectColorListShow = mutableStateOf(false)
+
+    private val selectColorDialogState = mutableStateOf(false)
+
+    private val exitDialogState = mutableStateOf(false)
+
+    fun getExitDialogState() = exitDialogState
+
+    fun showExitDialog() {
+        exitDialogState.value = true
+    }
+
+    fun hideExitDialog() {
+        exitDialogState.value = false
+    }
+
+    fun getSelectColorDialogState() = selectColorDialogState
+
+    fun getCurrentSelectedColor() = currentSelectedColor
+
+    fun showSelectColorDialog() {
+        selectColorDialogState.value = true
+    }
+
+    fun hideSelectColorDialog() {
+        selectColorDialogState.value = false
+    }
+
+    fun changeCurrentSelectedColor(newColor:Color) {
+        currentSelectedColor.value = newColor
+    }
+
+
+    fun isStrokeWidthSliderShow() = isStrokeWidthSliderShow
+
+    fun isSelectColorListShow() = isSelectColorListShow
+
+    fun changeBrushColor(newColor: Color) {
+        currentBrushColor.value = newColor
+        currentController.value?.setStrokeColor(newColor)
+    }
+
+    fun changeStrokeWidthSliderState() {
+        if(isSelectColorListShow.value) isSelectColorListShow.value = false
+        isStrokeWidthSliderShow.value = !isStrokeWidthSliderShow.value
+    }
+
+    fun changeSelectColorListShow() {
+        if(isStrokeWidthSliderShow.value) isStrokeWidthSliderShow.value = false
+        isSelectColorListShow.value = !isSelectColorListShow.value
+    }
 
     fun getSaveLoadDialogState() = saveLoadDialogState
 
@@ -65,4 +135,8 @@ class DrawViewModel @Inject constructor(
             handler.post { navController.navigateUp() }
         }
     }
+
+
+
+
 }
