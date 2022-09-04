@@ -3,7 +3,8 @@ package com.xxmrk888ytxx.privatenote
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider.getUriForFile
@@ -12,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val authorizationManager: BiometricAuthorizationManager
+    private val authorizationManager: BiometricAuthorizationManager,
+    private val showToast: ShowToast
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
@@ -124,9 +127,10 @@ class MainActivityViewModel @Inject constructor(
         return try {
             val shareImageDir: File = File(context.cacheDir, "share_files")
             shareImageDir.mkdir()
-            val imageFile = File(shareImageDir, "temp.png")
+            val imageFile = File(shareImageDir, "temp")
             val stream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.PNG, 80,stream)
+            if(isHaveAlpha(image)) image.compress(Bitmap.CompressFormat.PNG, 60,stream)
+            else image.compress(Bitmap.CompressFormat.JPEG, 60,stream)
             stream.close()
             getUriForFile(context, BuildConfig.APPLICATION_ID, imageFile)
         }catch (e:Exception) {
@@ -142,4 +146,7 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    suspend fun isHaveAlpha(image: Bitmap) : Boolean {
+        return image.hasAlpha()
+    }
 }

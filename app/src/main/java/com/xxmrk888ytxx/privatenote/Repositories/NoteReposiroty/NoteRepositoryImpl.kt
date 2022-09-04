@@ -7,6 +7,7 @@ import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
 import com.xxmrk888ytxx.privatenote.NoteFileManager.NoteFileManager
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_Note_Image_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_Note_Paint_Image_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_or_update_note_event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Change_category_event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Change_tempDir_to_Image_Event
@@ -56,7 +57,16 @@ class NoteRepositoryImpl @Inject constructor(
 
     override suspend fun addImage(image: Bitmap, noteId: Int,onError:(e:Exception) -> Unit) {
         analytics.logEvent(Add_Note_Image_Event,null)
-        noteFileManager.addImage(image, noteId,onError)
+        noteFileManager.addImage(image, noteId,false,onError)
+    }
+
+    override suspend fun addPaintImage(
+        image: Bitmap,
+        noteId: Int,
+        onError: (e: Exception) -> Unit
+    ) {
+        analytics.logEvent(Add_Note_Paint_Image_Event,null)
+        noteFileManager.addImage(image, noteId,true,onError)
     }
 
     override fun getNoteImages(): SharedFlow<List<Image>> {

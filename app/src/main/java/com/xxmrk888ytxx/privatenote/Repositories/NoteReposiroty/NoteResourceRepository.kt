@@ -7,6 +7,7 @@ import java.lang.Error
 
 interface NoteResourceRepository {
     suspend fun addImage(image:Bitmap,noteId:Int,onError:(e:Exception) -> Unit = {})
+    suspend fun addPaintImage(image:Bitmap,noteId:Int,onError:(e:Exception) -> Unit = {})
     fun getNoteImages() : SharedFlow<List<Image>>
     suspend fun loadImages(noteId: Int)
     suspend fun clearLoadImages()

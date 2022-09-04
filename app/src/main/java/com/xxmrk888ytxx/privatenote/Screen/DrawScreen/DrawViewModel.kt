@@ -127,7 +127,7 @@ class DrawViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val image = currentController.value?.getDrawBoxBitmap() ?: return@launch
             saveLoadDialogState.value = true
-            noteRepository.addImage(image,noteId) {
+            noteRepository.addPaintImage(image,noteId) {
                 showToast.showToast("Во время сохронения произошла ошибка: ${it.message.toString()}")
                 saveLoadDialogState.value = false
             }

@@ -24,8 +24,9 @@ class NoteFileManagerImpl @Inject constructor(
     private val context: Context,
     private val analytics: FirebaseAnalytics
 ) : NoteFileManager {
-    override suspend fun addImage(image: Bitmap, noteId: Int,onError:(e:Exception) -> Unit) {
-        saveBitmap(getNoteImageDir(noteId,context),image,onError)
+    override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
+                                  onError:(e:Exception) -> Unit) {
+        saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError)
         loadImagesInBuffer(noteId)
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
@@ -76,7 +77,7 @@ class NoteFileManagerImpl @Inject constructor(
 
     override suspend fun removeImage(noteId: Int, imageId: Long) {
         val imageDir = getNoteImageDir(noteId,context)
-        val image = File(imageDir,"$imageId.png")
+        val image = File(imageDir,"$imageId")
         image.delete()
         loadImagesInBuffer(noteId)
     }
@@ -90,9 +91,12 @@ class NoteFileManagerImpl @Inject constructor(
         return noteDir.absolutePath
     }
 
-     private suspend fun saveBitmap(imageDir:String, bitmap: Bitmap,onError:(e:Exception) -> Unit) {
+     private suspend fun saveBitmap(imageDir:String,
+                                    bitmap: Bitmap,
+                                    saveInPng:Boolean,
+                                    onError:(e:Exception) -> Unit) {
         try {
-            val fileDir = File(imageDir,"${System.currentTimeMillis()}.png")
+            val fileDir = File(imageDir,"${System.currentTimeMillis()}")
             val mainKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
@@ -100,7 +104,8 @@ class NoteFileManagerImpl @Inject constructor(
                 context,fileDir, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build()
             val stream: OutputStream = file.openFileOutput()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 80, stream)
+            if(saveInPng)  bitmap.compress(Bitmap.CompressFormat.PNG, 60, stream)
+            else bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
             stream.flush()
             stream.close()
         }catch (e:Exception) {

@@ -8,6 +8,7 @@ object AnalyticsEvents {
     const val Add_or_update_note_event = "add_or_update_note_event"
     const val Change_category_event = "Change_category_event"
     const val Add_Note_Image_Event = "Add_Note_Image_Event"
+    const val Add_Note_Paint_Image_Event = "Add_Note_Paint_Image_Event"
     const val Load_Images_Event = "Load_Images_Event"
     const val Change_tempDir_to_Image_Event = "Change_tempDir_to_Image_Event"
     const val Remove_Image_Event = "Remove_Image_Event"
