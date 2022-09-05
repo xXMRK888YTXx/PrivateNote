@@ -14,9 +14,12 @@ import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.io.*
 import javax.inject.Inject
 
@@ -25,15 +28,23 @@ class NoteFileManagerImpl @Inject constructor(
     private val context: Context,
     private val analytics: FirebaseAnalytics
 ) : NoteFileManager {
+
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
         val newFilePath =  saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError)
         newImageNotify(newFilePath)
 
     }
-    private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
+    private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow<List<Image>>(
         1
     )
+
+    init {
+        GlobalScope.launch(Dispatchers.IO) {
+            _noteImageList.emit(listOf())
+        }
+    }
+
     private val noteImageList:SharedFlow<List<Image>> = _noteImageList
 
     override fun getNoteImages(): SharedFlow<List<Image>>  {
@@ -52,28 +63,28 @@ class NoteFileManagerImpl @Inject constructor(
             }
         }
         analytics.logEvent(Load_Images_Event, bundleOf(Pair("Count_Load_Images",imageList.size)))
-        _noteImageList.tryEmit(imageList)
+        _noteImageList.emit(imageList)
     }
 
     private suspend fun newImageNotify(newFilePath:String) {
         if(newFilePath.isEmpty()) return
         val bitmap = getBitmap(newFilePath) ?: return
         val id:Long = File(newFilePath).fileNameToLong()
-        val newList = _noteImageList.first().toMutableList()
+        val newList = _noteImageList.firstOrNull()?.toMutableList() ?: mutableListOf()
         newList.add(Image(id,bitmap))
-        _noteImageList.tryEmit(newList)
+        _noteImageList.emit(newList)
     }
 
     private suspend fun removeImageNotify(imageId:Long) {
         var newList = _noteImageList.first()
         newList = newList.filter { it.id != imageId }
-        _noteImageList.tryEmit(newList)
+        _noteImageList.emit(newList)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearBufferImages() {
-        _noteImageList.tryEmit(listOf())
         _noteImageList.resetReplayCache()
+        _noteImageList.emit(listOf())
     }
 
     override suspend fun clearNoteImages(noteId: Int) {
