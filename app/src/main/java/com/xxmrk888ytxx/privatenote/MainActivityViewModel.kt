@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Handler
 import android.os.Looper
@@ -11,6 +12,7 @@ import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
@@ -22,6 +24,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.io.OutputStream
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -131,16 +134,19 @@ class MainActivityViewModel @Inject constructor(
         unRegisterImagePickCallBacks()
     }
 
-    suspend fun saveInCache(image: Bitmap, context: Context) : Uri? {
+    suspend fun saveInCache(imageFile: EncryptedFile, context: Context) : Uri? {
         return try {
             val shareImageDir: File = File(context.cacheDir, "share_files")
             shareImageDir.mkdir()
-            val imageFile = File(shareImageDir, "temp")
-            val stream = FileOutputStream(imageFile)
-            if(isHaveAlpha(image)) image.compress(Bitmap.CompressFormat.PNG, 60,stream)
-            else image.compress(Bitmap.CompressFormat.JPEG, 60,stream)
-            stream.close()
-            getUriForFile(context, BuildConfig.APPLICATION_ID, imageFile)
+            val outputFile = File(shareImageDir, "temp")
+            val readStream = imageFile.openFileInput()
+            val saveStream = FileOutputStream(outputFile)
+            val bitmap = BitmapFactory.decodeStream(readStream)
+            if(isHaveAlpha(bitmap)) bitmap.compress(Bitmap.CompressFormat.PNG, 60,saveStream)
+            else bitmap.compress(Bitmap.CompressFormat.JPEG, 60,saveStream)
+            saveStream.close()
+            readStream.close()
+            getUriForFile(context, BuildConfig.APPLICATION_ID, outputFile)
         }catch (e:Exception) {
             Log.d("MyLog",e.message.toString())
             null

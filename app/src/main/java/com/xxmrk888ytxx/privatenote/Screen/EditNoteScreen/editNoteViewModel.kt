@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
@@ -9,6 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.navArgument
+import androidx.security.crypto.EncryptedFile
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
@@ -417,12 +421,12 @@ class editNoteViewModel @Inject constructor(
         )
     }
 
-    fun openImageInImageViewer(image:Bitmap,activityController: ActivityController) {
+    fun openImageInImageViewer(imageFile:EncryptedFile,activityController: ActivityController) {
         viewModelScope.launch(Dispatchers.IO) {
             isNotLock = Pair(true){
                 activityController.clearShareDir()
             }
-            activityController.sendShowImageIntent(image)
+            activityController.sendShowImageIntent(imageFile)
         }
     }
 
@@ -434,5 +438,13 @@ class editNoteViewModel @Inject constructor(
 
     fun toDrawScreen(navController: NavController) {
         navController.navigate(Screen.DrawScreen.route) {launchSingleTop = true}
+    }
+
+    fun getImageRequest(context: Context, bytes: ByteArray?): ImageRequest {
+        return ImageRequest.Builder(context)
+            .data(bytes)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+           // .size(100)
+            .build()
     }
 }

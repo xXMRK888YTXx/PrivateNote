@@ -3,21 +3,16 @@ package com.xxmrk888ytxx.privatenote.NoteFileManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.os.Bundle
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.*
@@ -31,11 +26,11 @@ class NoteFileManagerImpl @Inject constructor(
 
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
-        val newFilePath =  saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError)
-        newImageNotify(newFilePath)
+        val newImage = saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError) ?: return
+        newImageNotify(newImage)
 
     }
-    private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow<List<Image>>(
+    private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
         1
     )
 
@@ -56,22 +51,19 @@ class NoteFileManagerImpl @Inject constructor(
         val imageDir = File(noteImagePath)
         val imageList = mutableListOf<Image>()
         imageDir.listFiles()?.forEach {
-            val bitmap = getBitmap(it.absolutePath)
+            val file = getImageFile (it.absolutePath)
             val id:Long = it.fileNameToLong()
-            if(bitmap != null&&id != 0L) {
-                imageList.add(Image(id,bitmap))
+            if(file != null&&id != 0L) {
+                imageList.add(Image(id,file))
             }
         }
         analytics.logEvent(Load_Images_Event, bundleOf(Pair("Count_Load_Images",imageList.size)))
         _noteImageList.emit(imageList)
     }
 
-    private suspend fun newImageNotify(newFilePath:String) {
-        if(newFilePath.isEmpty()) return
-        val bitmap = getBitmap(newFilePath) ?: return
-        val id:Long = File(newFilePath).fileNameToLong()
+    private suspend fun newImageNotify(newImage:Image) {
         val newList = _noteImageList.firstOrNull()?.toMutableList() ?: mutableListOf()
-        newList.add(Image(id,bitmap))
+        newList.add(newImage)
         _noteImageList.emit(newList)
     }
 
@@ -124,7 +116,7 @@ class NoteFileManagerImpl @Inject constructor(
      private suspend fun saveBitmap(imageDir:String,
                                     bitmap: Bitmap,
                                     saveInPng:Boolean,
-                                    onError:(e:Exception) -> Unit) : String {
+                                    onError:(e:Exception) -> Unit) : Image? {
         try {
             val fileDir = File(imageDir,"${System.currentTimeMillis()}")
             val mainKey = MasterKey.Builder(context)
@@ -138,15 +130,15 @@ class NoteFileManagerImpl @Inject constructor(
             else bitmap.compress(Bitmap.CompressFormat.JPEG, 60, stream)
             stream.flush()
             stream.close()
-            return fileDir.absolutePath
+            return Image(fileDir.fileNameToLong(),file)
         }catch (e:Exception) {
             onError(e)
-            return ""
+            return null
         }
     }
 
 
-    private suspend fun getBitmap(filePath: String): Bitmap? {
+    private suspend fun getImageFile(filePath: String): EncryptedFile? {
         try {
             val mainKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -156,10 +148,7 @@ class NoteFileManagerImpl @Inject constructor(
                 context,
                 File(filePath),mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
             ).build()
-
-            val stream: InputStream = file.openFileInput()
-            val bitmap = BitmapFactory.decodeStream(stream)
-            return bitmap
+            return file
         }catch (e:Exception) {
             Log.d("MyLog",e.message.toString())
             return null

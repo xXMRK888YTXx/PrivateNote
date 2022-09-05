@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
@@ -747,11 +748,11 @@ fun FilesDialog(
                         modifier = Modifier.padding(7.dp)
                     ) {
                         items(images.value) {
-                              Image(
-                                  bitmap = it.image.asImageBitmap(),
-                                  contentDescription = "",
-                                  contentScale = ContentScale.Crop,
-                                  modifier = Modifier
+                            AsyncImage(model = editNoteViewModel
+                                .getImageRequest(context,it.image.getBytes()),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
                                       .combinedClickable(
                                           onClick = {
                                               editNoteViewModel
@@ -767,7 +768,7 @@ fun FilesDialog(
                                       .padding(end = 10.dp)
                                       .size(100.dp)
                                       .clip(RoundedCornerShape(10))
-                              )
+                            )
                           }
                     }
                 }

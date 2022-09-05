@@ -399,7 +399,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val currentCategory = remember {
         noteStateViewModel.getCategoryFilterStatus()
     }
-    val ListPadding = if(mode.value == SelectionScreenMode) 55 else 0
+    val ListPadding = if(mode.value == SelectionScreenMode) 55 else 50
     val sortedNoteList = noteList.value.sortedByCategory(currentCategory.value)
         .searchFilter(mode.value == NoteScreenMode.SearchScreenMode,
         searchSubString.value).sortNote()

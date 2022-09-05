@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.text.isDigitsOnly
+import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
@@ -157,4 +158,12 @@ fun File.fileNameToLong() : Long {
         }
     }
     return 0
+}
+
+fun EncryptedFile.getBytes() : ByteArray? {
+    try {
+        return this.openFileInput().readBytes()
+    }catch (e:Exception) {
+        return null
+    }
 }

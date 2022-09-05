@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.security.crypto.EncryptedFile
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.connector.AnalyticsConnector
 import com.google.firebase.ktx.Firebase
@@ -167,8 +168,8 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
-    override suspend fun sendShowImageIntent(image: Bitmap) {
-        val uri = mainActivityViewModel.saveInCache(image,this) ?: return
+    override suspend fun sendShowImageIntent(imageFile: EncryptedFile) {
+        val uri = mainActivityViewModel.saveInCache(imageFile,this) ?: return
         val intent = Intent(Intent.ACTION_VIEW)
         intent.setDataAndType(uri,"image/*")
         intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
