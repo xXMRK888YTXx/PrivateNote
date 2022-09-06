@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.DrawScreen
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,6 +35,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.ui.theme.CardNoteColor
+import com.xxmrk888ytxx.privatenote.ui.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
@@ -47,6 +49,12 @@ fun DrawScreen(
     val newController = rememberDrawController()
     val loadSaveDialogState = remember {
         drawViewModel.getSaveLoadDialogState()
+    }
+    val isStrokeWidthSliderShow = remember {
+        drawViewModel.isStrokeWidthSliderShow()
+    }
+    val isSelectColorListShow = remember {
+        drawViewModel.isSelectColorListShow()
     }
     val exitDialogState = remember {
         drawViewModel.getExitDialogState()
@@ -69,13 +77,16 @@ fun DrawScreen(
         drawViewModel.getController(newController)
     }
     if(controller.value == null) navController.navigateUp()
+    val drawBoxHeight = animateFloatAsState(
+        targetValue = if(isSelectColorListShow.value||isStrokeWidthSliderShow.value) 0.85f else 0.9f
+    )
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         DrawBox(controller.value!!,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.9f))
+                .fillMaxHeight(drawBoxHeight.value))
         DrawToolBar(drawViewModel,navController)
         if(loadSaveDialogState.value) {
             Box(
@@ -187,11 +198,11 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
     val isStrokeWidthSliderShow = remember {
         drawViewModel.isStrokeWidthSliderShow()
     }
-    val currentStrokeWidth = remember {
-        drawViewModel.getCurrentStrokeWidth()
-    }
     val isSelectColorListShow = remember {
         drawViewModel.isSelectColorListShow()
+    }
+    val currentStrokeWidth = remember {
+        drawViewModel.getCurrentStrokeWidth()
     }
     val currentBrushColor = remember {
         drawViewModel.getCurrentBrushColor()
@@ -253,7 +264,11 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 Slider(value = currentStrokeWidth.value, onValueChange = {
                     drawViewModel.changeCurrentStrokeWidth(it)
                 },
-                    valueRange = 1f..100f
+                    valueRange = 1f..100f,
+                    colors = SliderDefaults.colors(
+                        thumbColor = FloatingButtonColor,
+                        activeTrackColor = FloatingButtonColor
+                    )
                 )
             }
         }
@@ -271,8 +286,6 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                             contentDescription = "",
                             tint = it,
                             modifier = Modifier.padding(
-                                top = 5.dp,
-                                bottom = 5.dp,
                                 start = 10.dp,
                                 end = 10.dp
                             )
@@ -287,8 +300,6 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                                 contentDescription = "",
                                 tint = PrimaryFontColor,
                                 modifier = Modifier.padding(
-                                    top = 5.dp,
-                                    bottom = 5.dp,
                                     start = 10.dp,
                                     end = 10.dp
                                 )
@@ -298,28 +309,25 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 }
             }
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            listOptions.forEach {
-                IconButton(onClick = { it.onClick() }) {
-                    Icon(painter = painterResource(it.icon),
-                        contentDescription = "",
-                        tint = it.iconColor,
-                        modifier = Modifier
-                            .padding(
-                                start = 18.dp,
-                                end = 18.dp,
-                                top = 10.dp,
-                                bottom = 5.dp
-                            )
-                            .size(27.dp)
-                    )
-
-                }
-            }
-        }
+       AnimatedVisibility(visible = true) {
+           Row(
+               modifier = Modifier.fillMaxWidth(),
+               verticalAlignment = Alignment.CenterVertically,
+               horizontalArrangement = Arrangement.Center
+           ) {
+               listOptions.forEach {
+                   IconButton(onClick = { it.onClick() }) {
+                       Icon(painter = painterResource(it.icon),
+                           contentDescription = "",
+                           tint = it.iconColor,
+                           modifier = Modifier.size(30.dp)
+                       )
+                   }
+                   Spacer(modifier = Modifier
+                       .height(100.dp)
+                       .width(10.dp))
+               }
+           }
+       }
     }
 }
