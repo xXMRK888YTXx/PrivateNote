@@ -130,5 +130,7 @@
     <string name="No_Images">No images</string>
     <string name="Note">Notes</string>
     <string name="ToDo">To-do list</string>
-    <string name="Save_Image">Сохранить рисунок?</string>
+    <string name="Save_Image">Save drawing?</string>
+    <string name="Saving">Saving</string>
+    <string name="Error_saving">An error occurred while saving</string>
 </resources>

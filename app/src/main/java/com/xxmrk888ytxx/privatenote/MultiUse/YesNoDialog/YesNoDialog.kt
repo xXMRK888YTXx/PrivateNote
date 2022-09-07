@@ -23,9 +23,16 @@ import com.xxmrk888ytxx.privatenote.ui.theme.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.ui.theme.TitleHintColor
 
 @Composable
-fun YesNoDialog(title:String, onCancel:() -> Unit, onConfirm:()->Unit) {
+fun YesNoDialog(
+    title:String,
+    confirmButtonText:String = stringResource(R.string.Ok),
+    cancelButtonText:String = stringResource(R.string.cancel),
+    onCancel:() -> Unit,
+    onCancelDialog:(() -> Unit)? = null,
+    onConfirm:()->Unit
+) {
     Dialog(onDismissRequest = {
-        onCancel()
+        if(onCancelDialog == null) onCancel() else onCancelDialog()
     }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -64,7 +71,7 @@ fun YesNoDialog(title:String, onCancel:() -> Unit, onConfirm:()->Unit) {
                             backgroundColor = TitleHintColor,
                         )
                     ) {
-                        Text(text = stringResource(R.string.cancel),
+                        Text(text = cancelButtonText,
                             color = PrimaryFontColor
                         )
                     }
@@ -80,7 +87,7 @@ fun YesNoDialog(title:String, onCancel:() -> Unit, onConfirm:()->Unit) {
                             .padding(start = 5.dp, end = 5.dp),
                         shape = RoundedCornerShape(80),
                     ) {
-                        Text(text = stringResource(R.string.Ok),
+                        Text(text = confirmButtonText,
                             color = PrimaryFontColor
                         )
                     }

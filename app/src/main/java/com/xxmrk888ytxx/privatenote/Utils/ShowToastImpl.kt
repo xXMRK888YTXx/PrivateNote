@@ -31,4 +31,8 @@ class ShowToastImpl(private val context: Context,
     override fun showToast(resourceId:Int) {
         Toast.makeText(context,context.getString(resourceId),Toast.LENGTH_SHORT).show()
     }
+
+    override fun showToast(getString: (context: Context) -> String) {
+        showToast(getString(context))
+    }
 }

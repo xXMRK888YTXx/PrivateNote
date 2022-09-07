@@ -126,4 +126,6 @@
     <string name="Note">Заметки</string>
     <string name="ToDo">Список дел</string>
     <string name="Save_Image">Сохранить рисунок?</string>
+    <string name="Saving">Сохранение</string>
+    <string name="Error_saving">Во время сохранения произошла ошибка</string>
 </resources>

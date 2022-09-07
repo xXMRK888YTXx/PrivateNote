@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
@@ -121,14 +122,16 @@ class DrawViewModel @Inject constructor(
         this.noteId = noteId
     }
 
-    @MustBeLocalization
     fun saveDraw(navController: NavController) {
         val handler = Handler(Looper.getMainLooper())
         viewModelScope.launch(Dispatchers.IO) {
             val image = currentController.value?.getDrawBoxBitmap() ?: return@launch
             saveLoadDialogState.value = true
             noteRepository.addPaintImage(image,noteId) {
-                showToast.showToast("Во время сохронения произошла ошибка: ${it.message.toString()}")
+                showToast.showToast() { context ->
+                    val text = context.getText(R.string.Error_saving)
+                    return@showToast "$text: ${it.message.toString()}"
+                }
                 saveLoadDialogState.value = false
             }
             saveLoadDialogState.value = false

@@ -105,7 +105,16 @@ fun DrawScreen(
     }
     if(exitDialogState.value) {
         YesNoDialog(title = stringResource(R.string.Save_Image),
-            onCancel = { drawViewModel.hideExitDialog() }) {
+            confirmButtonText = stringResource(R.string.Save),
+            cancelButtonText = stringResource(R.string.Not_save),
+            onCancel = {
+                drawViewModel.hideExitDialog()
+                navController.navigateUp()
+                       },
+            onCancelDialog = {
+                drawViewModel.hideExitDialog()
+            }
+        ) {
             drawViewModel.hideExitDialog()
             drawViewModel.saveDraw(navController)
         }
@@ -160,7 +169,6 @@ fun SelectColorDialog(drawViewModel: DrawViewModel) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-@MustBeLocalization
 fun SaveLoadDialog() {
     Dialog(
         onDismissRequest = { },
@@ -183,7 +191,7 @@ fun SaveLoadDialog() {
             ) {
                 CircularProgressIndicator(modifier = Modifier.padding(end = 20.dp))
                 Text(
-                    text = "Сохранение",
+                    text = stringResource(R.string.Saving),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = PrimaryFontColor
