@@ -197,13 +197,17 @@ class editNoteViewModel @Inject constructor(
     val isHaveChanges = mutableStateOf(false)
     get() = field
         //сохрание заметки(зависит от режима)
-    fun saveNote() {
+        private fun saveNote() {
             val noteId = note.id
         GlobalScope.launch(Dispatchers.IO) {
             when(saveNoteState.value) {
                 is SaveNoteState.DefaultSaveNote -> {
-                    if(textField.value == note.text&&
-                        titleTextField.value == note.title&&!checkChangeNoteConfiguration()) return@launch
+                    if((textField.value == note.text&&
+                        titleTextField.value == note.title &&
+                        !checkChangeNoteConfiguration())
+                    )
+                        return@launch
+
                     noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
                         title = titleTextField.value,
                         text = textField.value,
@@ -245,6 +249,7 @@ class editNoteViewModel @Inject constructor(
     }
 
     private fun checkChangeNoteConfiguration(): Boolean {
+        if(!isHavePrimaryVersion()&&isHaveImages()) return true
         if(!isHavePrimaryVersion()) return false
         if (currentCategory.value?.categoryId != primaryNoteVersion?.category ) return true
         return primaryNoteVersion?.isChosen != isChosenNoteState.value
@@ -419,6 +424,10 @@ class editNoteViewModel @Inject constructor(
                 analytics.logEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
             }
         )
+    }
+
+    fun isHaveImages() : Boolean {
+        return getNoteImage().getData().isNotEmpty()
     }
 
     fun openImageInImageViewer(imageFile:EncryptedFile,activityController: ActivityController) {

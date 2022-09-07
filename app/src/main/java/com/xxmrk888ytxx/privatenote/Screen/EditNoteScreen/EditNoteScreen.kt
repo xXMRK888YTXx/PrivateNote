@@ -180,7 +180,8 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
     }
     val dropDownItemList = listOf(
         DropDownItem(stringResource(R.string.Encrypt_note), isEnable = !editNoteViewModel.isEncryptNote()) {
-            if(editNoteViewModel.textField.value.isEmpty()&&editNoteViewModel.titleTextField.value.isEmpty()) {
+            if(editNoteViewModel.textField.value.isEmpty()&&
+                editNoteViewModel.titleTextField.value.isEmpty()&&!editNoteViewModel.isHaveImages()) {
                 editNoteViewModel.getToast().showToast(R.string.note_is_empty)
                 isDropDownMenuShow.value = false
                 return@DropDownItem
@@ -667,6 +668,7 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
+@MustBeLocalization
 fun FilesDialog(
     editNoteViewModel: editNoteViewModel,
     activityController: ActivityController,
@@ -718,6 +720,30 @@ fun FilesDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
+                        text = "Аудиозаписи",
+                        fontSize = 24.sp,
+                        color = PrimaryFontColor,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(start = 10.dp)
+                    )
+                    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        Row {
+                            IconButton(onClick = {  }) {
+                                Icon(painter = painterResource(R.drawable.ic_plus),
+                                    contentDescription = "",
+                                    tint = PrimaryFontColor,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                        }
+                    }
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
                         text = stringResource(R.string.Images),
                         fontSize = 24.sp,
                         color = PrimaryFontColor,
@@ -753,21 +779,21 @@ fun FilesDialog(
                                 contentDescription = "",
                                 contentScale = ContentScale.Crop,
                                 modifier = Modifier
-                                      .combinedClickable(
-                                          onClick = {
-                                              editNoteViewModel
-                                                  .openImageInImageViewer(
-                                                      it.image,
-                                                      activityController
-                                                  )
-                                          },
-                                          onLongClick = {
-                                              editNoteViewModel.showRemoveImageDialog(it.id)
-                                          }
-                                      )
-                                      .padding(end = 10.dp)
-                                      .size(100.dp)
-                                      .clip(RoundedCornerShape(10))
+                                    .combinedClickable(
+                                        onClick = {
+                                            editNoteViewModel
+                                                .openImageInImageViewer(
+                                                    it.image,
+                                                    activityController
+                                                )
+                                        },
+                                        onLongClick = {
+                                            editNoteViewModel.showRemoveImageDialog(it.id)
+                                        }
+                                    )
+                                    .padding(end = 10.dp)
+                                    .size(100.dp)
+                                    .clip(RoundedCornerShape(10))
                             )
                           }
                     }
