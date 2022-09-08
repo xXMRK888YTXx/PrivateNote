@@ -41,6 +41,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -103,6 +104,8 @@ class editNoteViewModel @Inject constructor(
 
     val isHideText = mutableStateOf(false)
 
+    private var isHaveImages = false
+
     private val isShowRemoveImageDialog = mutableStateOf(Pair(false){})
 
     fun getShowRemoveImageState() = isShowRemoveImageDialog
@@ -124,6 +127,18 @@ class editNoteViewModel @Inject constructor(
     val isChosenNoteState = mutableStateOf(false)
 
     private val currentSelectedCategory = mutableStateOf(0)
+
+    private val isAudioRecorderDialogState = mutableStateOf(false)
+
+    fun isAudioRecorderDialogShow() = isAudioRecorderDialogState
+
+    fun showAudioRecorderDialog() {
+        isAudioRecorderDialogState.value = true
+    }
+
+    fun hideAudioRecorderDialog() {
+        isAudioRecorderDialogState.value = false
+    }
 
     private var isNotLock:Pair<Boolean,suspend () -> Unit> = Pair(false){}
     //отвечает за блокировку при выходе из приложения, лямба будет выполнена после возвращаения
@@ -191,6 +206,12 @@ class editNoteViewModel @Inject constructor(
                     !(textField.value == primaryNoteVersion?.text && titleTextField.value ==
                             primaryNoteVersion?.title)
             }
+        }
+    }
+
+    fun updateImagesCount() {
+        viewModelScope.launch {
+           isHaveImages = getNoteImage().first().size != 0
         }
     }
 
@@ -413,6 +434,7 @@ class editNoteViewModel @Inject constructor(
         analytics.logEvent(SELECT_IMAGE_EVENT, Bundle())
         activityController.pickImage(
             onComplete = {
+                isHaveImages = true
                 viewModelScope.launch(Dispatchers.IO) {
                     noteRepository.addImage(it,note.id)
                 }
@@ -427,7 +449,7 @@ class editNoteViewModel @Inject constructor(
     }
 
     fun isHaveImages() : Boolean {
-        return getNoteImage().getData().isNotEmpty()
+        return isHaveImages
     }
 
     fun openImageInImageViewer(imageFile:EncryptedFile,activityController: ActivityController) {
@@ -442,6 +464,7 @@ class editNoteViewModel @Inject constructor(
     private fun removeImage(imageId:Long) {
         viewModelScope.launch(Dispatchers.IO) {
             noteRepository.removeImage(note.id,imageId)
+            updateImagesCount()
         }
     }
 

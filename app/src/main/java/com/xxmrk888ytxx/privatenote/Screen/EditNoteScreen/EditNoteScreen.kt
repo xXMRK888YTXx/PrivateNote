@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.annotation.SuppressLint
+import android.media.AudioRecord
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,7 +20,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -70,7 +70,11 @@ fun EditNoteScreen(
     val currentSelectedItem = remember {
         editNoteViewModel.getCurrentSelectedCategory()
     }
+    val isAudioRecordDialogShow = remember {
+        editNoteViewModel.isAudioRecorderDialogShow()
+    }
     LaunchedEffect(key1 = editNoteViewModel, block = {
+        editNoteViewModel.updateImagesCount()
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
     })
     val textFieldFocus = remember { FocusRequester() }
@@ -99,6 +103,9 @@ fun EditNoteScreen(
     val isHaveChanges = remember {
         editNoteViewModel.isHaveChanges
     }
+    if(isAudioRecordDialogShow.value) {
+        AudioRecordDialog(editNoteViewModel)
+    }
     BackPressController.setHandler(isHaveChanges.value&&editNoteViewModel.isHavePrimaryVersion()) {
         editNoteViewModel.dialogShowState.value = ShowDialogState.ExitDialog
     }
@@ -109,6 +116,45 @@ fun EditNoteScreen(
             editNoteViewModel.hideRemoveImageDialog()
         }
     }
+}
+
+@Composable
+fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
+    Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            backgroundColor = CardNoteColor,
+            shape = RoundedCornerShape(20.dp)
+        )
+        {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                RecordTimer(editNoteViewModel)
+                OutlinedButton(
+                    onClick = {  },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(0.9f)),
+                    shape = RoundedCornerShape(500.dp)
+                ) {
+                    Icon(painter = painterResource(R.drawable.ic_record),
+                        contentDescription = "")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecordTimer(editNoteViewModel: editNoteViewModel) {
+    Text(
+        text = "00:00",
+        fontSize = 30.sp,
+        color = PrimaryFontColor,
+        fontWeight = FontWeight.Medium,
+        modifier = Modifier.padding(bottom = 10.dp)
+    )
 }
 
 @Composable
@@ -728,7 +774,7 @@ fun FilesDialog(
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row {
-                            IconButton(onClick = {  }) {
+                            IconButton(onClick = { editNoteViewModel.showAudioRecorderDialog() }) {
                                 Icon(painter = painterResource(R.drawable.ic_plus),
                                     contentDescription = "",
                                     tint = PrimaryFontColor,
