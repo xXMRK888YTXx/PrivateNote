@@ -1,18 +1,18 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import androidx.navigation.navArgument
 import androidx.security.crypto.EncryptedFile
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
@@ -24,7 +24,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog.SelectionCategoryController
-import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
+import com.xxmrk888ytxx.privatenote.NoteImagesManager.Image
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Screen.Screen
@@ -32,7 +32,7 @@ import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
-import com.xxmrk888ytxx.privatenote.Utils.NavArguments
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -478,5 +478,20 @@ class editNoteViewModel @Inject constructor(
             .memoryCachePolicy(CachePolicy.DISABLED)
            // .size(100)
             .build()
+    }
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    @MustBeLocalization
+    fun requestAudioPermission(permission: PermissionState) {
+        com.xxmrk888ytxx.privatenote.MultiUse.requestPermission(permission = permission,
+            onGranted = {
+                showAudioRecorderDialog()
+            },
+            onDeny = {
+                showToast.showToast {
+                    "Для записи звука необходимо, предоставить разрешение на это."
+                }
+            }
+        )
     }
 }

@@ -1,7 +1,7 @@
 package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.media.AudioRecord
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -38,6 +38,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
@@ -118,6 +120,7 @@ fun EditNoteScreen(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
@@ -133,15 +136,25 @@ fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
                 verticalArrangement = Arrangement.Center
             ) {
                 RecordTimer(editNoteViewModel)
-                OutlinedButton(
-                    onClick = {  },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red.copy(0.9f)),
-                    shape = RoundedCornerShape(500.dp)
+                Row(
+                    modifier = Modifier.padding(bottom = 10.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(painter = painterResource(R.drawable.ic_record),
-                        contentDescription = "")
+                    IconButton(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(60.dp)
+                            .background(Color.Red.copy(0.9f)),
+                        onClick = {  },
+                    ) {
+                        Icon(painter = painterResource(R.drawable.ic_record),
+                            contentDescription = "",
+                            tint = PrimaryFontColor
+                        )
+                    }
+                    }
                 }
-            }
         }
     }
 }
@@ -712,7 +725,7 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @Composable
 @MustBeLocalization
 fun FilesDialog(
@@ -720,6 +733,7 @@ fun FilesDialog(
     activityController: ActivityController,
     navController: NavController
 ) {
+    val permission = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf(),scope.coroutineContext)
@@ -774,7 +788,7 @@ fun FilesDialog(
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row {
-                            IconButton(onClick = { editNoteViewModel.showAudioRecorderDialog() }) {
+                            IconButton(onClick = { editNoteViewModel.requestAudioPermission(permission) }) {
                                 Icon(painter = painterResource(R.drawable.ic_plus),
                                     contentDescription = "",
                                     tint = PrimaryFontColor,

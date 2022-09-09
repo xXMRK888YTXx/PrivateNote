@@ -1,6 +1,5 @@
-package com.xxmrk888ytxx.privatenote.NoteFileManager
+package com.xxmrk888ytxx.privatenote.NoteImagesManager
 
-import android.graphics.Bitmap
 import androidx.security.crypto.EncryptedFile
 
 data class Image(

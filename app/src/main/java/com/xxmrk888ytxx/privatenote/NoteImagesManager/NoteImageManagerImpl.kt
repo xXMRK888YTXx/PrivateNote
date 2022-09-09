@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.NoteFileManager
+package com.xxmrk888ytxx.privatenote.NoteImagesManager
 
 import android.content.Context
 import android.content.ContextWrapper
@@ -19,10 +19,10 @@ import java.io.*
 import javax.inject.Inject
 
 
-class NoteFileManagerImpl @Inject constructor(
+class NoteImageManagerImpl @Inject constructor(
     private val context: Context,
     private val analytics: FirebaseAnalytics
-) : NoteFileManager {
+) : NoteImageManager {
 
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {

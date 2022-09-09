@@ -1,9 +1,8 @@
 package com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty
 
 import android.graphics.Bitmap
-import com.xxmrk888ytxx.privatenote.NoteFileManager.Image
+import com.xxmrk888ytxx.privatenote.NoteImagesManager.Image
 import kotlinx.coroutines.flow.SharedFlow
-import java.lang.Error
 
 interface NoteResourceRepository {
     suspend fun addImage(image:Bitmap,noteId:Int,onError:(e:Exception) -> Unit = {})

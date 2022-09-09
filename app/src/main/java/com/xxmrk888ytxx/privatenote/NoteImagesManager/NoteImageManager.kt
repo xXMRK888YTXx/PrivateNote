@@ -1,11 +1,9 @@
-package com.xxmrk888ytxx.privatenote.NoteFileManager
+package com.xxmrk888ytxx.privatenote.NoteImagesManager
 
 import android.graphics.Bitmap
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
-import java.lang.Error
 
-interface NoteFileManager {
+interface NoteImageManager {
     suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean = false,
                          onError:(e:Exception) -> Unit = {})
     fun getNoteImages() : SharedFlow<List<Image>>

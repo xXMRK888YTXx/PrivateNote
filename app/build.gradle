@@ -107,7 +107,9 @@ dependencies {
     implementation 'androidx.biometric:biometric-ktx:1.2.0-alpha04'
     //draw box
     implementation 'io.ak1:drawbox:1.0.2'
-
+    //Coil
     implementation("io.coil-kt:coil-compose:2.2.0")
+    //Permissions
+    implementation 'com.google.accompanist:accompanist-permissions:0.26.2-beta'
 
 }

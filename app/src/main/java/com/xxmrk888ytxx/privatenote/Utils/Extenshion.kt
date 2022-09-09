@@ -167,3 +167,15 @@ fun EncryptedFile.getBytes() : ByteArray? {
         return null
     }
 }
+
+fun <T> T?.ifNotNull(Runnable:(T) -> Unit) {
+    if(this != null) {
+        Runnable(this)
+    }
+}
+
+suspend fun <T> T?.asyncIfNotNull(Runnable:suspend (T) -> Unit) {
+    if(this != null) {
+        Runnable(this)
+    }
+}
