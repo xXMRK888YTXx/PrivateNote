@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.AudioManager.AudioManager
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
@@ -46,14 +48,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class editNoteViewModel @Inject constructor(
+class EditNoteViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val categoryRepository: CategoryRepository,
     private val securityUtils: SecurityUtils,
     private val showToast: ShowToast,
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
-    private val analytics: FirebaseAnalytics
+    private val analytics: FirebaseAnalytics,
+    private val audioManager: AudioManager
 ) : ViewModel() {
 
     init {
@@ -160,6 +163,7 @@ class editNoteViewModel @Inject constructor(
             if(!note.isEncrypted) {
                 viewModelScope.launch(Dispatchers.IO) {
                     noteRepository.loadImages(id)
+                    audioManager.loadAudioInBuffer(id)
                 }
                     titleTextField.value = note.title
                     textField.value = note.text
@@ -312,6 +316,7 @@ class editNoteViewModel @Inject constructor(
             notePassword = hashPassword
             viewModelScope.launch(Dispatchers.IO) {
                 noteRepository.loadImages(note.id)
+                audioManager.loadAudioInBuffer(note.id)
             }
             saveNoteState.value = SaveNoteState.CryptSaveNote
             dialogShowState.value = ShowDialogState.None
@@ -339,6 +344,7 @@ class editNoteViewModel @Inject constructor(
         inputHistoryManager.clearBuffer()
         GlobalScope.launch(Dispatchers.IO) {
             noteRepository.clearLoadImages()
+            audioManager.clearAudioBuffer()
         }
         super.onCleared()
     }
@@ -493,5 +499,36 @@ class editNoteViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    fun getAudioRecorderState() = audioManager.getRecorderState()
+
+    fun getAudioFiles() = audioManager.getAudioList()
+
+    @MustBeLocalization
+    fun startRecord() {
+        viewModelScope.launch(Dispatchers.IO) {
+            audioManager.startRecord(note.id) {
+                showToast.showToast {
+                    "Произошла ошибка при попытки записи. Пожалуйста, " +
+                            "проверте выдали ли вы разрешение на запись звука"
+                }
+            }
+        }
+    }
+
+    fun stopRecord() {
+        viewModelScope.launch(Dispatchers.IO) {
+            audioManager.stopRecord()
+        }
+    }
+
+    fun playAudio(file:EncryptedFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            audioManager.stopPlayer()
+            audioManager.startPlayer(file) {
+                Log.d("MyLog",it.stackTraceToString())
+            }
+        }
     }
 }

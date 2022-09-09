@@ -7,11 +7,13 @@ interface AudioManager {
     suspend fun startRecord(noteId:Int,onError: (e:Exception) -> Unit = {})
     suspend fun stopRecord(onError: (e:Exception) -> Unit = {})
     fun getRecorderState() : SharedFlow<RecorderState>
+    suspend fun loadAudioInBuffer(noteId: Int)
+    suspend fun clearAudioBuffer()
     suspend fun notifyNewAudio(newAudio: Audio)
     suspend fun notifyDeleteAudio(audioId:Long)
     suspend fun removeAudio(audioId:Long)
-    fun getAudioList() : SharedFlow<Audio>
-    suspend fun startPlayer(file:EncryptedFile)
-    suspend fun pausePlayer()
-    suspend fun stopPlayer()
+    fun getAudioList() : SharedFlow<List<Audio>>
+    suspend fun startPlayer(file:EncryptedFile,onError: (e: Exception) -> Unit = {})
+    suspend fun pausePlayer(onError: (e: Exception) -> Unit = {})
+    suspend fun stopPlayer(onError: (e: Exception) -> Unit = {})
 }

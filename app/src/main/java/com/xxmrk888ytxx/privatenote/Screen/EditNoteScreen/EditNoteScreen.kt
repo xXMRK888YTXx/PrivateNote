@@ -41,6 +41,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.AudioManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
@@ -56,7 +57,7 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun EditNoteScreen(
-    editNoteViewModel: editNoteViewModel = hiltViewModel(),
+    editNoteViewModel: EditNoteViewModel = hiltViewModel(),
     navController: NavController,
     activityController: ActivityController
 ) {
@@ -122,7 +123,10 @@ fun EditNoteScreen(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
+fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
+    val scope = rememberCoroutineScope()
+    val recordState = editNoteViewModel.getAudioRecorderState()
+        .collectAsState(RecorderState.RecordDisable,scope.coroutineContext)
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -135,7 +139,7 @@ fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                RecordTimer(editNoteViewModel)
+                RecordTimer(editNoteViewModel,recordState.value)
                 Row(
                     modifier = Modifier.padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -146,9 +150,14 @@ fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
                             .clip(CircleShape)
                             .size(60.dp)
                             .background(Color.Red.copy(0.9f)),
-                        onClick = {  },
+                        onClick = {
+                            if(recordState.value == RecorderState.RecordDisable) editNoteViewModel.startRecord()
+                            else editNoteViewModel.stopRecord()
+                        },
                     ) {
-                        Icon(painter = painterResource(R.drawable.ic_record),
+                        Icon(painter =
+                        if(recordState.value == RecorderState.RecordDisable) painterResource(R.drawable.ic_record)
+                            else painterResource(R.drawable.ic_stop),
                             contentDescription = "",
                             tint = PrimaryFontColor
                         )
@@ -160,7 +169,10 @@ fun AudioRecordDialog(editNoteViewModel: editNoteViewModel) {
 }
 
 @Composable
-fun RecordTimer(editNoteViewModel: editNoteViewModel) {
+fun RecordTimer(editNoteViewModel: EditNoteViewModel,recorderState: RecorderState) {
+//    val time = if(recorderState != RecorderState.RecordDisable)
+//            (recorderState as RecorderState.RecordingNow).startRecordNow.ConvertTimeToTextFormat()
+//    else "00:00"
     Text(
         text = "00:00",
         fontSize = 30.sp,
@@ -171,7 +183,7 @@ fun RecordTimer(editNoteViewModel: editNoteViewModel) {
 }
 
 @Composable
-fun TimeCreated(editNoteViewModel: editNoteViewModel) {
+fun TimeCreated(editNoteViewModel: EditNoteViewModel) {
     if(editNoteViewModel.currentTime.value == 0L) return
     Text(text = editNoteViewModel.currentTime.value.secondToData(LocalContext.current),
         color = PrimaryFontColor.copy(0.5f),
@@ -184,7 +196,7 @@ fun TimeCreated(editNoteViewModel: editNoteViewModel) {
 }
 
 @Composable
-fun NoteTextEdit(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequester) {
+fun NoteTextEdit(editNoteViewModel: EditNoteViewModel, textFieldFocus: FocusRequester) {
     val textInField = remember {
         editNoteViewModel.textField
     }
@@ -227,7 +239,7 @@ fun NoteTextEdit(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequ
     }
 
 @Composable
-fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
+fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) {
     val isDropDownMenuShow = remember {
         editNoteViewModel.isDropDownMenuShow
     }
@@ -375,7 +387,7 @@ fun Toolbar(editNoteViewModel: editNoteViewModel,navController: NavController) {
 }
 
 @Composable
-fun TitleEditField(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRequester) {
+fun TitleEditField(editNoteViewModel: EditNoteViewModel, textFieldFocus: FocusRequester) {
     val isHideText = remember {
         editNoteViewModel.isHideText
     }
@@ -417,7 +429,7 @@ fun TitleEditField(editNoteViewModel: editNoteViewModel, textFieldFocus: FocusRe
     }
 
 @Composable
-fun CryptDialog(editNoteViewModel: editNoteViewModel) {
+fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
     val passwordText = remember {
         mutableStateOf("")
     }
@@ -467,7 +479,7 @@ fun CryptDialog(editNoteViewModel: editNoteViewModel) {
         }
     }
 @Composable
-fun PasswordTextEdit(editNoteViewModel: editNoteViewModel, password: MutableState<String>,
+fun PasswordTextEdit(editNoteViewModel: EditNoteViewModel, password: MutableState<String>,
                      repitPassword: MutableState<String>, isEnabled:MutableState<Boolean>) {
     OutlinedTextField(value = password.value,
         onValueChange = {password.value = it;isEnabled.value = repitPassword.value == password.value},
@@ -499,8 +511,8 @@ fun PasswordTextEdit(editNoteViewModel: editNoteViewModel, password: MutableStat
 }
 
 @Composable
-fun RepitPasswordTextEdit(editNoteViewModel: editNoteViewModel, repitPassword:MutableState<String>,
-    password: MutableState<String>, isEnabled:MutableState<Boolean>) {
+fun RepitPasswordTextEdit(editNoteViewModel: EditNoteViewModel, repitPassword:MutableState<String>,
+                          password: MutableState<String>, isEnabled:MutableState<Boolean>) {
 
     OutlinedTextField(value = repitPassword.value,
         onValueChange = {repitPassword.value = it;isEnabled.value = repitPassword.value == password.value },
@@ -533,7 +545,7 @@ fun RepitPasswordTextEdit(editNoteViewModel: editNoteViewModel, repitPassword:Mu
 }
 
 @Composable
-fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavController) {
+fun DecriptDialog(editNoteViewModel: EditNoteViewModel, navController: NavController) {
     val passwordText = remember {
         mutableStateOf("")
     }
@@ -608,7 +620,7 @@ fun DecriptDialog(editNoteViewModel: editNoteViewModel,navController: NavControl
 }
 
 @Composable
-fun ExitDialog(editNoteViewModel: editNoteViewModel,navController: NavController) {
+fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavController) {
     Dialog(onDismissRequest = {
         editNoteViewModel.dialogShowState.value = ShowDialogState.None
     }) {
@@ -676,7 +688,7 @@ fun ExitDialog(editNoteViewModel: editNoteViewModel,navController: NavController
     }
 }
 @Composable
-fun CategorySelector(editNoteViewModel: editNoteViewModel) {
+fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
     val category = remember {
         editNoteViewModel.getCategory()
     }
@@ -729,7 +741,7 @@ fun CategorySelector(editNoteViewModel: editNoteViewModel) {
 @Composable
 @MustBeLocalization
 fun FilesDialog(
-    editNoteViewModel: editNoteViewModel,
+    editNoteViewModel: EditNoteViewModel,
     activityController: ActivityController,
     navController: NavController
 ) {
@@ -737,6 +749,7 @@ fun FilesDialog(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf(),scope.coroutineContext)
+    val audios = editNoteViewModel.getAudioFiles().collectAsState(listOf(),scope.coroutineContext)
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -798,6 +811,18 @@ fun FilesDialog(
                         }
                     }
 
+                }
+                LazyRow() {
+                    items(audios.value) {
+                        IconButton(
+                            onClick = {
+                               editNoteViewModel.playAudio(it.file)
+                            },
+                            modifier = Modifier.clip(CircleShape).padding(end = 10.dp).background(Color.Magenta)
+                        ) {
+
+                        }
+                    }
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),

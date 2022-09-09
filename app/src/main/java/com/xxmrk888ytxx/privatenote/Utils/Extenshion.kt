@@ -179,3 +179,8 @@ suspend fun <T> T?.asyncIfNotNull(Runnable:suspend (T) -> Unit) {
         Runnable(this)
     }
 }
+
+
+fun Long.ConvertTimeToTextFormat() : String {
+    return ""
+}
