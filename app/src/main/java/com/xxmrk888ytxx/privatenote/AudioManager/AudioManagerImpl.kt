@@ -3,15 +3,17 @@ package com.xxmrk888ytxx.privatenote.AudioManager
 import android.content.Context
 import android.content.ContextWrapper
 import android.media.AudioAttributes
+import android.media.AudioAttributes.CONTENT_TYPE_MUSIC
+import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.media.MediaRecorder
-import android.os.Handler
-import android.os.Looper
+import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -22,11 +24,13 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
+
 class AudioManagerImpl @Inject constructor(
     private val context: Context
 ) : AudioManager {
     private var mediaRecorder: MediaRecorder? = null
     private var currentRecordAudio:Audio? = null
+
     private var mediaPlayer: MediaPlayer? = null
 
     private val _recordState:MutableSharedFlow<RecorderState> = MutableSharedFlow(1)
@@ -35,10 +39,15 @@ class AudioManagerImpl @Inject constructor(
     private val _audioFiles:MutableSharedFlow<List<Audio>> = MutableSharedFlow(1)
     private val  audioFiles:SharedFlow<List<Audio>> = _audioFiles
 
+    private val _playerState:MutableSharedFlow<PlayerState> = MutableSharedFlow(1)
+    private val playerState:SharedFlow<PlayerState> = _playerState
+    private var playerStopWatch:CountDownTimer? = null
+
     init {
         GlobalScope.launch(Dispatchers.IO) {
             _recordState.emit(RecorderState.RecordDisable)
             _audioFiles.emit(listOf())
+            _playerState.emit(PlayerState.Disable)
         }
     }
 
@@ -48,7 +57,7 @@ class AudioManagerImpl @Inject constructor(
             val audioFile = createAudioFile(noteId)
             mediaRecorder = MediaRecorder()
             mediaRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
-            mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS)
+            mediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             mediaRecorder?.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
             mediaRecorder?.setOutputFile(audioFile.file.openFileOutput().fd)
             mediaRecorder?.prepare()
@@ -67,7 +76,7 @@ class AudioManagerImpl @Inject constructor(
             mediaRecorder = null
             _recordState.tryEmit(RecorderState.RecordDisable)
             currentRecordAudio.asyncIfNotNull {
-                notifyNewAudio(it)
+                notifyNewAudio(it.copy(duration = getAudioDuration(it.file)))
                 currentRecordAudio = null
             }
         }catch (e:Exception) {
@@ -113,13 +122,30 @@ class AudioManagerImpl @Inject constructor(
         try {
             if(mediaPlayer != null) {
                 mediaPlayer?.start()
+                playerStopWatch?.start()
                 return
             }
             mediaPlayer = MediaPlayer()
-            mediaPlayer?.reset()
+            mediaPlayer?.setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(CONTENT_TYPE_MUSIC)
+                    .build()
+            )
             mediaPlayer?.setDataSource(file.openFileInput().fd)
             mediaPlayer?.prepare()
+            runOnMainThread {
+                playerStopWatch = object : CountDownTimer(Long.MAX_VALUE,1000) {
+                    override fun onTick(p0: Long) {
+                        mediaPlayer.ifNotNull {
+                            _playerState.tryEmit(PlayerState.Play(it.currentPosition.toLong()))
+                        }
+                    }
+                    override fun onFinish() {}
+                }.start()
+            }
             mediaPlayer?.start()
+
         }catch (e:Exception) {
             onError(e)
 
@@ -127,30 +153,65 @@ class AudioManagerImpl @Inject constructor(
     }
 
     override suspend fun pausePlayer(onError: (e: Exception) -> Unit) {
+        runOnMainThread {
+            playerStopWatch.ifNotNull {
+                it.cancel()
+            }
+        }
         mediaPlayer.ifNotNull {
             it.pause()
+            _playerState.tryEmit(PlayerState.Pause(it.currentPosition.toLong()))
         }
     }
 
     override suspend fun stopPlayer(onError: (e: Exception) -> Unit) {
+        runOnMainThread {
+            playerStopWatch.ifNotNull {
+                it.cancel()
+                playerStopWatch = null
+            }
+        }
         mediaPlayer.ifNotNull {
             it.stop()
             mediaPlayer = null
+            _playerState.tryEmit(PlayerState.Disable)
         }
     }
 
+    override suspend fun getAudioDuration(file: EncryptedFile) : Long {
+        val mediaMetadataRetriever = MediaMetadataRetriever()
+        mediaMetadataRetriever.setDataSource(file.openFileInput().fd)
+        return mediaMetadataRetriever
+            .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+    }
+
+    override suspend fun seekTo(pos: Long) {
+        try {
+            mediaPlayer.ifNotNull {
+                it.seekTo(pos.toInt())
+                try {
+                    it.start()
+                }catch (e:Exception){}
+                _playerState.tryEmit(PlayerState.Play(it.currentPosition.toLong()))
+            }
+        }catch (e:Exception) {
+
+        }
+    }
+
+    override fun getPlayerState(): SharedFlow<PlayerState> = playerState
 
     private fun createAudioFile(noteId: Int) : Audio {
         val noteAudioDir = getNoteDir(noteId)
         val id = System.currentTimeMillis()
-        val audioFile = File(File(noteAudioDir),"$id.aac")
+        val audioFile = File(File(noteAudioDir),"$id.mp3")
         val mainKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
         val file = EncryptedFile.Builder(
             context,audioFile, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
         ).build()
-        return Audio(id,file)
+        return Audio(id,file,0)
     }
 
     private fun getNoteDir(noteId:Int) : String {
@@ -161,13 +222,13 @@ class AudioManagerImpl @Inject constructor(
         return noteAudioDir.absolutePath
     }
 
-    private fun getAudioFile(filePath:File) : Audio {
+    private suspend fun getAudioFile(filePath:File) : Audio {
         val mainKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
         val file = EncryptedFile.Builder(
             context,filePath, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
         ).build()
-        return Audio(filePath.fileNameToLong(),file)
+        return Audio(filePath.fileNameToLong(),file,getAudioDuration(file))
     }
 }

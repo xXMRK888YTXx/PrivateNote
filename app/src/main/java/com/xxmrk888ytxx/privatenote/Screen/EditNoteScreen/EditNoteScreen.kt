@@ -41,9 +41,11 @@ import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.AudioManager.Audio
 import com.xxmrk888ytxx.privatenote.AudioManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.MultiUse.PasswordEditText.PasswordEditText
+import com.xxmrk888ytxx.privatenote.MultiUse.Player.PlayerDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.MultiUse.WarmingText.WarmingText
@@ -76,6 +78,8 @@ fun EditNoteScreen(
     val isAudioRecordDialogShow = remember {
         editNoteViewModel.isAudioRecorderDialogShow()
     }
+    val playerDialogState = editNoteViewModel.getPlayerDialogState().Remember()
+
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.updateImagesCount()
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
@@ -119,6 +123,13 @@ fun EditNoteScreen(
             editNoteViewModel.hideRemoveImageDialog()
         }
     }
+    if(playerDialogState.value.first&&playerDialogState.value.second != null) {
+        PlayerDialog(
+            controller = editNoteViewModel.getPlayerController(),
+            audio = playerDialogState.value.second!!,
+            onHideDialog = {editNoteViewModel.hidePlayerDialog()}
+        )
+    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -127,6 +138,10 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
     val scope = rememberCoroutineScope()
     val recordState = editNoteViewModel.getAudioRecorderState()
         .collectAsState(RecorderState.RecordDisable,scope.coroutineContext)
+    LaunchedEffect(key1 = recordState.value) {
+        if(recordState.value == RecorderState.RecordDisable) editNoteViewModel.stopRecordStopWatch()
+        else editNoteViewModel.startRecordStopWatch((recordState.value as RecorderState.RecordingNow).startRecordNow)
+    }
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -170,11 +185,11 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
 
 @Composable
 fun RecordTimer(editNoteViewModel: EditNoteViewModel,recorderState: RecorderState) {
-//    val time = if(recorderState != RecorderState.RecordDisable)
-//            (recorderState as RecorderState.RecordingNow).startRecordNow.ConvertTimeToTextFormat()
-//    else "00:00"
+    val currentRecordTime = remember {
+        editNoteViewModel.getCurrentRecordTime()
+    }
     Text(
-        text = "00:00",
+        text = currentRecordTime.value,
         fontSize = 30.sp,
         color = PrimaryFontColor,
         fontWeight = FontWeight.Medium,
@@ -814,13 +829,19 @@ fun FilesDialog(
                 }
                 LazyRow() {
                     items(audios.value) {
-                        IconButton(
-                            onClick = {
-                               editNoteViewModel.playAudio(it.file)
-                            },
-                            modifier = Modifier.clip(CircleShape).padding(end = 10.dp).background(Color.Magenta)
-                        ) {
+                        Column() {
+                            IconButton(
+                                onClick = {
+                                    editNoteViewModel.showPlayerDialog(it)
+                                },
+                                modifier = Modifier
+                                    .clip(CircleShape)
+                                    .padding(end = 10.dp)
+                                    .background(Color.Magenta)
+                            ) {
 
+                            }
+                            Text(it.duration.milliSecondToSecond())
                         }
                     }
                 }
@@ -899,3 +920,4 @@ fun FilesDialog(
         }
     }
 }
+

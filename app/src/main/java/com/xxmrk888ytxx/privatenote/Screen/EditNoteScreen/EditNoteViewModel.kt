@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen
 
 import android.content.Context
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -16,12 +17,15 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.AudioManager.Audio
 import com.xxmrk888ytxx.privatenote.AudioManager.AudioManager
+import com.xxmrk888ytxx.privatenote.AudioManager.PlayerState
 import com.xxmrk888ytxx.privatenote.DB.Entity.Category
 import com.xxmrk888ytxx.privatenote.DB.Entity.Note
 import com.xxmrk888ytxx.privatenote.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.LifeCycleState
+import com.xxmrk888ytxx.privatenote.MultiUse.Player.PlayerController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.Repositories.NoteReposiroty.NoteRepository
@@ -31,12 +35,10 @@ import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.SaveNoteState
 import com.xxmrk888ytxx.privatenote.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Screen.Screen
 import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
-import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -94,6 +96,12 @@ class EditNoteViewModel @Inject constructor(
 
     val currentTime = mutableStateOf(0L)
 
+    private var recordStopwatch:CountDownTimer? = null
+
+    private val currentRecordTime = mutableStateOf("00:00")
+
+    fun getCurrentRecordTime() = currentRecordTime
+
     private var note: Note = Note(title = "", text = "")
 
     //режим сохранения заметки
@@ -110,6 +118,18 @@ class EditNoteViewModel @Inject constructor(
     private var isHaveImages = false
 
     private val isShowRemoveImageDialog = mutableStateOf(Pair(false){})
+
+    private val playerDialogState = mutableStateOf(Pair<Boolean,Audio?>(false,null))
+
+    fun getPlayerDialogState() = playerDialogState
+
+    fun showPlayerDialog(audio: Audio) {
+        playerDialogState.value = Pair(true,audio)
+    }
+
+    fun hidePlayerDialog() {
+        playerDialogState.value = Pair(false,null)
+    }
 
     fun getShowRemoveImageState() = isShowRemoveImageDialog
 
@@ -141,6 +161,10 @@ class EditNoteViewModel @Inject constructor(
 
     fun hideAudioRecorderDialog() {
         isAudioRecorderDialogState.value = false
+        stopRecordStopWatch()
+        viewModelScope.launch(Dispatchers.IO) {
+            audioManager.stopRecord()
+        }
     }
 
     private var isNotLock:Pair<Boolean,suspend () -> Unit> = Pair(false){}
@@ -517,6 +541,8 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
+
+
     fun stopRecord() {
         viewModelScope.launch(Dispatchers.IO) {
             audioManager.stopRecord()
@@ -531,4 +557,57 @@ class EditNoteViewModel @Inject constructor(
             }
         }
     }
+
+    fun startRecordStopWatch(startRecordTime:Long) {
+        if(recordStopwatch != null) return
+        recordStopwatch = object :CountDownTimer(Long.MAX_VALUE,1000) {
+            override fun onTick(p: Long) {
+                currentRecordTime.value = (System.currentTimeMillis() - startRecordTime).milliSecondToSecond()
+            }
+
+            override fun onFinish() {}
+
+        }.start()
+    }
+
+    fun stopRecordStopWatch() {
+        recordStopwatch.ifNotNull {
+            it.cancel()
+            recordStopwatch = null
+            currentRecordTime.value = "00:00"
+        }
+    }
+
+    fun getPlayerController() : PlayerController {
+        return object : PlayerController {
+
+            override fun getPlayerState(): SharedFlow<PlayerState> = audioManager.getPlayerState()
+
+            override fun play(audio: Audio) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    playAudio(audio.file)
+                }
+            }
+
+            override fun pause() {
+                viewModelScope.launch(Dispatchers.IO) {
+                    audioManager.pausePlayer()
+                }
+            }
+
+            override fun reset() {
+                viewModelScope.launch(Dispatchers.IO) {
+                    audioManager.pausePlayer()
+                }
+            }
+
+            override fun seekTo(pos:Long) {
+                viewModelScope.launch(Dispatchers.IO) {
+                    audioManager.seekTo(pos)
+                }
+            }
+
+        }
+    }
+
 }

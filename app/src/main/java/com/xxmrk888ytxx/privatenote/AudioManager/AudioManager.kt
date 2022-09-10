@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.AudioManager
 
 import androidx.security.crypto.EncryptedFile
 import kotlinx.coroutines.flow.SharedFlow
+import java.io.File
 
 interface AudioManager {
     suspend fun startRecord(noteId:Int,onError: (e:Exception) -> Unit = {})
@@ -16,4 +17,7 @@ interface AudioManager {
     suspend fun startPlayer(file:EncryptedFile,onError: (e: Exception) -> Unit = {})
     suspend fun pausePlayer(onError: (e: Exception) -> Unit = {})
     suspend fun stopPlayer(onError: (e: Exception) -> Unit = {})
+    suspend fun getAudioDuration(file: EncryptedFile) : Long
+    suspend fun seekTo(pos:Long)
+    fun getPlayerState() : SharedFlow<PlayerState>
 }

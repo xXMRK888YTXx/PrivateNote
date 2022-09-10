@@ -1,6 +1,8 @@
 package com.xxmrk888ytxx.privatenote.Utils
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.*
@@ -173,14 +175,27 @@ fun <T> T?.ifNotNull(Runnable:(T) -> Unit) {
         Runnable(this)
     }
 }
-
-suspend fun <T> T?.asyncIfNotNull(Runnable:suspend (T) -> Unit) {
+suspend  fun <T> T?.asyncIfNotNull(Runnable:suspend (T) -> Unit) {
     if(this != null) {
         Runnable(this)
     }
 }
 
+fun Long.milliSecondToSecond() : String {
+    if(this == 0L) return "00:00"
+    var finalString = ""
+    val minute = this / 60000
+    val second = (this - minute * 60000) / 1000
+    finalString += if(minute in 0..9) "0$minute" else minute.toString()
+    finalString += ":"
+    finalString += if(second in 0..9) "0$second" else second.toString()
+    return finalString
+}
 
-fun Long.ConvertTimeToTextFormat() : String {
-    return ""
+@Composable
+fun <T> MutableState<T>.Remember() = remember {this}
+
+fun Any?.runOnMainThread(Runnable: () -> Unit) {
+    val handler = Handler(Looper.getMainLooper())
+    handler.post { Runnable() }
 }
