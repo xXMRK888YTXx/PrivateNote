@@ -1,8 +1,7 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import androidx.compose.ui.tooling.preview.Preview
-import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtils
-import com.xxmrk888ytxx.privatenote.SecurityUtils.SecurityUtilsImpl
+import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
+import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtilsImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

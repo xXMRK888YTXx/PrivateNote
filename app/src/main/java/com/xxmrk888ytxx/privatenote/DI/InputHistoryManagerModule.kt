@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
+import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

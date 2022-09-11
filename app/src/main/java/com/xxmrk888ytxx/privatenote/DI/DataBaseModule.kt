@@ -1,13 +1,12 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.xxmrk888ytxx.privatenote.DB.AppDataBase
-import com.xxmrk888ytxx.privatenote.DB.DAO.CategoryDao
-import com.xxmrk888ytxx.privatenote.DB.DAO.NoteDao
-import com.xxmrk888ytxx.privatenote.DB.DAO.NotifyTaskDao
-import com.xxmrk888ytxx.privatenote.DB.DAO.ToDoDao
+import com.xxmrk888ytxx.privatenote.data.Database.AppDataBase
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

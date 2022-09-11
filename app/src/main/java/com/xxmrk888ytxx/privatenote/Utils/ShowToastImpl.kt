@@ -3,7 +3,7 @@ package com.xxmrk888ytxx.privatenote.Utils
 import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
-import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import java.util.*
 import javax.inject.Singleton
 

@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.FileProvider.getUriForFile
@@ -13,9 +11,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedFile
-import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
-import com.xxmrk888ytxx.privatenote.Exception.CallBackAlreadyRegisteredException
-import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
+import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +22,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
 import java.util.concurrent.Executor
 import javax.inject.Inject
 

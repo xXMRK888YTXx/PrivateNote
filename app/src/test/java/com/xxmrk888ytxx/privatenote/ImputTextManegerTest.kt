@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote
 
-import com.xxmrk888ytxx.privatenote.InputHistoryManager.InputHistoryManager
-import org.junit.Assert
+import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

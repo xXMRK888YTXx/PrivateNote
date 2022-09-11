@@ -1,8 +1,8 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.xxmrk888ytxx.privatenote.LifeCycleState
-import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.Utils.ShowToastImpl
 import dagger.Module

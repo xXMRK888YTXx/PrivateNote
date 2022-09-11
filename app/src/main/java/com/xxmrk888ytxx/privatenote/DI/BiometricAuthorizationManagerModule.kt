@@ -3,9 +3,9 @@ package com.xxmrk888ytxx.privatenote.DI
 import android.content.Context
 import android.hardware.fingerprint.FingerprintManager
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManager
-import com.xxmrk888ytxx.privatenote.BiometricAuthorizationManager.BiometricAuthorizationManagerImpl
-import com.xxmrk888ytxx.privatenote.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
+import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

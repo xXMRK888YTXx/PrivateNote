@@ -10,9 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.text.isDigitsOnly
 import androidx.security.crypto.EncryptedFile
-import com.xxmrk888ytxx.privatenote.DB.Entity.Category
-import com.xxmrk888ytxx.privatenote.DB.Entity.Note
-import com.xxmrk888ytxx.privatenote.DB.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY

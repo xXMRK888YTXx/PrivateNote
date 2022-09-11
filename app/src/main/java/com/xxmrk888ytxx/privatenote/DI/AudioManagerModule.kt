@@ -1,8 +1,8 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.xxmrk888ytxx.privatenote.AudioManager.AudioManager
-import com.xxmrk888ytxx.privatenote.AudioManager.AudioManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.AudioManager.AudioManager
+import com.xxmrk888ytxx.privatenote.domain.AudioManager.AudioManagerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
