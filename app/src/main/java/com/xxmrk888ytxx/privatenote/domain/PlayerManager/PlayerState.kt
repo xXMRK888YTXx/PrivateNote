@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.AudioManager
+package com.xxmrk888ytxx.privatenote.domain.PlayerManager
 
 sealed class PlayerState(val currentPos:Long) {
     object Disable : PlayerState(0)

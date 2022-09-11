@@ -7,6 +7,8 @@ import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.domain.NoteImagesManager.NoteImageManager
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
@@ -67,5 +69,11 @@ class RepositoryModule {
     @Singleton
     fun getSettingsRepositoryImpl(@ApplicationContext context:Context ) : SettingsRepository {
         return SettingsRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getAudioRepository(@ApplicationContext context: Context ) : AudioRepository {
+        return AudioRepositoryImpl(context)
     }
 }

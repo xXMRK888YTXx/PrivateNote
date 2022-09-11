@@ -1,8 +1,9 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.AudioManager
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.AudioManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.AudioManager.RecordManager
+import com.xxmrk888ytxx.privatenote.domain.AudioManager.RecordManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,10 @@ import javax.inject.Singleton
 class AudioManagerModule {
     @Provides
     @Singleton
-    fun getAudioManager(@ApplicationContext context: Context) : AudioManager {
-        return AudioManagerImpl(context)
+    fun getAudioManager(
+        @ApplicationContext context: Context,
+        audioRepository: AudioRepository
+    ) : RecordManager {
+        return RecordManagerImpl(context,audioRepository)
     }
 }

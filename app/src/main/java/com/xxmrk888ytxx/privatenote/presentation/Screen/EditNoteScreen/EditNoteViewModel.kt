@@ -16,9 +16,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.Audio
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.AudioManager
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.PlayerState
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
+import com.xxmrk888ytxx.privatenote.domain.AudioManager.RecordManager
+import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
@@ -38,6 +38,8 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
+import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -57,7 +59,9 @@ class EditNoteViewModel @Inject constructor(
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
     private val analytics: FirebaseAnalytics,
-    private val audioManager: AudioManager
+    private val recordManager: RecordManager,
+    private val playerManager: PlayerManager,
+    private val audioRepository: AudioRepository
 ) : ViewModel() {
 
     init {
@@ -118,7 +122,7 @@ class EditNoteViewModel @Inject constructor(
 
     private val isShowRemoveImageDialog = mutableStateOf(Pair(false){})
 
-    private val playerDialogState = mutableStateOf(Pair<Boolean,Audio?>(false,null))
+    private val playerDialogState = mutableStateOf(Pair<Boolean, Audio?>(false,null))
 
     fun getPlayerDialogState() = playerDialogState
 
@@ -128,6 +132,9 @@ class EditNoteViewModel @Inject constructor(
 
     fun hidePlayerDialog() {
         playerDialogState.value = Pair(false,null)
+        viewModelScope.launch(Dispatchers.IO) {
+            playerManager.resetPlayer()
+        }
     }
 
     fun getShowRemoveImageState() = isShowRemoveImageDialog
@@ -162,7 +169,7 @@ class EditNoteViewModel @Inject constructor(
         isAudioRecorderDialogState.value = false
         stopRecordStopWatch()
         viewModelScope.launch(Dispatchers.IO) {
-            audioManager.stopRecord()
+            recordManager.stopRecord()
         }
     }
 
@@ -186,7 +193,7 @@ class EditNoteViewModel @Inject constructor(
             if(!note.isEncrypted) {
                 viewModelScope.launch(Dispatchers.IO) {
                     noteRepository.loadImages(id)
-                    audioManager.loadAudioInBuffer(id)
+                    audioRepository.loadAudioInBuffer(id)
                 }
                     titleTextField.value = note.title
                     textField.value = note.text
@@ -339,7 +346,7 @@ class EditNoteViewModel @Inject constructor(
             notePassword = hashPassword
             viewModelScope.launch(Dispatchers.IO) {
                 noteRepository.loadImages(note.id)
-                audioManager.loadAudioInBuffer(note.id)
+                audioRepository.loadAudioInBuffer(note.id)
             }
             saveNoteState.value = SaveNoteState.CryptSaveNote
             dialogShowState.value = ShowDialogState.None
@@ -367,7 +374,7 @@ class EditNoteViewModel @Inject constructor(
         inputHistoryManager.clearBuffer()
         GlobalScope.launch(Dispatchers.IO) {
             noteRepository.clearLoadImages()
-            audioManager.clearAudioBuffer()
+            audioRepository.clearAudioBuffer()
         }
         super.onCleared()
     }
@@ -524,14 +531,14 @@ class EditNoteViewModel @Inject constructor(
         )
     }
 
-    fun getAudioRecorderState() = audioManager.getRecorderState()
+    fun getAudioRecorderState() = recordManager.getRecorderState()
 
-    fun getAudioFiles() = audioManager.getAudioList()
+    fun getAudioFiles() = audioRepository.getAudioList()
 
     @MustBeLocalization
     fun startRecord() {
         viewModelScope.launch(Dispatchers.IO) {
-            audioManager.startRecord(note.id) {
+            recordManager.startRecord(note.id) {
                 showToast.showToast {
                     "Произошла ошибка при попытки записи. Пожалуйста, " +
                             "проверте выдали ли вы разрешение на запись звука"
@@ -544,14 +551,13 @@ class EditNoteViewModel @Inject constructor(
 
     fun stopRecord() {
         viewModelScope.launch(Dispatchers.IO) {
-            audioManager.stopRecord()
+            recordManager.stopRecord()
         }
     }
 
     fun playAudio(file:EncryptedFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            audioManager.stopPlayer()
-            audioManager.startPlayer(file) {
+            playerManager.startPlayer(file) {
                 Log.d("MyLog",it.stackTraceToString())
             }
         }
@@ -579,8 +585,7 @@ class EditNoteViewModel @Inject constructor(
 
     fun getPlayerController() : PlayerController {
         return object : PlayerController {
-
-            override fun getPlayerState(): SharedFlow<PlayerState> = audioManager.getPlayerState()
+            override fun getPlayerState(): SharedFlow<PlayerState> = playerManager.getPlayerState()
 
             override fun play(audio: Audio) {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -590,19 +595,19 @@ class EditNoteViewModel @Inject constructor(
 
             override fun pause() {
                 viewModelScope.launch(Dispatchers.IO) {
-                    audioManager.pausePlayer()
+                    playerManager.pausePlayer()
                 }
             }
 
             override fun reset() {
                 viewModelScope.launch(Dispatchers.IO) {
-                    audioManager.pausePlayer()
+                    playerManager.pausePlayer()
                 }
             }
 
             override fun seekTo(pos:Long) {
                 viewModelScope.launch(Dispatchers.IO) {
-                    audioManager.seekTo(pos)
+                    playerManager.seekTo(pos)
                 }
             }
 
