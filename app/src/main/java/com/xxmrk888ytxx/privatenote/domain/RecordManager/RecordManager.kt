@@ -1,6 +1,5 @@
-package com.xxmrk888ytxx.privatenote.domain.AudioManager
+package com.xxmrk888ytxx.privatenote.domain.RecordManager
 
-import androidx.security.crypto.EncryptedFile
 import kotlinx.coroutines.flow.SharedFlow
 
 interface RecordManager {

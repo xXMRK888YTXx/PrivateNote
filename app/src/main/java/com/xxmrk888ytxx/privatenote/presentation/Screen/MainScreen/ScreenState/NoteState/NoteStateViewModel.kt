@@ -32,8 +32,11 @@ import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.internal.synchronized
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -100,7 +103,7 @@ class NoteStateViewModel @Inject constructor(
 
     fun removeNote(id:Int?) {
         if(id == null) return
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             noteRepository.removeNote(id)
         }
     }
@@ -163,14 +166,15 @@ class NoteStateViewModel @Inject constructor(
 
     fun isSelectedNotEmpty() = selectedNoteList.isNotEmpty()
 
+
      fun removeSelected() {
-         viewModelScope.launch {
              val selectedItem = selectedNoteList
              currentNoteMode.value = NoteScreenMode.Default
              selectedItem.forEach {
-                 noteRepository.removeNote(it)
+                 viewModelScope.launch(Dispatchers.IO) {
+                     noteRepository.removeNote(it)
+                 }
              }
-         }
     }
 
     fun toSearchMode() {

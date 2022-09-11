@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.NoteImagesManager
+package com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository
 
 import android.content.Context
 import android.content.ContextWrapper
@@ -8,6 +8,7 @@ import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
@@ -19,13 +20,14 @@ import java.io.*
 import javax.inject.Inject
 
 
-class NoteImageManagerImpl @Inject constructor(
+class ImageRepositoryImpl @Inject constructor(
     private val context: Context,
     private val analytics: FirebaseAnalytics
-) : NoteImageManager {
+) : ImageRepository {
 
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
+        analytics.logEvent(AnalyticsEvents.Add_Note_Image_Event, bundleOf(Pair("SaveInPng",saveInPng)))
         val newImage = saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError) ?: return
         newImageNotify(newImage)
 
@@ -75,6 +77,7 @@ class NoteImageManagerImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearBufferImages() {
+        analytics.logEvent(AnalyticsEvents.Clear_Load_Images,null)
         _noteImageList.resetReplayCache()
         _noteImageList.emit(listOf())
     }
@@ -88,6 +91,7 @@ class NoteImageManagerImpl @Inject constructor(
     }
 
     override suspend fun tempDirToImageDir(noteId: Int) {
+        analytics.logEvent(AnalyticsEvents.Change_tempDir_to_Image_Event,null)
         val tempDir = File(getNoteImageDir(0,context))
         val newImageDir = File(getNoteImageDir(noteId,context))
         tempDir.renameTo(newImageDir)
@@ -98,6 +102,7 @@ class NoteImageManagerImpl @Inject constructor(
     }
 
     override suspend fun removeImage(noteId: Int, imageId: Long) {
+        analytics.logEvent(AnalyticsEvents.Remove_Image_Event,null)
         val imageDir = getNoteImageDir(noteId,context)
         val image = File(imageDir,"$imageId")
         image.delete()

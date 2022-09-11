@@ -133,4 +133,9 @@
     <string name="Save_Image">Save drawing?</string>
     <string name="Saving">Saving</string>
     <string name="Error_saving">An error occurred while saving</string>
+    <string name="Remove_audio">Delete audio?</string>
+    <string name="No_Audio">No Audio records</string>
+    <string name="Audio_records">Audio records</string>
+    <string name="Record_give_permissions">To record audio, you must grant permission to do so.</string>
+    <string name="Record_error">An error occurred while trying to write. Please check if you have given permission to record audio</string>
 </resources>

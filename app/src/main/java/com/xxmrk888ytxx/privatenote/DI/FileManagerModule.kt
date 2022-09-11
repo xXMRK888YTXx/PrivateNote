@@ -2,8 +2,8 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.xxmrk888ytxx.privatenote.domain.NoteImagesManager.NoteImageManager
-import com.xxmrk888ytxx.privatenote.domain.NoteImagesManager.NoteImageManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 class FileManagerModule {
     @Provides
     @Singleton
-    fun getFileManager(@ApplicationContext context: Context,analytics: FirebaseAnalytics) : NoteImageManager {
-        return NoteImageManagerImpl(context,analytics)
+    fun getFileManager(@ApplicationContext context: Context,analytics: FirebaseAnalytics) : ImageRepository {
+        return ImageRepositoryImpl(context,analytics)
     }
 }

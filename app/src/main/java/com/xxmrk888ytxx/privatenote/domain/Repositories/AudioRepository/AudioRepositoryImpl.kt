@@ -29,7 +29,7 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     override suspend fun loadAudioInBuffer(noteId: Int) {
-        val audioDir = File(getNoteDir(noteId))
+        val audioDir = File(getAudioDir(noteId))
         val audioList = mutableListOf<Audio>()
         audioDir.listFiles().forEach {
             audioList.add(getAudioFile(it))
@@ -51,12 +51,40 @@ class AudioRepositoryImpl @Inject constructor(
 
     override fun getAudioList(): SharedFlow<List<Audio>> = audioFiles
 
-    override suspend fun notifyDeleteAudio(audioId: Long) {
-        TODO("Not yet implemented")
+    override suspend fun isHaveAudios(noteId: Int): Boolean {
+        val audioDir = File(getAudioDir(noteId))
+        return audioDir.listFiles()?.isNotEmpty() ?: false
     }
 
-    override suspend fun removeAudio(audioId: Long) {
-        TODO("Not yet implemented")
+    override suspend fun notifyDeleteAudio(audioId: Long) {
+        var newList = _audioFiles.first()
+        newList = newList.filter { it.id != audioId }
+        _audioFiles.tryEmit(newList)
+    }
+
+    override suspend fun removeAudio(noteId: Int,audioId: Long) {
+        val audioDir = getAudioDir(noteId)
+        val file = File(audioDir,"$audioId.mp3")
+        file.delete()
+        notifyDeleteAudio(audioId)
+    }
+
+    override suspend fun clearNoteAudios(noteId: Int) {
+        val audioDir = File(getAudioDir(noteId))
+        audioDir.listFiles()?.forEach {
+            it.delete()
+        }
+        audioDir.delete()
+    }
+
+    override suspend fun tempDirToImageDir(noteId: Int) {
+        val tempDir = File(getAudioDir(0))
+        val newImageDir = File(getAudioDir(noteId))
+        tempDir.renameTo(newImageDir)
+    }
+
+    override suspend fun clearTempDir() {
+        clearNoteAudios(0)
     }
 
     override suspend fun getAudioDuration(file: EncryptedFile) : Long {
@@ -76,7 +104,7 @@ class AudioRepositoryImpl @Inject constructor(
         return Audio(filePath.fileNameToLong(),file,getAudioDuration(file))
     }
 
-    private fun getNoteDir(noteId:Int) : String {
+    private fun getAudioDir(noteId:Int) : String {
         val contextWrapper = ContextWrapper(context)
         val rootDir = contextWrapper.getDir("Note_Audios", Context.MODE_PRIVATE)
         val noteAudioDir = File(rootDir,"$noteId")

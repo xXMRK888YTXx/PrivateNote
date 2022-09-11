@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.NoteImagesManager
+package com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository
 
 import androidx.security.crypto.EncryptedFile
 

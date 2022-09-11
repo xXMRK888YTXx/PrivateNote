@@ -128,4 +128,9 @@
     <string name="Save_Image">Сохранить рисунок?</string>
     <string name="Saving">Сохранение</string>
     <string name="Error_saving">Во время сохранения произошла ошибка</string>
+    <string name="Remove_audio">Удалить аудио?</string>
+    <string name="No_Audio">Нет аудиозаписей</string>
+    <string name="Audio_records">Аудиозаписи</string>
+    <string name="Record_give_permissions">Для записи звука необходимо, предоставить разрешение на это.</string>
+    <string name="Record_error">Произошла ошибка при попытки записи. Пожалуйста, проверте выдали ли вы разрешение на запись звука</string>
 </resources>

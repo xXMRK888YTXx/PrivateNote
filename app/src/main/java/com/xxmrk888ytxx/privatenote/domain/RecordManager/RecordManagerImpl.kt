@@ -1,17 +1,21 @@
-package com.xxmrk888ytxx.privatenote.domain.AudioManager
+package com.xxmrk888ytxx.privatenote.domain.RecordManager
 
 import android.content.Context
 import android.content.ContextWrapper
 import android.media.MediaRecorder
+import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
+import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -23,6 +27,7 @@ class RecordManagerImpl @Inject constructor(
 ) : RecordManager {
     private var mediaRecorder: MediaRecorder? = null
     private var currentRecordAudio: Audio? = null
+    private var recordStopWatch: CountDownTimer? = null
 
     private val _recordState:MutableSharedFlow<RecorderState> = MutableSharedFlow(1)
     private val recordState:SharedFlow<RecorderState> = _recordState
@@ -44,7 +49,19 @@ class RecordManagerImpl @Inject constructor(
             mediaRecorder?.setOutputFile(audioFile.file.openFileOutput().fd)
             mediaRecorder?.prepare()
             mediaRecorder?.start()
-            _recordState.tryEmit(RecorderState.RecordingNow(System.currentTimeMillis()))
+            val startTime = System.currentTimeMillis()
+            _recordState.tryEmit(RecorderState.RecordingNow(startTime,0))
+            runOnMainThread {
+                recordStopWatch = object : CountDownTimer(Long.MAX_VALUE,100) {
+                    override fun onTick(p0: Long) {
+                        _recordState.tryEmit(RecorderState.RecordingNow(startTime,
+                                mediaRecorder?.maxAmplitude ?: 0))
+                    }
+
+                    override fun onFinish() {}
+
+                }.start()
+            }
             currentRecordAudio = audioFile
         }catch (e:Exception) {
             onError(e)
@@ -53,6 +70,10 @@ class RecordManagerImpl @Inject constructor(
 
     override suspend fun stopRecord(onError: (e: Exception) -> Unit) {
         try {
+            recordStopWatch.ifNotNull {
+                it.cancel()
+                recordStopWatch = null
+            }
             mediaRecorder?.stop()
             mediaRecorder?.release()
             mediaRecorder = null

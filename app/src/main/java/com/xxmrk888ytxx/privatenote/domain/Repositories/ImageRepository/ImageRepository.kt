@@ -1,9 +1,9 @@
-package com.xxmrk888ytxx.privatenote.domain.NoteImagesManager
+package com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository
 
 import android.graphics.Bitmap
 import kotlinx.coroutines.flow.SharedFlow
 
-interface NoteImageManager {
+interface ImageRepository {
     suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean = false,
                          onError:(e:Exception) -> Unit = {})
     fun getNoteImages() : SharedFlow<List<Image>>

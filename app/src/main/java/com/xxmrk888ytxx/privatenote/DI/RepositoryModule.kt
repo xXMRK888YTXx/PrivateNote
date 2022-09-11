@@ -6,7 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
-import com.xxmrk888ytxx.privatenote.domain.NoteImagesManager.NoteImageManager
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
@@ -19,6 +19,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,8 +32,12 @@ import javax.inject.Singleton
 class RepositoryModule {
     @Singleton
     @Provides
-    fun getNoteRepositoryImpl(noteDao: NoteDao, noteImageManager: NoteImageManager, analytics: FirebaseAnalytics) : NoteRepositoryImpl {
-        return NoteRepositoryImpl(noteDao,noteImageManager,analytics)
+    fun getNoteRepositoryImpl(
+        noteDao: NoteDao,
+        removeNoteFileUseCase: RemoveNoteFileUseCase,
+        analytics: FirebaseAnalytics
+    ) : NoteRepositoryImpl {
+        return NoteRepositoryImpl(noteDao,removeNoteFileUseCase,analytics)
     }
 
     @Provides

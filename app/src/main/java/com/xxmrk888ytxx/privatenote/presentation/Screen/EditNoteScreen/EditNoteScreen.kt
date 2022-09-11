@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -41,7 +42,7 @@ import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
-import com.xxmrk888ytxx.privatenote.domain.AudioManager.RecorderState
+import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.Player.PlayerDialog
@@ -78,9 +79,11 @@ fun EditNoteScreen(
         editNoteViewModel.isAudioRecorderDialogShow()
     }
     val playerDialogState = editNoteViewModel.getPlayerDialogState().Remember()
+    val removeAudioDialogState = editNoteViewModel.getAudioRemoveDialogState().Remember()
 
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.updateImagesCount()
+        editNoteViewModel.updateAudiosCount()
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
     })
     val textFieldFocus = remember { FocusRequester() }
@@ -129,6 +132,15 @@ fun EditNoteScreen(
             onHideDialog = {editNoteViewModel.hidePlayerDialog()}
         )
     }
+    if(removeAudioDialogState.value.first) {
+        YesNoDialog(title = stringResource(R.string.Remove_audio),
+            onCancel = { editNoteViewModel.hideAudioRemoveDialog() },
+            onConfirm = {
+                removeAudioDialogState.value.second()
+                editNoteViewModel.hideAudioRemoveDialog()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -141,6 +153,8 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
         if(recordState.value == RecorderState.RecordDisable) editNoteViewModel.stopRecordStopWatch()
         else editNoteViewModel.startRecordStopWatch((recordState.value as RecorderState.RecordingNow).startRecordNow)
     }
+//    val recordVolume = if(recordState.value is RecorderState.RecordingNow)
+//            (recordState.value as RecorderState.RecordingNow).volume % 150 else null
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -159,22 +173,25 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(60.dp)
-                            .background(Color.Red.copy(0.9f)),
-                        onClick = {
-                            if(recordState.value == RecorderState.RecordDisable) editNoteViewModel.startRecord()
-                            else editNoteViewModel.stopRecord()
-                        },
-                    ) {
-                        Icon(painter =
-                        if(recordState.value == RecorderState.RecordDisable) painterResource(R.drawable.ic_record)
+                    Box(contentAlignment = Alignment.CenterEnd) {
+                        IconButton(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(60.dp)
+                                .background(Color.Red),
+                            onClick = {
+                                if(recordState.value == RecorderState.RecordDisable) editNoteViewModel.startRecord()
+                                else editNoteViewModel.stopRecord()
+                            },
+                        ) {
+                            Icon(painter =
+                            if(recordState.value == RecorderState.RecordDisable) painterResource(R.drawable.ic_record)
                             else painterResource(R.drawable.ic_stop),
-                            contentDescription = "",
-                            tint = PrimaryFontColor
-                        )
+                                contentDescription = "",
+                                tint = PrimaryFontColor
+                            )
+                        }
+
                     }
                     }
                 }
@@ -753,7 +770,6 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalPermissionsApi::class)
 @Composable
-@MustBeLocalization
 fun FilesDialog(
     editNoteViewModel: EditNoteViewModel,
     activityController: ActivityController,
@@ -807,7 +823,7 @@ fun FilesDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Аудиозаписи",
+                            text = stringResource(R.string.Audio_records),
                         fontSize = 24.sp,
                         color = PrimaryFontColor,
                         fontWeight = FontWeight.Medium,
@@ -826,23 +842,60 @@ fun FilesDialog(
                     }
 
                 }
-                LazyRow() {
-                    items(audios.value) {
-                        Column() {
-                            IconButton(
-                                onClick = {
-                                    editNoteViewModel.showPlayerDialog(it)
-                                },
+                if(audios.value.isNotEmpty()) {
+                    LazyRow(Modifier.padding(start = 5.dp)) {
+                        items(audios.value) {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier
-                                    .clip(CircleShape)
-                                    .padding(end = 10.dp)
-                                    .background(Color.Magenta)
+                                    .padding(end = 8.dp)
+                                    .combinedClickable(
+                                        onClick = {
+                                            editNoteViewModel.showPlayerDialog(it)
+                                        },
+                                        onLongClick = {
+                                            editNoteViewModel.showAudioRemoveDialogState(it.id)
+                                        }
+                                    )
                             ) {
-
+                                Box(
+                                    modifier = Modifier
+                                        .clip(CircleShape)
+                                        .background(FloatingButtonColor)
+                                        .size(40.dp),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Icon(painter = painterResource(R.drawable.ic_play),
+                                        contentDescription = "",
+                                        tint = PrimaryFontColor,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
+                                Text(
+                                    text = it.duration.milliSecondToSecond(),
+                                    color = PrimaryFontColor,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Medium,
+                                )
                             }
-                            Text(it.duration.milliSecondToSecond())
                         }
                     }
+                }
+                else {
+                    Text(
+                        text = stringResource(R.string.No_Audio),
+                        fontSize = 26.sp,
+                        color = SecondoryFontColor.copy(1f),
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                top = 5.dp,
+                                bottom = 5.dp
+                            )
+                    )
                 }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -912,7 +965,7 @@ fun FilesDialog(
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(20.dp)
+                            .padding(15.dp)
                     )
                 }
             }

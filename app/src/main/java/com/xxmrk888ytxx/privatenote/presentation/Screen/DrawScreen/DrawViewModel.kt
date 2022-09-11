@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ak1.drawbox.DrawController
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DrawViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
-    private val showToast: ShowToast
+    private val showToast: ShowToast,
+    private val imageRepository: ImageRepository
 ) : ViewModel() {
     private val currentController:MutableState<DrawController?> = mutableStateOf(null)
 
@@ -126,7 +128,7 @@ class DrawViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val image = currentController.value?.getDrawBoxBitmap() ?: return@launch
             saveLoadDialogState.value = true
-            noteRepository.addPaintImage(image,noteId) {
+            imageRepository.addImage(image,noteId,true) {
                 showToast.showToast() { context ->
                     val text = context.getText(R.string.Error_saving)
                     return@showToast "$text: ${it.message.toString()}"

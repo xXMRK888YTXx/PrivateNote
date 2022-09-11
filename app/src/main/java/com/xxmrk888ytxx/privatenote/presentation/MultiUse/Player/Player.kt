@@ -1,5 +1,7 @@
 package com.xxmrk888ytxx.privatenote.presentation.MultiUse.Player
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -21,6 +23,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.Utils.milliSecondToSecond
 import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
 
 @Composable
@@ -64,7 +67,8 @@ fun PlayerDialog(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(10.dp)) {
+                    .padding(10.dp)
+            ) {
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
@@ -80,7 +84,11 @@ fun PlayerDialog(
                         controller.seekTo(it.toLong())
                     },
                         modifier = Modifier.fillMaxWidth(0.8f),
-                        valueRange = 0f..audio.duration.toFloat()
+                        valueRange = 0f..audio.duration.toFloat(),
+                        colors = SliderDefaults.colors(
+                            thumbColor = FloatingButtonColor,
+                            activeTrackColor = FloatingButtonColor
+                        )
                     )
                     Text(
                         text = audio.duration.milliSecondToSecond(),
