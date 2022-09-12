@@ -19,10 +19,11 @@ import javax.inject.Singleton
 import kotlin.random.Random
 
 @Singleton
-class NotificationAppManager @Inject constructor(
+class NotificationAppManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context
-) {
-    fun createNotificationChannels() {
+) : NotificationAppManager
+{
+    override fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val CHANNEL_ID = PRIORITY_DEFAULT
             val name: CharSequence = context.getString(R.string.Channel_name_default)
@@ -53,9 +54,9 @@ class NotificationAppManager @Inject constructor(
             notificationManager_HP.createNotificationChannel(mChannel_HP)
         }
     }
-    fun sendTaskNotification(title:String?,
+    override fun sendTaskNotification(title:String?,
                              text:String?,
-                             id:Int = Random(System.currentTimeMillis()).nextInt(),
+                             id:Int,
                              intentNotifyTask: IntentNotifyTask,
                              channel:String) {
         //открытие activity

@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.InputHistoryManager
 
 import kotlin.random.Random
 
-class InputHistoryManager {
+class InputHistoryManagerImpl() : InputHistoryManager {
     private val historyBuffer:MutableList<String> = mutableListOf()
     var currentPos = -1
     get() = field
@@ -11,16 +11,16 @@ class InputHistoryManager {
     private var primaryVersion = ""
 
 
-    fun setPrimaryVersion(text: String) {
+    override fun setPrimaryVersion(text: String) {
         primaryVersion = text
     }
 
-    fun addInHistory(text: String) {
+    override fun addInHistory(text: String) {
         historyBuffer.add(text)
         currentPos = historyBuffer.lastIndex
     }
 
-    fun isHaveUndo():Boolean {
+    override fun isHaveUndo():Boolean {
         if(historyBuffer.isEmpty()||currentPos == -1) return false
         return try {
             val undoPos = if(currentPos != 0) currentPos - 1 else currentPos
@@ -31,7 +31,7 @@ class InputHistoryManager {
         }
     }
 
-    fun isHaveRedo():Boolean {
+    override fun isHaveRedo():Boolean {
         if(historyBuffer.isEmpty()) return false
         return try {
             val repoPos = currentPos + 1
@@ -42,7 +42,7 @@ class InputHistoryManager {
         }
     }
 
-    fun getUndo() : String {
+    override fun getUndo() : String {
         try {
             currentPos--
             if(currentPos == -1) return primaryVersion
@@ -53,11 +53,11 @@ class InputHistoryManager {
         }
     }
 
-    fun clearBuffer() {
+    override fun clearBuffer() {
         historyBuffer.clear()
     }
 
-    fun getRedo() : String {
+    override fun getRedo() : String {
         try {
             currentPos++
             val text = historyBuffer[currentPos]

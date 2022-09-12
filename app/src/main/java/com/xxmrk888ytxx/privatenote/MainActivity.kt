@@ -22,7 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
@@ -44,7 +44,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), ActivityController {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
-    @Inject lateinit var notificationManager: NotificationAppManager
+    @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
