@@ -8,11 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
@@ -24,7 +26,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: NavController) {
+fun MainScreen(
+    mainViewModel: MainViewModel = hiltViewModel(),
+    navController: NavController,
+    activityController: ActivityController
+) {
     val state = remember {
         mainViewModel.screenState
     }
@@ -62,7 +68,7 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
                          NoteScreenState(navController = navController, mainScreenController = mainViewModel)
                      }
                     MainScreenState.ToDoScreen.id -> {
-                        ToDoScreen(mainScreenController = mainViewModel)
+                        ToDoScreen(mainScreenController = mainViewModel, activityController = activityController)
                     }
                 }
 
@@ -70,81 +76,6 @@ fun MainScreen(mainViewModel: MainViewModel = hiltViewModel(),navController: Nav
         }
     }
 }
-
-//@OptIn(ExperimentalPagerApi::class)
-//@Composable
-//fun TopNavigationBar(mainViewModel: MainViewModel,navController: NavController) {
-//    val state = remember {
-//        mainViewModel.screenState
-//    }
-//    val scope = rememberCoroutineScope()
-//    val navigationIcons = listOf<NavigationIconItem>(
-//        NavigationIconItem(R.drawable.ic_notes,
-//            state.value.currentPage != MainScreenState.NoteScreen.id,
-//        ) {
-//            scope.launch {
-//                mainViewModel.changeScreenState(MainScreenState.NoteScreen)
-//            }
-//        },
-//        NavigationIconItem(R.drawable.ic_todo_icon,state.value.currentPage != MainScreenState.ToDoScreen.id){
-//            scope.launch {
-//                mainViewModel.changeScreenState(MainScreenState.ToDoScreen)
-//            }
-//        },
-//        NavigationIconItem(R.drawable.ic_settings, isNavigation = false){
-//             mainViewModel.toSettingsScreen(navController)
-//        },
-//        NavigationIconItem(R.drawable.ic_baseline_search_24,
-//            isNavigation = false,
-//            isVisible = state.value.currentPage == MainScreenState.NoteScreen.id
-//        ){
-//            mainViewModel.getButtonListener(SEARCH_BUTTON_KEY)()
-//        },
-//
-//    )
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .background(MainBackGroundColor),
-//        horizontalArrangement = Arrangement.Center,
-//        verticalAlignment = Alignment.CenterVertically,
-//    ) {
-//        navigationIcons.getNavigationIcons().forEach {
-//            val color = if(it.enable) PrimaryFontColor else PrimaryFontColor.copy(0.3f)
-//            Icon(painter = painterResource(it.icon),
-//                contentDescription = "",
-//                tint = color,
-//                modifier = Modifier
-//                    .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-//                    .size(25.dp)
-//                    .clickable {
-//                        if (!it.enable) return@clickable
-//                        it.onClick()
-//                    }
-//            )
-//        }
-//        Row(
-//            horizontalArrangement = Arrangement.End,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            navigationIcons.getNavigationIcons(true).forEach {
-//                if(it.isVisible) {
-//                    Icon(painter = painterResource(it.icon),
-//                        contentDescription = "",
-//                        tint = PrimaryFontColor,
-//                        modifier = Modifier
-//                            .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-//                            .size(25.dp)
-//                            .clickable {
-//                                if (!it.enable) return@clickable
-//                                it.onClick()
-//                            }
-//                    )
-//                }
-//            }
-//        }
-//    }
-//}
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -190,7 +121,10 @@ fun BottomBar(
     ) {
         items.forEach {
             BottomNavigationItem(
-                icon =  { Icon(painterResource(id = it.icon), contentDescription = it.name)},
+                icon =  { Icon(painterResource(id = it.icon),
+                    contentDescription = it.name,
+                    modifier = Modifier.size(20.dp)
+                )},
                 label = { Text(text = it.name)},
                 selectedContentColor = Color.White,
                 unselectedContentColor = Color.White.copy(0.4f),

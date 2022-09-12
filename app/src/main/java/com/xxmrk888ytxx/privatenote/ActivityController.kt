@@ -8,4 +8,5 @@ interface ActivityController {
     suspend fun sendShowImageIntent(imageFile: EncryptedFile)
     suspend fun clearShareDir()
     fun changeOrientationLockState(state:Boolean)
+    fun openAlarmSettings()
 }

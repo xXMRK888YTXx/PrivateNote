@@ -33,8 +33,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
@@ -44,7 +47,11 @@ import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
 @Composable
-fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenController: MainScreenController) {
+fun ToDoScreen(
+    toDoViewModel: ToDoViewModel = hiltViewModel(),
+    mainScreenController: MainScreenController,
+    activityController: ActivityController
+) {
     val state = remember {
         toDoViewModel.getScreenState()
     }
@@ -54,6 +61,9 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
     val isRemoveDialogShow = remember {
         toDoViewModel.isRemoveDialogShow()
     }
+    val requestPermissionSendAlarmsDialog = toDoViewModel
+        .getRequestPermissionSendAlarmsDialog()
+        .Remember()
     LaunchedEffect(key1 = Unit, block = {
         toDoViewModel.setMainScreenController(mainScreenController)
         toDoViewModel.checkPickers()
@@ -79,6 +89,19 @@ fun ToDoScreen(toDoViewModel: ToDoViewModel = hiltViewModel(),mainScreenControll
             toDoViewModel.removeToDo(isRemoveDialogShow.value.second!!)
             toDoViewModel.hideRemoveDialog()
         }
+    }
+    if(requestPermissionSendAlarmsDialog.value) {
+        YesNoDialog(
+            title = stringResource(R.string.Request_user_for_send_alarms),
+            confirmButtonText = stringResource(R.string.Yes),
+            onCancel = {
+                toDoViewModel.hideRequestPermissionSendAlarmsDialog()
+            },
+            onConfirm = {
+                toDoViewModel.hideRequestPermissionSendAlarmsDialog()
+                toDoViewModel.openAlarmSettings(activityController)
+            }
+        )
     }
 }
 
@@ -134,7 +157,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(value = textField.value, onValueChange = {
-                    if(it.length > 100) return@OutlinedTextField
+                    if(it.length > 50) return@OutlinedTextField
                     textField.value = it
                 },
                     modifier = Modifier
@@ -159,6 +182,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                     ),
                     textStyle = TextStyle(
                         fontWeight = FontWeight.Medium,
+                        fontSize = 18.sp
                     ),
                 )
                 Row(modifier = Modifier.fillMaxWidth()) {

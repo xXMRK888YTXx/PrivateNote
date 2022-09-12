@@ -7,8 +7,11 @@ import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -22,6 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
+import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
@@ -30,8 +35,6 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
-import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -85,7 +88,11 @@ class MainActivity : AppCompatActivity(), ActivityController {
                             finishApp = {this@MainActivity.finish() }
                         )
                     }
-                    composable(Screen.MainScreen.route) {MainScreen(navController = navController)}
+                    composable(Screen.MainScreen.route) {
+                        MainScreen(
+                            navController = navController,
+                            activityController = this@MainActivity
+                        )}
                     composable(Screen.EditNoteScreen.route) {
                         EditNoteScreen(
                             navController = navController,
@@ -93,8 +100,9 @@ class MainActivity : AppCompatActivity(), ActivityController {
                     )}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
                     composable(Screen.DrawScreen.route) {
-                        DrawScreen(navController =  navController,
-                        activityController = this@MainActivity,
+                        DrawScreen(
+                            navController = navController,
+                            activityController = this@MainActivity,
                         ) }
                 }
             }
@@ -177,6 +185,17 @@ class MainActivity : AppCompatActivity(), ActivityController {
     override fun changeOrientationLockState(state: Boolean) {
         if(state) lockOrientation()
         else unLockOrientation()
+    }
+
+
+    override fun openAlarmSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            intent =  Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:" + baseContext.applicationInfo.packageName)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            startActivity(intent)
+        }
     }
 
     private val imagePickCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {

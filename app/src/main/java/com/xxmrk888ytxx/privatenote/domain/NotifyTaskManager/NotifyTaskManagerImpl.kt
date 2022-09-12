@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
@@ -98,6 +99,13 @@ class NotifyTaskManagerImpl @Inject constructor(
         oldTask.forEach {
             removeTask(it.taskId)
         }
+    }
+
+    override fun isCanSendAlarms(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return alarmManager.canScheduleExactAlarms()
+        }
+        return true
     }
 
     override fun markCompletedAction(todoId: Int) {

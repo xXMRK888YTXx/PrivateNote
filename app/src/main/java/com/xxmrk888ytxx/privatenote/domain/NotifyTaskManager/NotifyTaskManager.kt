@@ -12,5 +12,6 @@ interface NotifyTaskManager {
     fun cancelTask(todoId: Int)
     fun removeTask(taskId:Int)
     fun checkForOld()
+    fun isCanSendAlarms() : Boolean
     fun markCompletedAction(todoId: Int)
 }

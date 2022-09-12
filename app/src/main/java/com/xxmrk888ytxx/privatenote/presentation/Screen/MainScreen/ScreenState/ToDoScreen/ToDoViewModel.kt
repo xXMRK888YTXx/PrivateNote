@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
@@ -68,17 +69,21 @@ class ToDoViewModel @Inject constructor(
 
     private var savedIsCurrentNotifyPriority = true
 
-    private val isCompletedToDoVisible = mutableStateOf(true)
-
-    private val isToDoWithDateVisible = mutableStateOf(true)
-
-    private val isToDoWithoutDateVisible = mutableStateOf(true)
-
-    private val isMissedToDoVisible = mutableStateOf(true)
-
     private val removeDialogState = mutableStateOf(Pair<Boolean,Int?>(false,null))
 
     var cachedToDoList:List<ToDoItem> = listOf()
+
+    private val requestPermissionSendAlarmsDialog = mutableStateOf(false)
+
+    fun getRequestPermissionSendAlarmsDialog() = requestPermissionSendAlarmsDialog
+
+    fun showRequestPermissionSendAlarmsDialog() {
+        requestPermissionSendAlarmsDialog.value = true
+    }
+
+    fun hideRequestPermissionSendAlarmsDialog() {
+        requestPermissionSendAlarmsDialog.value = false
+    }
 
     fun isRemoveDialogShow() = removeDialogState
 
@@ -133,17 +138,15 @@ class ToDoViewModel @Inject constructor(
 
     fun getNotifyDropDownState() = isShowNotifyDropDown
 
-    fun hideNotifyDropDown() {
-        isShowNotifyDropDown.value = false
-    }
 
-    fun showNotifyDropDown() {
-        isShowNotifyDropDown.value = true
-    }
 
     fun getNotifyDialogState() = isNotifyDialogShow
 
     fun showNotifyDialog() {
+        if(!isCanSendAlarms()) {
+            showRequestPermissionSendAlarmsDialog()
+            return
+        }
         isNotifyDialogShow.value = true
         savedNotifyTime = currentNotifyTime.value
         savedIsCurrentNotifyEnable = isCurrentNotifyEnable.value
@@ -324,6 +327,8 @@ class ToDoViewModel @Inject constructor(
         showToast.showToast(R.string.move_time_delete)
     }
 
+    private fun isCanSendAlarms() : Boolean = notifyTaskManager.isCanSendAlarms()
+
 
     fun showPickerNotifyTimeDialog(context: Context) {
         isPickerNotifyTimeShow.value = true
@@ -348,6 +353,10 @@ class ToDoViewModel @Inject constructor(
                 System.currentTimeMillis() < it
             }
         )
+    }
+
+    fun openAlarmSettings(activityController: ActivityController) {
+        activityController.openAlarmSettings()
     }
     companion object {
          val SCREEN_ID = MainScreenState.ToDoScreen.id

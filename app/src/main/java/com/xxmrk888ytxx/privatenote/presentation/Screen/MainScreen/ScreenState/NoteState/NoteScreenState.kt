@@ -793,7 +793,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                         painterResource(it.icon),
                         contentDescription = "",
                         tint = PrimaryFontColor,
-                        modifier = Modifier.padding(15.dp)
+                        modifier = Modifier.padding(15.dp).size(20.dp)
                     )
                     Text(
                         text = it.title,
