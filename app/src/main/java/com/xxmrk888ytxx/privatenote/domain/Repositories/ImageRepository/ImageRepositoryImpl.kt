@@ -10,6 +10,7 @@ import androidx.security.crypto.MasterKey
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,12 +23,12 @@ import javax.inject.Inject
 
 class ImageRepositoryImpl @Inject constructor(
     private val context: Context,
-    private val analytics: FirebaseAnalytics
+    private val analytics: AnalyticsManager
 ) : ImageRepository {
 
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
-        analytics.logEvent(AnalyticsEvents.Add_Note_Image_Event, bundleOf(Pair("SaveInPng",saveInPng)))
+        analytics.sendEvent(AnalyticsEvents.Add_Note_Image_Event, bundleOf(Pair("SaveInPng",saveInPng)))
         val newImage = saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError) ?: return
         newImageNotify(newImage)
 
@@ -59,7 +60,7 @@ class ImageRepositoryImpl @Inject constructor(
                 imageList.add(Image(id,file))
             }
         }
-        analytics.logEvent(Load_Images_Event, bundleOf(Pair("Count_Load_Images",imageList.size)))
+        analytics.sendEvent(Load_Images_Event, bundleOf(Pair("Count_Load_Images",imageList.size)))
         _noteImageList.emit(imageList)
     }
 
@@ -77,7 +78,7 @@ class ImageRepositoryImpl @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearBufferImages() {
-        analytics.logEvent(AnalyticsEvents.Clear_Load_Images,null)
+        analytics.sendEvent(AnalyticsEvents.Clear_Load_Images,null)
         _noteImageList.resetReplayCache()
         _noteImageList.emit(listOf())
     }
@@ -91,7 +92,7 @@ class ImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun tempDirToImageDir(noteId: Int) {
-        analytics.logEvent(AnalyticsEvents.Change_tempDir_to_Image_Event,null)
+        analytics.sendEvent(AnalyticsEvents.Change_tempDir_to_Image_Event,null)
         val tempDir = File(getNoteImageDir(0,context))
         val newImageDir = File(getNoteImageDir(noteId,context))
         tempDir.renameTo(newImageDir)
@@ -102,7 +103,7 @@ class ImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeImage(noteId: Int, imageId: Long) {
-        analytics.logEvent(AnalyticsEvents.Remove_Image_Event,null)
+        analytics.sendEvent(AnalyticsEvents.Remove_Image_Event,null)
         val imageDir = getNoteImageDir(noteId,context)
         val image = File(imageDir,"$imageId")
         image.delete()

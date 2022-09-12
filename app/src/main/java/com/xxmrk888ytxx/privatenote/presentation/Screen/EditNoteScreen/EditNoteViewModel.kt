@@ -38,6 +38,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
@@ -59,7 +60,7 @@ class EditNoteViewModel @Inject constructor(
     private val showToast: ShowToast,
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
-    private val analytics: FirebaseAnalytics,
+    private val analytics: AnalyticsManager,
     private val recordManager: RecordManager,
     private val playerManager: PlayerManager,
     private val audioRepository: AudioRepository,
@@ -504,7 +505,7 @@ class EditNoteViewModel @Inject constructor(
 
     fun addImage(activityController: ActivityController) {
         isNotLock = Pair(true){}
-        analytics.logEvent(SELECT_IMAGE_EVENT, Bundle())
+        analytics.sendEvent(SELECT_IMAGE_EVENT, Bundle())
         activityController.pickImage(
             onComplete = {
                 isHaveImages = true
@@ -512,11 +513,11 @@ class EditNoteViewModel @Inject constructor(
                     imageRepository.addImage(it,note.id)
                 }
                 isNotLock = Pair(false){}
-                analytics.logEvent(SELECT_IMAGE_EVENT_OK,Bundle())
+                analytics.sendEvent(SELECT_IMAGE_EVENT_OK,Bundle())
             },
             onError = {
                 isNotLock = Pair(false){}
-                analytics.logEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
+                analytics.sendEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
             }
         )
     }

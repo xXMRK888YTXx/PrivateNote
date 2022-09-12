@@ -24,6 +24,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SearchMode_In_NoteScre
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SelectionMode_In_NoteScreen
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_Category_List
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_EditCategory_Dialog
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
@@ -46,7 +47,7 @@ class NoteStateViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val showToast: ShowToast,
     private val categoryRepository: CategoryRepository,
-    private val analytics: FirebaseAnalytics
+    private val analytics: AnalyticsManager
 ) : ViewModel() {
     val searchFieldText = mutableStateOf("")
         get() = field
@@ -119,14 +120,14 @@ class NoteStateViewModel @Inject constructor(
         navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
     }
     fun toSelectionMode() {
-        analytics.logEvent(SelectionMode_In_NoteScreen,null)
+        analytics.sendEvent(SelectionMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
     }
 
     fun toDefaultMode() {
-        analytics.logEvent(BackToDefaultMode_In_NoteScreen,null)
+        analytics.sendEvent(BackToDefaultMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.Default
         selectedNoteList.clear()
         mainScreenController?.changeBottomBarVisibleStatus(true)
@@ -178,7 +179,7 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun toSearchMode() {
-        analytics.logEvent(SearchMode_In_NoteScreen,null)
+        analytics.sendEvent(SearchMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.SearchScreenMode
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
@@ -204,14 +205,14 @@ class NoteStateViewModel @Inject constructor(
     fun getAllCategory() = categoryRepository.getAllCategory()
 
     fun showCategoryList() {
-        analytics.logEvent(Show_Category_List,null)
+        analytics.sendEvent(Show_Category_List,null)
         mainScreenController?.changeBottomBarVisibleStatus(false)
         mainScreenController?.changeScrollBetweenScreenState(false)
         currentNoteMode.value = NoteScreenMode.ShowCategoryMenu
     }
 
     fun hideCategoryList() {
-        analytics.logEvent(Hide_Category_List,null)
+        analytics.sendEvent(Hide_Category_List,null)
         mainScreenController?.changeBottomBarVisibleStatus(true)
         mainScreenController?.changeScrollBetweenScreenState(true)
         currentNoteMode.value = NoteScreenMode.Default
@@ -219,12 +220,12 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun showEditCategoryDialog(changedCategory:Category? = null) {
-        analytics.logEvent(Show_EditCategory_Dialog,null)
+        analytics.sendEvent(Show_EditCategory_Dialog,null)
         showEditCategoryDialog.value = Pair(true,changedCategory)
     }
 
     fun hideEditCategoryDialog() {
-        analytics.logEvent(Hide_EditCategory_Dialog,null)
+        analytics.sendEvent(Hide_EditCategory_Dialog,null)
         showEditCategoryDialog.value = Pair(false,null)
         nameCategoryFieldText.value = ""
         currentCategoryColor.value = PrimaryFontColor
@@ -250,7 +251,7 @@ class NoteStateViewModel @Inject constructor(
 
 
     fun removeCategory(category: Category,context: Context) {
-        analytics.logEvent(Remove_Category,null)
+        analytics.sendEvent(Remove_Category,null)
         viewModelScope.launch {
             if(categoryFilterStatus.value == category.categoryId)
             changeCategoryFilterStatus(IGNORE_CATEGORY)

@@ -12,6 +12,7 @@ import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Error
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Failed
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Succeeded
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,7 @@ class SplashViewModel @Inject constructor(
    private val settingsRepository: SettingsRepository,
    private val securityUtils: SecurityUtils,
    private val showToast: ShowToast,
-   private val analytics: FirebaseAnalytics
+   private val analytics: AnalyticsManager
 ): ViewModel() {
     val isShowAnimation = mutableStateOf(true)
     fun toMainScreen(navController: NavController) {
@@ -48,19 +49,19 @@ class SplashViewModel @Inject constructor(
         return object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                analytics.logEvent(Biometric_Authorization_Error,null)
+                analytics.sendEvent(Biometric_Authorization_Error,null)
             }
 
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                analytics.logEvent(Biometric_Authorization_Succeeded,null)
+                analytics.sendEvent(Biometric_Authorization_Succeeded,null)
                 if(isFirstStart)
                 onCompletedAuth {toMainScreen(navController)}
                 else onCompletedAuth {navController.navigateUp()}
             }
 
             override fun onAuthenticationFailed() {
-                analytics.logEvent(Biometric_Authorization_Failed,null)
+                analytics.sendEvent(Biometric_Authorization_Failed,null)
                 super.onAuthenticationFailed()
             }
         }

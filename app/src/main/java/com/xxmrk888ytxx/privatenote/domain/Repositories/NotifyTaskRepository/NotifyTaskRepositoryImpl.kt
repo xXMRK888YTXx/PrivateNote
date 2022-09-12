@@ -6,6 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_NotifyTask_By_TodoId
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,7 @@ import javax.inject.Inject
 @SendAnalytics
 class NotifyTaskRepositoryImpl @Inject constructor(
     private val notifyTaskDao: NotifyTaskDao,
-    private val analytics: FirebaseAnalytics
+    private val analytics: AnalyticsManager
 ) : NotifyTaskRepository {
     override fun getAllTasks(): Flow<List<NotifyTask>> = runBlocking(Dispatchers.IO) {
         return@runBlocking notifyTaskDao.getAllTasks()
@@ -25,17 +26,17 @@ class NotifyTaskRepositoryImpl @Inject constructor(
     }
 
     override fun insertTask(task: NotifyTask) = runBlocking(Dispatchers.IO) {
-        analytics.logEvent(Add_NotifyTask,null)
+        analytics.sendEvent(Add_NotifyTask,null)
         notifyTaskDao.insertTask(task)
     }
 
     override fun removeTask(taskId: Int) = runBlocking(Dispatchers.IO) {
-        analytics.logEvent(Remove_NotifyTask,null)
+        analytics.sendEvent(Remove_NotifyTask,null)
         notifyTaskDao.removeTask(taskId)
     }
 
     override fun removeTaskByTodoId(todoId: Int) = runBlocking(Dispatchers.IO) {
-        analytics.logEvent(Remove_NotifyTask_By_TodoId,null)
+        analytics.sendEvent(Remove_NotifyTask_By_TodoId,null)
         notifyTaskDao.removeTaskByTodoID(todoId)
     }
 

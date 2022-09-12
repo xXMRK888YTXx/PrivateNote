@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
@@ -11,6 +12,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
@@ -35,7 +37,7 @@ class RepositoryModule {
     fun getNoteRepositoryImpl(
         noteDao: NoteDao,
         removeNoteFileUseCase: RemoveNoteFileUseCase,
-        analytics: FirebaseAnalytics
+        analytics: AnalyticsManager
     ) : NoteRepositoryImpl {
         return NoteRepositoryImpl(noteDao,removeNoteFileUseCase,analytics)
     }
@@ -48,7 +50,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getCategoryRepositoryImpl(categoryDao: CategoryDao,analytics: FirebaseAnalytics) : CategoryRepositoryImpl {
+    fun getCategoryRepositoryImpl(categoryDao: CategoryDao,analytics: AnalyticsManager) : CategoryRepositoryImpl {
         return CategoryRepositoryImpl(categoryDao,analytics)
     }
 
@@ -60,13 +62,13 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao,analytics: FirebaseAnalytics) : ToDoRepository {
+    fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao,analytics: AnalyticsManager) : ToDoRepository {
         return ToDoRepositoryImpl(toDoDao,analytics)
     }
 
     @Provides
     @Singleton
-    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao,analytics: FirebaseAnalytics) : NotifyTaskRepository {
+    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao,analytics: AnalyticsManager) : NotifyTaskRepository {
         return NotifyTaskRepositoryImpl(notifyTaskDao,analytics)
     }
 
@@ -80,5 +82,11 @@ class RepositoryModule {
     @Singleton
     fun getAudioRepository(@ApplicationContext context: Context ) : AudioRepository {
         return AudioRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getImageRepository(@ApplicationContext context: Context, analytics: AnalyticsManager) : ImageRepository {
+        return ImageRepositoryImpl(context,analytics)
     }
 }

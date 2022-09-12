@@ -11,6 +11,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Check_Available_FingerPrint
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Send_Biometric_Authorization_Request
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -22,7 +23,7 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
     private val context: Context,
     settingsRepository: SettingsRepository,
     private val fingerprintManager: FingerprintManager,
-    private val analytics: FirebaseAnalytics
+    private val analytics: AnalyticsManager
 ) : BiometricAuthorizationManager {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
@@ -44,7 +45,7 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
 //            else -> return false
 //        }
         val state = fingerprintManager.hasEnrolledFingerprints()
-        analytics.logEvent(Check_Available_FingerPrint,
+        analytics.sendEvent(Check_Available_FingerPrint,
             bundleOf(Pair("is_FingerPrint_Available",state)))
         return state
     }
@@ -54,7 +55,7 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
         executor: Executor,
         callBack: BiometricPrompt.AuthenticationCallback
     ) {
-        analytics.logEvent(Send_Biometric_Authorization_Request,null)
+        analytics.sendEvent(Send_Biometric_Authorization_Request,null)
         val biometricPrompt = BiometricPrompt(fragmentActivity,executor,callBack)
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
             .setTitle(context.getString(R.string.Verify_your_identity))

@@ -14,6 +14,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Change_tempDir_to_Imag
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Clear_Load_Images
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_Image_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_Note_event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.NoAddAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase
@@ -26,14 +27,14 @@ import javax.inject.Inject
 class NoteRepositoryImpl @Inject constructor(
     private val noteDao: NoteDao,
     private val removeNoteFileUseCase: RemoveNoteFileUseCase,
-    private val analytics: FirebaseAnalytics
+    private val analytics: AnalyticsManager
 ) : NoteRepository {
     override fun getAllNote() = runBlocking(Dispatchers.IO) {
         return@runBlocking noteDao.getAllNote()
     }
 
     override fun insertNote(note: Note) = runBlocking(Dispatchers.IO) {
-        analytics.logEvent(Add_or_update_note_event,null)
+        analytics.sendEvent(Add_or_update_note_event,null)
         noteDao.insertNote(note)
     }
 
@@ -42,7 +43,7 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override suspend fun removeNote(id:Int) {
-        analytics.logEvent(Remove_Note_event,null)
+        analytics.sendEvent(Remove_Note_event,null)
         noteDao.removeNote(id)
         removeNoteFileUseCase.removeNoteFiles(id)
 
@@ -53,7 +54,7 @@ class NoteRepositoryImpl @Inject constructor(
     }
 
     override fun changeCurrentCategory(noteId: Int, categoryId: Int?) = runBlocking(Dispatchers.IO) {
-        analytics.logEvent(Change_category_event,null)
+        analytics.sendEvent(Change_category_event,null)
         noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }
 }

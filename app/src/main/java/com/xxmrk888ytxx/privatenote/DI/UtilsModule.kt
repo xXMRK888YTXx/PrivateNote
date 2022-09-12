@@ -1,6 +1,9 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManagerImpl
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.ShowToast
@@ -32,5 +35,12 @@ class UtilsModule {
     @Singleton
     fun getLifeCycleState() : MutableStateFlow<LifeCycleState> {
         return MutableStateFlow(LifeCycleState.onResume)
+    }
+
+    @Provides
+    @Singleton
+    fun getAnalyticsManager(@ApplicationContext context: Context ) : AnalyticsManager {
+        val analytics = FirebaseAnalytics.getInstance(context)
+        return AnalyticsManagerImpl(analytics)
     }
 }
