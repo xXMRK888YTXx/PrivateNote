@@ -111,5 +111,8 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.2.0")
     //Permissions
     implementation 'com.google.accompanist:accompanist-permissions:0.26.2-beta'
-
+    //MockK
+    testImplementation "io.mockk:mockk:$Mockk_version"
+    testImplementation "io.mockk:mockk-agent-jvm:$Mockk_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
 }
