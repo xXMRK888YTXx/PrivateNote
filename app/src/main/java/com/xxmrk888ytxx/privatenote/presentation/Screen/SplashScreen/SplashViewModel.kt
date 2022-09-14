@@ -32,8 +32,12 @@ class SplashViewModel @Inject constructor(
     }
 
     suspend fun checkPassword(enterPassword:String) : Boolean {
-        val passwordHash = securityUtils.passwordToHash(enterPassword,0)
-        return settingsRepository.checkAppPassword(passwordHash)
+        return try {
+            val passwordHash = securityUtils.passwordToHash(enterPassword,0)
+            settingsRepository.checkAppPassword(passwordHash)
+        }catch (e:Exception) {
+            false
+        }
     }
 
     fun showToastForLeaveApp() {

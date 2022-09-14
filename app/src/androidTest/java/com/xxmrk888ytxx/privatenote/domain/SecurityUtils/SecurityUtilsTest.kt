@@ -1,9 +1,12 @@
 package com.xxmrk888ytxx.privatenote.domain.SecurityUtils
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.xxmrk888ytxx.privatenote.Utils.Exception.PasswordIsEmptyException
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.crypto.BadPaddingException
+import kotlin.random.Random
 
 @RunWith(AndroidJUnit4::class)
 class SecurityUtilsTest {
@@ -20,12 +23,22 @@ class SecurityUtilsTest {
         Assert.assertNotEquals(passwordList,hashList)
     }
 
-    @Test
-    fun ifSendEmptyStringExpectEmptyString() {
+    @Test(expected = PasswordIsEmptyException::class)
+    fun ifSendEmptyStringExpectException() {
         val hash = securityUtils.passwordToHash("")
-
-        Assert.assertEquals(hash,"")
     }
+
+    @Test
+    fun testHashUncle() {
+        val str1 = "Mozart"
+        val str2 = "X simfonia"
+
+        val hash1 = securityUtils.passwordToHash(str1)
+        val hash2 = securityUtils.passwordToHash(str2)
+
+        Assert.assertNotEquals(hash1,hash2)
+    }
+
     @Test
     fun testHashSizeLimit() {
         val passwordList = mutableListOf("test1463r","t","sdfhujiadfsjhoubfsjiajdohfjijshiroehiuoewrothe" +
@@ -53,13 +66,122 @@ class SecurityUtilsTest {
                 Assert.fail()
             }
         }
-
-
     }
 
-//    @Test
-//    fun encryptTestExpectEncryptStrings() {
-//        //val strings = listOf<String>("test1,test2,test3")
-//    }
+    @Test
+    fun testEncryptIfStringsNotEqualsAndPasswordNotEqualsMethodExpectEncryptNotEqualsStrings() {
+        val str1 = "test"
+        val str2 = "test2"
+        val pas = getTestPasswordHash()
+        val pas2 = getTestPasswordHash("testPassword2")
+
+        val eStr = securityUtils.encrypt(str1,pas)
+        val eStr2 = securityUtils.encrypt(str2,pas2)
+
+        Assert.assertNotEquals(eStr,eStr2)
+    }
+
+    @Test
+    fun testEncryptIfStringsEqualsAndPasswordNotEqualsMethodExpectEncryptNotEqualsStrings() {
+        val str1 = "test"
+        val str2 = "test"
+        val pas = getTestPasswordHash()
+        val pas2 = getTestPasswordHash("testPassword2")
+
+        val eStr = securityUtils.encrypt(str1,pas)
+        val eStr2 = securityUtils.encrypt(str2,pas2)
+
+        Assert.assertNotEquals(eStr,eStr2)
+    }
+
+    @Test
+    fun testEncryptIfStringsNotEqualsAndPasswordEqualsMethodExpectEncryptNotEqualsStrings() {
+        val str1 = "test"
+        val str2 = "test2"
+        val pas = getTestPasswordHash()
+        val pas2 = getTestPasswordHash()
+
+        val eStr = securityUtils.encrypt(str1,pas)
+        val eStr2 = securityUtils.encrypt(str2,pas2)
+
+        Assert.assertNotEquals(eStr,eStr2)
+    }
+
+    @Test
+    fun testEncryptIfStringsEqualsAndPasswordEqualsMethodExpectEncryptEqualsStrings() {
+        val str1 = "test"
+        val str2 = "test"
+        val pas = getTestPasswordHash()
+        val pas2 = getTestPasswordHash()
+
+        val eStr = securityUtils.encrypt(str1,pas)
+        val eStr2 = securityUtils.encrypt(str2,pas2)
+
+        Assert.assertEquals(eStr,eStr2)
+    }
+
+    @Test(expected = PasswordIsEmptyException::class)
+    fun testEncryptIfStringEmptyExpectException() {
+        securityUtils.encrypt("giu","")
+    }
+
+    @Test
+    fun testDecrepitImputeStringExpectPrimaryString() {
+        val str = "Mozart X"
+        val password = getTestPasswordHash()
+
+        val eStr = securityUtils.encrypt(str,password)
+        val dStr = securityUtils.decrypt(eStr,password)
+
+        Assert.assertEquals(str,dStr)
+    }
+
+    @Test(expected = BadPaddingException::class)
+    fun testDecrepitImputeStringIfPasswordIValidExpectException() {
+        val str = "Mozart X"
+        val password = getTestPasswordHash()
+        val password2 = getTestPasswordHash("testPassword1")
+
+        val eStr = securityUtils.encrypt(str,password)
+        val dStr = securityUtils.decrypt(eStr,password2)
+    }
+
+    @Test(expected = PasswordIsEmptyException::class)
+    fun testDecrepitIfPasswordEmptyExceptException() {
+        securityUtils.decrypt("test","")
+    }
+
+    @Test
+    fun testDecrepitIfStringEmptyExceptEmptyString() {
+        val password = getTestPasswordHash()
+
+        val str = securityUtils.decrypt("",password)
+
+        Assert.assertEquals("",str)
+    }
+
+    @Test
+    fun testDecrepitIfPasswordVeryLongExpectDecryptString() {
+        val str = "test"
+        val pass = getTestPasswordHash(Random(System.currentTimeMillis()).nextBytes(1000).toString())
+
+        val eString = securityUtils.encrypt(str,pass)
+        val dString = securityUtils.decrypt(eString,pass)
+
+        Assert.assertEquals(str,dString)
+    }
+
+    @Test
+    fun testDecrepitIfTextVeryLongExpectDecryptString() {
+        val str =  Random(System.currentTimeMillis()).nextBytes(1000).toString()
+        val pass = getTestPasswordHash()
+
+        val eString = securityUtils.encrypt(str,pass)
+        val dString = securityUtils.decrypt(eString,pass)
+
+        Assert.assertEquals(str,dString)
+    }
+
+    private fun getTestPasswordHash(password:String = "testPassword") = securityUtils.passwordToHash(password)
 
 }

@@ -94,6 +94,8 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
+    testImplementation("androidx.room:room-testing:$room_version")
+
 
     //color picker
     implementation "com.github.skydoves:colorpicker-compose:1.0.0"
