@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import kotlinx.coroutines.runBlocking
@@ -11,8 +12,10 @@ import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.io.File
 
+@RunWith(AndroidJUnit4::class)
 class AudioRepositoryTest {
     lateinit var repo:AudioRepository
     lateinit var context:Context

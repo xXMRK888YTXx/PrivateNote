@@ -17,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.*
@@ -62,6 +63,7 @@ fun Long.secondToData(context: Context) : String {
 fun <T> Flow<T>.getData() : T  = runBlocking {
     return@runBlocking this@getData.first()
 }
+
 object BackPressController {
     @Composable
     fun setHandler(enabled: Boolean = true, onBack: () -> Unit) {
