@@ -77,7 +77,7 @@ class AudioRepositoryImpl @Inject constructor(
         audioDir.delete()
     }
 
-    override suspend fun tempDirToImageDir(noteId: Int) {
+    override suspend fun tempDirToAudioDir(noteId: Int) {
         val tempDir = File(getAudioDir(0))
         val newImageDir = File(getAudioDir(noteId))
         tempDir.renameTo(newImageDir)
@@ -88,10 +88,14 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAudioDuration(file: EncryptedFile) : Long {
-        val mediaMetadataRetriever = MediaMetadataRetriever()
-        mediaMetadataRetriever.setDataSource(file.openFileInput().fd)
-        return mediaMetadataRetriever
-            .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+        try {
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(file.openFileInput().fd)
+            return mediaMetadataRetriever
+                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+        }catch (e:Exception) {
+            return 0
+        }
     }
 
     private suspend fun getAudioFile(filePath:File) : Audio {

@@ -14,7 +14,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
@@ -333,7 +332,7 @@ class EditNoteViewModel @Inject constructor(
             if(noteId == 0) {
                 val newNoteId = noteRepository.getAllNote().getData().maxBy { it.id }.id
                 imageRepository.tempDirToImageDir(newNoteId)
-                audioRepository.tempDirToImageDir(newNoteId)
+                audioRepository.tempDirToAudioDir(newNoteId)
             }
         }
     }
