@@ -20,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DrawViewModel @Inject constructor(
-    private val noteRepository: NoteRepository,
     private val toastManager: ToastManager,
     private val imageRepository: ImageRepository
 ) : ViewModel() {
