@@ -4,7 +4,6 @@ import androidx.biometric.BiometricPrompt
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
@@ -14,16 +13,16 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorizatio
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Succeeded
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-   private val settingsRepository: SettingsRepository,
-   private val securityUtils: SecurityUtils,
-   private val showToast: ShowToast,
-   private val analytics: AnalyticsManager
+    private val settingsRepository: SettingsRepository,
+    private val securityUtils: SecurityUtils,
+    private val toastManager: ToastManager,
+    private val analytics: AnalyticsManager
 ): ViewModel() {
     val isShowAnimation = mutableStateOf(true)
     fun toMainScreen(navController: NavController) {
@@ -41,7 +40,7 @@ class SplashViewModel @Inject constructor(
     }
 
     fun showToastForLeaveApp() {
-        showToast.showToast(R.string.Press_again_to_exit)
+        toastManager.showToast(R.string.Press_again_to_exit)
     }
 
     @SendAnalytics

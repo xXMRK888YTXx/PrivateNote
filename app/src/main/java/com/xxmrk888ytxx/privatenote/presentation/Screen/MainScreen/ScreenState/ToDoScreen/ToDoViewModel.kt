@@ -16,7 +16,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenCon
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePicker
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePickerController
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ToDoViewModel @Inject constructor(
-    private val showToast: ShowToast,
+    private val toastManager: ToastManager,
     private val toDoRepository: ToDoRepository,
     private val notifyTaskManager: NotifyTaskManager,
     private val settingsRepository: SettingsRepository
@@ -290,7 +290,7 @@ class ToDoViewModel @Inject constructor(
             object : DataTimePickerController {
                 override fun onComplete(time: Long) {
                     currentToDoTime.value = time
-                    showToast.showToast(context.getString(R.string.move_time_set) + " "
+                    toastManager.showToast(context.getString(R.string.move_time_set) + " "
                             + time.secondToData(context))
                 }
 
@@ -324,7 +324,7 @@ class ToDoViewModel @Inject constructor(
 
     fun removeCurrentToDoTime() {
         currentToDoTime.value = null
-        showToast.showToast(R.string.move_time_delete)
+        toastManager.showToast(R.string.move_time_delete)
     }
 
     private fun isCanSendAlarms() : Boolean = notifyTaskManager.isCanSendAlarms()
@@ -344,7 +344,7 @@ class ToDoViewModel @Inject constructor(
                 }
 
                 override fun onError() {
-                    showToast.showToast(context.getString(R.string.data_is_passed))
+                    toastManager.showToast(context.getString(R.string.data_is_passed))
                     cancelNotifyTimePicker()
                 }
 

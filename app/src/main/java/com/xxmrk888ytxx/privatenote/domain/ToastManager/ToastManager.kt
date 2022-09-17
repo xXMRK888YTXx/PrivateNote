@@ -1,8 +1,8 @@
-package com.xxmrk888ytxx.privatenote.Utils
+package com.xxmrk888ytxx.privatenote.domain.ToastManager
 
 import android.content.Context
 
-interface ShowToast {
+interface ToastManager {
     fun showToast(text:String)
     fun showToast(resourceId:Int)
     fun showToast(getString:(context: Context) -> String)

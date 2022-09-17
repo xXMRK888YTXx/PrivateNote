@@ -13,7 +13,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val showToast: ShowToast,
+    private val toastManager: ToastManager,
     private val securityUtils: SecurityUtils,
     private val authorizationManager: BiometricAuthorizationManager
 ) : ViewModel() {
@@ -108,7 +108,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.setAppLanguage(currentSelectedLanguage.value)
             hideLanguageDialog()
-            showToast.showToast(R.string.Notify_Language_Changed)
+            toastManager.showToast(R.string.Notify_Language_Changed)
         }
     }
 

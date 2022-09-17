@@ -42,10 +42,10 @@ import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -58,7 +58,7 @@ class EditNoteViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val categoryRepository: CategoryRepository,
     private val securityUtils: SecurityUtils,
-    private val showToast: ShowToast,
+    private val toastManager: ToastManager,
     private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
     private val analytics: AnalyticsManager,
@@ -358,7 +358,7 @@ class EditNoteViewModel @Inject constructor(
         note.isEncrypted = true
         notePassword = securityUtils.passwordToHash(password)
         dialogShowState.value = ShowDialogState.None
-        showToast.showToast(R.string.Note_encrypted)
+        toastManager.showToast(R.string.Note_encrypted)
     }
 
     fun isEncryptNote() = note.isEncrypted
@@ -396,7 +396,7 @@ class EditNoteViewModel @Inject constructor(
         saveNoteState.value = SaveNoteState.DefaultSaveNote
         note.isEncrypted = false
         notePassword = null
-        showToast.showToast(R.string.Note_decrypted)
+        toastManager.showToast(R.string.Note_decrypted)
     }
 
     fun notSaveChanges(navController: NavController) {
@@ -417,7 +417,7 @@ class EditNoteViewModel @Inject constructor(
         }
         super.onCleared()
     }
-    fun getToast() = showToast
+    fun getToast() = toastManager
 
     fun isHavePrimaryVersion() = primaryNoteVersion != null
 
@@ -435,7 +435,7 @@ class EditNoteViewModel @Inject constructor(
             textField.value = inputHistoryManager.getRedo()
             checkHistoryState()
         }catch (e:IndexOutOfBoundsException) {
-            showToast.showToast(R.string.Text_rollback_error)
+            toastManager.showToast(R.string.Text_rollback_error)
         }
     }
     //перемещает указатель истории изменений назад
@@ -444,7 +444,7 @@ class EditNoteViewModel @Inject constructor(
             textField.value = inputHistoryManager.getUndo()
             checkHistoryState()
         }catch (e:IndexOutOfBoundsException) {
-            showToast.showToast(R.string.Text_rollback_error)
+            toastManager.showToast(R.string.Text_rollback_error)
         }
     }
     //добавление изменений в историю
@@ -562,7 +562,7 @@ class EditNoteViewModel @Inject constructor(
                 showAudioRecorderDialog()
             },
             onDeny = {
-                showToast.showToast {
+                toastManager.showToast {
                     it.getString(R.string.Record_give_permissions)
                 }
             }
@@ -576,7 +576,7 @@ class EditNoteViewModel @Inject constructor(
     fun startRecord() {
         viewModelScope.launch(Dispatchers.IO) {
             recordManager.startRecord(note.id) {
-                showToast.showToast {
+                toastManager.showToast {
                     it.getString(R.string.Record_error)
                 }
             }

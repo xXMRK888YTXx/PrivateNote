@@ -1,16 +1,18 @@
-package com.xxmrk888ytxx.privatenote.Utils
+package com.xxmrk888ytxx.privatenote.domain.ToastManager
 
 import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
+import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class ShowToastImpl(private val context: Context,
-    settingsRepository: SettingsRepository
-) : ShowToast {
+class ToastManagerImpl(private val context: Context,
+                       settingsRepository: SettingsRepository
+) : ToastManager {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
         if(languageCode != LanguagesCodes.SYSTEM_LANGUAGE_CODE) {

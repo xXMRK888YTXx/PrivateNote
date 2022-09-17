@@ -15,11 +15,10 @@ import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -30,7 +29,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authorizationManager: BiometricAuthorizationManager,
-    private val showToast: ShowToast
+    private val toastManager: ToastManager
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field

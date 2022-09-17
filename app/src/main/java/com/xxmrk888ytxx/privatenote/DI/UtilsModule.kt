@@ -6,8 +6,8 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManagerImpl
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
-import com.xxmrk888ytxx.privatenote.Utils.ShowToastImpl
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManagerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,14 +21,14 @@ import javax.inject.Singleton
 class UtilsModule {
     @Provides
     @Singleton
-    fun getShowToastRealisation(@ApplicationContext context: Context,settingsRepository: SettingsRepository) : ShowToastImpl {
-        return ShowToastImpl(context,settingsRepository)
+    fun getShowToastRealisation(@ApplicationContext context: Context,settingsRepository: SettingsRepository) : ToastManagerImpl {
+        return ToastManagerImpl(context,settingsRepository)
     }
 
     @Provides
     @Singleton
-    fun getShowToast(showToastImpl:ShowToastImpl) : ShowToast {
-        return showToastImpl
+    fun getShowToast(toastManagerImpl: ToastManagerImpl) : ToastManager {
+        return toastManagerImpl
     }
 
     @Provides

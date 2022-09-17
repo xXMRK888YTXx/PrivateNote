@@ -6,7 +6,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
@@ -30,14 +29,12 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
-import com.xxmrk888ytxx.privatenote.Utils.ShowToast
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.internal.synchronized
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -45,7 +42,7 @@ import javax.inject.Inject
 @HiltViewModel
 class NoteStateViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
-    private val showToast: ShowToast,
+    private val toastManager: ToastManager,
     private val categoryRepository: CategoryRepository,
     private val analytics: AnalyticsManager
 ) : ViewModel() {
@@ -256,7 +253,7 @@ class NoteStateViewModel @Inject constructor(
             if(categoryFilterStatus.value == category.categoryId)
             changeCategoryFilterStatus(IGNORE_CATEGORY)
             categoryRepository.removeCategory(category.categoryId)
-            showToast.showToast("${context.getString(R.string.Categoty)} \"${category.categoryName}\" " +
+            toastManager.showToast("${context.getString(R.string.Categoty)} \"${category.categoryName}\" " +
                     context.getString(R.string.has_been_deleted)
             )
         }
