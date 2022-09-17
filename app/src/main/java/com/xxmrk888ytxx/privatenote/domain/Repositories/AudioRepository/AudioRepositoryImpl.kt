@@ -5,6 +5,7 @@ import android.content.ContextWrapper
 import android.media.MediaMetadataRetriever
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,7 +24,7 @@ class AudioRepositoryImpl @Inject constructor(
     private val  audioFiles:SharedFlow<List<Audio>> = _audioFiles
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             _audioFiles.emit(listOf())
         }
     }

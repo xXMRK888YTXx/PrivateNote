@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
@@ -60,7 +61,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun saveExitLockInfo(time:Int) {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             settingsRepository.setSaveLockTime(System.currentTimeMillis()+time)
         }
     }

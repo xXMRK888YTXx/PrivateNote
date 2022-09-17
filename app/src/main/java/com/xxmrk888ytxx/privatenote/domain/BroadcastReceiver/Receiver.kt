@@ -8,6 +8,7 @@ import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppMa
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManagerImpl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,7 @@ class Receiver : BroadcastReceiver() {
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     override fun onReceive(context: Context?, intent: Intent?) {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
         Log.d("MyLog","Receiver triggered")
         when(intent?.action) {
             Intent.ACTION_BOOT_COMPLETED -> {

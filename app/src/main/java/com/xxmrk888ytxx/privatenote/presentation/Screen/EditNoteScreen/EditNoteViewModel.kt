@@ -38,10 +38,12 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.Flow
@@ -287,7 +289,7 @@ class EditNoteViewModel @Inject constructor(
         //сохрание заметки(зависит от режима)
         private fun saveNote() {
             val noteId = note.id
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO+CoroutineName("SaveNoteCoroutine")) {
             when(saveNoteState.value) {
                 is SaveNoteState.DefaultSaveNote -> {
                     if((textField.value == note.text&&
@@ -406,10 +408,10 @@ class EditNoteViewModel @Inject constructor(
     override fun onCleared() {
         saveNote()
         inputHistoryManager.clearBuffer()
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             recordManager.stopRecord()
         }
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             imageRepository.clearBufferImages()
             audioRepository.clearAudioBuffer()
         }

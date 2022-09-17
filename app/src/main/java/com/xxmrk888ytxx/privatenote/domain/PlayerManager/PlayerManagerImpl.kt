@@ -4,6 +4,7 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +22,7 @@ class PlayerManagerImpl @Inject constructor() : PlayerManager  {
     private var playerStopWatch:CountDownTimer? = null
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             _playerState.emit(PlayerState.Disable)
         }
     }

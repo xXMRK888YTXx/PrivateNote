@@ -6,6 +6,7 @@ import android.media.MediaRecorder
 import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
@@ -33,7 +34,7 @@ class RecordManagerImpl @Inject constructor(
     private val recordState:SharedFlow<RecorderState> = _recordState
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             _recordState.emit(RecorderState.RecordDisable)
         }
     }

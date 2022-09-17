@@ -11,6 +11,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +39,7 @@ class ImageRepositoryImpl @Inject constructor(
     )
 
     init {
-        GlobalScope.launch(Dispatchers.IO) {
+        ApplicationScope.launch(Dispatchers.IO) {
             _noteImageList.emit(listOf())
         }
     }
