@@ -11,4 +11,5 @@ interface NotificationAppManager {
         id:Int = Random(System.currentTimeMillis()).nextInt(),
         intentNotifyTask: IntentNotifyTask,
         channel:String)
+    fun isHavePostNotificationPermission() : Boolean
 }

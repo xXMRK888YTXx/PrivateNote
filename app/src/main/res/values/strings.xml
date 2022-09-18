@@ -141,4 +141,5 @@
     <string name="Yes">Yes</string>
     <string name="No">No</string>
     <string name="Request_user_for_send_alarms">To send reminders, you must provide additional permission.\nGo to Settings?</string>
+    <string name="Request_post_notification_permission">Requires permission to display notifications</string>
 </resources>

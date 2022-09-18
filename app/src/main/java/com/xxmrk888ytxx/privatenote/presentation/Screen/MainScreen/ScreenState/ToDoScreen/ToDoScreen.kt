@@ -1,6 +1,8 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.content.Context
+import android.os.Build
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,10 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
@@ -105,6 +108,7 @@ fun ToDoScreen(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     val currentToDoImpotent = remember {
@@ -118,6 +122,13 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     }
     val currentNotifyTime = remember {
         toDoViewModel.getCurrentNotifyTime()
+    }
+    val notificationPermissionState = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        rememberPermissionState(
+            POST_NOTIFICATIONS
+        )
+    } else {
+        null
     }
     val context = LocalContext.current
     val toDoEditItems = listOf(
@@ -142,7 +153,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
             activate = currentNotifyTime.value != null,
             activateColor = Yellow
         ) {
-          toDoViewModel.showNotifyDialog()
+              toDoViewModel.showNotifyDialog(notificationPermissionState)
         },
     )
     val textField = remember {

@@ -1,15 +1,19 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
+import android.os.Build
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 import com.xxmrk888ytxx.privatenote.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
@@ -18,7 +22,10 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePic
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePickerController
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -29,7 +36,8 @@ class ToDoViewModel @Inject constructor(
     private val toastManager: ToastManager,
     private val toDoRepository: ToDoRepository,
     private val notifyTaskManager: NotifyTaskManager,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val notificationAppManager: NotificationAppManager
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 
@@ -142,7 +150,12 @@ class ToDoViewModel @Inject constructor(
 
     fun getNotifyDialogState() = isNotifyDialogShow
 
-    fun showNotifyDialog() {
+    @OptIn(ExperimentalPermissionsApi::class)
+    fun showNotifyDialog(permission: PermissionState?) {
+        if(!isHaveNotificationPostPermission()) {
+            requestPostNotificationPermission(permission)
+            return
+        }
         if(!isCanSendAlarms()) {
             showRequestPermissionSendAlarmsDialog()
             return
@@ -152,6 +165,25 @@ class ToDoViewModel @Inject constructor(
         savedIsCurrentNotifyEnable = isCurrentNotifyEnable.value
         savedIsCurrentNotifyPriority = isCurrentNotifyPriority.value
     }
+
+    @OptIn(ExperimentalPermissionsApi::class)
+    private fun requestPostNotificationPermission(permission: PermissionState?) {
+        permission.ifNotNull {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermission(
+                    permission = it,
+                    onGranted = {
+                        showNotifyDialog(it)
+                    },
+                    onDeny = {
+                        toastManager.showToast(R.string.Request_post_notification_permission)
+                    }
+                )
+            }
+        }
+    }
+
+    private fun isHaveNotificationPostPermission(): Boolean = notificationAppManager.isHavePostNotificationPermission()
 
     fun hideNotifyDialog() {
         isNotifyDialogShow.value = false

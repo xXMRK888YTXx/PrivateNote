@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.NotificationManager
 
+import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
@@ -7,6 +8,7 @@ import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver
@@ -16,7 +18,6 @@ import com.xxmrk888ytxx.privatenote.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.random.Random
 
 @Singleton
 class NotificationAppManagerImpl @Inject constructor(
@@ -89,6 +90,15 @@ class NotificationAppManagerImpl @Inject constructor(
         }
         notificationManager.notify(id, notification.build())
     }
+
+    override fun isHavePostNotificationPermission(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return context.checkSelfPermission(POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        }else {
+            return true
+        }
+    }
+
     fun cancelNotification(notificationId:Int) {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.cancel(notificationId)
