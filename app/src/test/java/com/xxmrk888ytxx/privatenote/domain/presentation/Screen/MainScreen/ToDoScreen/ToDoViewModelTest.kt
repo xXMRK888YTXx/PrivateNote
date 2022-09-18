@@ -1,19 +1,19 @@
 package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.MainScreen.ToDoScreen
 
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
+import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoViewModel
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
@@ -32,9 +32,10 @@ class ToDoViewModelTest {
     private val toDoRepository = mockk<ToDoRepository>(relaxed = true)
     private val notifyTaskManager = mockk<NotifyTaskManager>(relaxed = true)
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
+    private val notificationAppManager = mockk<NotificationAppManager>(relaxed = true)
     @Before
     fun init() {
-        viewModel = ToDoViewModel(toastManager,toDoRepository,notifyTaskManager,settingsRepository)
+        viewModel = ToDoViewModel(toastManager,toDoRepository,notifyTaskManager,settingsRepository,notificationAppManager)
     }
 
     @Test
@@ -48,21 +49,24 @@ class ToDoViewModelTest {
         }
     }
 
+    @OptIn(ExperimentalPermissionsApi::class)
     @Test
     fun `test showNotifyDialog if app can send alarms expect property's changed`() {
         Assert.assertEquals(false,viewModel.getNotifyDialogState().value)
         every { notifyTaskManager.isCanSendAlarms() } returns true
-        viewModel.showNotifyDialog()
+        every { notificationAppManager.isHavePostNotificationPermission() } returns true
+        viewModel.showNotifyDialog(null)
 
         Assert.assertEquals(true,viewModel.getNotifyDialogState().value)
     }
 
+    @OptIn(ExperimentalPermissionsApi::class)
     @Test
     fun `test showNotifyDialog if app cant send alarms expect show RequestPermissionDialog`() {
         Assert.assertEquals(false,viewModel.getNotifyDialogState().value)
         every { notifyTaskManager.isCanSendAlarms() } returns false
-
-        viewModel.showNotifyDialog()
+        every { notificationAppManager.isHavePostNotificationPermission() } returns true
+        viewModel.showNotifyDialog(null)
 
         Assert.assertEquals(false,viewModel.getNotifyDialogState().value)
         Assert.assertEquals(true,viewModel.getRequestPermissionSendAlarmsDialog().value)
