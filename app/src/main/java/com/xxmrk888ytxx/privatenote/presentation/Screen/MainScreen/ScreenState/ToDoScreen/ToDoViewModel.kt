@@ -192,7 +192,7 @@ class ToDoViewModel @Inject constructor(
         clearEditableToDoInfo()
     }
 
-    fun clearEditableToDoInfo() {
+    private fun clearEditableToDoInfo() {
         currentEditableToDoId = 0
         dialogTextField.value = ""
         isCurrentEditableToDoImportant.value = false

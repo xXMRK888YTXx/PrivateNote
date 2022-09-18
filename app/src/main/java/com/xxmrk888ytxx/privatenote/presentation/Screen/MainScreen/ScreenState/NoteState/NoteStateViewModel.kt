@@ -228,7 +228,7 @@ class NoteStateViewModel @Inject constructor(
         currentCategoryColor.value = PrimaryFontColor
     }
 
-    fun editCategoryStatus() = showEditCategoryDialog
+    fun getEditCategoryStatus() = showEditCategoryDialog
 
     fun saveCategory(categoryName:String, iconColor: Color, categoryId: Int = 0){
         viewModelScope.launch {

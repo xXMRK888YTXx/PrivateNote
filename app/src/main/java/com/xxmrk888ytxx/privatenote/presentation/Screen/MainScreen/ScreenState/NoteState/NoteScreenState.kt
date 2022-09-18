@@ -742,7 +742,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
     val categoryList = noteStateViewModel.getAllCategory()
         .collectAsState(noteStateViewModel.savedCategory.value)
     val showEditDialogState = remember {
-        noteStateViewModel.editCategoryStatus()
+        noteStateViewModel.getEditCategoryStatus()
     }
     if(showEditDialogState.value.first) {
         EditCategoryDialog(noteStateViewModel,showEditDialogState.value.second)
