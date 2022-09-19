@@ -74,6 +74,10 @@ class EditNoteViewModel @Inject constructor(
             imageRepository.clearTempDir()
             audioRepository.clearTempDir()
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            imageRepository.clearBufferImages()
+            audioRepository.clearAudioBuffer()
+        }
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
             lifeCycleState.collect() {
