@@ -5,9 +5,8 @@ import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import io.mockk.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert
@@ -45,7 +44,7 @@ class NoteRepositoryImplTest {
 
     @Test
     fun `test remove note`() = runBlocking {
-        val removeNoteFileUseCase:RemoveNoteFileUseCase = mockk(relaxed = true)
+        val removeNoteFileUseCase: RemoveNoteFileUseCase = mockk(relaxed = true)
         val repo = getNoteRepo(removeNoteFileUseCase = removeNoteFileUseCase)
         val id = Random.nextInt()
 
@@ -96,7 +95,7 @@ class NoteRepositoryImplTest {
 
 
     private val noteDaoTest = mockk<NoteDao>(relaxed = true)
-    private val removeNoteFileUseCaseTest:RemoveNoteFileUseCase = mockk()
+    private val removeNoteFileUseCaseTest: RemoveNoteFileUseCase = mockk()
     private val analyticsTest:AnalyticsManager = mockk(relaxed = true)
 
 

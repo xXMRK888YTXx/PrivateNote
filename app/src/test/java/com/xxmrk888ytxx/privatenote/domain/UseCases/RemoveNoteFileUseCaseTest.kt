@@ -2,9 +2,9 @@ package com.xxmrk888ytxx.privatenote.domain.UseCases
 
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.verifySequence
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 

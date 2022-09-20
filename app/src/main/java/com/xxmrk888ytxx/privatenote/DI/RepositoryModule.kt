@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
@@ -21,7 +20,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
