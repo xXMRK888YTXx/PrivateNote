@@ -11,6 +11,7 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapter
 import com.xxmrk888ytxx.privatenote.MainActivity
+import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import kotlinx.coroutines.*
 import java.security.Key
@@ -30,10 +31,10 @@ fun main() = runBlocking {
     )
     val moshi: Moshi = Moshi.Builder().build()
     val jsonAdapter: JsonAdapter<ToDoItem> = moshi.adapter(ToDoItem::class.java)
-    val json: String = jsonAdapter.toJson(testClass)
+    val test5 = TodoWidgetDataModel(listOf(testClass))
+    val jsonAdapter2: JsonAdapter<TodoWidgetDataModel> = moshi.adapter(TodoWidgetDataModel::class.java)
+    val json: String = jsonAdapter2.toJson(test5)
     println(json)
-    val test =  jsonAdapter.fromJson(json)
-    println(test == testClass)
 }
 
 

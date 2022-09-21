@@ -21,6 +21,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.TodoWidgetProvideUseCase.TodoWidgetProvideUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,8 +62,12 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getToDoRepoRepositoryImpl(toDoDao: ToDoDao,analytics: AnalyticsManager) : ToDoRepository {
-        return ToDoRepositoryImpl(toDoDao,analytics)
+    fun getToDoRepoRepositoryImpl(
+        toDoDao: ToDoDao,
+        analytics: AnalyticsManager,
+        todoWidgetProvideUseCase: TodoWidgetProvideUseCase
+    ) : ToDoRepository {
+        return ToDoRepositoryImpl(toDoDao,todoWidgetProvideUseCase, analytics)
     }
 
     @Provides
