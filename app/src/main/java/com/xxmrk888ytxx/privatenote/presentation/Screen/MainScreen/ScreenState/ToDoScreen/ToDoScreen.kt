@@ -330,7 +330,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
         exit = slideOutVertically()
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().padding(bottom = 50.dp)
         ) {
             categoryList.forEach { category ->
                 val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
