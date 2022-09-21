@@ -1,12 +1,13 @@
-package com.xxmrk888ytxx.privatenote.domain.UseCases.TodoWidgetProvideUseCase
+package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository
 
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.glance.GlanceId
+import androidx.glance.LocalGlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
@@ -18,18 +19,16 @@ import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
 import kotlin.coroutines.CoroutineContext
 
-class TodoWidgetProvideUseCaseImpl constructor(
+class TodoWidgetRepositoryImpl constructor(
     private val context:Context,
     private val toDoDao: ToDoDao
-) : TodoWidgetProvideUseCase {
-    override fun updateTodoInWidget() {
-        ProviderWidgetScope.coroutineContext.cancelChildren()
-        ProviderWidgetScope.launch(Dispatchers.IO) {
+) : TodoWidgetRepository {
+    override fun updateWidgetData() {
+        WidgetRepositoryScope.coroutineContext.cancelChildren()
+        WidgetRepositoryScope.launch(Dispatchers.IO) {
             val todoList = toDoDao.getAllToDo().first()
             createWidgetTodoItems(todoList)
         }
@@ -40,14 +39,14 @@ class TodoWidgetProvideUseCaseImpl constructor(
             val todoList =  allTodo.filter { !it.isCompleted }
             val importantTodo = todoList.filter { it.isImportant }
             val notImportantTodo = todoList.filter { !it.isImportant }
-            if(importantTodo.size >= 4) {
+            if(importantTodo.size >= MAX_TODO_COUNT_IN_WIDGET) {
                 parseAndWrite(importantTodo)
                 return
             }
             val finalList = mutableListOf<ToDoItem>()
             finalList.addAll(importantTodo)
             notImportantTodo.forEach {
-                if(finalList.size >= 4) {
+                if(finalList.size >= MAX_TODO_COUNT_IN_WIDGET) {
                     parseAndWrite(finalList)
                     return
                 }
@@ -78,9 +77,12 @@ class TodoWidgetProvideUseCaseImpl constructor(
        // val dataModel
     }
 
-    private object ProviderWidgetScope : CoroutineScope {
+    private object WidgetRepositoryScope : CoroutineScope {
         override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default + CoroutineName("ProviderWidgetScope")
     }
     private val Context.dataStore: DataStore<Preferences> by
     preferencesDataStore(name = TodoWidget.WIDGET_DATA_PREFERENCE_NAME)
+    companion object {
+        private const val MAX_TODO_COUNT_IN_WIDGET = 4
+    }
 }

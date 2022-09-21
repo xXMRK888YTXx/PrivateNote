@@ -6,8 +6,10 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.TodoWidgetProvideUseCase.TodoWidgetProvideUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.TodoWidgetProvideUseCase.TodoWidgetProvideUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +29,7 @@ class UseCases {
 
     @Provides
     @Singleton
-    fun getTodoWidgetProvideUseCaseImpl(@ApplicationContext context: Context, toDoDao: ToDoDao) : TodoWidgetProvideUseCase {
-        return TodoWidgetProvideUseCaseImpl(context,toDoDao)
+    fun getNotifyWidgetDataChangedUseCase(todoWidgetRepository: TodoWidgetRepository) : NotifyWidgetDataChangedUseCase {
+        return NotifyWidgetDataChangedUseCaseImpl(todoWidgetRepository)
     }
 }

@@ -137,4 +137,5 @@
     <string name="No">Нет</string>
     <string name="Request_user_for_send_alarms">Для отправки напоминаний необходимо предоставить дополнительное разрешение.\nПерейти в настройки?</string>
     <string name="Request_post_notification_permission">Разрешение требуется для отображения уведомлений</string>
+    <string name="All_task_complite">Всё задачи выполнены</string>
 </resources>

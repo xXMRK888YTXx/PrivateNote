@@ -21,7 +21,9 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.TodoWidgetProvideUseCase.TodoWidgetProvideUseCase
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -65,9 +67,9 @@ class RepositoryModule {
     fun getToDoRepoRepositoryImpl(
         toDoDao: ToDoDao,
         analytics: AnalyticsManager,
-        todoWidgetProvideUseCase: TodoWidgetProvideUseCase
+        notifyWidgetDataChangedUseCase : NotifyWidgetDataChangedUseCase
     ) : ToDoRepository {
-        return ToDoRepositoryImpl(toDoDao,todoWidgetProvideUseCase, analytics)
+        return ToDoRepositoryImpl(toDoDao,notifyWidgetDataChangedUseCase, analytics)
     }
 
     @Provides
@@ -92,5 +94,11 @@ class RepositoryModule {
     @Singleton
     fun getImageRepository(@ApplicationContext context: Context, analytics: AnalyticsManager) : ImageRepository {
         return ImageRepositoryImpl(context,analytics)
+    }
+
+    @Provides
+    @Singleton
+    fun getTodoWidgetRepository(@ApplicationContext context: Context, toDoDao: ToDoDao) : TodoWidgetRepository {
+        return TodoWidgetRepositoryImpl(context,toDoDao)
     }
 }

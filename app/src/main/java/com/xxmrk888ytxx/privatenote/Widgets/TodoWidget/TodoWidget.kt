@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
@@ -11,23 +13,29 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.glance.*
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
-import androidx.glance.appwidget.CheckBox
-import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.action.toMutableParameters
+import androidx.glance.appwidget.*
 import androidx.glance.appwidget.action.actionRunCallback
-import androidx.glance.appwidget.cornerRadius
 import androidx.glance.layout.*
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
+import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenAppAction
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
 import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
 import kotlinx.coroutines.flow.map
 import java.io.File
@@ -35,6 +43,8 @@ import java.io.File
 class TodoWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<*>
         get() = CustomGlanceStateDefinition
+    override val sizeMode: SizeMode
+        get() = SizeMode.Single
     private val widgetState:MutableState<WidgetState> = mutableStateOf(WidgetState.EmptyTodoList)
     private fun updateState(preferences: Preferences) {
         try {
@@ -70,8 +80,8 @@ class TodoWidget : GlanceAppWidget() {
         updateState(pref)
         Column(
             modifier =
-            GlanceModifier.fillMaxSize()
-                .background(CardNoteColor.copy(0.85f))
+            GlanceModifier.fillMaxSize().height(260.dp)
+                .background(CardNoteColor.copy(0.9f))
                 .cornerRadius(20.dp)
         ) {
             Row(
@@ -102,7 +112,7 @@ class TodoWidget : GlanceAppWidget() {
                     CreateTodoList(model)
                 }
                 WidgetState.EmptyTodoList -> {
-                    Text(text = "EmptyTodoList")
+                    EmptyTodoStub()
                 }
                 WidgetState.Error -> {
                     Text(text = "Error")
@@ -110,6 +120,31 @@ class TodoWidget : GlanceAppWidget() {
             }
             }
         }
+
+    @Composable
+    @MustBeLocalization
+    private fun EmptyTodoStub() {
+        val context = LocalContext.current
+        Column(
+            modifier = GlanceModifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_todo_icon_for_widget),
+                contentDescription = "",
+                modifier = GlanceModifier.size(40.dp)
+            )
+            Text(context.getString(R.string.All_task_complite),
+                style = TextStyle(color = ColorProvider(PrimaryFontColor),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
+            )
+
+        }    
+    }
 
     @Composable
     fun CreateTodoList(model: TodoWidgetDataModel) {
@@ -121,17 +156,27 @@ class TodoWidget : GlanceAppWidget() {
                 CheckBox(
                     checked = it.isCompleted, 
                     onCheckedChange = null,
-                    modifier = GlanceModifier.padding(end = 10.dp)
+                    modifier = GlanceModifier
+                        .padding(end = 10.dp)
+                        .clickable(actionRunCallback<MarkCompletedAction>(
+                            parameters = actionParametersOf(
+                                MarkCompletedAction.actionWidgetKey to it
+                            )
+                        )),
+                    colors = CheckBoxColors(
+                        checkedColor = ColorProvider(FloatingButtonColor),
+                        uncheckedColor = ColorProvider(FloatingButtonColor),
+                    )
                 )
                 Text(text = it.todoText,
                     style = TextStyle(color = ColorProvider(PrimaryFontColor),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium
-                    )
+                    ),
+                    maxLines = 1
                 )
-                Diver()
-
             }
+            Diver()
         }
     }
 
