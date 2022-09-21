@@ -81,7 +81,7 @@ class TodoWidget : GlanceAppWidget() {
         Column(
             modifier =
             GlanceModifier.fillMaxSize().height(260.dp)
-                .background(CardNoteColor.copy(0.9f))
+                .background(CardNoteColor)
                 .cornerRadius(20.dp)
         ) {
             Row(
