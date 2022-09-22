@@ -3,15 +3,21 @@ package com.xxmrk888ytxx.privatenote.domain.ToastManager
 import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ShowToast_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import java.util.*
 import javax.inject.Singleton
 
 @Singleton
-class ToastManagerImpl(private val context: Context,
-                       settingsRepository: SettingsRepository
+@SendAnalytics
+class ToastManagerImpl(
+    private val context: Context,
+    settingsRepository: SettingsRepository,
+    private val analytics: AnalyticsManager
 ) : ToastManager {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
@@ -28,13 +34,16 @@ class ToastManagerImpl(private val context: Context,
     }
 
     override fun showToast(text:String) {
+        analytics.sendEvent(ShowToast_Event,null)
         Toast.makeText(context,text,Toast.LENGTH_SHORT).show()
     }
     override fun showToast(resourceId:Int) {
+        analytics.sendEvent(ShowToast_Event,null)
         Toast.makeText(context,context.getString(resourceId),Toast.LENGTH_SHORT).show()
     }
 
-    override fun showToast(getString: (context: Context) -> String) {
-        showToast(getString(context))
+    override fun showToast(stringBuild: (context: Context) -> String) {
+        analytics.sendEvent(ShowToast_Event,null)
+        showToast(stringBuild(context))
     }
 }

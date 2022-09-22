@@ -88,8 +88,8 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getAudioRepository(@ApplicationContext context: Context ) : AudioRepository {
-        return AudioRepositoryImpl(context)
+    fun getAudioRepository(@ApplicationContext context: Context,analytics: AnalyticsManager ) : AudioRepository {
+        return AudioRepositoryImpl(context,analytics)
     }
 
     @Provides
@@ -100,7 +100,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun getTodoWidgetRepository(@ApplicationContext context: Context, toDoDao: ToDoDao) : TodoWidgetRepository {
-        return TodoWidgetRepositoryImpl(context,toDoDao)
+    fun getTodoWidgetRepository(@ApplicationContext context: Context, toDoDao: ToDoDao,analytics: AnalyticsManager) : TodoWidgetRepository {
+        return TodoWidgetRepositoryImpl(context,toDoDao,analytics)
     }
 }

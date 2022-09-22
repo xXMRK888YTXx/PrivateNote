@@ -7,6 +7,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
@@ -25,7 +26,8 @@ class ToDoRepositoryTest {
     fun init() {
         val analytics:AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
-        repo = ToDoRepositoryImpl(dao,notifyWidgetDataChangedUseCase, analytics)
+        val removeNotifyTaskIfTodoCompletedUseCase = mockk<RemoveNotifyTaskIfTodoCompletedUseCase>(relaxed = true)
+        repo = ToDoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
     }
 
     @Test

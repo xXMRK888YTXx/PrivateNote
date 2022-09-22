@@ -3,9 +3,22 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 import android.content.Context
 import android.content.ContextWrapper
 import android.media.MediaMetadataRetriever
+import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ClearAudioBuffer_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ClearNoteAudios_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ClearTempDir_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.GetAudioDuration_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.LoadAudioInBuffer_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NotifyDeleteAudio_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NotifyNewAudio_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveAudio_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.TempDirToAudioDir_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,8 +30,10 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
+@SendAnalytics
 class AudioRepositoryImpl @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val analyticsManager: AnalyticsManager
 ) : AudioRepository {
     private val _audioFiles: MutableSharedFlow<List<Audio>> = MutableSharedFlow(1)
     private val  audioFiles:SharedFlow<List<Audio>> = _audioFiles
@@ -35,16 +50,19 @@ class AudioRepositoryImpl @Inject constructor(
         audioDir.listFiles().forEach {
             audioList.add(getAudioFile(it))
         }
+        analyticsManager.sendEvent(LoadAudioInBuffer_Event, bundleOf(Pair("Load_Audio_Count",audioList.size)))
         _audioFiles.tryEmit(audioList)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearAudioBuffer() {
+        analyticsManager.sendEvent(ClearAudioBuffer_Event,null)
         _audioFiles.resetReplayCache()
         _audioFiles.tryEmit(listOf())
     }
 
     override suspend fun notifyNewAudio(newAudio: Audio) {
+        analyticsManager.sendEvent(NotifyNewAudio_Event,null)
         val currentList = _audioFiles.first().toMutableList()
         currentList.add(newAudio)
         _audioFiles.tryEmit(currentList)
@@ -58,12 +76,14 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     override suspend fun notifyDeleteAudio(audioId: Long) {
+        analyticsManager.sendEvent(NotifyDeleteAudio_Event,null)
         var newList = _audioFiles.first()
         newList = newList.filter { it.id != audioId }
         _audioFiles.tryEmit(newList)
     }
 
     override suspend fun removeAudio(noteId: Int,audioId: Long) {
+        analyticsManager.sendEvent(RemoveAudio_Event,null)
         val audioDir = getAudioDir(noteId)
         val file = File(audioDir,"$audioId.mp3")
         file.delete()
@@ -71,6 +91,7 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearNoteAudios(noteId: Int) {
+        analyticsManager.sendEvent(ClearNoteAudios_Event,null)
         val audioDir = File(getAudioDir(noteId))
         audioDir.listFiles()?.forEach {
             it.delete()
@@ -79,16 +100,19 @@ class AudioRepositoryImpl @Inject constructor(
     }
 
     override suspend fun tempDirToAudioDir(noteId: Int) {
+        analyticsManager.sendEvent(TempDirToAudioDir_Event,null)
         val tempDir = File(getAudioDir(0))
         val newImageDir = File(getAudioDir(noteId))
         tempDir.renameTo(newImageDir)
     }
 
     override suspend fun clearTempDir() {
+        analyticsManager.sendEvent(ClearTempDir_Event,null)
         clearNoteAudios(0)
     }
 
     override suspend fun getAudioDuration(file: EncryptedFile) : Long {
+        analyticsManager.sendEvent(GetAudioDuration_Event,null)
         try {
             val mediaMetadataRetriever = MediaMetadataRetriever()
             mediaMetadataRetriever.setDataSource(file.openFileInput().fd)

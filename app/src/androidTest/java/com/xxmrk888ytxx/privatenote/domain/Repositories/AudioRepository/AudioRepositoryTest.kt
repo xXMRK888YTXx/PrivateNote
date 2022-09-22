@@ -2,10 +2,12 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Bundle
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -19,12 +21,19 @@ import java.io.File
 class AudioRepositoryTest {
     lateinit var repo:AudioRepository
     lateinit var context:Context
+    lateinit var analyticsManager: AnalyticsManager
     private val dirId = 3
     private val dirId2 = 12
     @Before
     fun init() {
+        analyticsManager = object : AnalyticsManager {
+            override fun sendEvent(eventName: String, params: Bundle?) {
+
+            }
+
+        }
         context = InstrumentationRegistry.getInstrumentation().targetContext
-        repo = AudioRepositoryImpl(context)
+        repo = AudioRepositoryImpl(context,analyticsManager)
     }
 
     @After

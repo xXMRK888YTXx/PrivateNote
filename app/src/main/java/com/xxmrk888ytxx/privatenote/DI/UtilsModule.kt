@@ -21,8 +21,8 @@ import javax.inject.Singleton
 class UtilsModule {
     @Provides
     @Singleton
-    fun getShowToastRealisation(@ApplicationContext context: Context,settingsRepository: SettingsRepository) : ToastManagerImpl {
-        return ToastManagerImpl(context,settingsRepository)
+    fun getShowToastRealisation(@ApplicationContext context: Context,settingsRepository: SettingsRepository,analyticsManager: AnalyticsManager) : ToastManagerImpl {
+        return ToastManagerImpl(context,settingsRepository,analyticsManager)
     }
 
     @Provides

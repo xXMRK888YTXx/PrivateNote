@@ -9,9 +9,14 @@ import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ClearNoteImages_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NewImageNotify_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveImageNotify_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SaveBitmap_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -21,7 +26,7 @@ import kotlinx.coroutines.launch
 import java.io.*
 import javax.inject.Inject
 
-
+@SendAnalytics
 class ImageRepositoryImpl @Inject constructor(
     private val context: Context,
     private val analytics: AnalyticsManager
@@ -66,12 +71,14 @@ class ImageRepositoryImpl @Inject constructor(
     }
 
     private suspend fun newImageNotify(newImage:Image) {
+        analytics.sendEvent(NewImageNotify_Event,null)
         val newList = _noteImageList.firstOrNull()?.toMutableList() ?: mutableListOf()
         newList.add(newImage)
         _noteImageList.emit(newList)
     }
 
     private suspend fun removeImageNotify(imageId:Long) {
+        analytics.sendEvent(RemoveImageNotify_Event,null)
         var newList = _noteImageList.first()
         newList = newList.filter { it.id != imageId }
         _noteImageList.emit(newList)
@@ -85,6 +92,7 @@ class ImageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun clearNoteImages(noteId: Int) {
+        analytics.sendEvent(ClearNoteImages_Event,null)
         val imageDir = File(getNoteImageDir(noteId,context))
         imageDir.listFiles().forEach {
             it.delete()
@@ -124,7 +132,8 @@ class ImageRepositoryImpl @Inject constructor(
                                     bitmap: Bitmap,
                                     saveInPng:Boolean,
                                     onError:(e:Exception) -> Unit) : Image? {
-        try {
+        analytics.sendEvent(SaveBitmap_Event,null)
+         try {
             val fileDir = File(imageDir,"${System.currentTimeMillis()}")
             val mainKey = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)

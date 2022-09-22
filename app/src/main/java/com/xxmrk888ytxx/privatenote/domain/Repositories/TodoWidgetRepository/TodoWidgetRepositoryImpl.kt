@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.util.Log
+import androidx.core.os.bundleOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -13,6 +14,10 @@ import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.CreateWidgetTodoItems_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ParseAndWriteTodoInWidget_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.UpdateWidgetData_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget.Companion.widgetDataKey
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
@@ -24,9 +29,11 @@ import kotlin.coroutines.CoroutineContext
 
 class TodoWidgetRepositoryImpl constructor(
     private val context:Context,
-    private val toDoDao: ToDoDao
+    private val toDoDao: ToDoDao,
+    private val analyticsManager: AnalyticsManager
 ) : TodoWidgetRepository {
     override fun updateWidgetData() {
+        analyticsManager.sendEvent(UpdateWidgetData_Event,null)
         WidgetRepositoryScope.coroutineContext.cancelChildren()
         WidgetRepositoryScope.launch(Dispatchers.IO) {
             val todoList = toDoDao.getAllToDo().first()
@@ -35,6 +42,7 @@ class TodoWidgetRepositoryImpl constructor(
     }
 
     private suspend fun createWidgetTodoItems(allTodo: List<ToDoItem>) {
+        analyticsManager.sendEvent(CreateWidgetTodoItems_Event,null)
         try {
             val todoList =  allTodo.filter { !it.isCompleted }
             val importantTodo = todoList.filter { it.isImportant }
@@ -59,6 +67,7 @@ class TodoWidgetRepositoryImpl constructor(
     }
 
     private suspend fun parseAndWrite(todoList:List<ToDoItem>) {
+        analyticsManager.sendEvent(ParseAndWriteTodoInWidget_Event, bundleOf(Pair("Write_In_Widget_Todo_Count",todoList.size)))
         try {
             val dataModel = TodoWidgetDataModel(todoList)
             val moshi: Moshi = Moshi.Builder().build()

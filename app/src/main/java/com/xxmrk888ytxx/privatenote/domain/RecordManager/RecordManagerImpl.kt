@@ -6,7 +6,11 @@ import android.media.MediaRecorder
 import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RecordIsStart
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RecordIsStop
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
@@ -21,10 +25,11 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
-
+@SendAnalytics
 class RecordManagerImpl @Inject constructor(
     private val context: Context,
-    private val audioRepository: AudioRepository
+    private val audioRepository: AudioRepository,
+    private val analyticsManager: AnalyticsManager
 ) : RecordManager {
     private var mediaRecorder: MediaRecorder? = null
     private var currentRecordAudio: Audio? = null
@@ -40,6 +45,7 @@ class RecordManagerImpl @Inject constructor(
     }
 
     override suspend fun startRecord(noteId: Int, onError: (e: Exception) -> Unit) {
+        analyticsManager.sendEvent(RecordIsStart,null)
         try {
             if(mediaRecorder != null) return
             val audioFile = createAudioFile(noteId)
@@ -70,6 +76,7 @@ class RecordManagerImpl @Inject constructor(
     }
 
     override suspend fun stopRecord(onError: (e: Exception) -> Unit) {
+        analyticsManager.sendEvent(RecordIsStop,null)
         try {
             recordStopWatch.ifNotNull {
                 it.cancel()

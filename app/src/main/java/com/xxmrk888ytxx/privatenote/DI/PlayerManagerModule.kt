@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.DI
 
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManagerImpl
 import dagger.Module
@@ -13,7 +14,7 @@ import javax.inject.Singleton
 class PlayerManagerModule {
     @Provides
     @Singleton
-    fun getPlayerManager() : PlayerManager {
-        return PlayerManagerImpl()
+    fun getPlayerManager(analyticsManager: AnalyticsManager) : PlayerManager {
+        return PlayerManagerImpl(analyticsManager)
     }
 }

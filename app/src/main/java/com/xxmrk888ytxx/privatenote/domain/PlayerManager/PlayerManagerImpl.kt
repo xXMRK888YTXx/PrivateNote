@@ -4,7 +4,14 @@ import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsPause
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsReset
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsStart
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerSeekTo_Event
+import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.NoAddAnalytics
+import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +21,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class PlayerManagerImpl @Inject constructor() : PlayerManager  {
+@SendAnalytics
+class PlayerManagerImpl @Inject constructor(
+    private val analytics: AnalyticsManager
+) : PlayerManager  {
     private var mediaPlayer: MediaPlayer? = null
 
     private val _playerState: MutableSharedFlow<PlayerState> = MutableSharedFlow(1)
@@ -29,6 +39,7 @@ class PlayerManagerImpl @Inject constructor() : PlayerManager  {
 
     override suspend fun startPlayer(file: EncryptedFile, onError: (e: Exception) -> Unit) {
         try {
+            analytics.sendEvent(PlayerIsStart,null)
             if(mediaPlayer != null) {
                 mediaPlayer?.start()
                 playerStopWatch?.start()
@@ -62,6 +73,7 @@ class PlayerManagerImpl @Inject constructor() : PlayerManager  {
     }
 
     override suspend fun pausePlayer(onError: (e: Exception) -> Unit) {
+        analytics.sendEvent(PlayerIsPause,null)
         runOnMainThread {
             playerStopWatch.ifNotNull {
                 it.cancel()
@@ -74,6 +86,7 @@ class PlayerManagerImpl @Inject constructor() : PlayerManager  {
     }
 
     override suspend fun resetPlayer(onError: (e: Exception) -> Unit) {
+        analytics.sendEvent(PlayerIsReset,null)
         runOnMainThread {
             playerStopWatch.ifNotNull {
                 it.cancel()
@@ -88,6 +101,7 @@ class PlayerManagerImpl @Inject constructor() : PlayerManager  {
     }
 
     override suspend fun seekTo(pos: Long) {
+        analytics.sendEvent(PlayerSeekTo_Event,null)
         try {
             mediaPlayer.ifNotNull {
                 val finalPos = if(pos < 0) 0L else if(pos > it.duration) it.duration.toLong()
