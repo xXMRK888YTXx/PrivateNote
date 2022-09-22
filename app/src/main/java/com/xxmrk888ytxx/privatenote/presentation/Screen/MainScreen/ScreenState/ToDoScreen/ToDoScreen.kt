@@ -168,7 +168,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(value = textField.value, onValueChange = {
-                    if(it.length > 50) return@OutlinedTextField
+                    if(it.length > 90) return@OutlinedTextField
                     textField.value = it
                 },
                     modifier = Modifier
