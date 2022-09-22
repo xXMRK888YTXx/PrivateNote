@@ -40,14 +40,14 @@ class TodoWidgetRepositoryImpl constructor(
             val importantTodo = todoList.filter { it.isImportant }
             val notImportantTodo = todoList.filter { !it.isImportant }
             if(importantTodo.size >= MAX_TODO_COUNT_IN_WIDGET) {
-                parseAndWrite(importantTodo)
+                parseAndWrite(importantTodo.take(MAX_TODO_COUNT_IN_WIDGET))
                 return
             }
             val finalList = mutableListOf<ToDoItem>()
             finalList.addAll(importantTodo)
             notImportantTodo.forEach {
                 if(finalList.size >= MAX_TODO_COUNT_IN_WIDGET) {
-                    parseAndWrite(finalList)
+                    parseAndWrite(finalList.take(MAX_TODO_COUNT_IN_WIDGET))
                     return
                 }
                 finalList.add(it)
