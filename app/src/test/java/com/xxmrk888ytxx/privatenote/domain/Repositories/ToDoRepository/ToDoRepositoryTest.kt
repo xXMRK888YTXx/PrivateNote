@@ -6,6 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
@@ -19,12 +20,12 @@ import org.junit.Test
 class ToDoRepositoryTest {
     lateinit var repo:ToDoRepository
     lateinit var dao:ToDoDao
-
+    val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase = mockk(relaxed = true)
     @Before
     fun init() {
         val analytics:AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
-        repo = ToDoRepositoryImpl(dao,analytics)
+        repo = ToDoRepositoryImpl(dao,notifyWidgetDataChangedUseCase, analytics)
     }
 
     @Test
@@ -58,6 +59,7 @@ class ToDoRepositoryTest {
 
         verifySequence {
             dao.insertToDo(todo)
+            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -69,6 +71,7 @@ class ToDoRepositoryTest {
 
         verifySequence {
             dao.removeToDo(id)
+            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -81,6 +84,7 @@ class ToDoRepositoryTest {
 
         verifySequence {
             dao.changeMarkStatus(id,state)
+            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -93,6 +97,8 @@ class ToDoRepositoryTest {
 
         verifySequence {
             dao.changeMarkStatus(id,state)
+            notifyWidgetDataChangedUseCase.execute()
         }
     }
+
 }

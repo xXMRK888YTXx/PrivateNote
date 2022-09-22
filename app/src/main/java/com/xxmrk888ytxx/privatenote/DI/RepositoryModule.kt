@@ -24,6 +24,7 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.Remove
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -67,9 +68,10 @@ class RepositoryModule {
     fun getToDoRepoRepositoryImpl(
         toDoDao: ToDoDao,
         analytics: AnalyticsManager,
+        removeNotifyTaskIfTodoCompletedUseCase: RemoveNotifyTaskIfTodoCompletedUseCase,
         notifyWidgetDataChangedUseCase : NotifyWidgetDataChangedUseCase
     ) : ToDoRepository {
-        return ToDoRepositoryImpl(toDoDao,notifyWidgetDataChangedUseCase, analytics)
+        return ToDoRepositoryImpl(toDoDao,notifyWidgetDataChangedUseCase, removeNotifyTaskIfTodoCompletedUseCase,analytics)
     }
 
     @Provides

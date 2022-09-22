@@ -9,6 +9,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class ToDoRepositoryImpl @Inject constructor(
     private val toDoDao: ToDoDao,
     private val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase,
+    private val removeNotifyTaskIfTodoCompletedUseCase: RemoveNotifyTaskIfTodoCompletedUseCase,
     private val analytics: AnalyticsManager
 ) : ToDoRepository {
     override fun getAllToDo(): Flow<List<ToDoItem>> = runBlocking(Dispatchers.IO) {
@@ -37,11 +39,15 @@ class ToDoRepositoryImpl @Inject constructor(
         analytics.sendEvent(Remove_Todo_Event,null)
         toDoDao.removeToDo(id)
         notifyWidgetDataChangedUseCase.execute()
+        removeNotifyTaskIfTodoCompletedUseCase.execute(id)
     }
 
     override fun changeMarkStatus(id: Int, status: Boolean) = runBlocking(Dispatchers.IO) {
         analytics.sendEvent(Change_Mark_Status,null)
         toDoDao.changeMarkStatus(id,status)
         notifyWidgetDataChangedUseCase.execute()
+        if(status) {
+            removeNotifyTaskIfTodoCompletedUseCase.execute(id)
+        }
     }
 }
