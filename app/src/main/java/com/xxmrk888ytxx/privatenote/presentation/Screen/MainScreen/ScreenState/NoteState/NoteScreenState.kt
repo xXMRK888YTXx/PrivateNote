@@ -654,12 +654,23 @@ fun DefaultNoteItem(note: Note) {
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            Text(text = note.title,
-                modifier = Modifier.fillMaxWidth(),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Black,
-                color = PrimaryFontColor,
-            )
+            if(note.title.isNotEmpty()) {
+                Text(text = note.title,
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Black,
+                    color = PrimaryFontColor,
+                )
+            }
+            else {
+                Text(text = stringResource(R.string.No_title),
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = PrimaryFontColor,
+                    fontStyle = FontStyle.Italic
+                )
+            }
             if(note.text.getFirstChars() != "") {
                 Text(text = note.text.getFirstChars(),
                     modifier = Modifier.fillMaxWidth(),
@@ -668,6 +679,16 @@ fun DefaultNoteItem(note: Note) {
                     maxLines = 1,
 
                 )
+            }
+            else {
+                Text(text = stringResource(R.string.No_text),
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 16.sp,
+                    color = SecondoryFontColor,
+                    maxLines = 1,
+                    fontWeight = FontWeight.Medium,
+                    fontStyle = FontStyle.Italic
+                    )
             }
             Row(
                 Modifier.fillMaxWidth(),
@@ -793,7 +814,9 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                         painterResource(it.icon),
                         contentDescription = "",
                         tint = PrimaryFontColor,
-                        modifier = Modifier.padding(15.dp).size(20.dp)
+                        modifier = Modifier
+                            .padding(15.dp)
+                            .size(20.dp)
                     )
                     Text(
                         text = it.title,
