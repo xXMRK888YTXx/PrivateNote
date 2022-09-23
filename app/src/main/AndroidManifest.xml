@@ -27,6 +27,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".presentation.Activity.DelayNotifyActivity.DelayNotifyActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:taskAffinity=""
+            android:theme="@style/Theme.AppCompat.Dialog"/>
         <receiver android:name="com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver"
             android:exported="true">
             <intent-filter>

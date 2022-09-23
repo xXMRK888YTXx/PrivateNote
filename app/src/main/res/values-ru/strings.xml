@@ -140,4 +140,9 @@
     <string name="All_task_complite">Всё задачи выполнены</string>
     <string name="No_title">Без заголовка</string>
     <string name="No_text">Без текста</string>
+    <string name="Postpone">Отложить</string>
+    <string name="Fifteen_minutes">15 минут</string>
+    <string name="Thirty_minutes">30 минут</string>
+    <string name="One_hour">1 час</string>
+    <string name="Three_hours">3 часа</string>
 </resources>

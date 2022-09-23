@@ -12,4 +12,5 @@ interface NotificationAppManager {
         intentNotifyTask: IntentNotifyTask,
         channel:String)
     fun isHavePostNotificationPermission() : Boolean
+    fun cancelNotification(notificationId:Int)
 }

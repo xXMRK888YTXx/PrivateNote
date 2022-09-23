@@ -14,7 +14,6 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.Not
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -111,6 +110,16 @@ class NotifyTaskManagerImpl @Inject constructor(
     override fun markCompletedAction(todoId: Int) {
         toDoRepository.changeMarkStatus(todoId,true)
     }
+
+    override fun isTodoValid(todoId: Int) : Boolean {
+        try {
+            val todo = toDoRepository.getToDoById(todoId).getData()
+            return true
+        }catch (e:Exception) {
+            return false
+        }
+    }
+
     companion object {
         const val TASK_KEY = "TASK_KEY"
         const val NOTIFY_TASK_ACTION = "NOTIFY_TASK_ACTION"

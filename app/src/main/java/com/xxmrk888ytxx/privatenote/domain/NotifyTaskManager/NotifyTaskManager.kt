@@ -14,4 +14,5 @@ interface NotifyTaskManager {
     fun checkForOld()
     fun isCanSendAlarms() : Boolean
     fun markCompletedAction(todoId: Int)
+    fun isTodoValid(todoId: Int) : Boolean
 }

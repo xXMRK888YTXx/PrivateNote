@@ -145,4 +145,9 @@
     <string name="All_task_complite">All tasks completed</string>
     <string name="No_title">No Title</string>
     <string name="No_text">No Text</string>
+    <string name="Postpone">Postpone</string>
+    <string name="Fifteen_minutes">15 minutes</string>
+    <string name="Thirty_minutes">30 minutes</string>
+    <string name="One_hour">1 hour</string>
+    <string name="Three_hours">3 hours</string>
 </resources>
