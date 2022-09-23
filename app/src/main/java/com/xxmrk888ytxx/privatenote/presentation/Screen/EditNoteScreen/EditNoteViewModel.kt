@@ -14,7 +14,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState

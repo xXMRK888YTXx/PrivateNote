@@ -17,7 +17,7 @@
         android:theme="@style/Theme.PrivateNote"
         tools:targetApi="33">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.Activity.MainActivity.MainActivity"
             android:exported="true"
             android:label="1111"
             android:theme="@style/Theme.PrivateNote">

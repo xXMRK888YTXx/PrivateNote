@@ -14,7 +14,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
-import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen

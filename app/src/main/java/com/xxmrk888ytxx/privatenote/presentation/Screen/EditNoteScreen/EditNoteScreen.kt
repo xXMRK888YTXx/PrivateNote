@@ -2,7 +2,6 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -41,7 +40,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText

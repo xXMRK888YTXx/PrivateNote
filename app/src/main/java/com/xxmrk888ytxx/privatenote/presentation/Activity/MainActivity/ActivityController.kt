@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote
+package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.graphics.Bitmap
 import androidx.security.crypto.EncryptedFile

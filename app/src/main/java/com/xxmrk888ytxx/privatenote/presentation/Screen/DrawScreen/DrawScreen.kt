@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import com.xxmrk888ytxx.privatenote.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R

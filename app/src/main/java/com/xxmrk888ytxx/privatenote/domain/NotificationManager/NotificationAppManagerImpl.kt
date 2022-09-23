@@ -12,7 +12,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver
-import com.xxmrk888ytxx.privatenote.MainActivity
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.R
 import dagger.hilt.android.qualifiers.ApplicationContext

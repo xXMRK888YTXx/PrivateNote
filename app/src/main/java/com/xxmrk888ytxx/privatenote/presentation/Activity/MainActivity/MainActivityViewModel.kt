@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote
+package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
