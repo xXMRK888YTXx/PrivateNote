@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButtonController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val deepLinkController: DeepLinkController
 ) : ViewModel(),MainScreenController,FloatButtonController {
 
     @OptIn(ExperimentalPagerApi::class)
@@ -73,6 +76,18 @@ class MainViewModel @Inject constructor(
         navController.navigate(Screen.SettingsScreen.route) {
             launchSingleTop = true
         }
+    }
+
+    suspend fun checkDeepLinks() {
+        val deepLink = validateDeepLink(deepLinkController.getDeepLink()) ?: return
+        changeScreenState(MainScreenState.ToDoScreen)
+    }
+
+    private fun validateDeepLink(deepLink: DeepLink?) : DeepLink.TodoDeepLink? {
+        if(deepLink == null) return null
+        if(deepLink !is DeepLink.TodoDeepLink) return null
+        if(!deepLink.isActiveDeepLink) return null
+        return deepLink
     }
 
     fun getNavigationSwipeState() = settingsRepository.getNavigationSwipeState()

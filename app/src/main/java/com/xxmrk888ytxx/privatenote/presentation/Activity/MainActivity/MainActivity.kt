@@ -27,6 +27,7 @@ import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
+import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
         notificationManager.createNotificationChannels()
         restoreTasks()
+        if(intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION) mainActivityViewModel.registerTodoDeepLink(intent)
         setContent {
             val startScreen = getStartScreen()
             val navController = rememberNavController()

@@ -23,6 +23,8 @@ import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +38,8 @@ class ToDoViewModel @Inject constructor(
     private val toDoRepository: ToDoRepository,
     private val notifyTaskManager: NotifyTaskManager,
     private val settingsRepository: SettingsRepository,
-    private val notificationAppManager: NotificationAppManager
+    private val notificationAppManager: NotificationAppManager,
+    private val deepLinkController: DeepLinkController
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 
@@ -389,6 +392,27 @@ class ToDoViewModel @Inject constructor(
     fun openAlarmSettings(activityController: ActivityController) {
         activityController.openAlarmSettings()
     }
+
+    suspend fun checkDeepLinks() {
+        val deepLink = validateDeepLink(deepLinkController.getDeepLink()) ?: return
+        val todo = deepLink.todo
+        if(todo != null) {
+            if(!toDoRepository.getAllToDo().getData().any{ it == todo }) {
+                deepLinkController.markInvalidDeepLink(deepLink.idDeepLink)
+                return
+            }
+        }
+        toEditToDoState(todo)
+        deepLinkController.markInvalidDeepLink(deepLink.idDeepLink)
+    }
+
+    private fun validateDeepLink(deepLink: DeepLink?) : DeepLink.TodoDeepLink? {
+        if(deepLink == null) return null
+        if(deepLink !is DeepLink.TodoDeepLink) return null
+        if(!deepLink.isActiveDeepLink) return null
+        return deepLink
+    }
+
     companion object {
          val SCREEN_ID = MainScreenState.ToDoScreen.id
     }

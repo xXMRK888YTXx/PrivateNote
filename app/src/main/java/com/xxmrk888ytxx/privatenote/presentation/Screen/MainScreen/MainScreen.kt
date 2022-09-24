@@ -75,6 +75,11 @@ fun MainScreen(
             }
         }
     }
+    LaunchedEffect(key1 = Unit, block = {
+        launch {
+            mainViewModel.checkDeepLinks()
+        }
+    })
 }
 
 @OptIn(ExperimentalPagerApi::class)

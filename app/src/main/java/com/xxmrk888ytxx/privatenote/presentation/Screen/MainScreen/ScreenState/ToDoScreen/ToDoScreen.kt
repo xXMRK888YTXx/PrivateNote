@@ -46,6 +46,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButt
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -106,6 +107,11 @@ fun ToDoScreen(
             }
         )
     }
+    LaunchedEffect(key1 = Unit, block = {
+       launch {
+           toDoViewModel.checkDeepLinks()
+       }
+    })
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -330,7 +336,9 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
         exit = slideOutVertically()
     ) {
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 50.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 50.dp)
         ) {
             categoryList.forEach { category ->
                 val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }

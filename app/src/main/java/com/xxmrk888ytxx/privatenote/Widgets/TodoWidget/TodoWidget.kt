@@ -33,6 +33,7 @@ import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenAppAction
+import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
 import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
@@ -85,22 +86,23 @@ class TodoWidget : GlanceAppWidget() {
                 .cornerRadius(20.dp)
         ) {
             Row(
-                modifier = GlanceModifier.padding(10.dp),
+                modifier = GlanceModifier.padding(10.dp).clickable(actionRunCallback<OpenAppAction>()),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(context.getString(R.string.ToDo),
                     style = TextStyle(color = ColorProvider(PrimaryFontColor),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium
-                    )
+                    ),
+                    modifier = GlanceModifier.clickable(actionRunCallback<OpenAppAction>())
                 )
                 Box(
-                    modifier = GlanceModifier.fillMaxWidth(),
+                    modifier = GlanceModifier.fillMaxWidth().clickable(actionRunCallback<OpenTodoInAppAction>()),
                     contentAlignment = Alignment.CenterEnd
                 ) {
                     Image(provider = ImageProvider(R.drawable.ic_plus_for_todo_widget),
                         contentDescription = "",
-                        modifier = GlanceModifier.clickable(actionRunCallback<OpenAppAction>())
+                        modifier = GlanceModifier.clickable(actionRunCallback<OpenTodoInAppAction>())
                     )
                 }
 
@@ -150,7 +152,12 @@ class TodoWidget : GlanceAppWidget() {
     fun CreateTodoList(model: TodoWidgetDataModel) {
         model.todoList.forEach {
             Row(
-                modifier = GlanceModifier.padding(10.dp),
+                modifier = GlanceModifier.fillMaxWidth().padding(10.dp)
+                    .clickable(actionRunCallback<OpenTodoInAppAction>(
+                        parameters = actionParametersOf(
+                            OpenTodoInAppAction.TODO_KEY to it
+                        )
+                    )),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 CheckBox(
@@ -173,7 +180,12 @@ class TodoWidget : GlanceAppWidget() {
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium
                     ),
-                    maxLines = 1
+                    maxLines = 1,
+                    modifier = GlanceModifier.clickable(actionRunCallback<OpenTodoInAppAction>(
+                        parameters = actionParametersOf(
+                            OpenTodoInAppAction.TODO_KEY to it
+                        )
+                    ))
                 )
             }
             Diver()

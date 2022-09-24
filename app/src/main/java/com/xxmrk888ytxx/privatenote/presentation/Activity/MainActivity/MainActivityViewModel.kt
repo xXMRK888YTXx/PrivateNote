@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -18,6 +19,11 @@ import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredExc
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,7 +36,8 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authorizationManager: BiometricAuthorizationManager,
-    private val toastManager: ToastManager
+    private val toastManager: ToastManager,
+    private val deepLinkController: DeepLinkController
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
@@ -160,5 +167,21 @@ class MainActivityViewModel @Inject constructor(
 
     suspend fun isHaveAlpha(image: Bitmap) : Boolean {
         return image.hasAlpha()
+    }
+
+    fun registerTodoDeepLink(intent: Intent?) {
+        intent.ifNotNull {
+            val startId = it.getIntExtra(OpenTodoInAppAction.START_ID_KEY,-1)
+            if(startId == -1) return@ifNotNull
+            val todo = it.getParcelableExtra<ToDoItem>(OpenTodoInAppAction.TODO_GET_KEY)
+            if(deepLinkController.getDeepLink()?.idDeepLink == startId) return@ifNotNull
+            deepLinkController.registerDeepLink(
+                DeepLink.TodoDeepLink(
+                    startId,
+                    todo
+                )
+            )
+
+        }
     }
 }
