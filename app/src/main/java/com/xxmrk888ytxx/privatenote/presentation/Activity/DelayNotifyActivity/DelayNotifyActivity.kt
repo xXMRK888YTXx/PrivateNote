@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.DelayNotifyActivity
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -33,11 +32,10 @@ import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
-import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
@@ -92,7 +90,7 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
     Dialog(onDismissRequest = { delayDialogController.onDismissRequest() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardNoteColor,
+            backgroundColor = ThemeManager.CardNoteColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(
@@ -116,8 +114,8 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
                                     delayDialogController.changeCurrentSelectedTime(it)
                                 },
                                 colors = RadioButtonDefaults.colors(
-                                    selectedColor = FloatingButtonColor,
-                                    unselectedColor =FloatingButtonColor
+                                    selectedColor = SecondaryColor,
+                                    unselectedColor =SecondaryColor
                                 ),
                                 modifier = Modifier.padding(end = 10.dp)
                             )

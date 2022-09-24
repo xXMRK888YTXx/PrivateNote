@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 
 @Composable
 fun WarmingText(text:String) {

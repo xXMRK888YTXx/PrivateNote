@@ -22,9 +22,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.theme.CursorColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.ErrorColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
 
 @Composable
 fun PasswordEditText(titleText: MutableState<String>,
@@ -53,7 +54,8 @@ fun PasswordEditText(titleText: MutableState<String>,
             focusedBorderColor = SearchColor,
             focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
             cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+            unfocusedLabelColor = PrimaryFontColor.copy(0.6f),
+            errorBorderColor = ErrorColor
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,

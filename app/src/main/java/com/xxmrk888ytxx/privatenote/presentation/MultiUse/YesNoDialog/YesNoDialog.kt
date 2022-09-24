@@ -17,10 +17,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.TitleHintColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
 
 @Composable
 fun YesNoDialog(
@@ -77,7 +77,7 @@ fun YesNoDialog(
                     }
                     OutlinedButton(
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = FloatingButtonColor,
+                            backgroundColor = SecondaryColor,
                         ),
                         onClick = {
                             onConfirm()

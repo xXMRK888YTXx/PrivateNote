@@ -19,8 +19,8 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
-import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -131,8 +131,8 @@ fun BottomBar(
                     modifier = Modifier.size(20.dp)
                 )},
                 label = { Text(text = it.name)},
-                selectedContentColor = Color.White,
-                unselectedContentColor = Color.White.copy(0.4f),
+                selectedContentColor = PrimaryFontColor,
+                unselectedContentColor = PrimaryFontColor.copy(0.4f),
                 alwaysShowLabel = true,
                 selected = it.id == pageState.currentPage,
                 onClick = {it.onClick()}

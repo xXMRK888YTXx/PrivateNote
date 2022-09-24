@@ -36,7 +36,9 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
-import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeHolder
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,6 +57,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(ThemeManager.systemThemeId)
         super.onCreate(savedInstanceState)
         val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {

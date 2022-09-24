@@ -52,7 +52,16 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
-import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -493,9 +502,9 @@ fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
                             &&!repitPasswordText.value.isEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = PrimaryFontColor,
-                        disabledContentColor = Color.Black.copy(0.3f),
-                        disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                        backgroundColor = largeButtonColor,
+                        disabledContentColor = largeButtonColor.copy(0.3f),
+                        disabledBackgroundColor = largeButtonColor.copy(0.3f)
                         )
                 ){
                     Text(text = stringResource(R.string.Encrypt),
@@ -630,9 +639,9 @@ fun DecriptDialog(editNoteViewModel: EditNoteViewModel, navController: NavContro
                         shape = RoundedCornerShape(50),
                         enabled = passwordText.value.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = PrimaryFontColor,
-                            disabledContentColor = Color.Black.copy(0.3f),
-                            disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                            backgroundColor = largeButtonColor,
+                            disabledContentColor = largeButtonColor.copy(0.3f),
+                            disabledBackgroundColor = largeButtonColor.copy(0.3f)
                         )
                     ){
                         Text(text = stringResource(R.string.Decrypt),
@@ -697,7 +706,7 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                         }
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = FloatingButtonColor,
+                                backgroundColor = SecondaryColor,
                             ),
                             onClick = {
                                 editNoteViewModel.dialogShowState.value = ShowDialogState.None
@@ -861,7 +870,7 @@ fun FilesDialog(
                                 Box(
                                     modifier = Modifier
                                         .clip(CircleShape)
-                                        .background(FloatingButtonColor)
+                                        .background(SecondaryColor)
                                         .size(40.dp),
                                     contentAlignment = Alignment.CenterEnd
                                 ) {

@@ -8,4 +8,8 @@
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:navigationBarColor">@color/MainBackGroundColor</item>
     </style>
+    <style name="Theme.PrivateNote_White" parent="Theme.PrivateNote">
+        <item name="android:statusBarColor">#C7C0C0</item>
+        <item name="android:navigationBarColor">@color/MainBackGroundColor_White</item>
+    </style>
 </resources>

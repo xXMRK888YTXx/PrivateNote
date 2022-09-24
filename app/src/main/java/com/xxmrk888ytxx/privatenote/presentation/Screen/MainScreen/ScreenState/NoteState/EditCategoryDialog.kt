@@ -24,7 +24,11 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
 
 @Composable
 fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category? = null) {
@@ -149,8 +153,8 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                         }
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = FloatingButtonColor,
-                                disabledBackgroundColor = FloatingButtonColor.copy(0.3f)
+                                backgroundColor = SecondaryColor,
+                                disabledBackgroundColor = SecondaryColor.copy(0.3f)
                             ),
                             enabled = nameCategoryFieldText.value.isNotEmpty(),
                             onClick = {

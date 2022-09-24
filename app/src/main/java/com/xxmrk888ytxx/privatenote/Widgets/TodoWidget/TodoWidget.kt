@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.core.DataStore
@@ -13,10 +11,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.glance.*
-import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
-import androidx.glance.action.toMutableParameters
 import androidx.glance.appwidget.*
 import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.layout.*
@@ -34,11 +30,9 @@ import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenAppAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
-import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import kotlinx.coroutines.flow.map
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import java.io.File
 
 class TodoWidget : GlanceAppWidget() {
@@ -171,8 +165,8 @@ class TodoWidget : GlanceAppWidget() {
                             )
                         )),
                     colors = CheckBoxColors(
-                        checkedColor = ColorProvider(FloatingButtonColor),
-                        uncheckedColor = ColorProvider(FloatingButtonColor),
+                        checkedColor = ColorProvider(SecondaryColor),
+                        uncheckedColor = ColorProvider(SecondaryColor),
                     )
                 )
                 Text(text = it.todoText,

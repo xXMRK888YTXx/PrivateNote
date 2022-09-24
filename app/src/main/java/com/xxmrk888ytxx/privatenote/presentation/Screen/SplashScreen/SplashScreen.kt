@@ -25,9 +25,10 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
-import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -119,7 +120,7 @@ fun FingerPrintButton(onAuthorization: (callBack: BiometricPrompt.Authentication
         modifier = Modifier
             .size(60.dp)
             .clip(RoundedCornerShape(40))
-            .background(SecondoryFontColor)
+            .background(largeButtonColor)
     ) {
         Icon(painter = painterResource(R.drawable.ic_fingerprint),
             contentDescription = "",
@@ -174,9 +175,9 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
             shape = RoundedCornerShape(50),
             enabled = password.value.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = PrimaryFontColor,
-                disabledContentColor = Color.Black.copy(0.3f),
-                disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                backgroundColor = largeButtonColor,
+                disabledContentColor = largeButtonColor.copy(0.3f),
+                disabledBackgroundColor = largeButtonColor.copy(0.3f)
             )
         ){
             Text(text = stringResource(R.string.Login),

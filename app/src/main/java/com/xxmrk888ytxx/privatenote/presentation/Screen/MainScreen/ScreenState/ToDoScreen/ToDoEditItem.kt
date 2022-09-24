@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.
 
 
 import androidx.compose.ui.graphics.Color
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 
 data class ToDoEditItem(
     val icon:Int,

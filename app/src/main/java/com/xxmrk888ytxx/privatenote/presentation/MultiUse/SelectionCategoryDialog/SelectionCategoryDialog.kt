@@ -21,10 +21,10 @@ import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.TitleHintColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
 
 @Composable
 fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController: SelectionCategoryController)
@@ -121,8 +121,8 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                 }
                 OutlinedButton(
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = FloatingButtonColor,
-                        disabledBackgroundColor = FloatingButtonColor.copy(0.4f)
+                        backgroundColor = SecondaryColor,
+                        disabledBackgroundColor = SecondaryColor.copy(0.4f)
                     ),
                     onClick = {
                         dialogController.onConfirmed()

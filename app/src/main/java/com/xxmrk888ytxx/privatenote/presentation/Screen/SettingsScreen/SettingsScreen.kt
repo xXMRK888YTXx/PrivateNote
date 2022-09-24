@@ -25,9 +25,10 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
-import com.xxmrk888ytxx.privatenote.presentation.theme.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 import kotlinx.coroutines.launch
 
 @Composable
@@ -125,8 +126,8 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
                     shape = RoundedCornerShape(50),
                     enabled = password.value.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = PrimaryFontColor,
-                        disabledContentColor = Color.Black.copy(0.3f),
+                        backgroundColor = largeButtonColor,
+                        disabledContentColor = largeButtonColor.copy(0.3f),
                         disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
                     )
                 ){

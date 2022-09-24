@@ -45,7 +45,14 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenCon
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
-import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Yellow
 import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -148,7 +155,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         ToDoEditItem(
             icon = R.drawable.ic_calendar,
             activate = currentToDoTime.value != null,
-            activateColor = FloatingButtonColor
+            activateColor = SecondaryColor
         ) {
             if(currentToDoTime.value == null)
             toDoViewModel.showDataPickerDialog(context)
@@ -226,8 +233,8 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                     Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.fillMaxWidth()) {
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = FloatingButtonColor,
-                                disabledBackgroundColor = FloatingButtonColor.copy(0.3f)
+                                backgroundColor = SecondaryColor,
+                                disabledBackgroundColor = SecondaryColor.copy(0.3f)
                             ),
                             enabled = textField.value.isNotEmpty(),
                             onClick = {
@@ -472,9 +479,9 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 onCheckedChange = { toDoViewModel.changeMarkStatus(it, todo.id) },
                 modifier = Modifier.padding(start = 0.dp),
                 colors = CheckboxDefaults.colors(
-                    checkedColor = FloatingButtonColor,
+                    checkedColor = SecondaryColor,
                     checkmarkColor = PrimaryFontColor,
-                    uncheckedColor = FloatingButtonColor
+                    uncheckedColor = SecondaryColor
                 )
             )
             if (todo.isImportant) {
@@ -619,7 +626,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                                 notifyEnabled.value = it
                             },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = FloatingButtonColor,
+                                checkedThumbColor = SecondaryColor,
                                 uncheckedThumbColor = SecondoryFontColor
                             ),
                             modifier = Modifier.padding(start = 10.dp)
@@ -670,7 +677,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                             },
                             enabled = notifyEnabled.value,
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = FloatingButtonColor,
+                                checkedThumbColor = SecondaryColor,
                                 uncheckedThumbColor = SecondoryFontColor
                             ),
                             modifier = Modifier.padding(start = 10.dp)

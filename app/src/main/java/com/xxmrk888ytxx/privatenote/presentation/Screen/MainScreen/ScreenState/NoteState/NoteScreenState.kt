@@ -45,7 +45,16 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
-import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SelectedCategoryColor
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -531,9 +540,9 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                                     },
                                     modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
                                     colors = CheckboxDefaults.colors(
-                                        checkedColor = FloatingButtonColor,
+                                        checkedColor = SecondaryColor,
                                         checkmarkColor = PrimaryFontColor,
-                                        uncheckedColor = FloatingButtonColor
+                                        uncheckedColor = SecondaryColor
                                     )
 
                                 )
@@ -630,7 +639,7 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
         )
         OutlinedButton(
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = FloatingButtonColor,
+                backgroundColor = SecondaryColor,
             ),
             onClick = {
                 noteStateViewModel.showEditCategoryDialog()
@@ -821,7 +830,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                     Text(
                         text = it.title,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.Bold,
                         color = backGround,
                         modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                     )
@@ -842,7 +851,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                         Text(
                             text = stringResource(R.string.Categoryes),
                             modifier = Modifier.padding(start = 15.dp, top = 10.dp),
-                            fontWeight = FontWeight.Medium,
+                            fontWeight = FontWeight.W800,
                             color = SecondoryFontColor,
                             fontSize = 16.sp
                         )
@@ -856,8 +865,8 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                                         noteStateViewModel.showEditCategoryDialog()
                                     }
                                     .padding(start = 15.dp, top = 10.dp, end = 15.dp),
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Cyan,
+                                fontWeight = FontWeight.W800,
+                                color = SelectedCategoryColor,
                                 textAlign = TextAlign.End,
                                 fontSize = 16.sp
                             )

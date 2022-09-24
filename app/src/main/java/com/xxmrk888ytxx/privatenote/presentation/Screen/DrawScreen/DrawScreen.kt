@@ -33,9 +33,9 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
-import com.xxmrk888ytxx.privatenote.presentation.theme.CardNoteColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.FloatingButtonColor
-import com.xxmrk888ytxx.privatenote.presentation.theme.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
 
@@ -273,8 +273,8 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 },
                     valueRange = 1f..100f,
                     colors = SliderDefaults.colors(
-                        thumbColor = FloatingButtonColor,
-                        activeTrackColor = FloatingButtonColor
+                        thumbColor = SecondaryColor,
+                        activeTrackColor = SecondaryColor
                     )
                 )
             }

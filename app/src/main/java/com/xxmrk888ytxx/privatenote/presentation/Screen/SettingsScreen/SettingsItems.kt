@@ -34,7 +34,15 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingTex
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
-import com.xxmrk888ytxx.privatenote.presentation.theme.*
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 
 
 @Composable
@@ -58,7 +66,7 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = FloatingButtonColor,
+                    checkedThumbColor = SecondaryColor,
                     uncheckedThumbColor = SecondoryFontColor
                 ),
             )
@@ -87,7 +95,7 @@ fun SplashScreenSettings(currentState: State<Boolean>,
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = FloatingButtonColor,
+                    checkedThumbColor = SecondaryColor,
                     uncheckedThumbColor = SecondoryFontColor
                 ),
             )
@@ -306,7 +314,7 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = FloatingButtonColor,
+                    checkedThumbColor = SecondaryColor,
                     uncheckedThumbColor = SecondoryFontColor
                 ),
             )
@@ -345,9 +353,9 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
                             &&repitPassword.value.isNotEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = PrimaryFontColor,
-                        disabledContentColor = Color.Black.copy(0.3f),
-                        disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                        backgroundColor = largeButtonColor,
+                        disabledContentColor = largeButtonColor.copy(0.3f),
+                        disabledBackgroundColor = largeButtonColor.copy(0.3f)
                     )
                 ){
                     Text(text = stringResource(R.string.Confirm),
@@ -452,7 +460,7 @@ fun BiometricAuthorizationSettings(
                        onChangeBioMetricAuthorizationState(it)
                    },
                    colors = SwitchDefaults.colors(
-                       checkedThumbColor = FloatingButtonColor,
+                       checkedThumbColor = SecondaryColor,
                        uncheckedThumbColor = SecondoryFontColor
                    ),
                )
@@ -485,7 +493,7 @@ fun LockWhenLeaveSettings(
                        onChangeState(it)
                    },
                    colors = SwitchDefaults.colors(
-                       checkedThumbColor = FloatingButtonColor,
+                       checkedThumbColor = SecondaryColor,
                        uncheckedThumbColor = SecondoryFontColor
                    ),
                )
