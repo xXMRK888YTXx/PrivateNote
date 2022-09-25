@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.MainScreen.ToDoS
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
@@ -33,9 +34,10 @@ class ToDoViewModelTest {
     private val notifyTaskManager = mockk<NotifyTaskManager>(relaxed = true)
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
     private val notificationAppManager = mockk<NotificationAppManager>(relaxed = true)
+    private val deepLinkController = mockk<DeepLinkController>(relaxed = true)
     @Before
     fun init() {
-        viewModel = ToDoViewModel(toastManager,toDoRepository,notifyTaskManager,settingsRepository,notificationAppManager)
+        viewModel = ToDoViewModel(toastManager,toDoRepository,notifyTaskManager,settingsRepository,notificationAppManager,deepLinkController)
     }
 
     @Test
