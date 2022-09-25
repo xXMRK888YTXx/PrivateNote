@@ -9,6 +9,8 @@ object ThemeHolder {
         return object : AppTheme {
             override val systemThemeId: Int
                 get() = R.style.Theme_PrivateNote
+            override val themeId: Int
+                get() = ThemeManager.BLACK_THEME
             override val MainBackGroundColor: Color
                 get() = Color(0xFF121212)
             override val SearchColor: Color
@@ -44,6 +46,8 @@ object ThemeHolder {
         return object : AppTheme {
             override val systemThemeId: Int
                 get() = R.style.Theme_PrivateNote_White
+            override val themeId: Int
+                get() = ThemeManager.WHITE_THEME
             override val MainBackGroundColor: Color
                 get() = Color(0xFFF7F4F4)
             override val SearchColor: Color

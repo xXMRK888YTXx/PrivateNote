@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 interface AppTheme {
     val systemThemeId:Int
+    val themeId:Int
     val MainBackGroundColor:Color
     val SearchColor:Color
     val CursorColor:Color

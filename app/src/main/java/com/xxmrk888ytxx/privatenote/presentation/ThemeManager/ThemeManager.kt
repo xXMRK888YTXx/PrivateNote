@@ -20,6 +20,8 @@ object ThemeManager : ThemeProvider {
 
     override val systemThemeId: Int
         get() = theme.value.systemThemeId
+    override val themeId: Int
+        get() = theme.value.themeId
     override val MainBackGroundColor: Color
         get() = theme.value.MainBackGroundColor
     override val SearchColor: Color
@@ -48,4 +50,7 @@ object ThemeManager : ThemeProvider {
         get() = theme.value.ErrorColor
     override val largeButtonColor: Color
         get() = theme.value.largeButtonColor
+
+    const val BLACK_THEME = 1
+    const val WHITE_THEME = 2
 }
