@@ -84,7 +84,6 @@ class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
 }
 
 @Composable
-@MustBeLocalization
 fun DelayDialog(delayDialogController: DelayDialogController) {
     val timeList = delayDialogController.getDelayTimeList()
     Dialog(onDismissRequest = { delayDialogController.onDismissRequest() }) {

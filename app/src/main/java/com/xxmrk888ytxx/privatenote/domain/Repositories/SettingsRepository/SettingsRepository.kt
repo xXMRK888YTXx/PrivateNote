@@ -54,4 +54,8 @@ interface SettingsRepository {
     suspend fun setSaveLockTime(time:Long?)
 
     fun getSaveLockTime() : Flow<Long?>
+
+    fun getApplicationThemeId() : Flow<Int>
+
+    suspend fun setApplicationThemeId(themeId:Int)
 }

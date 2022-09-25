@@ -10,8 +10,4 @@
         <item name="android:windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="android:windowSplashScreenAnimationDuration">0</item>
     </style>
-    <style name="Theme.PrivateNote_White" parent="Theme.PrivateNote">
-        <item name="android:statusBarColor">#C7C0C0</item>
-        <item name="android:navigationBarColor">@color/MainBackGroundColor_White</item>
-    </style>
 </resources>

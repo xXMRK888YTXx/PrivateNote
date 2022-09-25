@@ -6,8 +6,20 @@ import androidx.compose.ui.graphics.Color
 import com.xxmrk888ytxx.privatenote.R
 
 object ThemeManager : ThemeProvider {
+    const val SYSTEM_THEME = -1
+    const val BLACK_THEME = 1
+    const val WHITE_THEME = 2
+    private val themes = mapOf<Int,AppTheme>(
+        BLACK_THEME to ThemeHolder.getBlackTheme(),
+        WHITE_THEME to ThemeHolder.getWhiteTheme()
+    )
     override fun setupTheme(theme: AppTheme) {
         this.theme.value = theme
+    }
+
+    override fun setupTheme(themeId: Int) {
+        val theme = themes.get(themeId) ?: ThemeHolder.getBlackTheme()
+        setupTheme(theme)
     }
 
     private fun getDefaultTheme(): AppTheme {
@@ -51,6 +63,4 @@ object ThemeManager : ThemeProvider {
     override val categoryColorAlphaNoteCard:Float
         get() = theme.value.categoryColorAlphaNoteCard
 
-    const val BLACK_THEME = 1
-    const val WHITE_THEME = 2
 }

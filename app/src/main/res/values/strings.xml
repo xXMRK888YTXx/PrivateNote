@@ -150,4 +150,9 @@
     <string name="Thirty_minutes">30 minutes</string>
     <string name="One_hour">1 hour</string>
     <string name="Three_hours">3 hours</string>
+    <string name="App_theme">App Theme</string>
+    <string name="Themes">Themes</string>
+    <string name="System_theme">System theme</string>
+    <string name="White_theme">Light theme</string>
+    <string name="Black_theme">Dark theme</string>
 </resources>

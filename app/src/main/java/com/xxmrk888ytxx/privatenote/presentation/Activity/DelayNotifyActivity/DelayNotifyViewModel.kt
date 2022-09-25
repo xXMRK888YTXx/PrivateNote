@@ -43,7 +43,6 @@ class DelayNotifyViewModel @Inject constructor(
     private var currentTask:IntentNotifyTask? = null
     private var notificationId = -1
 
-    @MustBeLocalization
     fun getTimeList() : List<DelayTime> {
         return listOf(
             DelayTime(

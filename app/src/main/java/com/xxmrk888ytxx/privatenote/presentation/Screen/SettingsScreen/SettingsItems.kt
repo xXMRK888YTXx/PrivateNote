@@ -29,11 +29,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
@@ -607,6 +610,34 @@ fun TimerLockWhenLeave(
         }
     }
 }
+
+@Composable
+fun ToThemeSettingsScreenButton(navController: NavController) {
+    Row(Modifier.fillMaxWidth().clickable {
+        navController.navigate(Screen.ThemeSettingsScreen.route) {launchSingleTop = true}
+    },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.App_theme),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable

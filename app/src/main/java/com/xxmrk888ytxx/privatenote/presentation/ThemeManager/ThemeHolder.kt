@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.xxmrk888ytxx.privatenote.App
 import com.xxmrk888ytxx.privatenote.R
 
-object ThemeHolder {
+internal object ThemeHolder {
     fun getBlackTheme() : AppTheme {
         return object : AppTheme {
             override val systemThemeId: Int

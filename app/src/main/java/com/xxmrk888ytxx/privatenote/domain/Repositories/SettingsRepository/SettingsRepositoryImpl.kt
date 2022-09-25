@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -30,6 +31,7 @@ class SettingsRepositoryImpl (
     private val lockWhenLeaveState = booleanPreferencesKey("LockWhenLeaveState")
     private val lockWhenLeaveTime = intPreferencesKey("lockWhenLeaveTime")
     private val saveLockTime = longPreferencesKey("saveLockTime")
+    private val applicationTheme = intPreferencesKey("ApplicationTheme")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -197,6 +199,18 @@ class SettingsRepositoryImpl (
     override fun getSaveLockTime(): Flow<Long?> = runBlocking(Dispatchers.IO) {
         context.dataStore.data.map {
            it[saveLockTime]
+        }
+    }
+
+    override fun getApplicationThemeId(): Flow<Int> = runBlocking(Dispatchers.IO) {
+        context.dataStore.data.map {
+            it[applicationTheme] ?: ThemeManager.SYSTEM_THEME
+        }
+    }
+
+    override suspend fun setApplicationThemeId(themeId: Int) {
+        context.dataStore.edit {
+            it[applicationTheme] = themeId
         }
     }
 }

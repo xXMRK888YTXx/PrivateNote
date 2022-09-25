@@ -6,4 +6,5 @@ sealed class Screen(val route:String) {
     object EditNoteScreen : Screen("EditNoteScreen")
     object SettingsScreen : Screen("SettingsScreen")
     object DrawScreen : Screen("DrawScreen")
+    object ThemeSettingsScreen : Screen("ThemeSettingsScreen")
 }

@@ -9,4 +9,5 @@ interface ActivityController {
     suspend fun clearShareDir()
     fun changeOrientationLockState(state:Boolean)
     fun openAlarmSettings()
+    fun notifyAppThemeChanged()
 }

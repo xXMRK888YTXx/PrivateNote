@@ -27,18 +27,22 @@ import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
+import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeHolder
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SYSTEM_THEME
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,13 +56,14 @@ class MainActivity : AppCompatActivity(), ActivityController {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
+    @Inject lateinit var settingsRepository: SettingsRepository
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(ThemeManager.systemThemeId)
         super.onCreate(savedInstanceState)
+        notifyAppThemeChanged()
         val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {
             val locale = Locale(languageCode)
@@ -109,11 +114,16 @@ class MainActivity : AppCompatActivity(), ActivityController {
                             navController = navController,
                             activityController = this@MainActivity,
                         ) }
+                    composable(Screen.ThemeSettingsScreen.route) {
+                        ThemeSettingsScreen(
+                            navController = navController,
+                            activityController = this@MainActivity
+                        )
+                    }
                 }
             }
         }
     }
-
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
         val executor = ContextCompat.getMainExecutor(this)
         mainActivityViewModel.biometricAuthorizationRequest(this,executor,callBack)
@@ -200,6 +210,29 @@ class MainActivity : AppCompatActivity(), ActivityController {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
+        }
+    }
+
+    override fun notifyAppThemeChanged() {
+        val themeId = settingsRepository.getApplicationThemeId().getData()
+        if(themeId == SYSTEM_THEME) {
+            when (resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    ThemeManager.setupTheme(ThemeManager.BLACK_THEME)
+                    setTheme(ThemeManager.systemThemeId)
+                }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    ThemeManager.setupTheme(ThemeManager.WHITE_THEME)
+                    setTheme(ThemeManager.systemThemeId)
+                }
+                Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    ThemeManager.setupTheme(ThemeManager.BLACK_THEME)
+                    setTheme(ThemeManager.systemThemeId)
+                }
+            }
+        }else {
+            ThemeManager.setupTheme(themeId)
+            setTheme(ThemeManager.systemThemeId)
         }
     }
 

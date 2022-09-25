@@ -19,12 +19,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
@@ -57,7 +59,7 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
             color = PrimaryFontColor,
             modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
         )
-        SettingsList(settingsViewModel)
+        SettingsList(settingsViewModel,navController)
     }
     if(languageDialogState.value) {
         LanguageChoseDialog(
@@ -142,7 +144,7 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
 }
 
 @Composable
-fun SettingsList(settingsViewModel: SettingsViewModel) {
+fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavController) {
     val context = LocalContext.current
     val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
     val appPasswordEnable = settingsViewModel.isAppPasswordEnable()
@@ -158,14 +160,18 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
-            listOf {
+            listOf( {
                 SplashScreenSettings(
                     settingsViewModel.getSplashScreenVisible().collectAsState(true),
                     onChangeState = {
                         settingsViewModel.changeSplashScreenVisible(it)
                     }
                 )
+            },
+            {
+                ToThemeSettingsScreenButton(navController)
             }
+            )
         ),
         SettingsCategory(
             stringResource(R.string.Localization),
@@ -250,8 +256,8 @@ fun SettingsList(settingsViewModel: SettingsViewModel) {
             itemsIndexed(category.settingsItems) { index, it ->
                 if(index == 0) {
                     Text(text = category.categoryName,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 20.sp,
                         color = SecondoryFontColor,
                         modifier = Modifier
                             .fillMaxWidth()

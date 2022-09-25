@@ -1,0 +1,125 @@
+package com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.glance.appwidget.lazy.items
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.TopBar
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.BLACK_THEME
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SYSTEM_THEME
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.WHITE_THEME
+
+@Composable
+fun ThemeSettingsScreen(
+    themeSettingsViewModel: ThemeSettingsViewModel = hiltViewModel(),
+    navController: NavController,
+    activityController: ActivityController
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        TopBar(navController)
+        Text(text = stringResource(R.string.Themes),
+            fontWeight = FontWeight.W800,
+            fontSize = 30.sp,
+            color = PrimaryFontColor,
+            modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
+        )
+        ThemeList(themeSettingsViewModel)
+    }
+    LaunchedEffect(key1 = Unit, block = {
+        themeSettingsViewModel.initActivityController(activityController)
+    })
+}
+
+@Composable
+fun ThemeList(themeSettingsViewModel: ThemeSettingsViewModel) {
+    val currentTheme = themeSettingsViewModel
+        .getCurrentApplicationThemeId()
+        .collectAsState(initial = SYSTEM_THEME)
+    val themeList = listOf(
+        ThemeType(
+            SYSTEM_THEME,
+            stringResource(R.string.System_theme)
+        ),
+        ThemeType(
+            WHITE_THEME,
+            stringResource(R.string.White_theme)
+        ),
+        ThemeType(
+            BLACK_THEME,
+            stringResource(R.string.Black_theme)
+        ),
+    )
+    LazyColumn(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        items(themeList) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        themeSettingsViewModel.updateApplicationTheme(it.themeId)
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(selected =it.themeId == currentTheme.value,
+                    onClick = {
+                        themeSettingsViewModel.updateApplicationTheme(it.themeId)
+                    },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = ThemeManager.SecondaryColor,
+                        unselectedColor = ThemeManager.SecondaryColor
+                    ),
+                )
+                Text(
+                    text = it.themeName,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = PrimaryFontColor,
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TopBar(navController: NavController) {
+    Row(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        IconButton(
+            onClick = {
+                navController.navigateUp()
+            }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back_arrow),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(30.dp),
+                tint = PrimaryFontColor
+            )
+        }
+    }
+}

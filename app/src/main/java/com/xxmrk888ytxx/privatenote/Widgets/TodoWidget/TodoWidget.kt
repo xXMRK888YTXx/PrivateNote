@@ -118,7 +118,6 @@ class TodoWidget : GlanceAppWidget() {
         }
 
     @Composable
-    @MustBeLocalization
     private fun EmptyTodoStub() {
         val context = LocalContext.current
         Column(
