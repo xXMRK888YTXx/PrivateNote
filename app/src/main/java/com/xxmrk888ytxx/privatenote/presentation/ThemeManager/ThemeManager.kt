@@ -11,10 +11,8 @@ object ThemeManager : ThemeProvider {
     }
 
     private fun getDefaultTheme(): AppTheme {
-       return ThemeHolder.getWhiteTheme()
+       return ThemeHolder.getBlackTheme()
     }
-
-
 
     private val theme:MutableState<AppTheme> = mutableStateOf(getDefaultTheme())
 
@@ -50,6 +48,8 @@ object ThemeManager : ThemeProvider {
         get() = theme.value.ErrorColor
     override val largeButtonColor: Color
         get() = theme.value.largeButtonColor
+    override val categoryColorAlphaNoteCard:Float
+        get() = theme.value.categoryColorAlphaNoteCard
 
     const val BLACK_THEME = 1
     const val WHITE_THEME = 2

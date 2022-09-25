@@ -45,6 +45,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
@@ -55,6 +56,8 @@ import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Prima
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SelectedCategoryColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.WHITE_THEME
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.themeId
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -436,7 +439,11 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                 //if (mode.value == SelectionScreenMode) 0.9f else 1f
                 val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
                 val backGroundColor =  category?.value?.getColor() ?: CardNoteColor
-                val alpha = if(category?.value?.getColor() != null) 0.25f else 1f
+                val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
+                val cardBackground = if(themeId == WHITE_THEME) MaterialTheme.colors.surface
+                else backGroundColor.copy(alpha)
+                val swapBoxBackground = if(themeId == WHITE_THEME) backGroundColor.copy(alpha)
+                else Color.Transparent.copy(0f)
                 val removeSwipeAction = SwipeAction(
                     icon = {
                         Icon(
@@ -500,7 +507,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                                     }
                                 ),
                             shape = RoundedCornerShape(15),
-                            backgroundColor = backGroundColor.copy(alpha)
+                            backgroundColor = cardBackground,
                         ) {
                             SwipeableActionsBox(
                                 startActions = if(mode.value != SelectionScreenMode)
@@ -508,7 +515,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                                 else listOf(),
                                 endActions = if(mode.value != SelectionScreenMode)
                                     listOf(removeSwipeAction) else listOf(),
-                                backgroundUntilSwipeThreshold = Color.Transparent.copy(0f),
+                                backgroundUntilSwipeThreshold = swapBoxBackground,
                                 swipeThreshold = 190.dp,
                             ) {
                                 if (!it.isEncrypted) {
@@ -659,13 +666,13 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
 @Composable
 fun DefaultNoteItem(note: Note) {
         Column(
-            Modifier
+            Modifier.fillMaxSize()
                 .padding(10.dp),
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Top,
         ) {
             if(note.title.isNotEmpty()) {
                 Text(text = note.title,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Black,
                     color = PrimaryFontColor,
@@ -673,7 +680,7 @@ fun DefaultNoteItem(note: Note) {
             }
             else {
                 Text(text = stringResource(R.string.No_title),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Medium,
                     color = PrimaryFontColor,
@@ -682,7 +689,7 @@ fun DefaultNoteItem(note: Note) {
             }
             if(note.text.getFirstChars() != "") {
                 Text(text = note.text.getFirstChars(),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     fontSize = 16.sp,
                     color = SecondoryFontColor,
                     maxLines = 1,
@@ -691,7 +698,7 @@ fun DefaultNoteItem(note: Note) {
             }
             else {
                 Text(text = stringResource(R.string.No_text),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier,
                     fontSize = 16.sp,
                     color = SecondoryFontColor,
                     maxLines = 1,
@@ -700,7 +707,7 @@ fun DefaultNoteItem(note: Note) {
                     )
             }
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = note.created_at.secondToData(LocalContext.current),

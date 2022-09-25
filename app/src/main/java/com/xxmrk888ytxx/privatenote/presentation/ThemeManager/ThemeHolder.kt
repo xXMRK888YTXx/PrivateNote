@@ -39,6 +39,8 @@ object ThemeHolder {
                 get() = Color(0xFFF50000)
             override val largeButtonColor: Color
                 get() = PrimaryFontColor
+            override val categoryColorAlphaNoteCard: Float
+                get() = 0.3f
         }
     }
 
@@ -76,6 +78,8 @@ object ThemeHolder {
                 get() = Color(0xFFFF0000)
             override val largeButtonColor: Color
                 get() = Color(0xFF807F7E)
+            override val categoryColorAlphaNoteCard: Float
+                get() = 0.5f
         }
     }
 }
