@@ -1,12 +1,12 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository
 
 data class BackupSettings(
-    val isEnableBackup:Boolean,
-    val isBackupNotEncryptedNote:Boolean,
-    val isBackupEncryptedNote:Boolean,
-    val isBackupNoteImages:Boolean,
-    val isBackupNoteAudio:Boolean,
-    val isBackupNoteCategory:Boolean,
-    val isBackupNotCompletedTodo:Boolean,
-    val isBackupCompletedTodo:Boolean,
+    val isEnableBackup:Boolean = false,
+    val isBackupNotEncryptedNote:Boolean = true,
+    val isBackupEncryptedNote:Boolean = true,
+    val isBackupNoteImages:Boolean = true,
+    val isBackupNoteAudio:Boolean = true,
+    val isBackupNoteCategory:Boolean = true,
+    val isBackupNotCompletedTodo:Boolean = true,
+    val isBackupCompletedTodo:Boolean = false,
 )

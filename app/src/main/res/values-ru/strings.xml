@@ -150,4 +150,17 @@
     <string name="System_theme">Системная тема</string>
     <string name="White_theme">Светлая тема</string>
     <string name="Black_theme">Тёмная тема</string>
+    <string name="Backup">Бэкаб</string>
+    <string name="Not_copy_encrypt_note">Копировать не зашифрованные заметки</string>
+    <string name="Copy_encrypt_note">Копировать зашифрованые заметки</string>
+    <string name="Copy_note_images">Копировать изображение в заметках</string>
+    <string name="Copy_notes_audio">Копировать аудио в заметках</string>
+    <string name="Copy_note_category">Копировать категории заметок</string>
+    <string name="Copy_not_сompleted_todo">Копировать незавершенные задачи</string>
+    <string name="Copy_сompleted_todo">Копировать завершенные задачи</string>
+    <string name="Backup_params">Параметры бэкапа</string>
+    <string name="Main_settings">Основные настройки</string>
+    <string name="Backup_is_active">Бэкаб активен</string>
+    <string name="Backup_path">Путь для бэкапа</string>
+    <string name="Not_set">Не задано</string>
 </resources>

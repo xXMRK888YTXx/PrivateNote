@@ -155,4 +155,17 @@
     <string name="System_theme">System theme</string>
     <string name="White_theme">Light theme</string>
     <string name="Black_theme">Dark theme</string>
+    <string name="Backup">Backup</string>
+    <string name="Not_copy_encrypt_note">Copy unencrypted notes</string>
+    <string name="Copy_encrypt_note">Copy encrypted notes</string>
+    <string name="Copy_note_images">Copy image in notes</string>
+    <string name="Copy_notes_audio">Copy audio in notes</string>
+    <string name="Copy_note_category">Copy note categories</string>
+    <string name="Copy_not_сompleted_todo">Copy incomplete tasks</string>
+    <string name="Copy_сompleted_todo">Copy completed tasks</string>
+    <string name="Backup_params">Backup options</string>
+    <string name="Main_settings">Main Settings</string>
+    <string name="Backup_is_active">Backup active</string>
+    <string name="Backup_path">Backup path</string>
+    <string name="Not_set">Not set</string>
 </resources>

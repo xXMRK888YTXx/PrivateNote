@@ -613,9 +613,11 @@ fun TimerLockWhenLeave(
 
 @Composable
 fun ToThemeSettingsScreenButton(navController: NavController) {
-    Row(Modifier.fillMaxWidth().clickable {
-        navController.navigate(Screen.ThemeSettingsScreen.route) {launchSingleTop = true}
-    },
+    Row(Modifier
+        .fillMaxWidth()
+        .clickable {
+            navController.navigate(Screen.ThemeSettingsScreen.route) { launchSingleTop = true }
+        },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -626,7 +628,9 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
             color = PrimaryFontColor,
         )
         Box(
-            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
             contentAlignment = Alignment.CenterEnd) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
@@ -639,22 +643,26 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
 }
 
 @Composable
-@MustBeLocalization
 fun ToBackupSettingsScreenButton(navController: NavController) {
-    Row(Modifier.fillMaxWidth().padding(top = 10.dp) .clickable {
-        navController.navigate(Screen.BackupSettingsScreen.route) {launchSingleTop = true}
-    },
+    Row(Modifier
+        .fillMaxWidth()
+        .padding(top = 10.dp)
+        .clickable {
+            navController.navigate(Screen.BackupSettingsScreen.route) { launchSingleTop = true }
+        },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Бекаб",
+            text = stringResource(R.string.Backup),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
             color = PrimaryFontColor,
         )
         Box(
-            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
             contentAlignment = Alignment.CenterEnd) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
