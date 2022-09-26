@@ -7,4 +7,5 @@ sealed class Screen(val route:String) {
     object SettingsScreen : Screen("SettingsScreen")
     object DrawScreen : Screen("DrawScreen")
     object ThemeSettingsScreen : Screen("ThemeSettingsScreen")
+    object BackupSettingsScreen : Screen("BackupSettingsScreen")
 }

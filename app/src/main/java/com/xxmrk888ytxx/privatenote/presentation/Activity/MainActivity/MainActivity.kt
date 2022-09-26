@@ -32,6 +32,7 @@ import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoIn
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreen
@@ -119,6 +120,9 @@ class MainActivity : AppCompatActivity(), ActivityController {
                             navController = navController,
                             activityController = this@MainActivity
                         )
+                    }
+                    composable(Screen.BackupSettingsScreen.route) {
+                        BackupSettingsScreen(navController = navController)
                     }
                 }
             }

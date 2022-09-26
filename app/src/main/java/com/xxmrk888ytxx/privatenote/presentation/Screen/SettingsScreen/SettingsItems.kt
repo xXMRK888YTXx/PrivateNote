@@ -638,6 +638,34 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
     }
 }
 
+@Composable
+@MustBeLocalization
+fun ToBackupSettingsScreenButton(navController: NavController) {
+    Row(Modifier.fillMaxWidth().padding(top = 10.dp) .clickable {
+        navController.navigate(Screen.BackupSettingsScreen.route) {launchSingleTop = true}
+    },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Бекаб",
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
 
 @Preview
 @Composable

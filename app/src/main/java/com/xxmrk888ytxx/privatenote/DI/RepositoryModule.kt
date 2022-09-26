@@ -16,6 +16,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepos
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
@@ -102,5 +104,11 @@ class RepositoryModule {
     @Singleton
     fun getTodoWidgetRepository(@ApplicationContext context: Context, toDoDao: ToDoDao,analytics: AnalyticsManager) : TodoWidgetRepository {
         return TodoWidgetRepositoryImpl(context,toDoDao,analytics)
+    }
+
+    @Provides
+    @Singleton
+    fun getBackupSettingsRepository(@ApplicationContext context: Context) : SettingsBackupRepository {
+        return SettingsBackupRepositoryImpl(context)
     }
 }

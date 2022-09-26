@@ -170,6 +170,9 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
             },
             {
                 ToThemeSettingsScreenButton(navController)
+            },
+            {
+                ToBackupSettingsScreenButton(navController)
             }
             )
         ),
