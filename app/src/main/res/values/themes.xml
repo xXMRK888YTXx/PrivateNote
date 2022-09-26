@@ -3,7 +3,7 @@
 
     <style name="Theme.PrivateNote" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/MainBackGroundColor</item>
-        <item name="colorPrimary">#0A6312</item>
+        <item name="colorPrimary">#2962FF</item>
         <item name="colorOnPrimary">@color/Blue</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
         <item name="android:navigationBarColor">@color/MainBackGroundColor</item>
