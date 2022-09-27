@@ -13,4 +13,5 @@ interface SettingsBackupRepository {
     suspend fun updateIsBackupNoteCategory(newState:Boolean)
     suspend fun updateIsBackupNotCompletedTodo(newState:Boolean)
     suspend fun updateIsBackupCompletedTodo(newState:Boolean)
+    suspend fun updateBackupPath(newPath:String)
 }

@@ -163,4 +163,6 @@
     <string name="Backup_is_active">Бэкаб активен</string>
     <string name="Backup_path">Путь для бэкапа</string>
     <string name="Not_set">Не задано</string>
+    <string name="Path_set">Путь указан</string>
+    <string name="Backup_path_setuped">Путь бэкапа установлен</string>
 </resources>

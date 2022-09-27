@@ -122,7 +122,10 @@ class MainActivity : AppCompatActivity(), ActivityController {
                         )
                     }
                     composable(Screen.BackupSettingsScreen.route) {
-                        BackupSettingsScreen(navController = navController)
+                        BackupSettingsScreen(
+                            navController = navController,
+                            activityController = this@MainActivity
+                        )
                     }
                 }
             }
@@ -237,6 +240,40 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }else {
             ThemeManager.setupTheme(themeId)
             setTheme(ThemeManager.systemThemeId)
+        }
+    }
+
+    override fun selectBackupFile(
+        onComplete: (path: String) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        try {
+            mainActivityViewModel.registerSelectBackupFileCallBacks(onComplete, onError)
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+                putExtra(Intent.EXTRA_TITLE, "Backup.json")
+                flags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+            }
+            selectBackupFileCallBack.launch(intent)
+        }catch (e:CallBackAlreadyRegisteredException) {
+            onError(e)
+        }
+    }
+
+
+    private val selectBackupFileCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK) {
+            val uri = it.data?.data ?: return@registerForActivityResult
+            try {
+                baseContext.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                baseContext.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                mainActivityViewModel.onSelectBackupFileCompleted(uri.toString())
+            }catch (e:Exception) {
+                mainActivityViewModel.onErrorSelectBackupFile(e)
+            }
         }
     }
 

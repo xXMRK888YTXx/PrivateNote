@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +26,7 @@ class SettingsBackupRepositoryImpl constructor(
     private val isBackupNoteCategoryKey = booleanPreferencesKey("isBackupNoteCategoryKey")
     private val isBackupNotCompletedTodoKey = booleanPreferencesKey("isBackupNotCompletedTodoKey")
     private val isBackupCompletedTodoKey = booleanPreferencesKey("isBackupCompletedTodoKey")
+    private val backupPathKey = stringPreferencesKey("backupPathKey")
 
     override fun getBackupSettings(): SharedFlow<BackupSettings> = settingsBackup
 
@@ -37,6 +39,7 @@ class SettingsBackupRepositoryImpl constructor(
         val isBackupNoteCategoryKey = getIsBackupNoteCategory().first()
         val isBackupNotCompletedTodoKey = getIsBackupNotCompletedTodo().first()
         val isBackupCompletedTodoKey = getIsBackupCompletedTodo().first()
+        val backupPath = getBackupPath().first()
         _settingsBackup.emit(BackupSettings(
             isEnableBackup,
             isBackupNotEncryptedNoteKey,
@@ -45,7 +48,8 @@ class SettingsBackupRepositoryImpl constructor(
             isBackupNoteAudioKey,
             isBackupNoteCategoryKey,
             isBackupNotCompletedTodoKey,
-            isBackupCompletedTodoKey
+            isBackupCompletedTodoKey,
+            backupPath
         ))
     }
 
@@ -135,6 +139,15 @@ class SettingsBackupRepositoryImpl constructor(
         }
     }
 
+    override suspend fun updateBackupPath(newPath: String) {
+        context.dataStore.edit {
+            it[backupPathKey] = newPath
+        }
+        notifySettingsChanges {
+            it.copy(backupPath = newPath)
+        }
+    }
+
     private fun getIsEnableBackup() : Flow<Boolean> {
         return context.dataStore.data.map {
             it[isEnableBackup] ?: false
@@ -179,6 +192,12 @@ class SettingsBackupRepositoryImpl constructor(
     private fun getIsBackupCompletedTodo() : Flow<Boolean> {
         return context.dataStore.data.map {
             it[isBackupCompletedTodoKey] ?: false
+        }
+    }
+
+    private fun getBackupPath() : Flow<String?> {
+        return context.dataStore.data.map {
+            it[backupPathKey]
         }
     }
 }

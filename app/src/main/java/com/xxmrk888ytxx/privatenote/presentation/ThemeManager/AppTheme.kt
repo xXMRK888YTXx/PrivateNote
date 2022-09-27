@@ -19,4 +19,5 @@ interface AppTheme : AppValues {
     val Yellow:Color
     val ErrorColor:Color
     val largeButtonColor:Color
+    val Green:Color
 }

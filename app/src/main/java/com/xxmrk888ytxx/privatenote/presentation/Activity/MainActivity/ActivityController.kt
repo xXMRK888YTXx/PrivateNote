@@ -10,4 +10,5 @@ interface ActivityController {
     fun changeOrientationLockState(state:Boolean)
     fun openAlarmSettings()
     fun notifyAppThemeChanged()
+    fun selectBackupFile(onComplete:(path:String) -> Unit,onError:(e:Exception) -> Unit = {})
 }

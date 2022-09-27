@@ -8,6 +8,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import java.util.*
 import javax.inject.Singleton

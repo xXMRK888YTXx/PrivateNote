@@ -168,4 +168,6 @@
     <string name="Backup_is_active">Backup active</string>
     <string name="Backup_path">Backup path</string>
     <string name="Not_set">Not set</string>
+    <string name="Path_set">Path set</string>
+    <string name="Backup_path_setuped">Backup path set</string>
 </resources>

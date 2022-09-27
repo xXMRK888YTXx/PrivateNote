@@ -9,4 +9,5 @@ data class BackupSettings(
     val isBackupNoteCategory:Boolean = true,
     val isBackupNotCompletedTodo:Boolean = true,
     val isBackupCompletedTodo:Boolean = false,
+    val backupPath:String? = null
 )

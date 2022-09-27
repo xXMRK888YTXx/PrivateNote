@@ -1,10 +1,12 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -19,15 +21,20 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 
 @Composable
 fun BackupSettingsScreen(
     backupSettingsViewModel: BackupSettingsViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    activityController: ActivityController
 ) {
     val settings = backupSettingsViewModel.getBackupSettings().collectAsState(BackupSettings())
+    LaunchedEffect(key1 = activityController, block = {
+        backupSettingsViewModel.initActivityController(activityController)
+    })
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -204,7 +211,12 @@ fun MainBackupSettings(
         }
     }
     Column(
-        modifier = Modifier.fillMaxWidth().padding(top = 5.dp,start = 10.dp, bottom = 10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, start = 10.dp, bottom = 10.dp)
+            .clickable {
+                backupSettingsViewModel.selectBackupFile()
+            },
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -231,13 +243,24 @@ fun MainBackupSettings(
                 )
             }
         }
-        Text(
-            text = stringResource(R.string.Not_set),
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            color = ThemeManager.SecondoryFontColor,
-            modifier = Modifier
-        )
+        if(settings.value.backupPath == null) {
+            Text(
+                text = stringResource(R.string.Not_set),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = ThemeManager.ErrorColor,
+                modifier = Modifier
+            )
+        }
+        else {
+            Text(
+                text = "${stringResource(R.string.Path_set)}",
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = ThemeManager.Green,
+                modifier = Modifier
+            )
+        }
     }
 }
 

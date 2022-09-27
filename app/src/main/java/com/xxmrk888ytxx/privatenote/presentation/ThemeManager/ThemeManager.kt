@@ -60,6 +60,8 @@ object ThemeManager : ThemeProvider {
         get() = theme.value.ErrorColor
     override val largeButtonColor: Color
         get() = theme.value.largeButtonColor
+    override val Green: Color
+        get() = theme.value.Green
     override val categoryColorAlphaNoteCard:Float
         get() = theme.value.categoryColorAlphaNoteCard
 
