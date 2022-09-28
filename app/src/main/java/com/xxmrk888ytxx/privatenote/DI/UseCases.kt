@@ -23,6 +23,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCa
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCaseImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -76,6 +78,12 @@ class UseCases {
         toDoRepository: ToDoRepository
     ) : GetTodoForBackupUseCase {
         return GetTodoForBackupUseCaseImpl(toDoRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getWriteBackupInFileUseCase(@ApplicationContext context: Context) : WriteBackupInFileUseCase {
+        return WriteBackupInFileUseCaseImpl(context)
     }
 
 }
