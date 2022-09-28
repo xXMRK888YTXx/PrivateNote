@@ -31,7 +31,6 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onEnabled(context: Context?) {
         super.onEnabled(context)
-        todoWidgetRepository.updateWidgetData()
     }
 
 }
