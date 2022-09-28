@@ -15,4 +15,5 @@ interface AudioRepository {
     suspend fun clearTempDir()
     fun getAudioList() : SharedFlow<List<Audio>>
     suspend fun isHaveAudios(noteId: Int) : Boolean
+    suspend fun getAudiosForBackup(noteId:List<Int>) : Map<Int,List<Audio>>
 }

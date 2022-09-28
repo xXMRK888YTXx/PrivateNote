@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
-import com.google.firebase.analytics.FirebaseAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ClearNoteImages_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
@@ -20,7 +19,6 @@ import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.*
@@ -117,6 +115,28 @@ class ImageRepositoryImpl @Inject constructor(
         val image = File(imageDir,"$imageId")
         image.delete()
         removeImageNotify(imageId)
+    }
+
+    override suspend fun getImagesFromBackup(noteId: List<Int>) : Map<Int,List<Image>> {
+        val map = mutableMapOf<Int,List<Image>>()
+        noteId.forEach {
+            map[it] = getImagesNoteById(it)
+        }
+        return map
+    }
+
+    private suspend fun getImagesNoteById(noteId: Int) : List<Image> {
+        val noteImagePath = getNoteImageDir(noteId,context)
+        val imageDir = File(noteImagePath)
+        val imageList = mutableListOf<Image>()
+        imageDir.listFiles()?.forEach {
+            val file = getImageFile(it.absolutePath)
+            val id:Long = it.fileNameToLong()
+            if(file != null&&id != 0L) {
+                imageList.add(Image(id,file))
+            }
+        }
+        return imageList
     }
 
 

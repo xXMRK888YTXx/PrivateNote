@@ -6,7 +6,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -143,5 +145,32 @@ class ImageRepositoryTest {
             }
         }
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getImageForBackup_add_Images_Expect_Return_All_Images() = runTest {
+        repo.addImage(getTestBitmap(),dirId)
+        repeat(5) {
+            repo.addImage(getTestBitmap(),dirId2)
+        }
+
+        val images =  repo.getImagesFromBackup(listOf(dirId,dirId2))
+
+        Assert.assertEquals(images.size,2)
+        Assert.assertEquals(1,images.get(dirId)?.size)
+        Assert.assertEquals(5,images.get(dirId2)?.size)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getAudiosForBackup_not_add_Audios_Expect_Return_Empty_Map() = runTest {
+        val images =  repo.getImagesFromBackup(listOf(dirId,dirId2))
+
+        Assert.assertEquals(2,images.size)
+        Assert.assertEquals(0,images.get(dirId)?.size)
+        Assert.assertEquals(0,images.get(dirId2)?.size)
+
+    }
+
     private fun getTestBitmap(size:Int = 8) = Bitmap.createBitmap(size,size,Bitmap.Config.ALPHA_8)
 }

@@ -75,6 +75,23 @@ class AudioRepositoryImpl @Inject constructor(
         return audioDir.listFiles()?.isNotEmpty() ?: false
     }
 
+    override suspend fun getAudiosForBackup(noteId: List<Int>): Map<Int,List<Audio>> {
+        val map = mutableMapOf<Int,List<Audio>>()
+        noteId.forEach {
+            map[it] = getAudioNoteById(it)
+        }
+        return map
+    }
+
+    private suspend fun getAudioNoteById(noteId: Int) : List<Audio> {
+        val audioDir = File(getAudioDir(noteId))
+        val audioList = mutableListOf<Audio>()
+        audioDir.listFiles()?.forEach {
+            audioList.add(getAudioFile(it))
+        }
+        return audioList
+    }
+
     override suspend fun notifyDeleteAudio(audioId: Long) {
         analyticsManager.sendEvent(NotifyDeleteAudio_Event,null)
         var newList = _audioFiles.first()

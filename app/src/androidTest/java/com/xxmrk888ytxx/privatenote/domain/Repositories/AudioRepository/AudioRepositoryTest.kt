@@ -9,7 +9,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -145,12 +147,38 @@ class AudioRepositoryTest {
         Assert.assertEquals(false,repo.isHaveAudios(dirId))
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getAudiosForBackup_add_Audio_Expect_Return_All_Audio() = runTest {
+        addAudio(dirId)
+        addAudio(dirId2,5)
+
+        val audios =  repo.getAudiosForBackup(listOf(dirId,dirId2))
+
+        Assert.assertEquals(audios.size,2)
+        Assert.assertEquals(1,audios.get(dirId)?.size)
+        Assert.assertEquals(5,audios.get(dirId2)?.size)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getAudiosForBackup_not_add_Audios_Expect_Return_Empty_Map() = runTest {
+        val audios =  repo.getAudiosForBackup(listOf(dirId,dirId2))
+
+        Assert.assertEquals(2,audios.size)
+        Assert.assertEquals(0,audios.get(dirId)?.size)
+        Assert.assertEquals(0,audios.get(dirId2)?.size)
+
+    }
+
     fun addAudio(noteId:Int, count:Int = 1) = runBlocking {
         repeat(count) {
             val audio = createAudioFile(noteId)
             repo.notifyNewAudio(audio)
         }
     }
+
+
     private fun getNoteDir(noteId:Int) : String {
         val contextWrapper = ContextWrapper(context)
         val rootDir = contextWrapper.getDir("Note_Audios", Context.MODE_PRIVATE)
@@ -174,4 +202,6 @@ class AudioRepositoryTest {
         }
         return Audio(id,file,0)
     }
+
+
 }

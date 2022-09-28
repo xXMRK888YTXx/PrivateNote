@@ -13,4 +13,5 @@ interface ImageRepository {
     suspend fun tempDirToImageDir(noteId: Int)
     suspend fun clearTempDir()
     suspend fun removeImage(noteId: Int,imageId:Long)
+    suspend fun getImagesFromBackup(noteId:List<Int>) : Map<Int,List<Image>>
 }
