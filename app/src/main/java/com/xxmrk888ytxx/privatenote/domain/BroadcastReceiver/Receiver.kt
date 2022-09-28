@@ -12,7 +12,6 @@ import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManagerImpl
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,8 +35,8 @@ class Receiver : BroadcastReceiver() {
                         task.todoText,
                         id = task.taskId,
                         intentNotifyTask = task,
-                        channel = if (task.isPriority) NotificationAppManagerImpl.PRIORITY_HIGH
-                        else NotificationAppManagerImpl.PRIORITY_DEFAULT
+                        channel = if (task.isPriority) NotificationAppManagerImpl.PRIORITY_HIGH_REMINDERS_CHANNELS
+                        else NotificationAppManagerImpl.PRIORITY_DEFAULT_REMINDERS_CHANNELS
                     )
                 }
                 notifyTaskManager.removeTask(task.taskId)

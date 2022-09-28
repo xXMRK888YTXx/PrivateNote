@@ -170,4 +170,6 @@
     <string name="Not_set">Not set</string>
     <string name="Path_set">Path set</string>
     <string name="Backup_path_setuped">Backup path set</string>
+    <string name="Backup_channel_name">Backup status notifications</string>
+    <string name="Backup_channel_description">Notifications appear in this channel at the backup status</string>
 </resources>

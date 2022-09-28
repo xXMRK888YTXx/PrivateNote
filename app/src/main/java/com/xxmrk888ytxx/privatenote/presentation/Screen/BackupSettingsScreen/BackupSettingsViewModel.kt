@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
+import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BackupSettingsViewModel @Inject constructor(
     private val settingsBackupRepository: SettingsBackupRepository,
-    private val toastManager: ToastManager
+    private val toastManager: ToastManager,
+    private val backupManager: BackupManager
 ): ViewModel() {
 
     fun getBackupSettings() = settingsBackupRepository.getBackupSettings()
@@ -90,6 +92,10 @@ class BackupSettingsViewModel @Inject constructor(
     fun initActivityController(activityController: ActivityController) {
         if(this.activityController != null) return
         this.activityController = activityController
+    }
+
+    fun startBackupNow() {
+        backupManager.startSingleBackup()
     }
 
 }

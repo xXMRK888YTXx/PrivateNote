@@ -22,6 +22,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 
@@ -260,6 +261,35 @@ fun MainBackupSettings(
                 color = ThemeManager.Green,
                 modifier = Modifier
             )
+        }
+    }
+    if(settings.value.isEnableBackup&&settings.value.backupPath != null) {
+        Row(Modifier
+            .fillMaxWidth()
+            .clickable {
+                backupSettingsViewModel.startBackupNow()
+            },
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Создать бэкап сейчас",
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                color = ThemeManager.PrimaryFontColor,
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
+                contentAlignment = Alignment.CenterEnd) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow),
+                    contentDescription = "",
+                    tint = ThemeManager.PrimaryFontColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }

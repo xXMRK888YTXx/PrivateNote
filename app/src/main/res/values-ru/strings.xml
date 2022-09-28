@@ -165,4 +165,6 @@
     <string name="Not_set">Не задано</string>
     <string name="Path_set">Путь указан</string>
     <string name="Backup_path_setuped">Путь бэкапа установлен</string>
+    <string name="Backup_channel_name">Уведомления о состоянии бэкапа</string>
+    <string name="Backup_channel_description">В этом канале появляются уведомления о состоянии бекапа</string>
 </resources>

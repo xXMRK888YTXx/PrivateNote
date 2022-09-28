@@ -22,8 +22,11 @@ class GetNotesForBackupUseCaseImpl(
         val allNotes = validateNotes(noteRepository.getAllNote().first(),settings)
         if(allNotes.isEmpty()) return emptyList()
         val noteIds = allNotes.map { it.id }
-        val images = imagesRepository.getImagesFromBackup(noteIds)
-        val audio = audioRepository.getAudiosForBackup(noteIds)
+
+        val images =if(settings.isBackupNoteImages) imagesRepository.getImagesFromBackup(noteIds)
+        else mapOf()
+        val audio = if(settings.isBackupNoteAudio) audioRepository.getAudiosForBackup(noteIds)
+        else mapOf()
         val noteBackupModels = mutableListOf<NoteBackupModel>()
         allNotes.forEach {
             val base64Images = mapImagesToBase64String(images.getOrElse(it.id){listOf()})

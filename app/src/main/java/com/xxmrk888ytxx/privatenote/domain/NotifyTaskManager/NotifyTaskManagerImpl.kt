@@ -91,8 +91,8 @@ class NotifyTaskManagerImpl @Inject constructor(
                 id = oldTask[index].taskId,
                 intentNotifyTask = IntentNotifyTask.fromTask(oldTask[index],
                     todo[index].todoText,todo[index].id),
-                channel = if(oldTask[index].isPriority) NotificationAppManagerImpl.PRIORITY_HIGH
-                else NotificationAppManagerImpl.PRIORITY_DEFAULT
+                channel = if(oldTask[index].isPriority) NotificationAppManagerImpl.PRIORITY_HIGH_REMINDERS_CHANNELS
+                else NotificationAppManagerImpl.PRIORITY_DEFAULT_REMINDERS_CHANNELS
             )
         }
         oldTask.forEach {

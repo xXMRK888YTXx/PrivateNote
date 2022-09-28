@@ -11,6 +11,7 @@ interface NotificationAppManager {
         id:Int = Random(System.currentTimeMillis()).nextInt(),
         intentNotifyTask: IntentNotifyTask,
         channel:String)
+    fun sendBackupStateNotification(title: String,text: String) : Int
     fun isHavePostNotificationPermission() : Boolean
     fun cancelNotification(notificationId:Int)
 }
