@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -24,6 +25,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
@@ -32,6 +35,7 @@ import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoIn
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen

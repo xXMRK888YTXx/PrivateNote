@@ -4,12 +4,21 @@ import android.content.Context
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
@@ -41,6 +50,32 @@ class UseCases {
     @Singleton
     fun getRemoveNotifyTaskIfTodoCompletedUseCase(notifyTaskRepository: NotifyTaskRepository) : RemoveNotifyTaskIfTodoCompletedUseCase {
         return RemoveNotifyTaskIfTodoCompletedUseCaseImpl(notifyTaskRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getGetNotesForBackupUseCase(
+        noteRepository: NoteRepository,
+        imageRepository: ImageRepository,
+        audioRepository: AudioRepository
+    ) : GetNotesForBackupUseCase {
+        return GetNotesForBackupUseCaseImpl(noteRepository,imageRepository,audioRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getGetCategoryForBackupUseCase(
+        categoryRepository: CategoryRepository
+    ) : GetCategoryForBackupUseCase {
+        return GetCategoryForBackupUseCaseImpl(categoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getTodoGetForBackupUseCase(
+        toDoRepository: ToDoRepository
+    ) : GetTodoForBackupUseCase {
+        return GetTodoForBackupUseCaseImpl(toDoRepository)
     }
 
 }

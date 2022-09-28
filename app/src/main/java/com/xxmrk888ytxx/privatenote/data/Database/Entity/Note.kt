@@ -1,6 +1,9 @@
 package com.xxmrk888ytxx.privatenote.data.Database.Entity
 
+import android.os.Parcelable
 import androidx.room.*
+import com.squareup.moshi.JsonClass
+import kotlinx.android.parcel.Parcelize
 
 @Entity(
     indices =[
@@ -17,6 +20,8 @@ import androidx.room.*
         )
     ]
 )
+@JsonClass(generateAdapter = true)
+@Parcelize
 data class Note(
     @PrimaryKey(autoGenerate = true) val id:Int = 0,
     val title:String,
@@ -25,4 +30,4 @@ data class Note(
     var isChosen:Boolean = false,
     var isEncrypted:Boolean = false,
     val category:Int? = null
-)
+) : Parcelable
