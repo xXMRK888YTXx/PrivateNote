@@ -194,10 +194,12 @@ fun Long.milliSecondToSecond() : String {
 }
 
 @Composable
-fun <T> MutableState<T>.Remember() = remember {this}
+fun <T> State<T>.Remember() = remember {this}
 
 fun Any?.runOnMainThread(Runnable: () -> Unit) {
     val handler = Handler(Looper.getMainLooper())
     handler.post { Runnable() }
 }
+
+fun <T> MutableState<T>.toState():State<T> = this
 

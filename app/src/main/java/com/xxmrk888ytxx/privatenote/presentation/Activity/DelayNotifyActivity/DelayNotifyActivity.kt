@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
@@ -89,7 +88,7 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
     Dialog(onDismissRequest = { delayDialogController.onDismissRequest() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = ThemeManager.CardNoteColor,
+            backgroundColor = ThemeManager.CardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(

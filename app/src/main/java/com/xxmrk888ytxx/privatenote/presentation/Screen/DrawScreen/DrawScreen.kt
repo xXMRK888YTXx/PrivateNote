@@ -33,7 +33,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import io.ak1.drawbox.DrawBox
@@ -128,7 +128,7 @@ fun SelectColorDialog(drawViewModel: DrawViewModel) {
     Dialog(onDismissRequest = { drawViewModel.hideSelectColorDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardNoteColor,
+            backgroundColor = CardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -180,7 +180,7 @@ fun SaveLoadDialog() {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20),
-            backgroundColor = CardNoteColor
+            backgroundColor = CardColor
         ) {
             Row(modifier = Modifier
                 .fillMaxWidth()

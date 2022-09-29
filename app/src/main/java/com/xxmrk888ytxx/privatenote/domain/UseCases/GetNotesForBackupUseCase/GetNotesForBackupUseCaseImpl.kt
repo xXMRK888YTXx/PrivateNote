@@ -11,6 +11,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
 import kotlinx.coroutines.flow.first
+import java.io.FileInputStream
 
 class GetNotesForBackupUseCaseImpl(
     private val noteRepository: NoteRepository,
@@ -72,7 +73,7 @@ class GetNotesForBackupUseCaseImpl(
         val base64List = mutableListOf<String>()
         audios.forEach {
             val file = it.file
-            val stream = file.openFileInput()
+            val stream = FileInputStream(file.openFileInput().fd)
             val bytes = stream.readBytes()
             stream.close()
             base64List.add(Base64.encodeToString(bytes,Base64.DEFAULT))

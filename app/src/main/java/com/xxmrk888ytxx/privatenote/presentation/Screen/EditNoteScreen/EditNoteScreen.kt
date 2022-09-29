@@ -52,7 +52,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
@@ -166,7 +166,7 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardNoteColor,
+            backgroundColor = CardColor,
             shape = RoundedCornerShape(20.dp)
         )
         {
@@ -670,7 +670,7 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(CardNoteColor),
+                        .background(CardColor),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
                     Text(
@@ -794,7 +794,7 @@ fun FilesDialog(
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardNoteColor,
+            backgroundColor = CardColor,
             shape = RoundedCornerShape(25.dp)
         ) {
             Column(

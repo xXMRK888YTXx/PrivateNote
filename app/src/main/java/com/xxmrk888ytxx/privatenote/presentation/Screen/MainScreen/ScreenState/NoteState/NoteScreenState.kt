@@ -46,7 +46,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
@@ -438,7 +438,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                 )
                 //if (mode.value == SelectionScreenMode) 0.9f else 1f
                 val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
-                val backGroundColor =  category?.value?.getColor() ?: CardNoteColor
+                val backGroundColor =  category?.value?.getColor() ?: CardColor
                 val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
                 val cardBackground = if(themeId == WHITE_THEME) MaterialTheme.colors.surface
                 else backGroundColor.copy(alpha)

@@ -167,4 +167,10 @@
     <string name="Backup_path_setuped">Путь бэкапа установлен</string>
     <string name="Backup_channel_name">Уведомления о состоянии бэкапа</string>
     <string name="Backup_channel_description">В этом канале появляются уведомления о состоянии бекапа</string>
+    <string name="Create_backup_now">Создать бэкап сейчас</string>
+    <string name="Restore_backup">Восстановить из бэкапа</string>
+    <string name="Restore_notes">Восстановить заметки</string>
+    <string name="Restore_category">Восстановить категории</string>
+    <string name="Restore_todo">Восстановить список дел</string>
+    <string name="Restore_backup_warming">Я понимаю, что старые данные выбранных категорий будут навсегда удалены!</string>
 </resources>

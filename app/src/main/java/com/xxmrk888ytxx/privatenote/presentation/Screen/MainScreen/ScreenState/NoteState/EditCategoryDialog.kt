@@ -24,7 +24,7 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
@@ -73,7 +73,7 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
             Card(
                 Modifier
                     .fillMaxWidth(),
-                backgroundColor = CardNoteColor,
+                backgroundColor = CardColor,
                 shape = RoundedCornerShape(25.dp)
             ) {
                 Column(

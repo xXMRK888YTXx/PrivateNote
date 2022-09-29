@@ -20,7 +20,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.Utils.milliSecondToSecond
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 
@@ -59,7 +59,7 @@ fun PlayerDialog(
     Dialog(onDismissRequest = { onHideDialog();controller.reset() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardNoteColor,
+            backgroundColor = CardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(

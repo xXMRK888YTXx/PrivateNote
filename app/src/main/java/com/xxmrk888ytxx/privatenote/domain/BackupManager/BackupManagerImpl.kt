@@ -18,4 +18,8 @@ class BackupManagerImpl constructor(
             .build()
         workManager.enqueue(work)
     }
+
+    override fun restoreBackup() {
+
+    }
 }

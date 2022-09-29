@@ -1,10 +1,17 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
+import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
+import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreParams
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
@@ -22,6 +29,46 @@ class BackupSettingsViewModel @Inject constructor(
 ): ViewModel() {
 
     fun getBackupSettings() = settingsBackupRepository.getBackupSettings()
+
+    private val restoreBackupDialogState:MutableState<Boolean> = mutableStateOf(false)
+
+    private val restoreParamsInDialog:MutableState<BackupRestoreParams?> = mutableStateOf(null)
+
+    private val currentBackupFileForRestore:MutableState<Uri?> = mutableStateOf(null)
+
+    private val userConfirmRemoveOldDataState:MutableState<Boolean> = mutableStateOf(false)
+
+    fun getUserConfirmRemoveOldDataState() = userConfirmRemoveOldDataState.toState()
+
+    fun updateUserConfirmRemoveOldDataState(newState: Boolean) {
+        userConfirmRemoveOldDataState.value = newState
+    }
+
+    fun getCurrentBackupFileForRestore() = currentBackupFileForRestore.toState()
+
+    fun getRestoreBackupDialogState():State<Boolean> = restoreBackupDialogState
+
+    fun getRestoreParamsInDialog():State<BackupRestoreParams?> = restoreParamsInDialog
+
+
+
+    fun updateRestoreParams(updatedParams:(BackupRestoreParams) -> BackupRestoreParams) {
+        restoreParamsInDialog.value.ifNotNull {
+            restoreParamsInDialog.value = updatedParams(it)
+        }
+    }
+
+    fun showRestoreBackupDialog() {
+        restoreParamsInDialog.value = BackupRestoreParams()
+        restoreBackupDialogState.value = true
+    }
+
+    fun hideRestoreBackupDialog() {
+        restoreBackupDialogState.value = false
+        userConfirmRemoveOldDataState.value = false
+        restoreParamsInDialog.value = null
+        currentBackupFileForRestore.value = null
+    }
 
     private var activityController:ActivityController? = null
 

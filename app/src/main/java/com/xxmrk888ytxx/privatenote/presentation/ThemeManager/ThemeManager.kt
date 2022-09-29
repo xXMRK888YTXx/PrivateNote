@@ -3,7 +3,6 @@ package com.xxmrk888ytxx.privatenote.presentation.ThemeManager
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import com.xxmrk888ytxx.privatenote.R
 
 object ThemeManager : ThemeProvider {
     const val SYSTEM_THEME = -1
@@ -38,8 +37,8 @@ object ThemeManager : ThemeProvider {
         get() = theme.value.SearchColor
     override val CursorColor: Color
         get() = theme.value.CursorColor
-    override val CardNoteColor: Color
-        get() = theme.value.CardNoteColor
+    override val CardColor: Color
+        get() = theme.value.CardColor
     override val DropDownMenuColor: Color
         get() = theme.value.DropDownMenuColor
     override val TitleHintColor: Color

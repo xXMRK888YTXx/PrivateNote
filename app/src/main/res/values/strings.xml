@@ -172,4 +172,10 @@
     <string name="Backup_path_setuped">Backup path set</string>
     <string name="Backup_channel_name">Backup status notifications</string>
     <string name="Backup_channel_description">Notifications appear in this channel at the backup status</string>
+    <string name="Create_backup_now">Create backup now</string>
+    <string name="Restore_backup">Restore from backup</string>
+    <string name="Restore_notes">Restore Notes</string>
+    <string name="Restore_category">Restore categories</string>
+    <string name="Restore_todo">Restore to-do list</string>
+    <string name="Restore_backup_warming">I understand that the old data of the selected categories will be permanently deleted!</string>
 </resources>

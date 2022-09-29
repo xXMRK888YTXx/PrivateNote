@@ -45,7 +45,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenCon
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardNoteColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
@@ -177,7 +177,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     ) {
         Card(modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            backgroundColor = CardNoteColor
+            backgroundColor = CardColor
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(value = textField.value, onValueChange = {
@@ -401,7 +401,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                                 }
                                 .animateItemPlacement(),
                             shape = RoundedCornerShape(15),
-                            backgroundColor = CardNoteColor
+                            backgroundColor = CardColor
                         ) {
                             SwipeableActionsBox(
                                 startActions = listOf(removeSwipeAction),
@@ -602,7 +602,7 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10),
-            backgroundColor = CardNoteColor
+            backgroundColor = CardColor
         ) {
             Column(modifier = Modifier
                 .fillMaxWidth()

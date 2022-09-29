@@ -8,7 +8,7 @@ interface AppTheme : AppValues {
     val MainBackGroundColor:Color
     val SearchColor:Color
     val CursorColor:Color
-    val CardNoteColor:Color
+    val CardColor:Color
     val DropDownMenuColor:Color
     val TitleHintColor:Color
     val SecondaryColor:Color

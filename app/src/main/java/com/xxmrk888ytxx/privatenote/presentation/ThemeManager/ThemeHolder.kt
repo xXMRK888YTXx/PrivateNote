@@ -17,7 +17,7 @@ internal object ThemeHolder {
                 get() = Color(0xFF333232)
             override val CursorColor: Color
                 get() = Color(0xFF1D1DBB)
-            override val CardNoteColor: Color
+            override val CardColor: Color
                 get() = Color(0xFF242424)
             override val DropDownMenuColor: Color
                 get() = Color(0xFF424141)
@@ -58,7 +58,7 @@ internal object ThemeHolder {
                 get() = Color(0xFFCCBEBE)
             override val CursorColor: Color
                 get() = Color(0xFF1D1DBB)
-            override val CardNoteColor: Color
+            override val CardColor: Color
                 get() = Color(0xFFE0DADA)
             override val DropDownMenuColor: Color
                 get() = Color(0xFFD8CBCB)
