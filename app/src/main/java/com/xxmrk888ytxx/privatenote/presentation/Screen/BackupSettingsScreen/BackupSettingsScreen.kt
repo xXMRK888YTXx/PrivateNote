@@ -223,7 +223,7 @@ fun MainBackupSettings(
             .fillMaxWidth()
             .padding(top = 5.dp, start = 10.dp, bottom = 10.dp)
             .clickable {
-                backupSettingsViewModel.selectBackupFile()
+                backupSettingsViewModel.selectFileForCreateBackup()
             },
     ) {
         Row(
@@ -381,7 +381,7 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                 SelectBackupPathButton(
                     isPathSelected = restoreBackupFile.value != null,
                     onClick = {
-
+                        backupSettingsViewModel.selectFileForRestoreBackup()
                     }
                 )
                 Divider(modifier = Modifier

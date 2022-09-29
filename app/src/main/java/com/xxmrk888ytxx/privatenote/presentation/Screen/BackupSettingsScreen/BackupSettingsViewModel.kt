@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
-import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreParams
@@ -120,8 +119,8 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    fun selectBackupFile() {
-            activityController?.selectBackupFile(
+    fun selectFileForCreateBackup() {
+            activityController?.selectFileForBackup(
                 onComplete = { path ->
                     viewModelScope.launch(Dispatchers.IO) {
                         settingsBackupRepository.updateBackupPath(path)
@@ -134,6 +133,17 @@ class BackupSettingsViewModel @Inject constructor(
 
                 }
             )
+    }
+
+    fun selectFileForRestoreBackup() {
+        activityController?.openBackupFile(
+            onComplete = { path:Uri ->
+                currentBackupFileForRestore.value = path
+            },
+            onError = {
+
+            }
+        )
     }
 
     fun initActivityController(activityController: ActivityController) {

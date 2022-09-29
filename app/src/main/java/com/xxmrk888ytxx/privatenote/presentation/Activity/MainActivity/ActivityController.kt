@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.security.crypto.EncryptedFile
 
 interface ActivityController {
@@ -10,5 +11,6 @@ interface ActivityController {
     fun changeOrientationLockState(state:Boolean)
     fun openAlarmSettings()
     fun notifyAppThemeChanged()
-    fun selectBackupFile(onComplete:(path:String) -> Unit,onError:(e:Exception) -> Unit = {})
+    fun selectFileForBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
+    fun openBackupFile(onComplete:(path: Uri) -> Unit, onError:(e:Exception) -> Unit = {})
 }

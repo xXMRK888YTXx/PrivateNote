@@ -60,6 +60,7 @@ class MainActivityViewModel @Inject constructor(
 
     private var pickImageCallBacks:Pair<(image: Bitmap) -> Unit,(e:Exception) -> Unit>? = null
     private var selectBackupFileCallBacks:Pair<(path: String) -> Unit,(e:Exception) -> Unit>? = null
+    private var openBackupFileCallBacks:Pair<(path: Uri) -> Unit,(e:Exception) -> Unit>? = null
 
     fun completedAuthCallBack(): (navigate:() -> Unit) -> Unit {
         return {
@@ -164,6 +165,35 @@ class MainActivityViewModel @Inject constructor(
         }
         unRegisterSelectBackupFileCallBacks()
     }
+
+    fun registerOpenBackupFileCallBacks(
+        onComplete:(path: Uri) -> Unit,
+        onError:(e:Exception) -> Unit = {}
+    ) {
+        if(openBackupFileCallBacks != null) throw CallBackAlreadyRegisteredException()
+        openBackupFileCallBacks = Pair(onComplete,onError)
+        isNotLockApp = true
+    }
+
+    private fun unRegisterOpenBackupFileCallBacks() {
+        openBackupFileCallBacks = null
+        isNotLockApp = false
+    }
+
+    fun onOpenBackupFileCompleted(uri: Uri) {
+        openBackupFileCallBacks.ifNotNull {
+            it.first(uri)
+        }
+        unRegisterOpenBackupFileCallBacks()
+    }
+
+    fun onErrorOpenBackupFile(e:Exception) {
+        openBackupFileCallBacks.ifNotNull {
+            it.second(e)
+        }
+        unRegisterOpenBackupFileCallBacks()
+    }
+
 
     suspend fun saveInCache(imageFile: EncryptedFile, context: Context) : Uri? {
         return try {

@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -25,8 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
@@ -35,7 +32,6 @@ import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoIn
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
@@ -44,7 +40,6 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeHolder
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SYSTEM_THEME
@@ -247,7 +242,7 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
-    override fun selectBackupFile(
+    override fun selectFileForBackup(
         onComplete: (path: String) -> Unit,
         onError: (e: Exception) -> Unit,
     ) {
@@ -267,6 +262,36 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
+    override fun openBackupFile(
+        onComplete: (path: Uri) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        try {
+            mainActivityViewModel.registerOpenBackupFileCallBacks(onComplete, onError)
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+            }
+            openBackupFileCallBack.launch(intent)
+        }catch (e:CallBackAlreadyRegisteredException) {
+            onError(e)
+        }
+    }
+
+
+    private val openBackupFileCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK) {
+            val uri = it.data?.data ?: return@registerForActivityResult
+            try {
+                mainActivityViewModel.onOpenBackupFileCompleted(uri)
+            }catch (e:Exception) {
+                mainActivityViewModel.onErrorOpenBackupFile(e)
+            }
+        }
+        else {
+            mainActivityViewModel.onErrorOpenBackupFile(Exception("openBackupFileCancel"))
+        }
+    }
 
     private val selectBackupFileCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK) {
@@ -278,6 +303,9 @@ class MainActivity : AppCompatActivity(), ActivityController {
             }catch (e:Exception) {
                 mainActivityViewModel.onErrorSelectBackupFile(e)
             }
+        }
+        else {
+            mainActivityViewModel.onErrorSelectBackupFile(Exception("selectBackupFileCancel"))
         }
     }
 
