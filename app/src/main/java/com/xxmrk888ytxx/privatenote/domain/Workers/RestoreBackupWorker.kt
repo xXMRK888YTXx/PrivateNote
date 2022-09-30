@@ -11,7 +11,11 @@ import com.xxmrk888ytxx.privatenote.Utils.Exception.ConvertBackupFileToDataExcep
 import com.xxmrk888ytxx.privatenote.Utils.Exception.NotInputFileUriException
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreParams
+import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -19,26 +23,35 @@ import dagger.assisted.AssistedInject
 class RestoreBackupWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
-    private val readBackupFileUseCaseImpl: ReadBackupFileUseCase
+    private val readBackupFileUseCaseImpl: ReadBackupFileUseCase,
+    private val restoreCategoryFromUseCase: RestoreCategoryFromUseCase,
+    private val restoreNoteFromBackupUseCase: RestoreNoteFromBackupUseCase,
+    private val restoreTodoFromUseCase: RestoreTodoFromUseCase,
+    private val notificationAppManager: NotificationAppManager
 ) : CoroutineWorker(context,workerParameters) {
 
     override suspend fun doWork(): Result {
+        val id = notificationAppManager.sendBackupStateNotification("Восстоновление запущено","В процессе")
         try {
             val uri = getBackupFileUri(workerParameters.inputData)
             val jsonBackupString = readBackupFileUseCaseImpl.execute(uri)
             val restoreBackupParams = getRestoreBackupParams(workerParameters.inputData)
             val backupModel = getBackupModel(jsonBackupString)
-            if(restoreBackupParams.restoreNotes) {
-
-            }
             if(restoreBackupParams.restoreCategory) {
-
+                restoreCategoryFromUseCase.execute(backupModel.category)
+            }
+            if(restoreBackupParams.restoreNotes) {
+                restoreNoteFromBackupUseCase.execute(backupModel.notes)
             }
             if(restoreBackupParams.restoreTodo) {
-
+                restoreTodoFromUseCase.execute(backupModel.todo)
             }
-            TODO()
+            notificationAppManager.cancelNotification(id)
+            notificationAppManager.sendBackupStateNotification("Восстоновленно успешно","завершен")
+            return Result.success()
         }catch (e: Exception) {
+            notificationAppManager.cancelNotification(id)
+            notificationAppManager.sendBackupStateNotification("Провалено","Восстоновление провалено")
             return Result.failure()
         }
     }

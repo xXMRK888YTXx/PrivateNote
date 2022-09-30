@@ -16,6 +16,5 @@ class RestoreCategoryFromUseCaseImpl(
         restoreCategory.forEach {
             categoryRepository.insertCategory(it)
         }
-
     }
 }

@@ -25,6 +25,12 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBa
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCaseImpl
 import dagger.Module
@@ -92,6 +98,29 @@ class UseCases {
     @Singleton
     fun getReadBackupFileUseCase(@ApplicationContext context: Context) : ReadBackupFileUseCase {
         return ReadBackupFileUseCaseImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getRestoreCategoryFromUseCase(categoryRepository: CategoryRepository) : RestoreCategoryFromUseCase {
+        return RestoreCategoryFromUseCaseImpl(categoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getRestoreNoteFromUseCase(
+        noteRepository: NoteRepository,
+        imageRepository: ImageRepository,
+        audioRepository: AudioRepository,
+        categoryRepository: CategoryRepository
+    ) : RestoreNoteFromBackupUseCase {
+        return RestoreNoteFromBackupUseCaseImpl(noteRepository, imageRepository, audioRepository, categoryRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getRestoreTodoFromBackupUseCase(toDoRepository: ToDoRepository) : RestoreTodoFromUseCase {
+        return RestoreTodoFromUseCaseImpl(toDoRepository)
     }
 
 }
