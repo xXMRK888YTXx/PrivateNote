@@ -26,4 +26,7 @@ interface NoteDao {
 
     @Query("UPDATE NOTE SET category= :categoryId WHERE id = :noteId")
     fun changeCurrentCategory(noteId:Int,categoryId:Int?)
+
+    @Query("SELECT MAX(id) FROM NOTE")
+    fun getLastId() : Int
 }

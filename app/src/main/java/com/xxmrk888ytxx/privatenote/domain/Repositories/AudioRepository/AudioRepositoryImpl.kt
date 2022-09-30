@@ -83,6 +83,20 @@ class AudioRepositoryImpl @Inject constructor(
         return map
     }
 
+    override suspend fun addAudioFromBackup(noteId: Int, audio: ByteArray) {
+        val notePath = getAudioDir(noteId)
+        val outputFile = File(notePath,"${System.currentTimeMillis()}.mp3")
+        val mainKey = MasterKey.Builder(context)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+        val file = EncryptedFile.Builder(
+            context,outputFile, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+        ).build()
+        val stream = file.openFileOutput()
+        stream.write(audio)
+        stream.close()
+    }
+
     private suspend fun getAudioNoteById(noteId: Int) : List<Audio> {
         val audioDir = File(getAudioDir(noteId))
         val audioList = mutableListOf<Audio>()

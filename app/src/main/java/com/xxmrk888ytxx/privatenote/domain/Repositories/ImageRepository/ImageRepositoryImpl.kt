@@ -125,6 +125,10 @@ class ImageRepositoryImpl @Inject constructor(
         return map
     }
 
+    override suspend fun addImageFromBackup(noteId: Int, bitmap: Bitmap) {
+        saveBitmap(getNoteImageDir(noteId,context),bitmap,false,{})
+    }
+
     private suspend fun getImagesNoteById(noteId: Int) : List<Image> {
         val noteImagePath = getNoteImageDir(noteId,context)
         val imageDir = File(noteImagePath)

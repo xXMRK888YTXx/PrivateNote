@@ -21,6 +21,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetT
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
@@ -84,6 +86,12 @@ class UseCases {
     @Singleton
     fun getWriteBackupInFileUseCase(@ApplicationContext context: Context) : WriteBackupInFileUseCase {
         return WriteBackupInFileUseCaseImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getReadBackupFileUseCase(@ApplicationContext context: Context) : ReadBackupFileUseCase {
+        return ReadBackupFileUseCaseImpl(context)
     }
 
 }

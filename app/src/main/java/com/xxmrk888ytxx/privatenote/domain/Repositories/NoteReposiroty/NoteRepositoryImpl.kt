@@ -46,4 +46,8 @@ class NoteRepositoryImpl @Inject constructor(
         analytics.sendEvent(Change_category_event,null)
         noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }
+
+    override suspend fun getLastAddId(): Int {
+        return noteDao.getLastId()
+    }
 }

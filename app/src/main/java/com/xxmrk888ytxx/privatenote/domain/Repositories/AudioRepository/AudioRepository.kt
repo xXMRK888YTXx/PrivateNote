@@ -16,4 +16,5 @@ interface AudioRepository {
     fun getAudioList() : SharedFlow<List<Audio>>
     suspend fun isHaveAudios(noteId: Int) : Boolean
     suspend fun getAudiosForBackup(noteId:List<Int>) : Map<Int,List<Audio>>
+    suspend fun addAudioFromBackup(noteId: Int,audio:ByteArray)
 }

@@ -15,4 +15,6 @@ interface NoteRepository {
     fun changeChosenStatus(isChosen:Boolean,id:Int)
 
     fun changeCurrentCategory(noteId:Int,categoryId:Int?)
+
+    suspend fun getLastAddId() : Int
 }

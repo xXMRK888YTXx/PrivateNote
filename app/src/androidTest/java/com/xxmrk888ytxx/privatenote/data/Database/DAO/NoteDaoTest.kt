@@ -10,6 +10,8 @@ import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.AppDataBase
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -198,6 +200,22 @@ class NoteDaoTest {
 
         val noteWithoutCategory = noteDao.getNoteById(noteId).getData()
         Assert.assertEquals(noteWithoutCategory.category,null)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getLastId_add_Notes_Expect_Return_Id_Last_Add_Notes() = runTest {
+        val note = listOf(getTestNote(1),getTestNote(2),getTestNote(3))
+
+        note.forEach { noteDao.insertNote(it) }
+
+        Assert.assertEquals(3,noteDao.getLastId())
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun test_getLastId_Expect_Return_Zero() = runTest {
+        Assert.assertEquals(0,noteDao.getLastId())
     }
 
     private fun getTestNote(id:Int = 0,title:String = "test",text:String = "test") = Note(id, title, text, created_at = 0)

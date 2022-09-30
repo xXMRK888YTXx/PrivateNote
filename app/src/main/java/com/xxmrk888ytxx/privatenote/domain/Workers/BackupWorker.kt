@@ -44,7 +44,7 @@ class BackupWorker @AssistedInject constructor(
             val jsonString = parseBackupModelToJson(
                 BackupDataModel(notesData,categoryData,todoData)
             )
-            writeBackupInFileUseCase.execute(jsonString,settings.backupPath)
+            if(!writeBackupInFileUseCase.execute(jsonString,settings.backupPath)) throw Exception("FileNotWrite")
             notificationAppManager.cancelNotification(id)
             notificationAppManager.sendBackupStateNotification("Успешно выполнено","Бэкап завершен")
             return Result.success()
