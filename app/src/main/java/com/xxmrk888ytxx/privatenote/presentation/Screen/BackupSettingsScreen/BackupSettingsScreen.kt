@@ -403,7 +403,8 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                 )
                 YesNoButton(
                     onConfirm = {
-
+                        backupSettingsViewModel.startRestoreBackup()
+                        backupSettingsViewModel.hideRestoreBackupDialog()
                     },
                     onCancel = {
                         backupSettingsViewModel.hideRestoreBackupDialog()

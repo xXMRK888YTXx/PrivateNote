@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.Workers
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -52,6 +53,7 @@ class RestoreBackupWorker @AssistedInject constructor(
         }catch (e: Exception) {
             notificationAppManager.cancelNotification(id)
             notificationAppManager.sendBackupStateNotification("Провалено","Восстоновление провалено")
+            Log.d("MyLog",e.stackTraceToString())
             return Result.failure()
         }
     }
@@ -75,7 +77,7 @@ class RestoreBackupWorker @AssistedInject constructor(
     fun getBackupModel(jsonString: String) : BackupDataModel {
         try {
             val moshi = Moshi.Builder().build()
-            val adapter = moshi.adapter(BackupDataModel::class.java)
+            val adapter = moshi.adapter(BackupDataModel::class.java).lenient()
             return adapter.fromJson(jsonString)!!
         }catch (e:Exception) {
             throw ConvertBackupFileToDataException()

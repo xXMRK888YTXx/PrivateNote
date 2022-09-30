@@ -20,8 +20,10 @@ class RestoreNoteFromBackupUseCaseImpl(
 
     override suspend fun execute(notes: List<NoteBackupModel>) {
         val noteInApp = noteRepository.getAllNote().first()
+        noteInApp.forEach {
+            noteRepository.removeNote(it.id)
+        }
         val restoredNotesId = mutableListOf<Int>()
-        try {
             notes.forEach {
                 insertNote(it.note)
                 val addNoteId = noteRepository.getLastAddId()
@@ -33,18 +35,11 @@ class RestoreNoteFromBackupUseCaseImpl(
                     audioRepository.addAudioFromBackup(addNoteId,getAudioBytesFromBase64(base64AudioBytes))
                 }
             }
-        }catch (e:Exception) {
-            restoredNotesId.forEach {
-                noteRepository.removeNote(it)
-            }
-        }
-        noteInApp.forEach {
-            noteRepository.removeNote(it.id)
-        }
     }
 
     private suspend fun insertNote(note: Note) {
-        val noteCategory = categoryRepository.getCategoryById(note.id)?.first()
+        val noteCategory = if(note.category != null) categoryRepository.getCategoryById(note.category)?.first()
+        else null
         noteRepository.insertNote(note.copy(id = 0, category = noteCategory?.categoryId))
     }
 

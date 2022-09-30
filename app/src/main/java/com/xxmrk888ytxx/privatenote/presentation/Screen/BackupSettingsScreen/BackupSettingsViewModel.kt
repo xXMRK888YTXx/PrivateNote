@@ -155,4 +155,10 @@ class BackupSettingsViewModel @Inject constructor(
         backupManager.startSingleBackup()
     }
 
+    fun startRestoreBackup() {
+        val uri = currentBackupFileForRestore.value ?: return
+        val params = restoreParamsInDialog.value ?: return
+        backupManager.restoreBackup(uri,params)
+    }
+
 }
