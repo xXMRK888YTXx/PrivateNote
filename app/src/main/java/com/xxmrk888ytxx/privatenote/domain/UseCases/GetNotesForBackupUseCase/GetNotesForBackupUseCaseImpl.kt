@@ -73,7 +73,7 @@ class GetNotesForBackupUseCaseImpl(
         val base64List = mutableListOf<String>()
         audios.forEach {
             val file = it.file
-            val stream = FileInputStream(file.openFileInput().fd)
+            val stream = file.openFileInput()
             val bytes = stream.readBytes()
             stream.close()
             base64List.add(Base64.encodeToString(bytes,Base64.DEFAULT))

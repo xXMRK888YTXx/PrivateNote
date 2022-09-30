@@ -1,29 +1,28 @@
 package com.xxmrk888ytxx.privatenote.domain.PlayerManager
 
-import android.media.AudioAttributes
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsPause
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsReset
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsStart
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerSeekTo_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.Utils.NoAddAnalytics
-import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
-import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
-import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 
 @SendAnalytics
 class PlayerManagerImpl @Inject constructor(
-    private val analytics: AnalyticsManager
+    private val analytics: AnalyticsManager,
+    private val context: Context
 ) : PlayerManager  {
     private var mediaPlayer: MediaPlayer? = null
 
@@ -45,14 +44,13 @@ class PlayerManagerImpl @Inject constructor(
                 playerStopWatch?.start()
                 return
             }
+            val tempFile = getTempFile()
+            val bytes = file.getBytes()
+            val stream = FileOutputStream(tempFile)
+            stream.write(bytes)
+            stream.close()
             mediaPlayer = MediaPlayer()
-            mediaPlayer?.setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .build()
-            )
-            mediaPlayer?.setDataSource(file.openFileInput().fd)
+            mediaPlayer?.setDataSource(tempFile.absolutePath)
             mediaPlayer?.prepare()
             runOnMainThread {
                 playerStopWatch = object : CountDownTimer(Long.MAX_VALUE,100) {
@@ -71,6 +69,8 @@ class PlayerManagerImpl @Inject constructor(
 
         }
     }
+
+    private fun getTempFile() = File(context.cacheDir,"play.mp3")
 
     override suspend fun pausePlayer(onError: (e: Exception) -> Unit) {
         analytics.sendEvent(PlayerIsPause,null)
@@ -97,6 +97,7 @@ class PlayerManagerImpl @Inject constructor(
             it.stop()
             mediaPlayer = null
             _playerState.tryEmit(PlayerState.Disable)
+            getTempFile().delete()
         }
     }
 

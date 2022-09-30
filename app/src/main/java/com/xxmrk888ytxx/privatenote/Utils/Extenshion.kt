@@ -165,7 +165,10 @@ fun File.fileNameToLong() : Long {
 
 fun EncryptedFile.getBytes() : ByteArray? {
     try {
-        return this.openFileInput().readBytes()
+        val stream = this.openFileInput()
+        val bytes = stream.readBytes()
+        stream.close()
+        return bytes
     }catch (e:Exception) {
         return null
     }

@@ -3,7 +3,8 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 import android.content.Context
 import android.content.ContextWrapper
 import android.media.MediaMetadataRetriever
-import android.os.Bundle
+import android.security.keystore.KeyGenParameterSpec
+import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
 import androidx.security.crypto.MasterKey
@@ -22,12 +23,13 @@ import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import javax.inject.Inject
 
@@ -62,11 +64,32 @@ class AudioRepositoryImpl @Inject constructor(
         _audioFiles.tryEmit(listOf())
     }
 
-    override suspend fun notifyNewAudio(newAudio: Audio) {
+    override suspend fun notifyNewAudioRecorded(recordedFile: File, noteId: Int) {
         analyticsManager.sendEvent(NotifyNewAudio_Event,null)
-        val currentList = _audioFiles.first().toMutableList()
-        currentList.add(newAudio)
-        _audioFiles.tryEmit(currentList)
+        try {
+            val inputStream = FileInputStream(recordedFile)
+            val bytes = inputStream.readBytes()
+
+            val outputFile = File(getAudioDir(noteId),"${System.currentTimeMillis()}.mp3")
+            val mainKey = MasterKey.Builder(context)
+                .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                .build()
+            val encryptedFile = EncryptedFile.Builder(
+                context,outputFile, mainKey, EncryptedFile.FileEncryptionScheme.AES256_GCM_HKDF_4KB
+            ).build()
+            val outputStream = encryptedFile.openFileOutput()
+            outputStream.write(bytes)
+            outputStream.flush()
+            recordedFile.delete()
+            outputStream.close()
+            inputStream.close()
+
+            val listInBuffer = _audioFiles.first().toMutableList()
+            listInBuffer.add(getAudioFile(outputFile))
+            _audioFiles.emit(listInBuffer)
+        }catch (e:Exception) {
+            Log.d("MyLog","add new audio error ${e.printStackTrace()}")
+        }
     }
 
     override fun getAudioList(): SharedFlow<List<Audio>> = audioFiles
@@ -145,12 +168,24 @@ class AudioRepositoryImpl @Inject constructor(
 
     override suspend fun getAudioDuration(file: EncryptedFile) : Long {
         analyticsManager.sendEvent(GetAudioDuration_Event,null)
+        val tempFile = File(context.cacheDir,"temp.mp3")
         try {
             val mediaMetadataRetriever = MediaMetadataRetriever()
-            mediaMetadataRetriever.setDataSource(file.openFileInput().fd)
-            return mediaMetadataRetriever
+            val inputStream = file.openFileInput()
+            val bytes = inputStream.readBytes()
+            inputStream.close()
+
+            val outputFile = FileOutputStream(tempFile)
+            outputFile.write(bytes)
+            outputFile.close()
+
+            mediaMetadataRetriever.setDataSource(tempFile.absolutePath)
+            val duration = mediaMetadataRetriever
                 .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLong() ?: 0
+            tempFile.delete()
+            return duration
         }catch (e:Exception) {
+            tempFile.delete()
             return 0
         }
     }

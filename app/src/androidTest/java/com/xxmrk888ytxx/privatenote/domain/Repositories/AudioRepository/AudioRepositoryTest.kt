@@ -174,7 +174,7 @@ class AudioRepositoryTest {
     fun addAudio(noteId:Int, count:Int = 1) = runBlocking {
         repeat(count) {
             val audio = createAudioFile(noteId)
-            repo.notifyNewAudio(audio)
+            repo.notifyNewAudioRecorded(audio)
         }
     }
 
