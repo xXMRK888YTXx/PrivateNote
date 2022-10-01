@@ -18,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.FileOutputStream
 
 @RunWith(AndroidJUnit4::class)
 class AudioRepositoryTest {
@@ -173,8 +174,11 @@ class AudioRepositoryTest {
 
     fun addAudio(noteId:Int, count:Int = 1) = runBlocking {
         repeat(count) {
-            val audio = createAudioFile(noteId)
-            repo.notifyNewAudioRecorded(audio)
+            val file = File(context.cacheDir,"${System.currentTimeMillis()}.mp3")
+            val stream = FileOutputStream(file)
+            stream.write("test".toByteArray())
+            stream.close()
+            repo.notifyNewAudioRecorded(file,noteId)
         }
     }
 
