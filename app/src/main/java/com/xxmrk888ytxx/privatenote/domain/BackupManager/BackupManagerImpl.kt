@@ -6,24 +6,34 @@ import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.xxmrk888ytxx.privatenote.Utils.Exception.NotSetBackupPathException
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.RestoreBackupWorker
-import kotlinx.coroutines.flow.first
 
 class BackupManagerImpl constructor(
     private val context:Context
 ) : BackupManager {
 
-    override fun startSingleBackup() {
+    override fun createBackup(settings: BackupSettings) {
+        val backupPath = settings.backupPath ?: return
         val workManager = WorkManager.getInstance(context)
-        val work = OneTimeWorkRequestBuilder<BackupWorker>().addTag("SingleBackupWork")
+        val data = Data.Builder()
+            .putString(BackupWorker.BACKUP_PATH,backupPath)
+            .putBoolean(BackupWorker.IS_BACKUP_NOT_ENCRYPTED_NOTE,settings.isBackupNotEncryptedNote)
+            .putBoolean(BackupWorker.IS_BACKUP_ENCRYPTED_NOTE,settings.isBackupEncryptedNote)
+            .putBoolean(BackupWorker.IS_BACKUP_NOTE_IMAGES,settings.isBackupNoteImages)
+            .putBoolean(BackupWorker.IS_BACKUP_NOTE_AUDIO,settings.isBackupNoteAudio)
+            .putBoolean(BackupWorker.IS_BACKUP_NOTE_CATEGORY,settings.isBackupNoteCategory)
+            .putBoolean(BackupWorker.IS_BACKUP_COMPLETED_TODO,settings.isBackupCompletedTodo)
+            .putBoolean(BackupWorker.IS_BACKUP_NOT_COMPLETED_TODO,settings.isBackupNotCompletedTodo)
             .build()
-        workManager.enqueue(work)
+        val work = OneTimeWorkRequestBuilder<BackupWorker>()
+            .setInputData(data)
+            .build()
+        workManager.enqueueUniqueWork("BackupWork",ExistingWorkPolicy.KEEP,work)
     }
 
-    override fun restoreBackup(uri: Uri, restoreBackupParams: BackupRestoreParams) {
+    override fun restoreBackup(uri: Uri, restoreBackupParams: BackupRestoreSettings) {
         val workManager = WorkManager.getInstance(context)
         val data = Data.Builder()
             .putString(RestoreBackupWorker.URI_BACKUP_FILE_KEY,uri.toString())

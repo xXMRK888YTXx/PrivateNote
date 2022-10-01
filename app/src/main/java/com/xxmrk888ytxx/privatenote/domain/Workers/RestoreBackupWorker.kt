@@ -11,7 +11,7 @@ import com.squareup.moshi.Moshi
 import com.xxmrk888ytxx.privatenote.Utils.Exception.ConvertBackupFileToDataException
 import com.xxmrk888ytxx.privatenote.Utils.Exception.NotInputFileUriException
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
-import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreParams
+import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
@@ -58,11 +58,11 @@ class RestoreBackupWorker @AssistedInject constructor(
         }
     }
 
-    private fun getRestoreBackupParams(inputData: Data): BackupRestoreParams {
+    private fun getRestoreBackupParams(inputData: Data): BackupRestoreSettings {
         val isRestoreNote = inputData.getBoolean(IS_RESTORE_NOTE_PARAMS,false)
         val isRestoreCategory = inputData.getBoolean(IS_RESTORE_CATEGORY_PARAMS,false)
         val isRestoreTodo = inputData.getBoolean(IS_RESTORE_TODO_PARAMS,false)
-        return BackupRestoreParams(isRestoreNote,isRestoreCategory,isRestoreTodo)
+        return BackupRestoreSettings(isRestoreNote,isRestoreCategory,isRestoreTodo)
     }
 
     private fun getBackupFileUri(inputData: Data): Uri {

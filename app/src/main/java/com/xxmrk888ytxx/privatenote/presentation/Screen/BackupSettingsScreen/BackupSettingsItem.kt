@@ -4,5 +4,6 @@ data class BackupParams(
     val title:String,
     val settingsState:Boolean,
     val isEnable:Boolean = true,
-    val updateState:(newState:Boolean) -> Unit
+    val updateStateInAutoBackupParams:(newState:Boolean) -> Unit,
+    val updateStateInDialog:(newState:Boolean) -> Unit
 )

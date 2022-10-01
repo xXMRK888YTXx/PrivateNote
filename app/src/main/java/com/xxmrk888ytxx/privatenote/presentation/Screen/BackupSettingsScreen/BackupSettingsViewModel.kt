@@ -10,7 +10,8 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
-import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreParams
+import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
@@ -31,11 +32,35 @@ class BackupSettingsViewModel @Inject constructor(
 
     private val restoreBackupDialogState:MutableState<Boolean> = mutableStateOf(false)
 
-    private val restoreParamsInDialog:MutableState<BackupRestoreParams?> = mutableStateOf(null)
+    private val restoreParamsInDialog:MutableState<BackupRestoreSettings?> = mutableStateOf(null)
 
     private val currentBackupFileForRestore:MutableState<Uri?> = mutableStateOf(null)
 
     private val userConfirmRemoveOldDataState:MutableState<Boolean> = mutableStateOf(false)
+
+    private val createBackupDialogState = mutableStateOf(false)
+
+    private val backupSettingsInDialog:MutableState<BackupSettings?> = mutableStateOf(null)
+
+    fun getBackupSettingsInDialog() = backupSettingsInDialog.toState()
+
+    fun changeBackupParamsInDialog(onChange:(BackupSettings) -> BackupSettings) {
+        backupSettingsInDialog.value.ifNotNull {
+            backupSettingsInDialog.value = onChange(it)
+        }
+    }
+
+    fun getCreateBackupDialogState() = createBackupDialogState.toState()
+
+    fun showCreateBackupDialogState() {
+        createBackupDialogState.value = true
+        backupSettingsInDialog.value = BackupSettings()
+    }
+
+    fun hideCreateBackupDialogState() {
+        createBackupDialogState.value = false
+        backupSettingsInDialog.value = null
+    }
 
     fun getUserConfirmRemoveOldDataState() = userConfirmRemoveOldDataState.toState()
 
@@ -47,18 +72,18 @@ class BackupSettingsViewModel @Inject constructor(
 
     fun getRestoreBackupDialogState():State<Boolean> = restoreBackupDialogState
 
-    fun getRestoreParamsInDialog():State<BackupRestoreParams?> = restoreParamsInDialog
+    fun getRestoreParamsInDialog():State<BackupRestoreSettings?> = restoreParamsInDialog
 
 
 
-    fun updateRestoreParams(updatedParams:(BackupRestoreParams) -> BackupRestoreParams) {
+    fun updateRestoreParams(updatedParams:(BackupRestoreSettings) -> BackupRestoreSettings) {
         restoreParamsInDialog.value.ifNotNull {
             restoreParamsInDialog.value = updatedParams(it)
         }
     }
 
     fun showRestoreBackupDialog() {
-        restoreParamsInDialog.value = BackupRestoreParams()
+        restoreParamsInDialog.value = BackupRestoreSettings()
         restoreBackupDialogState.value = true
     }
 
@@ -77,62 +102,62 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateIsBackupNotEncryptedNote(newState: Boolean) {
+    fun updateAutoBackupParamsIsBackupNotEncryptedNote(newState: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupNotEncryptedNote(newState)
         }
     }
 
-    fun updateIsBackupEncryptedNote(newState: Boolean) {
+    fun updateAutoBackupParamsIsBackupEncryptedNote(newState: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupEncryptedNote(newState)
         }
     }
 
-    fun updateIsBackupNoteImages(newState:Boolean) {
+    fun updateAutoBackupParamsIsBackupNoteImages(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupNoteImages(newState)
         }
     }
 
-    fun updateIsBackupNoteAudio(newState:Boolean) {
+    fun updateAutoBackupParamsIsBackupNoteAudio(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupNoteAudio(newState)
         }
     }
 
-    fun updateIsBackupNoteCategory(newState:Boolean) {
+    fun updateAutoBackupParamsIsBackupNoteCategory(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupNoteCategory(newState)
         }
     }
 
-    fun updateIsBackupNotCompletedTodo(newState:Boolean) {
+    fun updateAutoBackupParamsIsBackupNotCompletedTodo(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupNotCompletedTodo(newState)
         }
     }
 
-    fun updateIsBackupCompletedTodo(newState:Boolean) {
+    fun updateAutoBackupParamsIsBackupCompletedTodo(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             settingsBackupRepository.updateIsBackupCompletedTodo(newState)
         }
     }
 
-    fun selectFileForCreateBackup() {
-            activityController?.selectFileForBackup(
-                onComplete = { path ->
-                    viewModelScope.launch(Dispatchers.IO) {
-                        settingsBackupRepository.updateBackupPath(path)
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Backup_path_setuped)
-                        }
+    fun selectFileForAutoBackup() {
+        activityController?.selectFileForAutoBackup(
+            onComplete = { path ->
+                viewModelScope.launch(Dispatchers.IO) {
+                    settingsBackupRepository.updateBackupPath(path)
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Backup_path_setuped)
                     }
-                },
-                onError = {
-
                 }
-            )
+            },
+            onError = {
+
+            }
+        )
     }
 
     fun selectFileForRestoreBackup() {
@@ -146,13 +171,29 @@ class BackupSettingsViewModel @Inject constructor(
         )
     }
 
+    fun createBackupFile() {
+        activityController?.createFileBackup(
+            onComplete = { path ->
+                backupSettingsInDialog.value.ifNotNull {
+                    backupSettingsInDialog.value = it.copy(backupPath = path)
+                }
+            },
+            onError = {
+
+            }
+        )
+    }
+
     fun initActivityController(activityController: ActivityController) {
         if(this.activityController != null) return
         this.activityController = activityController
     }
 
-    fun startBackupNow() {
-        backupManager.startSingleBackup()
+    fun startBackup() {
+        backupSettingsInDialog.value?.ifNotNull {
+            if(it.backupPath == null) return@ifNotNull
+            backupManager.createBackup(it)
+        }
     }
 
     fun startRestoreBackup() {

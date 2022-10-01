@@ -61,6 +61,7 @@ class MainActivityViewModel @Inject constructor(
     private var pickImageCallBacks:Pair<(image: Bitmap) -> Unit,(e:Exception) -> Unit>? = null
     private var selectBackupFileCallBacks:Pair<(path: String) -> Unit,(e:Exception) -> Unit>? = null
     private var openBackupFileCallBacks:Pair<(path: Uri) -> Unit,(e:Exception) -> Unit>? = null
+    private var createFileBackupCallBacks:Pair<(path: String) -> Unit,(e: Exception) -> Unit>? = null
 
     fun completedAuthCallBack(): (navigate:() -> Unit) -> Unit {
         return {
@@ -141,29 +142,29 @@ class MainActivityViewModel @Inject constructor(
         unRegisterImagePickCallBacks()
     }
 
-    fun registerSelectBackupFileCallBacks(onComplete: (path:String) -> Unit,onError:(e:Exception) -> Unit) {
+    fun registerSelectFileForAutoBackupCallBacks(onComplete: (path:String) -> Unit, onError:(e:Exception) -> Unit) {
         if(selectBackupFileCallBacks != null) CallBackAlreadyRegisteredException()
         selectBackupFileCallBacks = Pair(onComplete,onError)
         isNotLockApp = true
     }
 
-    private fun unRegisterSelectBackupFileCallBacks() {
+    private fun unRegisterSelectFileForAutoBackupCallBacks() {
         selectBackupFileCallBacks = null
         isNotLockApp = false
     }
 
-    fun onSelectBackupFileCompleted(path:String) {
+    fun onSelectFileForAutoBackupCompleted(path:String) {
         selectBackupFileCallBacks.ifNotNull {
             it.first(path)
         }
-        unRegisterSelectBackupFileCallBacks()
+        unRegisterSelectFileForAutoBackupCallBacks()
     }
 
-    fun onErrorSelectBackupFile(e:Exception) {
+    fun onErrorSelectFileForAutoBackup(e:Exception) {
         selectBackupFileCallBacks.ifNotNull {
             it.second(e)
         }
-        unRegisterSelectBackupFileCallBacks()
+        unRegisterSelectFileForAutoBackupCallBacks()
     }
 
     fun registerOpenBackupFileCallBacks(
@@ -238,6 +239,34 @@ class MainActivityViewModel @Inject constructor(
                 )
             )
 
+        }
+    }
+
+    fun registerCreateFileBackupCallBack(
+        onComplete: (path: String) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        if(createFileBackupCallBacks != null) throw CallBackAlreadyRegisteredException()
+        createFileBackupCallBacks = Pair(onComplete,onError)
+        isNotLockApp = true
+    }
+
+    private fun unRegisterCreateFileBackupCallBack() {
+        createFileBackupCallBacks = null
+        isNotLockApp = false
+    }
+
+    fun onCompleteCreateFileBackup(uri:Uri) {
+        createFileBackupCallBacks.ifNotNull {
+            it.first(uri.toString())
+            unRegisterCreateFileBackupCallBack()
+        }
+    }
+
+    fun onErrorCreateFileBackup(e:Exception) {
+        createFileBackupCallBacks.ifNotNull {
+            it.second(e)
+            unRegisterCreateFileBackupCallBack()
         }
     }
 }

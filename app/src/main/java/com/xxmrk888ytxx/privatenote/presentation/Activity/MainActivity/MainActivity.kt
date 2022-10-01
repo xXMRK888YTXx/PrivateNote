@@ -242,12 +242,12 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
-    override fun selectFileForBackup(
+    override fun selectFileForAutoBackup(
         onComplete: (path: String) -> Unit,
         onError: (e: Exception) -> Unit,
     ) {
         try {
-            mainActivityViewModel.registerSelectBackupFileCallBacks(onComplete, onError)
+            mainActivityViewModel.registerSelectFileForAutoBackupCallBacks(onComplete, onError)
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
                 type = "application/json"
@@ -256,7 +256,24 @@ class MainActivity : AppCompatActivity(), ActivityController {
                         or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                         or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
             }
-            selectBackupFileCallBack.launch(intent)
+            selectFileForAutoBackupCallBack.launch(intent)
+        }catch (e:CallBackAlreadyRegisteredException) {
+            onError(e)
+        }
+    }
+
+    override fun createFileBackup(
+        onComplete: (path: String) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        try {
+            mainActivityViewModel.registerCreateFileBackupCallBack(onComplete,onError)
+            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "application/json"
+                putExtra(Intent.EXTRA_TITLE, "Backup.json")
+            }
+            createFileBackupCallBack.launch(intent)
         }catch (e:CallBackAlreadyRegisteredException) {
             onError(e)
         }
@@ -278,6 +295,14 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
+    private val createFileBackupCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK) {
+            val data = it.data?.data ?: return@registerForActivityResult
+            mainActivityViewModel.onCompleteCreateFileBackup(data)
+        }else {
+            mainActivityViewModel.onErrorCreateFileBackup(Exception("Cancel"))
+        }
+    }
 
     private val openBackupFileCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK) {
@@ -293,19 +318,19 @@ class MainActivity : AppCompatActivity(), ActivityController {
         }
     }
 
-    private val selectBackupFileCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+    private val selectFileForAutoBackupCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK) {
             val uri = it.data?.data ?: return@registerForActivityResult
             try {
                 baseContext.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 baseContext.contentResolver.takePersistableUriPermission(uri,Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                mainActivityViewModel.onSelectBackupFileCompleted(uri.toString())
+                mainActivityViewModel.onSelectFileForAutoBackupCompleted(uri.toString())
             }catch (e:Exception) {
-                mainActivityViewModel.onErrorSelectBackupFile(e)
+                mainActivityViewModel.onErrorSelectFileForAutoBackup(e)
             }
         }
         else {
-            mainActivityViewModel.onErrorSelectBackupFile(Exception("selectBackupFileCancel"))
+            mainActivityViewModel.onErrorSelectFileForAutoBackup(Exception("selectBackupFileCancel"))
         }
     }
 

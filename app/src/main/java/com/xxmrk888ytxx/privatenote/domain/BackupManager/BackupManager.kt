@@ -1,9 +1,9 @@
 package com.xxmrk888ytxx.privatenote.domain.BackupManager
 
 import android.net.Uri
-import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupParams
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
 
 interface BackupManager {
-    fun startSingleBackup()
-    fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreParams)
+    fun createBackup(settings: BackupSettings)
+    fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings)
 }
