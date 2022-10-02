@@ -27,12 +27,10 @@ class RestoreBackupWorker @AssistedInject constructor(
     private val readBackupFileUseCaseImpl: ReadBackupFileUseCase,
     private val restoreCategoryFromUseCase: RestoreCategoryFromUseCase,
     private val restoreNoteFromBackupUseCase: RestoreNoteFromBackupUseCase,
-    private val restoreTodoFromUseCase: RestoreTodoFromUseCase,
-    private val notificationAppManager: NotificationAppManager
+    private val restoreTodoFromUseCase: RestoreTodoFromUseCase
 ) : CoroutineWorker(context,workerParameters) {
 
     override suspend fun doWork(): Result {
-        val id = notificationAppManager.sendBackupStateNotification("Восстоновление запущено","В процессе")
         try {
             val uri = getBackupFileUri(workerParameters.inputData)
             val jsonBackupString = readBackupFileUseCaseImpl.execute(uri)
@@ -47,12 +45,8 @@ class RestoreBackupWorker @AssistedInject constructor(
             if(restoreBackupParams.restoreTodo) {
                 restoreTodoFromUseCase.execute(backupModel.todo)
             }
-            notificationAppManager.cancelNotification(id)
-            notificationAppManager.sendBackupStateNotification("Восстоновленно успешно","завершен")
             return Result.success()
         }catch (e: Exception) {
-            notificationAppManager.cancelNotification(id)
-            notificationAppManager.sendBackupStateNotification("Провалено","Восстоновление провалено")
             Log.d("MyLog",e.stackTraceToString())
             return Result.failure()
         }
@@ -74,7 +68,7 @@ class RestoreBackupWorker @AssistedInject constructor(
         }
     }
 
-    fun getBackupModel(jsonString: String) : BackupDataModel {
+    private fun getBackupModel(jsonString: String) : BackupDataModel {
         try {
             val moshi = Moshi.Builder().build()
             val adapter = moshi.adapter(BackupDataModel::class.java).lenient()

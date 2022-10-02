@@ -1,21 +1,17 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository
 
 import android.content.Context
-import androidx.compose.runtime.MutableState
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class SettingsBackupRepositoryImpl constructor(
+class SettingsAutoBackupRepositoryImpl constructor(
     private val context:Context
-) : SettingsBackupRepository {
+) : SettingsAutoBackupRepository {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "backup_settings")
 
     private val isEnableBackup = booleanPreferencesKey("isEnableBackup")
@@ -27,6 +23,7 @@ class SettingsBackupRepositoryImpl constructor(
     private val isBackupNotCompletedTodoKey = booleanPreferencesKey("isBackupNotCompletedTodoKey")
     private val isBackupCompletedTodoKey = booleanPreferencesKey("isBackupCompletedTodoKey")
     private val backupPathKey = stringPreferencesKey("backupPathKey")
+    private val repeatAutoBackupTimeAtHours = longPreferencesKey("repeatAutoBackupTimeAtHours")
 
     override fun getBackupSettings(): SharedFlow<BackupSettings> = settingsBackup
 
@@ -40,6 +37,7 @@ class SettingsBackupRepositoryImpl constructor(
         val isBackupNotCompletedTodoKey = getIsBackupNotCompletedTodo().first()
         val isBackupCompletedTodoKey = getIsBackupCompletedTodo().first()
         val backupPath = getBackupPath().first()
+        val repeatAutoBackupTimeAtHours = getAutoBackupTime().first()
         _settingsBackup.emit(BackupSettings(
             isEnableBackup,
             isBackupNotEncryptedNoteKey,
@@ -49,7 +47,8 @@ class SettingsBackupRepositoryImpl constructor(
             isBackupNoteCategoryKey,
             isBackupNotCompletedTodoKey,
             isBackupCompletedTodoKey,
-            backupPath
+            backupPath,
+            repeatAutoBackupTimeAtHours
         ))
     }
 
@@ -139,12 +138,28 @@ class SettingsBackupRepositoryImpl constructor(
         }
     }
 
-    override suspend fun updateBackupPath(newPath: String) {
-        context.dataStore.edit {
-            it[backupPathKey] = newPath
+    override suspend fun updateBackupPath(newPath: String?) {
+        if(newPath != null) {
+            context.dataStore.edit {
+                it[backupPathKey] = newPath
+            }
+        }
+        else {
+            context.dataStore.edit {
+                it.remove(backupPathKey)
+            }
         }
         notifySettingsChanges {
             it.copy(backupPath = newPath)
+        }
+    }
+
+    override suspend fun changeAutoBackupTime(newTime: Long) {
+        context.dataStore.edit {
+            it[repeatAutoBackupTimeAtHours] = newTime
+        }
+        notifySettingsChanges {
+            it.copy(repeatAutoBackupTimeAtHours = newTime)
         }
     }
 
@@ -198,6 +213,12 @@ class SettingsBackupRepositoryImpl constructor(
     private fun getBackupPath() : Flow<String?> {
         return context.dataStore.data.map {
             it[backupPathKey]
+        }
+    }
+
+    private fun getAutoBackupTime() : Flow<Long> {
+        return context.dataStore.data.map {
+            it[repeatAutoBackupTimeAtHours] ?: 5
         }
     }
 }

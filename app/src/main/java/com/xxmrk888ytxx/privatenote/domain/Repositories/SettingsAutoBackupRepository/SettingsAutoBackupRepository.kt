@@ -1,9 +1,8 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository
 
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
-interface SettingsBackupRepository {
+interface SettingsAutoBackupRepository {
     fun getBackupSettings() : SharedFlow<BackupSettings>
     suspend fun updateIsEnableBackup(newState:Boolean)
     suspend fun updateIsBackupNotEncryptedNote(newState:Boolean)
@@ -13,5 +12,6 @@ interface SettingsBackupRepository {
     suspend fun updateIsBackupNoteCategory(newState:Boolean)
     suspend fun updateIsBackupNotCompletedTodo(newState:Boolean)
     suspend fun updateIsBackupCompletedTodo(newState:Boolean)
-    suspend fun updateBackupPath(newPath:String)
+    suspend fun updateBackupPath(newPath:String?)
+    suspend fun changeAutoBackupTime(newTime:Long)
 }

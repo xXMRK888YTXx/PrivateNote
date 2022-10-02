@@ -3,20 +3,25 @@ package com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class WriteBackupInFileUseCaseImpl(
     private val context: Context
 ) : WriteBackupInFileUseCase {
-    override suspend fun execute(jsonBackupString: String,path:String): Boolean {
+    override suspend fun execute(jsonBackupString: String,path:String) {
         try {
             val uri = Uri.parse(path)
-            val stream = context.contentResolver.openOutputStream(uri) ?: return false
-            stream.write(jsonBackupString.toByteArray())
-            stream.close()
-            return true
-        }catch (e:Exception) {
+            val stream = context.contentResolver.openOutputStream(uri) ?: throw BadFileAccessException()
+            withContext(Dispatchers.IO) {
+                stream.write(jsonBackupString.toByteArray())
+                stream.close()
+            }
+        }catch (e:SecurityException) {
             Log.d("MyLog",e.stackTraceToString())
-            return false
+            throw BadFileAccessException()
         }
     }
 }

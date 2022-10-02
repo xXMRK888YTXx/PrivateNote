@@ -1,31 +1,41 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.content.ContextParams
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.glance.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
@@ -40,11 +50,14 @@ fun BackupSettingsScreen(
     val settings = backupSettingsViewModel.getBackupSettings().collectAsState(BackupSettings())
     val restoreBackupDialogState = backupSettingsViewModel.getRestoreBackupDialogState().Remember()
     val createBackupDialogState = backupSettingsViewModel.getCreateBackupDialogState().Remember()
+    val backupWorkObserver = backupSettingsViewModel.getBackupWorkObserver().Remember()
+    val restoreBackupWorkObserver = backupSettingsViewModel.getRestoreBackupWorkObserver().Remember()
     LaunchedEffect(key1 = activityController, block = {
         backupSettingsViewModel.initActivityController(activityController)
     })
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
     ) {
         TopBar(navController)
         Text(text = stringResource(R.string.Backup),
@@ -53,14 +66,16 @@ fun BackupSettingsScreen(
             color = ThemeManager.PrimaryFontColor,
             modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
         )
-        MainBackupSettings(backupSettingsViewModel,settings)
-        ParamsBackupList(backupSettingsViewModel,settings)
+        AutoBackupSettingsList(backupSettingsViewModel,settings)
     }
     if(restoreBackupDialogState.value) {
         RestoreBackupDialog(backupSettingsViewModel)
     }
     if(createBackupDialogState.value) {
         CreateBackupDialog(backupSettingsViewModel)
+    }
+    if(backupWorkObserver.value != null||restoreBackupWorkObserver.value != null) {
+        LoadDialog()
     }
 }
 
@@ -165,7 +180,7 @@ fun getParamsList(
 }
 
 @Composable
-fun ParamsBackupList(
+fun AutoBackupSettingsList(
     backupSettingsViewModel: BackupSettingsViewModel,
     settings: State<BackupSettings>,
 ) {
@@ -173,18 +188,102 @@ fun ParamsBackupList(
     Column(
         modifier = Modifier.padding(top = 10.dp)
     ) {
-        Text(
-            text = stringResource(R.string.Backup_params),
-            fontWeight = FontWeight.W800,
-            fontSize = 22.sp,
-            color = ThemeManager.PrimaryFontColor,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        Divider(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
     }
     LazyColumn() {
+        item {
+            MainBackupSettings(backupSettingsViewModel)
+            Text(
+                text = stringResource(R.string.Auto_Backup_Settings_Local),
+                fontWeight = FontWeight.W800,
+                fontSize = 20.sp,
+                color = ThemeManager.PrimaryFontColor,
+                modifier = Modifier.padding(start = 10.dp)
+            )
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+        }
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.Backup_is_active),
+                    fontWeight = FontWeight.W800,
+                    fontSize = 18.sp,
+                    color = ThemeManager.PrimaryFontColor,
+                    modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
+                )
+                Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
+                    Switch(
+                        checked = settings.value.isEnableBackup,
+                        onCheckedChange = {
+                            backupSettingsViewModel.updateBackupState(it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = ThemeManager.SecondaryColor,
+                            uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                        ),
+                    )
+                }
+            }
+        }
+        item {
+            SelectBackupPathButton(isPathSelected = settings.value.backupPath != null,
+                onClick = {
+                    backupSettingsViewModel.selectFileForLocalAutoBackup()
+                })
+        }
+        item {
+            val annotatedLabelString = buildAnnotatedString {
+                append(stringResource(RepeatAutoBackupTimeItem
+                    .getDropDownItemByTime(settings.value.repeatAutoBackupTimeAtHours)
+                    .title))
+                appendInlineContent("drop_down_triangle")
+            }
+            val inlineContentMap = mapOf(
+                "drop_down_triangle" to InlineTextContent(
+                    Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+                ) {
+                    Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                        contentDescription = "",
+                        tint = ThemeManager.SecondoryFontColor,
+                        modifier = Modifier.padding(top = 0.dp)
+                    )
+                }
+            )
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(start = 10.dp, bottom = 10.dp)
+                    .clickable {
+                        backupSettingsViewModel.showRepeatAutoBackupTimeDropDown()
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.Repeat_every),
+                    fontWeight = FontWeight.W800,
+                    fontSize = 18.sp,
+                    color = ThemeManager.PrimaryFontColor,
+                    modifier = Modifier
+                )
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    Text(text = annotatedLabelString,
+                        inlineContent = inlineContentMap,
+                        fontWeight = FontWeight.W800,
+                        fontSize = 16.sp,
+                        color = ThemeManager.SecondoryFontColor)
+                    RepeatAutoBackupTimeDropDownList(backupSettingsViewModel)
+                }
+            }
+        }
+        item {
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+        }
         items(paramsList) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -217,99 +316,8 @@ fun ParamsBackupList(
 
 @Composable
 fun MainBackupSettings(
-    backupSettingsViewModel: BackupSettingsViewModel,
-    settings: State<BackupSettings>
+    backupSettingsViewModel: BackupSettingsViewModel
 ) {
-    Column(
-
-    ) {
-        Text(
-            text = stringResource(R.string.Main_settings),
-            fontWeight = FontWeight.W800,
-            fontSize = 22.sp,
-            color = ThemeManager.PrimaryFontColor,
-            modifier = Modifier.padding(start = 10.dp)
-        )
-        Divider(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
-    }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-            text = stringResource(R.string.Backup_is_active),
-            fontWeight = FontWeight.W800,
-            fontSize = 20.sp,
-            color = ThemeManager.PrimaryFontColor,
-            modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
-        )
-        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
-            Switch(
-                checked = settings.value.isEnableBackup,
-                onCheckedChange = {
-                    backupSettingsViewModel.updateBackupState(it)
-                },
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = ThemeManager.SecondaryColor,
-                    uncheckedThumbColor = ThemeManager.SecondoryFontColor
-                ),
-            )
-        }
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 5.dp, start = 10.dp, bottom = 10.dp)
-            .clickable {
-                //backupSettingsViewModel.selectFileForAutoBackup()
-            },
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = stringResource(R.string.Backup_path),
-                fontWeight = FontWeight.W800,
-                fontSize = 20.sp,
-                color = ThemeManager.PrimaryFontColor,
-                modifier = Modifier
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 10.dp),
-                contentAlignment = Alignment.CenterEnd) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow),
-                    contentDescription = "",
-                    tint = ThemeManager.PrimaryFontColor,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-        }
-        if(settings.value.backupPath == null) {
-            Text(
-                text = stringResource(R.string.Not_set),
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                color = ThemeManager.ErrorColor,
-                modifier = Modifier
-            )
-        }
-        else {
-            Text(
-                text = "${stringResource(R.string.Path_set)}",
-                fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
-                color = ThemeManager.Green,
-                modifier = Modifier
-            )
-        }
-    }
         Row(Modifier
             .fillMaxWidth()
             .clickable {
@@ -321,7 +329,7 @@ fun MainBackupSettings(
             Text(
                 text = stringResource(R.string.Create_backup_now),
                 fontWeight = FontWeight.W800,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = ThemeManager.PrimaryFontColor,
                 modifier = Modifier.padding(start = 10.dp, bottom = 15.dp)
             )
@@ -350,7 +358,7 @@ fun MainBackupSettings(
         Text(
             text = stringResource(R.string.Restore_backup),
             fontWeight = FontWeight.W800,
-            fontSize = 20.sp,
+            fontSize = 18.sp,
             color = ThemeManager.PrimaryFontColor,
             modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
         )
@@ -423,7 +431,6 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
 
 
 @Composable
-@MustBeLocalization
 fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
     val backupParams = backupSettingsViewModel.getRestoreParamsInDialog().Remember()
     val restoreBackupFile = backupSettingsViewModel.getCurrentBackupFileForRestore().Remember()
@@ -549,6 +556,35 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
 }
 
 @Composable
+fun RepeatAutoBackupTimeDropDownList(backupSettingsViewModel: BackupSettingsViewModel) {
+    val dropDownState = backupSettingsViewModel.isRepeatAutoBackupTimeDropDownVisible().Remember()
+    val dropDownItem = RepeatAutoBackupTimeItem.getDropDownList()
+    DropdownMenu(expanded = dropDownState.value,
+        onDismissRequest = {
+            backupSettingsViewModel.hideRepeatAutoBackupTimeDropDown()
+        },
+        modifier = Modifier
+            .background(ThemeManager.DropDownMenuColor)
+            .heightIn(max = 200.dp)
+    ) {
+        dropDownItem.forEach {
+            DropdownMenuItem(onClick = {
+                backupSettingsViewModel.hideRepeatAutoBackupTimeDropDown()
+                backupSettingsViewModel.changeCurrentAutoBackupTime(it.timeAtHours)
+            }) {
+                Row {
+                    Text(text = stringResource(it.title),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = ThemeManager.PrimaryFontColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun SelectBackupPathButton(
     isPathSelected:Boolean,
     onClick:() -> Unit,
@@ -572,7 +608,7 @@ fun SelectBackupPathButton(
             Text(
                 text = title,
                 fontWeight = FontWeight.W800,
-                fontSize = 20.sp,
+                fontSize = 18.sp,
                 color = ThemeManager.PrimaryFontColor,
                 modifier = Modifier
             )
@@ -593,7 +629,7 @@ fun SelectBackupPathButton(
             Text(
                 text = textIfPathNotSelected,
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = ThemeManager.ErrorColor,
                 modifier = Modifier
             )
@@ -602,10 +638,44 @@ fun SelectBackupPathButton(
             Text(
                 text = textIfPathSelected,
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 color = ThemeManager.Green,
                 modifier = Modifier
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun LoadDialog() {
+    Dialog(
+        onDismissRequest = { },
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = true
+        )
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20),
+            backgroundColor = ThemeManager.CardColor
+        ) {
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CircularProgressIndicator(modifier = Modifier.padding(end = 20.dp))
+                Text(
+                    text = stringResource(R.string.Wait_please),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = ThemeManager.PrimaryFontColor
+                )
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.xxmrk888ytxx.privatenote.domain.BackupManager
 
 import android.net.Uri
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import androidx.work.Operation
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 
 interface BackupManager {
-    fun createBackup(settings: BackupSettings)
-    fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings)
+    fun createBackup(settings: BackupSettings) : Operation
+    fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings) : Operation
+    fun enableAutoBackup(timeRepeatHours:Long)
+    fun disableAutoBackup()
 }

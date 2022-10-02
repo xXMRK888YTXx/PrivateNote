@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository
 
 data class BackupSettings(
     val isEnableBackup:Boolean = false,
@@ -9,5 +9,6 @@ data class BackupSettings(
     val isBackupNoteCategory:Boolean = true,
     val isBackupNotCompletedTodo:Boolean = true,
     val isBackupCompletedTodo:Boolean = false,
-    val backupPath:String? = null
+    val backupPath:String? = null,
+    val repeatAutoBackupTimeAtHours:Long = 5
 )

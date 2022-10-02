@@ -2,20 +2,19 @@ package com.xxmrk888ytxx.privatenote.domain.BackupManager
 
 import android.content.Context
 import android.net.Uri
-import androidx.work.Data
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import androidx.work.*
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.domain.Workers.LocalAutoBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.RestoreBackupWorker
+import java.util.concurrent.TimeUnit
 
 class BackupManagerImpl constructor(
     private val context:Context
 ) : BackupManager {
 
-    override fun createBackup(settings: BackupSettings) {
-        val backupPath = settings.backupPath ?: return
+    override fun createBackup(settings: BackupSettings) : Operation {
+        val backupPath = settings.backupPath
         val workManager = WorkManager.getInstance(context)
         val data = Data.Builder()
             .putString(BackupWorker.BACKUP_PATH,backupPath)
@@ -30,10 +29,10 @@ class BackupManagerImpl constructor(
         val work = OneTimeWorkRequestBuilder<BackupWorker>()
             .setInputData(data)
             .build()
-        workManager.enqueueUniqueWork("BackupWork",ExistingWorkPolicy.KEEP,work)
+         return workManager.enqueueUniqueWork("BackupWork",ExistingWorkPolicy.KEEP,work)
     }
 
-    override fun restoreBackup(uri: Uri, restoreBackupParams: BackupRestoreSettings) {
+    override fun restoreBackup(uri: Uri, restoreBackupParams: BackupRestoreSettings) : Operation {
         val workManager = WorkManager.getInstance(context)
         val data = Data.Builder()
             .putString(RestoreBackupWorker.URI_BACKUP_FILE_KEY,uri.toString())
@@ -42,10 +41,27 @@ class BackupManagerImpl constructor(
             .putBoolean(RestoreBackupWorker.IS_RESTORE_TODO_PARAMS,restoreBackupParams.restoreTodo)
             .build()
         val work = OneTimeWorkRequestBuilder<RestoreBackupWorker>()
-
             .setInputData(data)
             .build()
-        workManager.enqueueUniqueWork("RestoreBackupWork",ExistingWorkPolicy.KEEP,work)
+        return workManager.enqueueUniqueWork("RestoreBackupWork",ExistingWorkPolicy.KEEP,work)
+    }
+
+    override fun enableAutoBackup(timeRepeatHours:Long) {
+        disableAutoBackup()
+        val workManager = WorkManager.getInstance(context)
+        val work = PeriodicWorkRequestBuilder<LocalAutoBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
+            .addTag(LocalAutoBackupWorker.WORK_TAG)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            "AutoBackupWork",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            work
+        )
+    }
+
+    override fun disableAutoBackup() {
+        val workManager = WorkManager.getInstance(context)
+        workManager.cancelAllWorkByTag(LocalAutoBackupWorker.WORK_TAG)
     }
 
 

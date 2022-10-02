@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase
 
 import android.util.Base64
-import android.util.Log
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.NoteBackupModel
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
@@ -9,9 +8,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.Image
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import kotlinx.coroutines.flow.first
-import java.io.FileInputStream
 
 class GetNotesForBackupUseCaseImpl(
     private val noteRepository: NoteRepository,

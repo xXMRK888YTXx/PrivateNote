@@ -1,34 +1,42 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.SettingsBackupRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class BackupSettingsViewModel @Inject constructor(
-    private val settingsBackupRepository: SettingsBackupRepository,
+    private val settingsAutoBackupRepository: SettingsAutoBackupRepository,
     private val toastManager: ToastManager,
     private val backupManager: BackupManager
 ): ViewModel() {
 
-    fun getBackupSettings() = settingsBackupRepository.getBackupSettings()
+    fun getBackupSettings() = settingsAutoBackupRepository.getBackupSettings()
 
     private val restoreBackupDialogState:MutableState<Boolean> = mutableStateOf(false)
 
@@ -41,6 +49,28 @@ class BackupSettingsViewModel @Inject constructor(
     private val createBackupDialogState = mutableStateOf(false)
 
     private val backupSettingsInDialog:MutableState<BackupSettings?> = mutableStateOf(null)
+
+    private val isRepeatAutoBackupTimeDropDownVisible = mutableStateOf(false)
+
+    private val backupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
+    = mutableStateOf(null)
+
+    private val restoreBackupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
+    = mutableStateOf(null)
+
+    fun getBackupWorkObserver() = backupWorkObserver.toState()
+
+    fun getRestoreBackupWorkObserver() = restoreBackupWorkObserver.toState()
+
+    fun isRepeatAutoBackupTimeDropDownVisible() = isRepeatAutoBackupTimeDropDownVisible.toState()
+
+    fun showRepeatAutoBackupTimeDropDown() {
+        isRepeatAutoBackupTimeDropDownVisible.value = true
+    }
+
+    fun hideRepeatAutoBackupTimeDropDown() {
+        isRepeatAutoBackupTimeDropDownVisible.value = false
+    }
 
     fun getBackupSettingsInDialog() = backupSettingsInDialog.toState()
 
@@ -98,57 +128,70 @@ class BackupSettingsViewModel @Inject constructor(
 
     fun updateBackupState(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsEnableBackup(newState)
+            val settings = settingsAutoBackupRepository.getBackupSettings().first()
+            if(settings.backupPath == null) {
+                withContext(Dispatchers.Main) {
+                    toastManager.showToast(R.string.Need_select_auto_backup_path)
+                }
+                return@launch
+            }
+            settingsAutoBackupRepository.updateIsEnableBackup(newState)
+            if(newState) {
+                val time = settings.repeatAutoBackupTimeAtHours
+                backupManager.enableAutoBackup(time)
+            }else {
+                backupManager.disableAutoBackup()
+            }
         }
     }
 
     fun updateAutoBackupParamsIsBackupNotEncryptedNote(newState: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupNotEncryptedNote(newState)
+            settingsAutoBackupRepository.updateIsBackupNotEncryptedNote(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupEncryptedNote(newState: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupEncryptedNote(newState)
+            settingsAutoBackupRepository.updateIsBackupEncryptedNote(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupNoteImages(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupNoteImages(newState)
+            settingsAutoBackupRepository.updateIsBackupNoteImages(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupNoteAudio(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupNoteAudio(newState)
+            settingsAutoBackupRepository.updateIsBackupNoteAudio(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupNoteCategory(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupNoteCategory(newState)
+            settingsAutoBackupRepository.updateIsBackupNoteCategory(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupNotCompletedTodo(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupNotCompletedTodo(newState)
+            settingsAutoBackupRepository.updateIsBackupNotCompletedTodo(newState)
         }
     }
 
     fun updateAutoBackupParamsIsBackupCompletedTodo(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            settingsBackupRepository.updateIsBackupCompletedTodo(newState)
+            settingsAutoBackupRepository.updateIsBackupCompletedTodo(newState)
         }
     }
 
-    fun selectFileForAutoBackup() {
+    fun selectFileForLocalAutoBackup() {
         activityController?.selectFileForAutoBackup(
             onComplete = { path ->
                 viewModelScope.launch(Dispatchers.IO) {
-                    settingsBackupRepository.updateBackupPath(path)
+                    settingsAutoBackupRepository.updateBackupPath(path)
                     withContext(Dispatchers.Main) {
                         toastManager.showToast(R.string.Backup_path_setuped)
                     }
@@ -192,14 +235,63 @@ class BackupSettingsViewModel @Inject constructor(
     fun startBackup() {
         backupSettingsInDialog.value?.ifNotNull {
             if(it.backupPath == null) return@ifNotNull
-            backupManager.createBackup(it)
+            if(backupWorkObserver.value != null) return@ifNotNull
+            val observer = Observer<Operation.State> { state ->
+                if(state is Operation.State.SUCCESS) {
+                    toastManager.showToast(R.string.Backup_completed)
+                }
+                if(state is Operation.State.FAILURE) {
+                    toastManager.showToast(R.string.Backup_error)
+                }
+                if(state !is Operation.State.IN_PROGRESS) {
+                    removeBackupObserver()
+                }
+            }
+            val operation = backupManager.createBackup(it).state
+            operation.observeForever(observer)
+            backupWorkObserver.value = Pair(operation,observer)
         }
     }
 
     fun startRestoreBackup() {
         val uri = currentBackupFileForRestore.value ?: return
         val params = restoreParamsInDialog.value ?: return
-        backupManager.restoreBackup(uri,params)
+        val observer = Observer<Operation.State> { state ->
+            if(state is Operation.State.SUCCESS) {
+                toastManager.showToast(R.string.Restore_backup_complited)
+            }
+            if(state is Operation.State.FAILURE) {
+                toastManager.showToast(R.string.Restore_backup_error)
+            }
+            if(state !is Operation.State.IN_PROGRESS) {
+                removeRestoreBackupObserver()
+            }
+        }
+        val operation = backupManager.restoreBackup(uri,params).state
+        operation.observeForever(observer)
+        restoreBackupWorkObserver.value = Pair(operation,observer)
+    }
+
+    private fun removeRestoreBackupObserver() {
+        restoreBackupWorkObserver.value.ifNotNull {
+            it.first.removeObserver(it.second)
+            restoreBackupWorkObserver.value = null
+        }
+    }
+
+    fun changeCurrentAutoBackupTime(timeAtHours: Long) {
+        viewModelScope.launch {
+            settingsAutoBackupRepository.changeAutoBackupTime(timeAtHours)
+            if(settingsAutoBackupRepository.getBackupSettings().first().isEnableBackup) {
+                backupManager.enableAutoBackup(timeAtHours)
+            }
+        }
+    }
+    private fun removeBackupObserver() {
+        backupWorkObserver.value.ifNotNull {
+            it.first.removeObserver(it.second)
+            backupWorkObserver.value = null
+        }
     }
 
 }

@@ -13,6 +13,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.Remove
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
@@ -121,6 +123,16 @@ class UseCases {
     @Singleton
     fun getRestoreTodoFromBackupUseCase(toDoRepository: ToDoRepository) : RestoreTodoFromUseCase {
         return RestoreTodoFromUseCaseImpl(toDoRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getCreateBackupUseCase(
+        getNotesForBackupUseCase: GetNotesForBackupUseCase,
+        getCategoryForBackupUseCase: GetCategoryForBackupUseCase,
+        getTodoForBackupUseCase: GetTodoForBackupUseCase
+    ) : CreateBackupUseCase {
+        return CreateBackupUseCaseImpl(getNotesForBackupUseCase, getCategoryForBackupUseCase, getTodoForBackupUseCase)
     }
 
 }

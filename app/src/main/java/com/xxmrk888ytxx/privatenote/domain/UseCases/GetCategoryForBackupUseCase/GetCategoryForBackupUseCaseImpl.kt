@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase
 
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsBackupRepository.BackupSettings
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import kotlinx.coroutines.flow.first
 
 class GetCategoryForBackupUseCaseImpl(
