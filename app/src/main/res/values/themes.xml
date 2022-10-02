@@ -12,6 +12,6 @@
     </style>
     <style name="Theme.PrivateNote_White" parent="Theme.PrivateNote">
         <item name="android:statusBarColor">#C7C0C0</item>
-        <item name="android:navigationBarColor">@color/MainBackGroundColor_White</item>
+        <item name="android:navigationBarColor">#2DA39797</item>
     </style>
 </resources>

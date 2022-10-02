@@ -30,7 +30,7 @@ fun FloatButton(floatButtonController: FloatButtonController,navController: NavC
             modifier = Modifier.size(65.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_plus),
+                painter = painterResource(id = R.drawable.ic_float_button_plus),
                 contentDescription = "plus",
                 tint = PrimaryFontColor,
                 modifier = Modifier.size(35.dp)

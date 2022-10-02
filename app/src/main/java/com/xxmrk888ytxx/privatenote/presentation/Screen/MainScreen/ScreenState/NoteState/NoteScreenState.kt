@@ -238,7 +238,7 @@ fun SelectionTopBar(noteStateViewModel: NoteStateViewModel) {
             contentDescription = "close",
             tint = PrimaryFontColor,
             modifier = Modifier
-                .size(28.dp)
+                .size(24.dp)
                 .clickable {
                     noteStateViewModel.toDefaultMode()
                 }
