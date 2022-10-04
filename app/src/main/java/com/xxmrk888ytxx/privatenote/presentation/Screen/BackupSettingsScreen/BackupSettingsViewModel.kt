@@ -1,8 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
-import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -12,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
@@ -22,7 +19,6 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -50,7 +46,9 @@ class BackupSettingsViewModel @Inject constructor(
 
     private val backupSettingsInDialog:MutableState<BackupSettings?> = mutableStateOf(null)
 
-    private val isRepeatAutoBackupTimeDropDownVisible = mutableStateOf(false)
+    private val isRepeatLocalAutoBackupTimeDropDownVisible = mutableStateOf(false)
+
+    private val isRepeatGDriveAutoBackupTimeDropDownVisible = mutableStateOf(false)
 
     private val backupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
     = mutableStateOf(null)
@@ -62,14 +60,24 @@ class BackupSettingsViewModel @Inject constructor(
 
     fun getRestoreBackupWorkObserver() = restoreBackupWorkObserver.toState()
 
-    fun isRepeatAutoBackupTimeDropDownVisible() = isRepeatAutoBackupTimeDropDownVisible.toState()
+    fun isRepeatLocalAutoBackupTimeDropDownVisible() = isRepeatLocalAutoBackupTimeDropDownVisible.toState()
 
-    fun showRepeatAutoBackupTimeDropDown() {
-        isRepeatAutoBackupTimeDropDownVisible.value = true
+    fun isRepeatGDriveAutoBackupTimeDropDownVisible() = isRepeatGDriveAutoBackupTimeDropDownVisible.toState()
+
+    fun showRepeatGDriveAutoBackupTimeDropDownVisible() {
+        isRepeatGDriveAutoBackupTimeDropDownVisible.value = true
     }
 
-    fun hideRepeatAutoBackupTimeDropDown() {
-        isRepeatAutoBackupTimeDropDownVisible.value = false
+    fun hideRepeatGDriveAutoBackupTimeDropDownVisible() {
+        isRepeatGDriveAutoBackupTimeDropDownVisible.value = false
+    }
+
+    fun showRepeatLocalAutoBackupTimeDropDown() {
+        isRepeatLocalAutoBackupTimeDropDownVisible.value = true
+    }
+
+    fun hideRepeatLocalAutoBackupTimeDropDown() {
+        isRepeatLocalAutoBackupTimeDropDownVisible.value = false
     }
 
     fun getBackupSettingsInDialog() = backupSettingsInDialog.toState()

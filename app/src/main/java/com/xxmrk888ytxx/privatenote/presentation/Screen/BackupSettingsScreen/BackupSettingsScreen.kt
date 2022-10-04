@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
-import android.content.ContextParams
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -28,11 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.glance.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
@@ -185,6 +183,10 @@ fun AutoBackupSettingsList(
     settings: State<BackupSettings>,
 ) {
     val paramsList: List<BackupParams> = getParamsList(backupSettingsViewModel, settings.value)
+    val localAutoBackupDropDownState = backupSettingsViewModel.
+    isRepeatLocalAutoBackupTimeDropDownVisible().Remember()
+    val gDriveAutoBackupDropDownState = backupSettingsViewModel
+        .isRepeatGDriveAutoBackupTimeDropDownVisible().Remember()
     Column(
         modifier = Modifier.padding(top = 10.dp)
     ) {
@@ -213,7 +215,7 @@ fun AutoBackupSettingsList(
                     fontWeight = FontWeight.W800,
                     fontSize = 18.sp,
                     color = ThemeManager.PrimaryFontColor,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
+                    modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
                     Switch(
@@ -236,48 +238,91 @@ fun AutoBackupSettingsList(
                 })
         }
         item {
-            val annotatedLabelString = buildAnnotatedString {
-                append(stringResource(RepeatAutoBackupTimeItem
-                    .getDropDownItemByTime(settings.value.repeatAutoBackupTimeAtHours)
-                    .title))
-                appendInlineContent("drop_down_triangle")
-            }
-            val inlineContentMap = mapOf(
-                "drop_down_triangle" to InlineTextContent(
-                    Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
-                ) {
-                    Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
-                        contentDescription = "",
-                        tint = ThemeManager.SecondoryFontColor,
-                        modifier = Modifier.padding(top = 0.dp)
-                    )
+            SelectRepeatBackupButton(
+                getCurrentTime = {
+                    settings.value.repeatAutoBackupTimeAtHours
+                },
+                isVisible = localAutoBackupDropDownState.value,
+                onChange = {
+                    backupSettingsViewModel.hideRepeatLocalAutoBackupTimeDropDown()
+                    backupSettingsViewModel.changeCurrentAutoBackupTime(it)
+                },
+                onShow = {
+                    backupSettingsViewModel.showRepeatLocalAutoBackupTimeDropDown()
+                },
+                onHide = {
+                    backupSettingsViewModel.hideRepeatLocalAutoBackupTimeDropDown()
                 }
             )
+        }
+        item {
+//            Divider(modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+            Text(
+                text = stringResource(R.string.Auto_Backup_Settings_GDrive),
+                fontWeight = FontWeight.W800,
+                fontSize = 20.sp,
+                color = ThemeManager.PrimaryFontColor,
+                modifier = Modifier.padding(start = 10.dp,top = 10.dp)
+            )
+        }
+        item {
+            Divider(modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+        }
+        item {
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(start = 10.dp, bottom = 10.dp)
-                    .clickable {
-                        backupSettingsViewModel.showRepeatAutoBackupTimeDropDown()
-                    },
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = stringResource(R.string.Repeat_every),
+                    text = stringResource(R.string.Backup_is_active),
                     fontWeight = FontWeight.W800,
                     fontSize = 18.sp,
                     color = ThemeManager.PrimaryFontColor,
-                    modifier = Modifier
+                    modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
                 )
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    Text(text = annotatedLabelString,
-                        inlineContent = inlineContentMap,
-                        fontWeight = FontWeight.W800,
-                        fontSize = 16.sp,
-                        color = ThemeManager.SecondoryFontColor)
-                    RepeatAutoBackupTimeDropDownList(backupSettingsViewModel)
+                Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
+                    Switch(
+                        checked = true,
+                        onCheckedChange = {
+
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = ThemeManager.SecondaryColor,
+                            uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                        ),
+                    )
                 }
             }
+        }
+        item {
+            GoogleSingInButton(
+                authState = false,
+                onAuth = {
+                    Log.d("MyLog","test")
+                }
+
+            )
+        }
+        item {
+            SelectRepeatBackupButton(
+                getCurrentTime = {
+                    settings.value.repeatAutoBackupTimeAtHours
+                },
+                isVisible = gDriveAutoBackupDropDownState.value,
+                onChange = {
+
+                },
+                onShow = {
+                    backupSettingsViewModel.showRepeatGDriveAutoBackupTimeDropDownVisible()
+                },
+                onHide = {
+                    backupSettingsViewModel.hideRepeatGDriveAutoBackupTimeDropDownVisible()
+                }
+            )
         }
         item {
             Divider(modifier = Modifier
@@ -556,12 +601,15 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
 }
 
 @Composable
-fun RepeatAutoBackupTimeDropDownList(backupSettingsViewModel: BackupSettingsViewModel) {
-    val dropDownState = backupSettingsViewModel.isRepeatAutoBackupTimeDropDownVisible().Remember()
+fun RepeatAutoBackupTimeDropDownList(
+    onChange: (Long) -> Unit,
+    isVisible:Boolean,
+    onHide:() -> Unit
+) {
     val dropDownItem = RepeatAutoBackupTimeItem.getDropDownList()
-    DropdownMenu(expanded = dropDownState.value,
+    DropdownMenu(expanded = isVisible,
         onDismissRequest = {
-            backupSettingsViewModel.hideRepeatAutoBackupTimeDropDown()
+            onHide()
         },
         modifier = Modifier
             .background(ThemeManager.DropDownMenuColor)
@@ -569,8 +617,7 @@ fun RepeatAutoBackupTimeDropDownList(backupSettingsViewModel: BackupSettingsView
     ) {
         dropDownItem.forEach {
             DropdownMenuItem(onClick = {
-                backupSettingsViewModel.hideRepeatAutoBackupTimeDropDown()
-                backupSettingsViewModel.changeCurrentAutoBackupTime(it.timeAtHours)
+                onChange(it.timeAtHours)
             }) {
                 Row {
                     Text(text = stringResource(it.title),
@@ -644,6 +691,116 @@ fun SelectBackupPathButton(
             )
         }
     }
+}
+
+@Composable
+fun SelectRepeatBackupButton(
+    getCurrentTime:() -> Long,
+    isVisible: Boolean,
+    onChange: (Long) -> Unit,
+    onShow:() -> Unit,
+    onHide:() -> Unit
+) {
+    val annotatedLabelString = buildAnnotatedString {
+        append(stringResource(RepeatAutoBackupTimeItem
+            .getDropDownItemByTime(getCurrentTime())
+            .title))
+        appendInlineContent("drop_down_triangle")
+    }
+    val inlineContentMap = mapOf(
+        "drop_down_triangle" to InlineTextContent(
+            Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+        ) {
+            Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                contentDescription = "",
+                tint = ThemeManager.SecondoryFontColor,
+                modifier = Modifier.padding(top = 0.dp)
+            )
+        }
+    )
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, bottom = 10.dp)
+            .clickable {
+                onShow()
+            },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = stringResource(R.string.Repeat_every),
+            fontWeight = FontWeight.W800,
+            fontSize = 18.sp,
+            color = ThemeManager.PrimaryFontColor,
+            modifier = Modifier
+        )
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+            Text(text = annotatedLabelString,
+                inlineContent = inlineContentMap,
+                fontWeight = FontWeight.W800,
+                fontSize = 16.sp,
+                color = ThemeManager.SecondoryFontColor)
+            RepeatAutoBackupTimeDropDownList(onChange,isVisible,onHide)
+        }
+    }
+}
+
+@Composable
+fun GoogleSingInButton(
+    authState:Boolean,
+    onAuth:() -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, start = 10.dp, bottom = 10.dp)
+            .clickable {
+                onAuth()
+            },
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.Google_sing_in),
+                fontWeight = FontWeight.W800,
+                fontSize = 18.sp,
+                color = ThemeManager.PrimaryFontColor,
+                modifier = Modifier
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 10.dp),
+                contentAlignment = Alignment.CenterEnd) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow),
+                    contentDescription = "",
+                    tint = ThemeManager.PrimaryFontColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+            if(authState) {
+                Text(
+                    text = stringResource(R.string.Authorization),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = ThemeManager.Green,
+                    modifier = Modifier
+                )
+            }else {
+                Text(
+                    text = stringResource(R.string.Click_to_sign_in),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = ThemeManager.ErrorColor,
+                    modifier = Modifier
+                )
+            }
+        }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)

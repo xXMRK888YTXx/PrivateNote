@@ -164,6 +164,7 @@
     <string name="Copy_not_сompleted_todo">Copy incomplete tasks</string>
     <string name="Copy_сompleted_todo">Copy completed tasks</string>
     <string name="Auto_Backup_Settings_Local">AutoBackup options(Local)</string>
+    <string name="Auto_Backup_Settings_GDrive">AutoBackup options(GDrive)</string>
     <string name="Main_settings">Main Settings</string>
     <string name="Backup_is_active">Is active</string>
     <string name="Backup_path">Backup path</string>
@@ -196,4 +197,7 @@
     <string name="Twelve_hours">12 hours</string>
     <string name="twenty_four_hours">24 hours</string>
     <string name="Forty_eight_hours">48 hours</string>
+    <string name="Google_sing_in">Sign in to Google</string>
+    <string name="Authorization">Authorized</string>
+    <string name="Click_to_sign_in">Click to sign in</string>
 </resources>

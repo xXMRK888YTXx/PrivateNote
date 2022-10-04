@@ -159,6 +159,7 @@
     <string name="Copy_not_сompleted_todo">Копировать незавершенные задачи</string>
     <string name="Copy_сompleted_todo">Копировать завершенные задачи</string>
     <string name="Auto_Backup_Settings_Local">Параметры авто бэкапа(локально)</string>
+    <string name="Auto_Backup_Settings_GDrive">Параметры авто бэкапа(GDrive)</string>
     <string name="Main_settings">Основные настройки</string>
     <string name="Backup_is_active">Состояние</string>
     <string name="Backup_path">Путь для бэкапа</string>
@@ -191,4 +192,7 @@
     <string name="Twelve_hours">12 часов</string>
     <string name="twenty_four_hours">24 часа</string>
     <string name="Forty_eight_hours">48 часов</string>
+    <string name="Google_sing_in">Вход в Google</string>
+    <string name="Authorization">Авторизовано</string>
+    <string name="Click_to_sign_in">Нажмите для входа</string>
 </resources>
