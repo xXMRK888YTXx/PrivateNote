@@ -14,7 +14,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
 ) : SettingsAutoBackupRepository {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "backup_settings")
 
-    private val isEnableBackup = booleanPreferencesKey("isEnableBackup")
+    private val isEnableLocalBackup = booleanPreferencesKey("isEnableBackup")
+    private val isEnableGDriveBackup = booleanPreferencesKey("isEnableGDriveBackup")
     private val isBackupNotEncryptedNoteKey = booleanPreferencesKey("isBackupNotEncryptedNoteKey")
     private val isBackupEncryptedNoteKey = booleanPreferencesKey("isBackupEncryptedNoteKey")
     private val isBackupNoteImagesKey = booleanPreferencesKey("isBackupNoteImagesKey")
@@ -28,7 +29,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
     override fun getBackupSettings(): SharedFlow<BackupSettings> = settingsBackup
 
     private suspend fun restoreSettings() {
-        val isEnableBackup = getIsEnableBackup().first()
+        val isEnableLocalBackup = getIsEnableLocalBackup().first()
+        val isEnableGDriveBackup = getIsEnableGDriveBackup().first()
         val isBackupNotEncryptedNoteKey = getIsBackupNotEncryptedNote().first()
         val isBackupEncryptedNoteKey = getIsBackupEncryptedNote().first()
         val isBackupNoteImagesKey = getIsBackupNoteImages().first()
@@ -39,7 +41,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
         val backupPath = getBackupPath().first()
         val repeatAutoBackupTimeAtHours = getAutoBackupTime().first()
         _settingsBackup.emit(BackupSettings(
-            isEnableBackup,
+            isEnableLocalBackup,
+            isEnableGDriveBackup,
             isBackupNotEncryptedNoteKey,
             isBackupEncryptedNoteKey,
             isBackupNoteImagesKey,
@@ -66,12 +69,21 @@ class SettingsAutoBackupRepositoryImpl constructor(
         }
     }
 
-    override suspend fun updateIsEnableBackup(newState: Boolean) {
+    override suspend fun updateIsEnableLocalBackup(newState: Boolean) {
         context.dataStore.edit {
-            it[isEnableBackup] = newState
+            it[isEnableLocalBackup] = newState
         }
         notifySettingsChanges {
-            it.copy(isEnableBackup = newState)
+            it.copy(isEnableLocalBackup = newState)
+        }
+    }
+
+    override suspend fun updateIsEnableGDriveBackup(newState: Boolean) {
+        context.dataStore.edit {
+            it[isEnableGDriveBackup] = newState
+        }
+        notifySettingsChanges {
+            it.copy(isEnableGDriveBackup = newState)
         }
     }
 
@@ -163,9 +175,9 @@ class SettingsAutoBackupRepositoryImpl constructor(
         }
     }
 
-    private fun getIsEnableBackup() : Flow<Boolean> {
+    private fun getIsEnableLocalBackup() : Flow<Boolean> {
         return context.dataStore.data.map {
-            it[isEnableBackup] ?: false
+            it[isEnableLocalBackup] ?: false
         }
     }
 
@@ -219,6 +231,12 @@ class SettingsAutoBackupRepositoryImpl constructor(
     private fun getAutoBackupTime() : Flow<Long> {
         return context.dataStore.data.map {
             it[repeatAutoBackupTimeAtHours] ?: 5
+        }
+    }
+
+    private fun getIsEnableGDriveBackup() : Flow<Boolean> {
+        return context.dataStore.data.map {
+            it[isEnableGDriveBackup] ?: false
         }
     }
 }

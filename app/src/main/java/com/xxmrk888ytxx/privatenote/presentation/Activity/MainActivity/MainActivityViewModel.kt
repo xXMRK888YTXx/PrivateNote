@@ -16,6 +16,7 @@ import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -24,6 +25,7 @@ import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoIn
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
+import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +39,8 @@ class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authorizationManager: BiometricAuthorizationManager,
     private val toastManager: ToastManager,
-    private val deepLinkController: DeepLinkController
+    private val deepLinkController: DeepLinkController,
+    private val googleAuthorizationManager: GoogleAuthorizationManager
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
@@ -268,5 +271,11 @@ class MainActivityViewModel @Inject constructor(
             it.second(e)
             unRegisterCreateFileBackupCallBack()
         }
+    }
+
+    @MustBeLocalization
+    fun googleSuccessAuthCallBack() {
+        if(googleAuthorizationManager.googleAccount.value != null)
+            toastManager.showToast("Авторизировано успешно")
     }
 }

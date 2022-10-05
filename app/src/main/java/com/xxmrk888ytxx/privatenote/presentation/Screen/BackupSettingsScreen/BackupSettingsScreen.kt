@@ -1,6 +1,5 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -86,7 +85,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Not_copy_encrypt_note),
             settingsState = settings.isBackupNotEncryptedNote,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotEncryptedNote(it)
             },
@@ -99,7 +98,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_encrypt_note),
             settingsState = settings.isBackupEncryptedNote,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupEncryptedNote(it)
             },
@@ -112,7 +111,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_images),
             settingsState = settings.isBackupNoteImages,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteImages(it)
             },
@@ -125,7 +124,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_notes_audio),
             settingsState = settings.isBackupNoteAudio,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteAudio(it)
             },
@@ -138,7 +137,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_category),
             settingsState = settings.isBackupNoteCategory,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteCategory(it)
             },
@@ -151,7 +150,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_not_сompleted_todo),
             settingsState = settings.isBackupNotCompletedTodo,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotCompletedTodo(it)
             },
@@ -164,7 +163,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_сompleted_todo),
             settingsState = settings.isBackupCompletedTodo,
-            isEnable = settings.isEnableBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupCompletedTodo(it)
             },
@@ -187,6 +186,7 @@ fun AutoBackupSettingsList(
     isRepeatLocalAutoBackupTimeDropDownVisible().Remember()
     val gDriveAutoBackupDropDownState = backupSettingsViewModel
         .isRepeatGDriveAutoBackupTimeDropDownVisible().Remember()
+    val googleAccount = backupSettingsViewModel.getGoogleAccount().Remember()
     Column(
         modifier = Modifier.padding(top = 10.dp)
     ) {
@@ -219,7 +219,7 @@ fun AutoBackupSettingsList(
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
                     Switch(
-                        checked = settings.value.isEnableBackup,
+                        checked = settings.value.isEnableLocalBackup,
                         onCheckedChange = {
                             backupSettingsViewModel.updateBackupState(it)
                         },
@@ -286,9 +286,9 @@ fun AutoBackupSettingsList(
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
                     Switch(
-                        checked = true,
+                        checked = settings.value.isEnableGDriveBackup,
                         onCheckedChange = {
-
+                            backupSettingsViewModel.updateIsEnableGDriveBackup(it)
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = ThemeManager.SecondaryColor,
@@ -300,9 +300,9 @@ fun AutoBackupSettingsList(
         }
         item {
             GoogleSingInButton(
-                authState = false,
+                authState = googleAccount.value != null,
                 onAuth = {
-                    Log.d("MyLog","test")
+                    backupSettingsViewModel.sendGoogleAuthRequest()
                 }
 
             )

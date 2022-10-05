@@ -1,7 +1,8 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository
 
 data class BackupSettings(
-    val isEnableBackup:Boolean = false,
+    val isEnableLocalBackup:Boolean = false,
+    val isEnableGDriveBackup:Boolean = false,
     val isBackupNotEncryptedNote:Boolean = true,
     val isBackupEncryptedNote:Boolean = true,
     val isBackupNoteImages:Boolean = true,

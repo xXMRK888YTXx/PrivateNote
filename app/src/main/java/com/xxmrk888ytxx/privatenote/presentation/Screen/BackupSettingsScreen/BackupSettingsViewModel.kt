@@ -10,10 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
+import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
@@ -29,7 +31,8 @@ import javax.inject.Inject
 class BackupSettingsViewModel @Inject constructor(
     private val settingsAutoBackupRepository: SettingsAutoBackupRepository,
     private val toastManager: ToastManager,
-    private val backupManager: BackupManager
+    private val backupManager: BackupManager,
+    private val googleAuthorizationManager: GoogleAuthorizationManager
 ): ViewModel() {
 
     fun getBackupSettings() = settingsAutoBackupRepository.getBackupSettings()
@@ -143,13 +146,24 @@ class BackupSettingsViewModel @Inject constructor(
                 }
                 return@launch
             }
-            settingsAutoBackupRepository.updateIsEnableBackup(newState)
+            settingsAutoBackupRepository.updateIsEnableLocalBackup(newState)
             if(newState) {
                 val time = settings.repeatAutoBackupTimeAtHours
                 backupManager.enableAutoBackup(time)
             }else {
                 backupManager.disableAutoBackup()
             }
+        }
+    }
+
+    @MustBeLocalization
+    fun updateIsEnableGDriveBackup(newState: Boolean) {
+        if(getGoogleAccount().value == null&&!newState) {
+            toastManager.showToast("Для работы необходимо войти в аккаунт Google")
+            return
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsAutoBackupRepository.updateIsEnableGDriveBackup(newState)
         }
     }
 
@@ -290,7 +304,7 @@ class BackupSettingsViewModel @Inject constructor(
     fun changeCurrentAutoBackupTime(timeAtHours: Long) {
         viewModelScope.launch {
             settingsAutoBackupRepository.changeAutoBackupTime(timeAtHours)
-            if(settingsAutoBackupRepository.getBackupSettings().first().isEnableBackup) {
+            if(settingsAutoBackupRepository.getBackupSettings().first().isEnableLocalBackup) {
                 backupManager.enableAutoBackup(timeAtHours)
             }
         }
@@ -300,6 +314,13 @@ class BackupSettingsViewModel @Inject constructor(
             it.first.removeObserver(it.second)
             backupWorkObserver.value = null
         }
+    }
+
+    fun getGoogleAccount() = googleAuthorizationManager.googleAccount
+
+    fun sendGoogleAuthRequest() {
+        val callBack = activityController?.googleAuthorizationCallBack ?: return
+        googleAuthorizationManager.sendAuthorizationRequest(callBack)
     }
 
 }

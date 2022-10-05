@@ -4,7 +4,8 @@ import kotlinx.coroutines.flow.SharedFlow
 
 interface SettingsAutoBackupRepository {
     fun getBackupSettings() : SharedFlow<BackupSettings>
-    suspend fun updateIsEnableBackup(newState:Boolean)
+    suspend fun updateIsEnableLocalBackup(newState:Boolean)
+    suspend fun updateIsEnableGDriveBackup(newState: Boolean)
     suspend fun updateIsBackupNotEncryptedNote(newState:Boolean)
     suspend fun updateIsBackupEncryptedNote(newState:Boolean)
     suspend fun updateIsBackupNoteImages(newState:Boolean)

@@ -1,9 +1,7 @@
 package com.xxmrk888ytxx.privatenote.domain.Workers
 
 import android.app.Notification
-import android.app.NotificationManager
 import android.content.Context
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -22,7 +20,6 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.Wri
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
-import kotlin.random.Random
 
 @HiltWorker
 class LocalAutoBackupWorker @AssistedInject constructor(
@@ -41,7 +38,7 @@ class LocalAutoBackupWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         try {
             val settings = settingsAutoBackupRepository.getBackupSettings().first()
-            if(!settings.isEnableBackup) return Result.failure()
+            if(!settings.isEnableLocalBackup) return Result.failure()
             if(settings.backupPath == null) throw NotSetBackupPathException()
             val jsonString = parseBackupModelToJson(
                 createBackupUseCase.execute(settings)
@@ -53,7 +50,7 @@ class LocalAutoBackupWorker @AssistedInject constructor(
                 title = context.getString(R.string.Error_with_local_backup),
                 text = context.getString(R.string.BadFileAccessException_description)
             )
-            settingsAutoBackupRepository.updateIsEnableBackup(false)
+            settingsAutoBackupRepository.updateIsEnableLocalBackup(false)
             settingsAutoBackupRepository.updateBackupPath(null)
             return Result.failure()
         } catch (e: NotSetBackupPathException) {

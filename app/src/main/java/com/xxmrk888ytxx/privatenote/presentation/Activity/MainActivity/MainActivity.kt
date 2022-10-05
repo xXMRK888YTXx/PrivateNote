@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
@@ -294,6 +296,18 @@ class MainActivity : AppCompatActivity(), ActivityController {
             onError(e)
         }
     }
+
+    override val googleAuthorizationCallBack: ActivityResultLauncher<Intent>
+    = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if(it.resultCode == Activity.RESULT_OK) {
+                GoogleSignIn.getSignedInAccountFromIntent(it.data)
+                    .addOnCompleteListener {
+                        if(it.isSuccessful) {
+                            mainActivityViewModel.googleSuccessAuthCallBack()
+                        }
+                    }
+            }
+        }
 
     private val createFileBackupCallBack = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if(it.resultCode == Activity.RESULT_OK) {
