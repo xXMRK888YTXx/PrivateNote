@@ -200,4 +200,10 @@
     <string name="Google_sing_in">Sign in to Google</string>
     <string name="Authorization">Authorized</string>
     <string name="Click_to_sign_in">Click to sign in</string>
+    <string name="GDrive_backup_started">Backup on Google Drive started</string>
+    <string name="Google_drive_backup_error_title">An error occurred during the backup on Google Drive</string>
+    <string name="GoogleDriveBadWrite_description">Google Drive denied access, check that the app has access to Google Drive</string>
+    <string name="Not_known_error">An unknown error occurred during the backup.</string>
+    <string name="Successful_authorization">Authorized successfully</string>
+    <string name="Need_login_to_google">To work, you need to log in to your Google account</string>
 </resources>

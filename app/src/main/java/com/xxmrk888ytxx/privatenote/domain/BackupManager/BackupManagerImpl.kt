@@ -6,6 +6,7 @@ import androidx.work.*
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Workers.LocalAutoBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
+import com.xxmrk888ytxx.privatenote.domain.Workers.GDriveBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.RestoreBackupWorker
 import java.util.concurrent.TimeUnit
 
@@ -46,22 +47,40 @@ class BackupManagerImpl constructor(
         return workManager.enqueueUniqueWork("RestoreBackupWork",ExistingWorkPolicy.KEEP,work)
     }
 
-    override fun enableAutoBackup(timeRepeatHours:Long) {
-        disableAutoBackup()
+    override fun enableLocalAutoBackup(timeRepeatHours:Long) {
+        disableLocalAutoBackup()
         val workManager = WorkManager.getInstance(context)
         val work = PeriodicWorkRequestBuilder<LocalAutoBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
             .addTag(LocalAutoBackupWorker.WORK_TAG)
             .build()
         workManager.enqueueUniquePeriodicWork(
-            "AutoBackupWork",
+            "LocalAutoBackupWork",
             ExistingPeriodicWorkPolicy.REPLACE,
             work
         )
     }
 
-    override fun disableAutoBackup() {
+    override fun disableLocalAutoBackup() {
         val workManager = WorkManager.getInstance(context)
         workManager.cancelAllWorkByTag(LocalAutoBackupWorker.WORK_TAG)
+    }
+
+    override fun enableGDriveBackup(timeRepeatHours: Long) {
+        disableGDriveAutoBackup()
+        val workManager = WorkManager.getInstance(context)
+        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
+            .addTag(GDriveBackupWorker.WORK_TAG)
+            .build()
+        workManager.enqueueUniquePeriodicWork(
+            "GDriveAutoBackupWork",
+            ExistingPeriodicWorkPolicy.REPLACE,
+            work
+        )
+    }
+
+    override fun disableGDriveAutoBackup() {
+        val workManager = WorkManager.getInstance(context)
+        workManager.cancelAllWorkByTag(GDriveBackupWorker.WORK_TAG)
     }
 
 

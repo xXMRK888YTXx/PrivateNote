@@ -11,9 +11,9 @@ import kotlinx.coroutines.withContext
 class WriteBackupInFileUseCaseImpl(
     private val context: Context
 ) : WriteBackupInFileUseCase {
-    override suspend fun execute(jsonBackupString: String,path:String) {
+    override suspend fun execute(jsonBackupString: String, uriString:String) {
         try {
-            val uri = Uri.parse(path)
+            val uri = Uri.parse(uriString)
             val stream = context.contentResolver.openOutputStream(uri) ?: throw BadFileAccessException()
             withContext(Dispatchers.IO) {
                 stream.write(jsonBackupString.toByteArray())

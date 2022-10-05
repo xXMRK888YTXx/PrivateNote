@@ -24,7 +24,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
     private val isBackupNotCompletedTodoKey = booleanPreferencesKey("isBackupNotCompletedTodoKey")
     private val isBackupCompletedTodoKey = booleanPreferencesKey("isBackupCompletedTodoKey")
     private val backupPathKey = stringPreferencesKey("backupPathKey")
-    private val repeatAutoBackupTimeAtHours = longPreferencesKey("repeatAutoBackupTimeAtHours")
+    private val repeatLocalAutoBackupTimeAtHours = longPreferencesKey("repeatAutoBackupTimeAtHours")
+    private val repeatGDriveAutoBackupTimeAtHours = longPreferencesKey("repeatGDriveAutoBackupTimeAtHours")
 
     override fun getBackupSettings(): SharedFlow<BackupSettings> = settingsBackup
 
@@ -39,7 +40,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
         val isBackupNotCompletedTodoKey = getIsBackupNotCompletedTodo().first()
         val isBackupCompletedTodoKey = getIsBackupCompletedTodo().first()
         val backupPath = getBackupPath().first()
-        val repeatAutoBackupTimeAtHours = getAutoBackupTime().first()
+        val repeatLocalAutoBackupTimeAtHours = getLocalAutoBackupTime().first()
+        val repeatGDriveAutoBackupTimeAtHours = getGDriveAutoBackupTime().first()
         _settingsBackup.emit(BackupSettings(
             isEnableLocalBackup,
             isEnableGDriveBackup,
@@ -51,7 +53,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
             isBackupNotCompletedTodoKey,
             isBackupCompletedTodoKey,
             backupPath,
-            repeatAutoBackupTimeAtHours
+            repeatLocalAutoBackupTimeAtHours,
+            repeatGDriveAutoBackupTimeAtHours
         ))
     }
 
@@ -166,12 +169,21 @@ class SettingsAutoBackupRepositoryImpl constructor(
         }
     }
 
-    override suspend fun changeAutoBackupTime(newTime: Long) {
+    override suspend fun changeLocalAutoBackupTime(newTime: Long) {
         context.dataStore.edit {
-            it[repeatAutoBackupTimeAtHours] = newTime
+            it[repeatLocalAutoBackupTimeAtHours] = newTime
         }
         notifySettingsChanges {
-            it.copy(repeatAutoBackupTimeAtHours = newTime)
+            it.copy(repeatLocalAutoBackupTimeAtHours = newTime)
+        }
+    }
+
+    override suspend fun changeGDriveAutoBackupTime(newTime: Long) {
+        context.dataStore.edit {
+            it[repeatGDriveAutoBackupTimeAtHours] = newTime
+        }
+        notifySettingsChanges {
+            it.copy(repeatGDriveAutoBackupTimeAtHours = newTime)
         }
     }
 
@@ -228,15 +240,21 @@ class SettingsAutoBackupRepositoryImpl constructor(
         }
     }
 
-    private fun getAutoBackupTime() : Flow<Long> {
+    private fun getLocalAutoBackupTime() : Flow<Long> {
         return context.dataStore.data.map {
-            it[repeatAutoBackupTimeAtHours] ?: 5
+            it[repeatLocalAutoBackupTimeAtHours] ?: 5
         }
     }
 
     private fun getIsEnableGDriveBackup() : Flow<Boolean> {
         return context.dataStore.data.map {
             it[isEnableGDriveBackup] ?: false
+        }
+    }
+
+    private fun getGDriveAutoBackupTime() : Flow<Long> {
+        return context.dataStore.data.map {
+            it[repeatGDriveAutoBackupTimeAtHours] ?: 5
         }
     }
 }

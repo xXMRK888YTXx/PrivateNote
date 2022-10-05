@@ -148,22 +148,28 @@ class BackupSettingsViewModel @Inject constructor(
             }
             settingsAutoBackupRepository.updateIsEnableLocalBackup(newState)
             if(newState) {
-                val time = settings.repeatAutoBackupTimeAtHours
-                backupManager.enableAutoBackup(time)
+                val time = settings.repeatLocalAutoBackupTimeAtHours
+                backupManager.enableLocalAutoBackup(time)
             }else {
-                backupManager.disableAutoBackup()
+                backupManager.disableLocalAutoBackup()
             }
         }
     }
 
-    @MustBeLocalization
     fun updateIsEnableGDriveBackup(newState: Boolean) {
         if(getGoogleAccount().value == null&&!newState) {
-            toastManager.showToast("Для работы необходимо войти в аккаунт Google")
+            toastManager.showToast(R.string.Need_login_to_google)
             return
         }
         viewModelScope.launch(Dispatchers.IO) {
             settingsAutoBackupRepository.updateIsEnableGDriveBackup(newState)
+            if(newState) {
+                val settings = settingsAutoBackupRepository.getBackupSettings().first()
+                val time = settings.repeatGDriveAutoBackupTimeAtHours
+                backupManager.enableGDriveBackup(time)
+            }else {
+                backupManager.disableGDriveAutoBackup()
+            }
         }
     }
 
@@ -301,14 +307,24 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    fun changeCurrentAutoBackupTime(timeAtHours: Long) {
+    fun updateLocalAutoBackupTime(timeAtHours: Long) {
         viewModelScope.launch {
-            settingsAutoBackupRepository.changeAutoBackupTime(timeAtHours)
+            settingsAutoBackupRepository.changeLocalAutoBackupTime(timeAtHours)
             if(settingsAutoBackupRepository.getBackupSettings().first().isEnableLocalBackup) {
-                backupManager.enableAutoBackup(timeAtHours)
+                backupManager.enableLocalAutoBackup(timeAtHours)
             }
         }
     }
+
+    fun updateGDriveAutoBackupTime(timeAtHours: Long) {
+        viewModelScope.launch {
+            settingsAutoBackupRepository.changeGDriveAutoBackupTime(newTime = timeAtHours)
+            if(settingsAutoBackupRepository.getBackupSettings().first().isEnableGDriveBackup) {
+                backupManager.enableGDriveBackup(timeAtHours)
+            }
+        }
+    }
+
     private fun removeBackupObserver() {
         backupWorkObserver.value.ifNotNull {
             it.first.removeObserver(it.second)

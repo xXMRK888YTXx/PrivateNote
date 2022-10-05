@@ -14,5 +14,6 @@ interface SettingsAutoBackupRepository {
     suspend fun updateIsBackupNotCompletedTodo(newState:Boolean)
     suspend fun updateIsBackupCompletedTodo(newState:Boolean)
     suspend fun updateBackupPath(newPath:String?)
-    suspend fun changeAutoBackupTime(newTime:Long)
+    suspend fun changeLocalAutoBackupTime(newTime:Long)
+    suspend fun changeGDriveAutoBackupTime(newTime: Long)
 }

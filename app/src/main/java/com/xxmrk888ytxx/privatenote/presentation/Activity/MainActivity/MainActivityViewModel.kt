@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.BuildConfig
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
@@ -273,9 +274,9 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
-    @MustBeLocalization
+
     fun googleSuccessAuthCallBack() {
         if(googleAuthorizationManager.googleAccount.value != null)
-            toastManager.showToast("Авторизировано успешно")
+            toastManager.showToast(R.string.Successful_authorization)
     }
 }

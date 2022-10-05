@@ -7,6 +7,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 interface BackupManager {
     fun createBackup(settings: BackupSettings) : Operation
     fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings) : Operation
-    fun enableAutoBackup(timeRepeatHours:Long)
-    fun disableAutoBackup()
+    fun enableLocalAutoBackup(timeRepeatHours:Long)
+    fun disableLocalAutoBackup()
+    fun enableGDriveBackup(timeRepeatHours: Long)
+    fun disableGDriveAutoBackup()
 }

@@ -240,12 +240,12 @@ fun AutoBackupSettingsList(
         item {
             SelectRepeatBackupButton(
                 getCurrentTime = {
-                    settings.value.repeatAutoBackupTimeAtHours
+                    settings.value.repeatLocalAutoBackupTimeAtHours
                 },
                 isVisible = localAutoBackupDropDownState.value,
                 onChange = {
                     backupSettingsViewModel.hideRepeatLocalAutoBackupTimeDropDown()
-                    backupSettingsViewModel.changeCurrentAutoBackupTime(it)
+                    backupSettingsViewModel.updateLocalAutoBackupTime(it)
                 },
                 onShow = {
                     backupSettingsViewModel.showRepeatLocalAutoBackupTimeDropDown()
@@ -310,11 +310,12 @@ fun AutoBackupSettingsList(
         item {
             SelectRepeatBackupButton(
                 getCurrentTime = {
-                    settings.value.repeatAutoBackupTimeAtHours
+                    settings.value.repeatGDriveAutoBackupTimeAtHours
                 },
                 isVisible = gDriveAutoBackupDropDownState.value,
                 onChange = {
-
+                    backupSettingsViewModel.hideRepeatGDriveAutoBackupTimeDropDownVisible()
+                    backupSettingsViewModel.updateGDriveAutoBackupTime(it)
                 },
                 onShow = {
                     backupSettingsViewModel.showRepeatGDriveAutoBackupTimeDropDownVisible()

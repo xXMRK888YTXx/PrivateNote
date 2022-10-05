@@ -33,6 +33,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.UploadBackupToGoogleDriveUseCase.UploadBackupToGoogleDriveUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.UploadBackupToGoogleDriveUseCase.UploadBackupToGoogleDriveUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCaseImpl
 import dagger.Module
@@ -134,5 +136,14 @@ class UseCases {
     ) : CreateBackupUseCase {
         return CreateBackupUseCaseImpl(getNotesForBackupUseCase, getCategoryForBackupUseCase, getTodoForBackupUseCase)
     }
+
+    @Provides
+    @Singleton
+    fun getUploadBackupToGoogleDriveUseCaseImpl(
+        @ApplicationContext context: Context
+    ) : UploadBackupToGoogleDriveUseCase {
+      return UploadBackupToGoogleDriveUseCaseImpl(context)
+    }
+
 
 }
