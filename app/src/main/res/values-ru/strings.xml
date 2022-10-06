@@ -201,4 +201,5 @@
     <string name="Not_known_error">Во время бэкапа произошла неизвестная ошибка.</string>
     <string name="Successful_authorization">Авторизировано успешно</string>
     <string name="Need_login_to_google">Для работы необходимо войти в аккаунт Google</string>
+    <string name="Load_only_from_WIFI">Загружать только по WiFi</string>
 </resources>

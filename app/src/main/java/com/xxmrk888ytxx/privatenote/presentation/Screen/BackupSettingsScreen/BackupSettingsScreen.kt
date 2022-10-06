@@ -299,6 +299,14 @@ fun AutoBackupSettingsList(
             }
         }
         item {
+            SettingsRadioButton(
+                text = stringResource(R.string.Load_only_from_WIFI),
+                state = settings.value.isUploadToGDriveOnlyForWiFi,
+                onChange = {
+                    backupSettingsViewModel.updateUploadToGDriveOnlyForWiFi(it)
+                })
+        }
+        item {
             GoogleSingInButton(
                 authState = googleAccount.value != null,
                 onAuth = {
@@ -834,6 +842,38 @@ fun LoadDialog() {
                     color = ThemeManager.PrimaryFontColor
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun SettingsRadioButton(
+    text:String,
+    state:Boolean,
+    onChange: (Boolean) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.W800,
+            fontSize = 18.sp,
+            color = ThemeManager.PrimaryFontColor,
+            modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
+        )
+        Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
+            Switch(
+                checked = state,
+                onCheckedChange = {
+                    onChange(it)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = ThemeManager.SecondaryColor,
+                    uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                ),
+            )
         }
     }
 }

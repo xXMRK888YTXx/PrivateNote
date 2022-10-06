@@ -12,5 +12,6 @@ data class BackupSettings(
     val isBackupCompletedTodo:Boolean = false,
     val backupPath:String? = null,
     val repeatLocalAutoBackupTimeAtHours:Long = 5,
-    val repeatGDriveAutoBackupTimeAtHours:Long = 5
-    )
+    val repeatGDriveAutoBackupTimeAtHours:Long = 5,
+    val isUploadToGDriveOnlyForWiFi:Boolean = false
+)

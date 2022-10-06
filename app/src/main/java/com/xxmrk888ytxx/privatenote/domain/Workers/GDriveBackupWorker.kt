@@ -60,7 +60,7 @@ class GDriveBackupWorker @AssistedInject constructor (
                 text = context.getString(R.string.GoogleDriveBadWrite_description)
             )
             removeTempFile()
-            return Result.failure()
+            return Result.retry()
         }
         catch (e:Exception) {
             notificationAppManager.sendBackupStateNotification(
@@ -68,7 +68,7 @@ class GDriveBackupWorker @AssistedInject constructor (
                 text = context.getString(R.string.Not_known_error)
             )
             removeTempFile()
-            return Result.failure()
+            return Result.retry()
         }
     }
 

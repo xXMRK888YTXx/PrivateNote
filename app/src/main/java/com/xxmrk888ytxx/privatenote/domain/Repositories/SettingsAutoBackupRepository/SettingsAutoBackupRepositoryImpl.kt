@@ -26,6 +26,7 @@ class SettingsAutoBackupRepositoryImpl constructor(
     private val backupPathKey = stringPreferencesKey("backupPathKey")
     private val repeatLocalAutoBackupTimeAtHours = longPreferencesKey("repeatAutoBackupTimeAtHours")
     private val repeatGDriveAutoBackupTimeAtHours = longPreferencesKey("repeatGDriveAutoBackupTimeAtHours")
+    private val uploadToGDriveOnlyForWiFiKey = booleanPreferencesKey("uploadToGDriveOnlyForWiFiKey")
 
     override fun getBackupSettings(): SharedFlow<BackupSettings> = settingsBackup
 
@@ -42,6 +43,7 @@ class SettingsAutoBackupRepositoryImpl constructor(
         val backupPath = getBackupPath().first()
         val repeatLocalAutoBackupTimeAtHours = getLocalAutoBackupTime().first()
         val repeatGDriveAutoBackupTimeAtHours = getGDriveAutoBackupTime().first()
+        val uploadToGDriveOnlyForWiFi = getUploadToGDriveOnlyForWiFi().first()
         _settingsBackup.emit(BackupSettings(
             isEnableLocalBackup,
             isEnableGDriveBackup,
@@ -54,7 +56,8 @@ class SettingsAutoBackupRepositoryImpl constructor(
             isBackupCompletedTodoKey,
             backupPath,
             repeatLocalAutoBackupTimeAtHours,
-            repeatGDriveAutoBackupTimeAtHours
+            repeatGDriveAutoBackupTimeAtHours,
+            uploadToGDriveOnlyForWiFi
         ))
     }
 
@@ -187,6 +190,15 @@ class SettingsAutoBackupRepositoryImpl constructor(
         }
     }
 
+    override suspend fun updateUploadToGDriveOnlyForWiFi(newState: Boolean) {
+        context.dataStore.edit {
+            it[uploadToGDriveOnlyForWiFiKey] = newState
+        }
+        notifySettingsChanges {
+            it.copy(isUploadToGDriveOnlyForWiFi = newState)
+        }
+    }
+
     private fun getIsEnableLocalBackup() : Flow<Boolean> {
         return context.dataStore.data.map {
             it[isEnableLocalBackup] ?: false
@@ -257,4 +269,11 @@ class SettingsAutoBackupRepositoryImpl constructor(
             it[repeatGDriveAutoBackupTimeAtHours] ?: 5
         }
     }
+
+    private fun getUploadToGDriveOnlyForWiFi() : Flow<Boolean> {
+        return context.dataStore.data.map {
+            it[uploadToGDriveOnlyForWiFiKey] ?: false
+        }
+    }
+
 }

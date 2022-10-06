@@ -58,7 +58,7 @@ class LocalAutoBackupWorker @AssistedInject constructor(
                 title = context.getString(R.string.Error_with_local_backup),
                 text = context.getString(R.string.NotSetBackupPathException_description)
             )
-            return Result.failure()
+            return Result.retry()
         }
 
     }

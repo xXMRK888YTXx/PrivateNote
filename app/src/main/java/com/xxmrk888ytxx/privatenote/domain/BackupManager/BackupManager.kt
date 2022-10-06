@@ -9,6 +9,6 @@ interface BackupManager {
     fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings) : Operation
     fun enableLocalAutoBackup(timeRepeatHours:Long)
     fun disableLocalAutoBackup()
-    fun enableGDriveBackup(timeRepeatHours: Long)
+    fun enableGDriveBackup(timeRepeatHours: Long,isUploadByWifiOnly:Boolean)
     fun disableGDriveAutoBackup()
 }

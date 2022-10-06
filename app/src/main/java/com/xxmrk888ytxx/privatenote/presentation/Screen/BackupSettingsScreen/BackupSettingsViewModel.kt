@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
@@ -166,7 +165,7 @@ class BackupSettingsViewModel @Inject constructor(
             if(newState) {
                 val settings = settingsAutoBackupRepository.getBackupSettings().first()
                 val time = settings.repeatGDriveAutoBackupTimeAtHours
-                backupManager.enableGDriveBackup(time)
+                backupManager.enableGDriveBackup(time,settings.isUploadToGDriveOnlyForWiFi)
             }else {
                 backupManager.disableGDriveAutoBackup()
             }
@@ -281,6 +280,19 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
+    fun updateUploadToGDriveOnlyForWiFi(newState: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsAutoBackupRepository.updateUploadToGDriveOnlyForWiFi(newState)
+            val settings = settingsAutoBackupRepository.getBackupSettings().first()
+            if(settings.isEnableGDriveBackup) {
+                backupManager.enableGDriveBackup(
+                    settings.repeatGDriveAutoBackupTimeAtHours,
+                    settings.isUploadToGDriveOnlyForWiFi
+                )
+            }
+        }
+    }
+
     fun startRestoreBackup() {
         val uri = currentBackupFileForRestore.value ?: return
         val params = restoreParamsInDialog.value ?: return
@@ -320,7 +332,8 @@ class BackupSettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsAutoBackupRepository.changeGDriveAutoBackupTime(newTime = timeAtHours)
             if(settingsAutoBackupRepository.getBackupSettings().first().isEnableGDriveBackup) {
-                backupManager.enableGDriveBackup(timeAtHours)
+                backupManager.enableGDriveBackup(timeAtHours,
+                    settingsAutoBackupRepository.getBackupSettings().first().isUploadToGDriveOnlyForWiFi)
             }
         }
     }

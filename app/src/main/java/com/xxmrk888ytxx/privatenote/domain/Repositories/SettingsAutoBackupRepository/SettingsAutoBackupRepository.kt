@@ -16,4 +16,5 @@ interface SettingsAutoBackupRepository {
     suspend fun updateBackupPath(newPath:String?)
     suspend fun changeLocalAutoBackupTime(newTime:Long)
     suspend fun changeGDriveAutoBackupTime(newTime: Long)
+    suspend fun updateUploadToGDriveOnlyForWiFi(newState: Boolean)
 }
