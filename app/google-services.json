@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "352221401627",
+    "firebase_url": "https://privatenote-8x8118-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "privatenote-8x8118",
     "storage_bucket": "privatenote-8x8118.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "352221401627-27i86ncum6cocrvbatp4toqr69gqbn73.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xxmrk888ytxx.privatenote",
+            "certificate_hash": "fc2e49ade430989b4b1cc80480f7d4c1a0d8c4d5"
+          }
+        },
         {
           "client_id": "352221401627-b57j8vhicvc112r4u92to1ksvch32n9l.apps.googleusercontent.com",
           "client_type": 1,

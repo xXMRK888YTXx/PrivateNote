@@ -156,7 +156,7 @@ class BackupSettingsViewModel @Inject constructor(
     }
 
     fun updateIsEnableGDriveBackup(newState: Boolean) {
-        if(getGoogleAccount().value == null&&!newState) {
+        if(getGoogleAccount().value == null) {
             toastManager.showToast(R.string.Need_login_to_google)
             return
         }
