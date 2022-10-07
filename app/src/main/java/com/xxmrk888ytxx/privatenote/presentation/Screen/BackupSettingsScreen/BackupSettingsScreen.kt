@@ -85,7 +85,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Not_copy_encrypt_note),
             settingsState = settings.isBackupNotEncryptedNote,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotEncryptedNote(it)
             },
@@ -98,7 +98,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_encrypt_note),
             settingsState = settings.isBackupEncryptedNote,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupEncryptedNote(it)
             },
@@ -111,7 +111,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_images),
             settingsState = settings.isBackupNoteImages,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteImages(it)
             },
@@ -124,7 +124,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_notes_audio),
             settingsState = settings.isBackupNoteAudio,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteAudio(it)
             },
@@ -137,7 +137,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_category),
             settingsState = settings.isBackupNoteCategory,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteCategory(it)
             },
@@ -150,7 +150,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_not_сompleted_todo),
             settingsState = settings.isBackupNotCompletedTodo,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotCompletedTodo(it)
             },
@@ -163,7 +163,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_сompleted_todo),
             settingsState = settings.isBackupCompletedTodo,
-            isEnable = settings.isEnableLocalBackup,
+            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupCompletedTodo(it)
             },

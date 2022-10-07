@@ -11,7 +11,7 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="1111"
+        android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".App"
@@ -20,7 +20,7 @@
         <activity
             android:name=".presentation.Activity.MainActivity.MainActivity"
             android:exported="true"
-            android:label="1111"
+            android:label="@string/app_name"
             android:theme="@style/Theme.PrivateNote">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
