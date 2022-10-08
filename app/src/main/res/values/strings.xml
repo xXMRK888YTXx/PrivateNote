@@ -207,4 +207,5 @@
     <string name="Successful_authorization">Authorized successfully</string>
     <string name="Need_login_to_google">To work, you need to log in to your Google account</string>
     <string name="Load_only_from_WIFI">Upload over WiFi only</string>
+    <string name="Login_out_from_account">Sign out</string>
 </resources>

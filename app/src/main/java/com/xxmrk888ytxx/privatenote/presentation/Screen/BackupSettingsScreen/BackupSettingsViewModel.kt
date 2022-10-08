@@ -352,4 +352,10 @@ class BackupSettingsViewModel @Inject constructor(
         googleAuthorizationManager.sendAuthorizationRequest(callBack)
     }
 
+    fun loginOutGoogleAccount() {
+        googleAuthorizationManager.loginOut()
+        backupManager.disableGDriveAutoBackup()
+        viewModelScope.launch { settingsAutoBackupRepository.updateIsEnableGDriveBackup(false) }
+    }
+
 }

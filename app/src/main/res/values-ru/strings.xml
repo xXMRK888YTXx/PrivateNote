@@ -202,4 +202,5 @@
     <string name="Successful_authorization">Авторизировано успешно</string>
     <string name="Need_login_to_google">Для работы необходимо войти в аккаунт Google</string>
     <string name="Load_only_from_WIFI">Загружать только по WiFi</string>
+    <string name="Login_out_from_account">Выйти из аккаунта</string>
 </resources>

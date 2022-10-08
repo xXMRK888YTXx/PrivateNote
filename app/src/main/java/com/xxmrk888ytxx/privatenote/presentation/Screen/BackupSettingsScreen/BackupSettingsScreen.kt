@@ -315,6 +315,13 @@ fun AutoBackupSettingsList(
 
             )
         }
+        if(googleAccount.value != null) {
+            item {
+                SettingsButton(text = stringResource(R.string.Login_out_from_account)) {
+                    backupSettingsViewModel.loginOutGoogleAccount()
+                }
+            }
+        }
         item {
             SelectRepeatBackupButton(
                 getCurrentTime = {
@@ -873,6 +880,41 @@ fun SettingsRadioButton(
                     checkedThumbColor = ThemeManager.SecondaryColor,
                     uncheckedThumbColor = ThemeManager.SecondoryFontColor
                 ),
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsButton(
+    text:String,
+    onClick: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth().padding(start = 10.dp, bottom = 15.dp)
+            .clickable {
+                onClick()
+            }
+    ) {
+        Text(
+            text = text,
+            fontWeight = FontWeight.W800,
+            fontSize = 18.sp,
+            color = ThemeManager.PrimaryFontColor,
+            modifier = Modifier
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = ThemeManager.PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
