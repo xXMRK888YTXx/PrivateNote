@@ -1,5 +1,7 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.DelayNotifyActivity
 
+import android.app.Activity
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,17 +33,26 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeActivity
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
+class DelayNotifyActivity : ComponentActivity(),DelayDialogController,ThemeActivity {
     private val delayNotifyViewModel:DelayNotifyViewModel by viewModels()
+
+    override fun notifyAppThemeChanged(activity: Activity, themeId: Int) {
+        super.notifyAppThemeChanged(activity, themeId)
+        setTheme(R.style.DialogTheme)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(intent.action != DELAY_TASK_ACTION) this.finish()
+        val themeId = delayNotifyViewModel.getThemeId()
+        notifyAppThemeChanged(this,themeId)
         val currentTask = intent.getParcelableExtra<IntentNotifyTask>(DELAY_TASK_DATA_KEY)
         if(currentTask == null) this.finish()
         val notificationId = intent.getIntExtra(NOTIFICATION_ID_KEY,-1)

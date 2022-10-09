@@ -25,7 +25,7 @@ class DelayNotifyViewModel @Inject constructor(
     private val notifyTaskManager: NotifyTaskManager,
     private val notificationAppManager: NotificationAppManager,
     @ApplicationContext private val context: Context,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     init {
         val languageCode = settingsRepository.getAppLanguage().getData()
@@ -103,5 +103,9 @@ class DelayNotifyViewModel @Inject constructor(
             cancelNotification()
             activity.finish()
         }
+    }
+
+    fun getThemeId(): Int {
+        return settingsRepository.getApplicationThemeId().getData()
     }
 }

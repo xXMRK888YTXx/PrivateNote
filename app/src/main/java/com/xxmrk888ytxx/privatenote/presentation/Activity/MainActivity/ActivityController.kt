@@ -12,7 +12,6 @@ interface ActivityController {
     suspend fun clearShareDir()
     fun changeOrientationLockState(state:Boolean)
     fun openAlarmSettings()
-    fun notifyAppThemeChanged()
     fun selectFileForAutoBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun createFileBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun openBackupFile(onComplete:(path: Uri) -> Unit, onError:(e:Exception) -> Unit = {})

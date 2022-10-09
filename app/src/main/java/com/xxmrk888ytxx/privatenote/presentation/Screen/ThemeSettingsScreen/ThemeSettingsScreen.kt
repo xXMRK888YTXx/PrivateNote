@@ -32,7 +32,7 @@ import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.WHITE
 fun ThemeSettingsScreen(
     themeSettingsViewModel: ThemeSettingsViewModel = hiltViewModel(),
     navController: NavController,
-    activityController: ActivityController
+    onUpdateTheme:(Int) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -47,7 +47,7 @@ fun ThemeSettingsScreen(
         ThemeList(themeSettingsViewModel)
     }
     LaunchedEffect(key1 = Unit, block = {
-        themeSettingsViewModel.initActivityController(activityController)
+        themeSettingsViewModel.initOnUpdateTheme(onUpdateTheme)
     })
 }
 

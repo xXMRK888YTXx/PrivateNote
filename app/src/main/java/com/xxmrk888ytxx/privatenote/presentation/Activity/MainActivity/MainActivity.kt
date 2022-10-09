@@ -42,6 +42,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeActivity
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SYSTEM_THEME
@@ -54,18 +55,18 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityController {
+class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
-
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        notifyAppThemeChanged()
+        val themeId = settingsRepository.getApplicationThemeId().getData()
+        notifyAppThemeChanged(this,themeId)
         val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {
             val locale = Locale(languageCode)
@@ -119,7 +120,9 @@ class MainActivity : AppCompatActivity(), ActivityController {
                     composable(Screen.ThemeSettingsScreen.route) {
                         ThemeSettingsScreen(
                             navController = navController,
-                            activityController = this@MainActivity
+                            onUpdateTheme = {
+                                notifyAppThemeChanged(this@MainActivity,it)
+                            }
                         )
                     }
                     composable(Screen.BackupSettingsScreen.route) {
@@ -218,29 +221,6 @@ class MainActivity : AppCompatActivity(), ActivityController {
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
             startActivity(intent)
-        }
-    }
-
-    override fun notifyAppThemeChanged() {
-        val themeId = settingsRepository.getApplicationThemeId().getData()
-        if(themeId == SYSTEM_THEME) {
-            when (resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-                Configuration.UI_MODE_NIGHT_YES -> {
-                    ThemeManager.setupTheme(ThemeManager.BLACK_THEME)
-                    setTheme(ThemeManager.systemThemeId)
-                }
-                Configuration.UI_MODE_NIGHT_NO -> {
-                    ThemeManager.setupTheme(ThemeManager.WHITE_THEME)
-                    setTheme(ThemeManager.systemThemeId)
-                }
-                Configuration.UI_MODE_NIGHT_UNDEFINED -> {
-                    ThemeManager.setupTheme(ThemeManager.BLACK_THEME)
-                    setTheme(ThemeManager.systemThemeId)
-                }
-            }
-        }else {
-            ThemeManager.setupTheme(themeId)
-            setTheme(ThemeManager.systemThemeId)
         }
     }
 
