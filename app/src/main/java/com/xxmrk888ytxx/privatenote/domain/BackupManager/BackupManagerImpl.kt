@@ -73,8 +73,9 @@ class BackupManagerImpl constructor(
             else NetworkType.CONNECTED
         )
         val workManager = WorkManager.getInstance(context)
-        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
+        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>((timeRepeatHours * 60)+10, TimeUnit.MINUTES)
             .addTag(GDriveBackupWorker.WORK_TAG)
+            .setInitialDelay(1,TimeUnit.MINUTES)
             .setConstraints(constraints.build())
             .build()
         workManager.enqueueUniquePeriodicWork(
