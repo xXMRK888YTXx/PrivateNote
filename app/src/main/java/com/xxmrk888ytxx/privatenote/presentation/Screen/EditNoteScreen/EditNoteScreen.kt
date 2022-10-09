@@ -52,6 +52,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
@@ -149,6 +150,10 @@ fun EditNoteScreen(
             }
         )
     }
+    LaunchedEffect(key1 = activityController, block = {
+        editNoteViewModel.initActivityController(activityController)
+    })
+
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -839,7 +844,9 @@ fun FilesDialog(
                     )
                     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                         Row {
-                            IconButton(onClick = { editNoteViewModel.requestAudioPermission(permission) }) {
+                            IconButton(onClick = {
+                                editNoteViewModel.showAddAudioDropDown()
+                            }) {
                                 Icon(painter = painterResource(R.drawable.ic_plus),
                                     contentDescription = "",
                                     tint = PrimaryFontColor,
@@ -847,6 +854,7 @@ fun FilesDialog(
                                 )
                             }
                         }
+                        AddAudioDropDown(editNoteViewModel = editNoteViewModel)
                     }
 
                 }
@@ -979,5 +987,48 @@ fun FilesDialog(
             }
         }
     }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+@MustBeLocalization
+fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
+    val state = editNoteViewModel.addAudioDropDownState().Remember()
+    val permission = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
+    val items = listOf(
+        DropDownItem(
+            "Записать",
+            onClick = {
+                editNoteViewModel.requestAudioPermission(permission)
+                editNoteViewModel.hideAddAudioDropDown()
+            }
+        ),
+        DropDownItem(
+            "С устройства",
+            onClick = {
+                editNoteViewModel.selectAudioFromExternalStorage()
+                editNoteViewModel.hideAddAudioDropDown()
+            }
+        )
+    )
+   Box() {
+       DropdownMenu(
+           expanded = state.value,
+           onDismissRequest = { editNoteViewModel.hideAddAudioDropDown() },
+           modifier = Modifier
+               .background(DropDownMenuColor)
+               .heightIn(max = 200.dp)
+       ) {
+           items.forEach {
+               DropdownMenuItem(onClick = { it.onClick() }) {
+                   Text(text = it.text,
+                       fontSize = 16.sp,
+                       fontWeight = FontWeight.Medium,
+                       color = ThemeManager.PrimaryFontColor
+                   )
+               }
+           }
+       }
+   }
 }
 

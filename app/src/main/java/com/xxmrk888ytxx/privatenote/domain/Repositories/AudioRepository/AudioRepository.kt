@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 
+import android.net.Uri
 import androidx.security.crypto.EncryptedFile
 import kotlinx.coroutines.flow.SharedFlow
 import java.io.File
@@ -7,7 +8,8 @@ import java.io.File
 interface AudioRepository {
     suspend fun loadAudioInBuffer(noteId: Int)
     suspend fun clearAudioBuffer()
-    suspend fun notifyNewAudioRecorded(recordedFile: File,noteId: Int)
+    suspend fun addNewAudio(recordedFile: File, noteId: Int)
+    suspend fun saveAudioFromExternalStorage(file:Uri,noteId: Int)
     suspend fun notifyDeleteAudio(audioId:Long)
     suspend fun getAudioDuration(file: EncryptedFile) : Long
     suspend fun removeAudio(noteId: Int,audioId:Long)

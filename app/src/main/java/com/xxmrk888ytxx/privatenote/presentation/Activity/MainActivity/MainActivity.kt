@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
+import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
@@ -196,6 +197,17 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
         }
     }
 
+    override fun pickAudio(onComplete: (audioUri: Uri) -> Unit, onError: (e: Exception) -> Unit) {
+        try {
+            mainActivityViewModel.registerPickAudioCallBack(onComplete,onError)
+            val intent = Intent(ACTION_GET_CONTENT)
+            intent.type = "audio/*"
+            audioPickCallBack.launch(intent)
+        }catch (e:CallBackAlreadyRegisteredException) {
+            onError(e)
+        }
+    }
+
     override suspend fun sendShowImageIntent(imageFile: EncryptedFile) {
         val uri = mainActivityViewModel.saveInCache(imageFile,this) ?: return
         val intent = Intent(Intent.ACTION_VIEW)
@@ -346,11 +358,25 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
         }
     }
 
-    fun lockOrientation() {
+    private val audioPickCallBack =  registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if(it.resultCode == Activity.RESULT_OK) {
+            val uri = it.data?.data
+            if(uri != null) {
+                mainActivityViewModel.onCompletePickAudio(uri)
+            }
+            else {
+                mainActivityViewModel.onErrorPickAudio(Exception())
+            }
+        }else {
+            mainActivityViewModel.onErrorPickAudio(Exception("Cancel"))
+        }
+    }
+
+    private fun lockOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
-    fun unLockOrientation() {
+    private fun unLockOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
     }
 }

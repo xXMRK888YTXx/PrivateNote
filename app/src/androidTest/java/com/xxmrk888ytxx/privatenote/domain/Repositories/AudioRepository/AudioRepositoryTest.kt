@@ -178,7 +178,7 @@ class AudioRepositoryTest {
             val stream = FileOutputStream(file)
             stream.write("test".toByteArray())
             stream.close()
-            repo.notifyNewAudioRecorded(file,noteId)
+            repo.addNewAudio(file,noteId)
         }
     }
 

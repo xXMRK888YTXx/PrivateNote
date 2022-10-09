@@ -113,6 +113,8 @@ class EditNoteViewModel @Inject constructor(
 
     private val currentRecordTime = mutableStateOf("00:00")
 
+    private var activityController:ActivityController? = null
+
     fun getCurrentRecordTime() = currentRecordTime
 
     private var note: Note = Note(title = "", text = "")
@@ -137,6 +139,18 @@ class EditNoteViewModel @Inject constructor(
     private val playerDialogState = mutableStateOf(Pair<Boolean, Audio?>(false,null))
 
     private val audioRemoveDialogState = mutableStateOf(Pair<Boolean,() -> Unit>(false,{}))
+
+    private val addAudioDropDownState = mutableStateOf(false)
+
+    fun addAudioDropDownState() = addAudioDropDownState.toState()
+
+    fun showAddAudioDropDown() {
+        addAudioDropDownState.value = true
+    }
+
+    fun hideAddAudioDropDown() {
+        addAudioDropDownState.value = false
+    }
 
     fun getAudioRemoveDialogState() = audioRemoveDialogState
 
@@ -559,6 +573,8 @@ class EditNoteViewModel @Inject constructor(
             .build()
     }
 
+
+
     @OptIn(ExperimentalPermissionsApi::class)
     fun requestAudioPermission(permission: PermissionState) {
         com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission(permission = permission,
@@ -655,6 +671,23 @@ class EditNoteViewModel @Inject constructor(
             }
 
         }
+    }
+
+    fun selectAudioFromExternalStorage() {
+        activityController?.pickAudio(
+            onComplete = {
+                viewModelScope.launch(Dispatchers.IO) {
+                    audioRepository.saveAudioFromExternalStorage(it,note.id)
+                }
+            },
+            onError = {
+
+            }
+        )
+    }
+
+    fun initActivityController(activityController: ActivityController) {
+        this.activityController = activityController
     }
 
 }

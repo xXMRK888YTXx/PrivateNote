@@ -3,7 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 import android.content.Context
 import android.content.ContextWrapper
 import android.media.MediaMetadataRetriever
-import android.security.keystore.KeyGenParameterSpec
+import android.net.Uri
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.security.crypto.EncryptedFile
@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -64,7 +63,7 @@ class AudioRepositoryImpl @Inject constructor(
         _audioFiles.tryEmit(listOf())
     }
 
-    override suspend fun notifyNewAudioRecorded(recordedFile: File, noteId: Int) {
+    override suspend fun addNewAudio(recordedFile: File, noteId: Int) {
         analyticsManager.sendEvent(NotifyNewAudio_Event,null)
         try {
             val inputStream = FileInputStream(recordedFile)
@@ -89,6 +88,20 @@ class AudioRepositoryImpl @Inject constructor(
             _audioFiles.emit(listInBuffer)
         }catch (e:Exception) {
             Log.d("MyLog","add new audio error ${e.printStackTrace()}")
+        }
+    }
+
+    override suspend fun saveAudioFromExternalStorage(file: Uri, noteId: Int) {
+        try {
+            val inputStream = context.contentResolver.openInputStream(file) ?: return
+            val bytes = inputStream.readBytes()
+            val tempFile = File(context.cacheDir,"temp")
+
+            val outputStream = FileOutputStream(tempFile)
+            outputStream.write(bytes)
+            addNewAudio(tempFile,noteId)
+        }catch (e:Exception) {
+            Log.d("MyLog","Add audio from external storage ${e.printStackTrace()}")
         }
     }
 

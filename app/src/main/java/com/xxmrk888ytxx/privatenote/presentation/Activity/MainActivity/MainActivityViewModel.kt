@@ -63,6 +63,7 @@ class MainActivityViewModel @Inject constructor(
     get() = field
 
     private var pickImageCallBacks:Pair<(image: Bitmap) -> Unit,(e:Exception) -> Unit>? = null
+    private var pickAudioCallBacks:Pair<(audioUri: Uri) -> Unit,(e:Exception) -> Unit>? = null
     private var selectBackupFileCallBacks:Pair<(path: String) -> Unit,(e:Exception) -> Unit>? = null
     private var openBackupFileCallBacks:Pair<(path: Uri) -> Unit,(e:Exception) -> Unit>? = null
     private var createFileBackupCallBacks:Pair<(path: String) -> Unit,(e: Exception) -> Unit>? = null
@@ -274,9 +275,38 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun registerPickAudioCallBack(
+        onComplete: (audioUri: Uri) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        if(pickAudioCallBacks != null) throw CallBackAlreadyRegisteredException()
+        pickAudioCallBacks = Pair(onComplete,onError)
+        isNotLockApp = true
+    }
+
+    private fun unRegisterPickAudioCallBack() {
+        pickAudioCallBacks = null
+        isNotLockApp = false
+    }
+
+    fun onCompletePickAudio(audioUri: Uri) {
+        pickAudioCallBacks.ifNotNull {
+            it.first(audioUri)
+        }
+        unRegisterPickAudioCallBack()
+    }
+
+    fun onErrorPickAudio(e:Exception) {
+        pickAudioCallBacks.ifNotNull {
+            it.second(e)
+        }
+        unRegisterPickAudioCallBack()
+    }
+
 
     fun googleSuccessAuthCallBack() {
         if(googleAuthorizationManager.googleAccount.value != null)
             toastManager.showToast(R.string.Successful_authorization)
     }
+
 }

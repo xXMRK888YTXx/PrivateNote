@@ -80,7 +80,7 @@ class RecordManagerImpl @Inject constructor(
             mediaRecorder?.release()
             mediaRecorder = null
             _recordState.tryEmit(RecorderState.RecordDisable)
-            audioRepository.notifyNewAudioRecorded(getOutputFile(),recordForNoteId!!)
+            audioRepository.addNewAudio(getOutputFile(),recordForNoteId!!)
             recordForNoteId = null
         }catch (e:Exception) {
             onError(e)
