@@ -16,6 +16,7 @@
         android:supportsRtl="true"
         android:name=".App"
         android:theme="@style/Theme.PrivateNote"
+        android:largeHeap="true"
         tools:targetApi="33">
         <activity
             android:name=".presentation.Activity.MainActivity.MainActivity"

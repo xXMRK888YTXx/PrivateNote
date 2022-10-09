@@ -991,20 +991,19 @@ fun FilesDialog(
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-@MustBeLocalization
 fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
     val state = editNoteViewModel.addAudioDropDownState().Remember()
     val permission = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
     val items = listOf(
         DropDownItem(
-            "Записать",
+            stringResource(R.string.Record),
             onClick = {
                 editNoteViewModel.requestAudioPermission(permission)
                 editNoteViewModel.hideAddAudioDropDown()
             }
         ),
         DropDownItem(
-            "С устройства",
+            stringResource(R.string.From_device),
             onClick = {
                 editNoteViewModel.selectAudioFromExternalStorage()
                 editNoteViewModel.hideAddAudioDropDown()
