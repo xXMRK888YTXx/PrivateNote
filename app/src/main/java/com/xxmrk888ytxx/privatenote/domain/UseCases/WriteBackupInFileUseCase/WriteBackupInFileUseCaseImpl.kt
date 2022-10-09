@@ -6,6 +6,7 @@ import android.util.Log
 import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okio.IOException
 
 
 class WriteBackupInFileUseCaseImpl(
@@ -14,12 +15,12 @@ class WriteBackupInFileUseCaseImpl(
     override suspend fun execute(jsonBackupString: String, uriString:String) {
         try {
             val uri = Uri.parse(uriString)
-            val stream = context.contentResolver.openOutputStream(uri) ?: throw BadFileAccessException()
+            val stream = context.contentResolver.openOutputStream(uri) ?: throw IOException()
             withContext(Dispatchers.IO) {
                 stream.write(jsonBackupString.toByteArray())
                 stream.close()
             }
-        }catch (e:SecurityException) {
+        }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())
             throw BadFileAccessException()
         }

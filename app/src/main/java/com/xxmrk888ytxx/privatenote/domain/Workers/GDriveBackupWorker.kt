@@ -65,7 +65,7 @@ class GDriveBackupWorker @AssistedInject constructor (
         catch (e:Exception) {
             notificationAppManager.sendBackupStateNotification(
                 title = context.getString(R.string.Google_drive_backup_error_title),
-                text = context.getString(R.string.Not_known_error)
+                text = "${context.getString(R.string.Not_known_error)} ${e::class.java.name}"
             )
             removeTempFile()
             return Result.retry()

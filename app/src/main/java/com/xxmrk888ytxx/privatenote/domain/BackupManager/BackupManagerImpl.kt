@@ -50,8 +50,7 @@ class BackupManagerImpl constructor(
     override fun enableLocalAutoBackup(timeRepeatHours:Long) {
         disableLocalAutoBackup()
         val workManager = WorkManager.getInstance(context)
-        val work = PeriodicWorkRequestBuilder<LocalAutoBackupWorker>(timeRepeatHours, TimeUnit.HOURS,
-            timeRepeatHours * 60 - 10,TimeUnit.MINUTES)
+        val work = PeriodicWorkRequestBuilder<LocalAutoBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
             .addTag(LocalAutoBackupWorker.WORK_TAG)
             .build()
         workManager.enqueueUniquePeriodicWork(
@@ -74,8 +73,7 @@ class BackupManagerImpl constructor(
             else NetworkType.CONNECTED
         )
         val workManager = WorkManager.getInstance(context)
-        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>(timeRepeatHours, TimeUnit.HOURS,
-            timeRepeatHours * 60 - 10,TimeUnit.MINUTES)
+        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>(timeRepeatHours, TimeUnit.HOURS)
             .addTag(GDriveBackupWorker.WORK_TAG)
             .setConstraints(constraints.build())
             .build()
