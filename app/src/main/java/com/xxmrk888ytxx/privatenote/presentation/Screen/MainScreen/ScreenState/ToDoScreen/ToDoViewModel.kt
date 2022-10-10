@@ -23,11 +23,13 @@ import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -84,6 +86,22 @@ class ToDoViewModel @Inject constructor(
     var cachedToDoList:List<ToDoItem> = listOf()
 
     private val requestPermissionSendAlarmsDialog = mutableStateOf(false)
+
+    private val dontKillMyAppDialogState:MutableState<Pair<Boolean,(() -> Unit)?>> = mutableStateOf(Pair(false,null))
+
+    fun getDontKillMyAppDialogState() = dontKillMyAppDialogState.toState()
+
+    fun showDontKillMyAppDialog(onExecuteAfterCloseDialog:() -> Unit) {
+        if(!isDontKillMyAppHideForever()) {
+            onExecuteAfterCloseDialog()
+            return
+        }
+        dontKillMyAppDialogState.value = Pair(true,onExecuteAfterCloseDialog)
+    }
+
+    fun hideDontKillMyAppDialog() {
+        dontKillMyAppDialogState.value = Pair(false,null)
+    }
 
     fun getRequestPermissionSendAlarmsDialog() = requestPermissionSendAlarmsDialog
 
@@ -412,6 +430,14 @@ class ToDoViewModel @Inject constructor(
         if(!deepLink.isActiveDeepLink) return null
         return deepLink
     }
+
+    fun hideDontKillMyAppDialogForever() {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsRepository.hideDontKillMyAppDialogForever()
+        }
+    }
+
+    fun isDontKillMyAppHideForever() = settingsRepository.getDontKillMyAppDialogState().getData()
 
     companion object {
          val SCREEN_ID = MainScreenState.ToDoScreen.id

@@ -32,6 +32,7 @@ class SettingsRepositoryImpl (
     private val lockWhenLeaveTime = intPreferencesKey("lockWhenLeaveTime")
     private val saveLockTime = longPreferencesKey("saveLockTime")
     private val applicationTheme = intPreferencesKey("ApplicationTheme")
+    private val dontKillMyAppState = booleanPreferencesKey("dontKillMyAppState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -211,6 +212,18 @@ class SettingsRepositoryImpl (
     override suspend fun setApplicationThemeId(themeId: Int) {
         context.dataStore.edit {
             it[applicationTheme] = themeId
+        }
+    }
+
+    override fun getDontKillMyAppDialogState(): Flow<Boolean> {
+        return context.dataStore.data.map {
+            it[dontKillMyAppState] ?: true
+        }
+    }
+
+    override suspend fun hideDontKillMyAppDialogForever() {
+        context.dataStore.edit {
+            it[dontKillMyAppState] = false
         }
     }
 }

@@ -250,6 +250,9 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 },
                 {
                     AboutSubDeveloper()
+                },
+                {
+                    DontKillMyAppButton()
                 }
             )
         )

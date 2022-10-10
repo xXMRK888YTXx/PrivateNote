@@ -45,6 +45,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenCon
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
@@ -72,6 +73,7 @@ fun ToDoScreen(
     val isRemoveDialogShow = remember {
         toDoViewModel.isRemoveDialogShow()
     }
+    val dontKillMyAppState = toDoViewModel.getDontKillMyAppDialogState().Remember()
     val requestPermissionSendAlarmsDialog = toDoViewModel
         .getRequestPermissionSendAlarmsDialog()
         .Remember()
@@ -111,6 +113,19 @@ fun ToDoScreen(
             onConfirm = {
                 toDoViewModel.hideRequestPermissionSendAlarmsDialog()
                 toDoViewModel.openAlarmSettings(activityController)
+            }
+        )
+    }
+    if(dontKillMyAppState.value.first) {
+        DontKillMyAppDialog(
+            onHideDialogForever = {
+                toDoViewModel.hideDontKillMyAppDialogForever()
+            },
+            onDismissRequest = {
+                toDoViewModel.hideDontKillMyAppDialog()
+            },
+            onExecuteAfterCloseDialog = {
+                dontKillMyAppState.value.second?.invoke()
             }
         )
     }
@@ -166,7 +181,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
             activate = currentNotifyTime.value != null,
             activateColor = Yellow
         ) {
-              toDoViewModel.showNotifyDialog(notificationPermissionState)
+            toDoViewModel.showDontKillMyAppDialog {
+                toDoViewModel.showNotifyDialog(permission = notificationPermissionState)
+            }
         },
     )
     val textField = remember {

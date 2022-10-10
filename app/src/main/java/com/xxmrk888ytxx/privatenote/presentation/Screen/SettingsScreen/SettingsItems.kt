@@ -1,5 +1,7 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -668,6 +671,40 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
                 contentDescription = "",
                 tint = PrimaryFontColor,
                 modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun DontKillMyAppButton() {
+    val context = LocalContext.current
+    Row(Modifier
+        .fillMaxWidth()
+        .clickable {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://dontkillmyapp.com/"))
+            context.startActivity(browserIntent)
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.DontKillMyApp),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(16.dp)
             )
         }
     }

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
@@ -17,6 +18,7 @@ import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
 import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +33,8 @@ class BackupSettingsViewModel @Inject constructor(
     private val settingsAutoBackupRepository: SettingsAutoBackupRepository,
     private val toastManager: ToastManager,
     private val backupManager: BackupManager,
-    private val googleAuthorizationManager: GoogleAuthorizationManager
+    private val googleAuthorizationManager: GoogleAuthorizationManager,
+    private val settingsRepository: SettingsRepository
 ): ViewModel() {
 
     fun getBackupSettings() = settingsAutoBackupRepository.getBackupSettings()
@@ -57,6 +60,22 @@ class BackupSettingsViewModel @Inject constructor(
 
     private val restoreBackupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
     = mutableStateOf(null)
+
+    private val dontKillMyAppDialogState:MutableState<Pair<Boolean,(() -> Unit)?>> = mutableStateOf(Pair(false,null))
+
+    fun getDontKillMyAppDialogState() = dontKillMyAppDialogState.toState()
+
+    fun showDontKillMyAppDialog(onAfterConfirmDialog:() -> Unit) {
+        if(!isDontKillMyAppHideForever()) {
+            onAfterConfirmDialog()
+            return
+        }
+        dontKillMyAppDialogState.value = Pair(true,onAfterConfirmDialog)
+    }
+
+    fun hideDontKillMyAppDialog() {
+        dontKillMyAppDialogState.value = Pair(false,null)
+    }
 
     fun getBackupWorkObserver() = backupWorkObserver.toState()
 
@@ -357,5 +376,11 @@ class BackupSettingsViewModel @Inject constructor(
         backupManager.disableGDriveAutoBackup()
         viewModelScope.launch { settingsAutoBackupRepository.updateIsEnableGDriveBackup(false) }
     }
+
+    fun hideDontKillMyAppDialogForever() {
+        viewModelScope.launch { settingsRepository.hideDontKillMyAppDialogForever() }
+    }
+
+    fun isDontKillMyAppHideForever() = settingsRepository.getDontKillMyAppDialogState().getData()
 
 }

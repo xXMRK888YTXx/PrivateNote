@@ -34,6 +34,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
@@ -49,6 +50,7 @@ fun BackupSettingsScreen(
     val createBackupDialogState = backupSettingsViewModel.getCreateBackupDialogState().Remember()
     val backupWorkObserver = backupSettingsViewModel.getBackupWorkObserver().Remember()
     val restoreBackupWorkObserver = backupSettingsViewModel.getRestoreBackupWorkObserver().Remember()
+    val dontKillMyAppDialogState = backupSettingsViewModel.getDontKillMyAppDialogState().Remember()
     LaunchedEffect(key1 = activityController, block = {
         backupSettingsViewModel.initActivityController(activityController)
     })
@@ -73,6 +75,19 @@ fun BackupSettingsScreen(
     }
     if(backupWorkObserver.value != null||restoreBackupWorkObserver.value != null) {
         LoadDialog()
+    }
+    if(dontKillMyAppDialogState.value.first) {
+        DontKillMyAppDialog(
+            onExecuteAfterCloseDialog = {
+                dontKillMyAppDialogState.value.second?.invoke()
+            },
+            onDismissRequest = {
+                backupSettingsViewModel.hideDontKillMyAppDialog()
+            },
+            onHideDialogForever = {
+                backupSettingsViewModel.hideDontKillMyAppDialogForever()
+            }
+        )
     }
 }
 
@@ -221,7 +236,14 @@ fun AutoBackupSettingsList(
                     Switch(
                         checked = settings.value.isEnableLocalBackup,
                         onCheckedChange = {
-                            backupSettingsViewModel.updateBackupState(it)
+                            if(it) {
+                                backupSettingsViewModel.showDontKillMyAppDialog {
+                                    backupSettingsViewModel.updateBackupState(it)
+                                }
+                            }
+                            else {
+                                backupSettingsViewModel.updateBackupState(it)
+                            }
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = ThemeManager.SecondaryColor,
@@ -288,7 +310,13 @@ fun AutoBackupSettingsList(
                     Switch(
                         checked = settings.value.isEnableGDriveBackup,
                         onCheckedChange = {
-                            backupSettingsViewModel.updateIsEnableGDriveBackup(it)
+                            if(it) {
+                                backupSettingsViewModel.showDontKillMyAppDialog {
+                                    backupSettingsViewModel.updateIsEnableGDriveBackup(it)
+                                }
+                            }else {
+                                backupSettingsViewModel.updateIsEnableGDriveBackup(it)
+                            }
                         },
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = ThemeManager.SecondaryColor,
@@ -893,7 +921,8 @@ fun SettingsButton(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .fillMaxWidth().padding(start = 10.dp, bottom = 15.dp)
+            .fillMaxWidth()
+            .padding(start = 10.dp, bottom = 15.dp)
             .clickable {
                 onClick()
             }

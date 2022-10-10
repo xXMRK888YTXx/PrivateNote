@@ -58,4 +58,8 @@ interface SettingsRepository {
     fun getApplicationThemeId() : Flow<Int>
 
     suspend fun setApplicationThemeId(themeId:Int)
+
+    fun getDontKillMyAppDialogState() : Flow<Boolean>
+
+    suspend fun hideDontKillMyAppDialogForever()
 }

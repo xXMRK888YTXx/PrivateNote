@@ -210,4 +210,8 @@
     <string name="Login_out_from_account">Sign out</string>
     <string name="Record">Record</string>
     <string name="From_device">From device</string>
+    <string name="DontKillMyApp_dialog_text">Due to the fact that some manufacturers restrict the work outside the application, it is necessary to make additional settings. Go to dontkillmyapp.com, find your manufacturer, and follow the instructions there.</string>
+    <string name="Not_Show_Nothing">Dont show again</string>
+    <string name="Open_dontkillmyapp">Open DontKillMyApp</string>
+    <string name="DontKillMyApp" translatable="false">DontKillMyApp.com</string>
 </resources>
