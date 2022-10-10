@@ -1,5 +1,8 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -17,8 +20,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -334,14 +340,15 @@ fun AutoBackupSettingsList(
                     backupSettingsViewModel.updateUploadToGDriveOnlyForWiFi(it)
                 })
         }
-        item {
-            GoogleSingInButton(
-                authState = googleAccount.value != null,
-                onAuth = {
-                    backupSettingsViewModel.sendGoogleAuthRequest()
-                }
+        if(googleAccount.value == null) {
+            item {
+                GoogleSingInButton(
+                    onAuth = {
+                        backupSettingsViewModel.sendGoogleAuthRequest()
+                    }
 
-            )
+                )
+            }
         }
         if(googleAccount.value != null) {
             item {
@@ -407,32 +414,32 @@ fun AutoBackupSettingsList(
 fun MainBackupSettings(
     backupSettingsViewModel: BackupSettingsViewModel
 ) {
-        Row(Modifier
-            .fillMaxWidth()
-            .clickable {
-                backupSettingsViewModel.showCreateBackupDialogState()
-            },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = stringResource(R.string.Create_backup_now),
-                fontWeight = FontWeight.W800,
-                fontSize = 18.sp,
-                color = ThemeManager.PrimaryFontColor,
-                modifier = Modifier.padding(start = 10.dp, bottom = 15.dp)
+    Row(Modifier
+        .fillMaxWidth()
+        .clickable {
+            backupSettingsViewModel.showCreateBackupDialogState()
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.Create_backup_now),
+            fontWeight = FontWeight.W800,
+            fontSize = 18.sp,
+            color = ThemeManager.PrimaryFontColor,
+            modifier = Modifier.padding(start = 10.dp, bottom = 15.dp)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = ThemeManager.PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 10.dp),
-                contentAlignment = Alignment.CenterEnd) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow),
-                    contentDescription = "",
-                    tint = ThemeManager.PrimaryFontColor,
-                    modifier = Modifier.size(20.dp)
-                )
         }
     }
 
@@ -791,7 +798,6 @@ fun SelectRepeatBackupButton(
 
 @Composable
 fun GoogleSingInButton(
-    authState:Boolean,
     onAuth:() -> Unit,
 ) {
     Column(
@@ -819,32 +825,14 @@ fun GoogleSingInButton(
                     .fillMaxWidth()
                     .padding(end = 10.dp),
                 contentAlignment = Alignment.CenterEnd) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow),
+                Image(
+                    painter = painterResource(R.drawable.ic_google_icon),
                     contentDescription = "",
-                    tint = ThemeManager.PrimaryFontColor,
-                    modifier = Modifier.size(20.dp)
+                    //tint = ThemeManager.PrimaryFontColor,
                 )
             }
         }
-            if(authState) {
-                Text(
-                    text = stringResource(R.string.Authorization),
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
-                    color = ThemeManager.Green,
-                    modifier = Modifier
-                )
-            }else {
-                Text(
-                    text = stringResource(R.string.Click_to_sign_in),
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
-                    color = ThemeManager.ErrorColor,
-                    modifier = Modifier
-                )
-            }
-        }
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)

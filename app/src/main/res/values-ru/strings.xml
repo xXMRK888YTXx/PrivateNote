@@ -202,7 +202,7 @@
     <string name="Successful_authorization">Авторизировано успешно</string>
     <string name="Need_login_to_google">Для работы необходимо войти в аккаунт Google</string>
     <string name="Load_only_from_WIFI">Загружать только по WiFi</string>
-    <string name="Login_out_from_account">Выйти из аккаунта</string>
+    <string name="Login_out_from_account">Выйти из аккаунта Google</string>
     <string name="Record">Записать</string>
     <string name="From_device">С устройства</string>
     <string name="DontKillMyApp_dialog_text">В связи с тем, что некоторые производители ограничивают работу вне приложения, необходимо провести дополнительные настройки. Перейдите на сайт dontkillmyapp.com, найдите своего производителя, и выполните находящийся там инструкции.</string>
