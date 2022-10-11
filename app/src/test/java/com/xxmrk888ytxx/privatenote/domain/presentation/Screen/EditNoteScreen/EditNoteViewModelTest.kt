@@ -16,6 +16,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteViewModel
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import io.mockk.*
@@ -48,6 +50,8 @@ class EditNoteViewModelTest {
     private val playerManager: PlayerManager = mockk(relaxed = true)
     private val audioRepository: AudioRepository = mockk(relaxed = true)
     private val imageRepository: ImageRepository = mockk(relaxed = true)
+    private val exportImageUseCase : ExportImageUseCase = mockk(relaxed = true)
+    private val exportAudioUseCase : ExportAudioUseCase = mockk(relaxed = true)
 
     @Before
     fun init() {
@@ -62,7 +66,9 @@ class EditNoteViewModelTest {
             recordManager,
             playerManager,
             audioRepository,
-            imageRepository
+            imageRepository,
+            exportImageUseCase,
+            exportAudioUseCase
         )
     }
 
