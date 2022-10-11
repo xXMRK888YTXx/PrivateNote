@@ -43,6 +43,9 @@ import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +54,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -65,7 +69,9 @@ class EditNoteViewModel @Inject constructor(
     private val recordManager: RecordManager,
     private val playerManager: PlayerManager,
     private val audioRepository: AudioRepository,
-    private val imageRepository: ImageRepository
+    private val imageRepository: ImageRepository,
+    private val exportImageUseCase: ExportImageUseCase,
+    private val exportAudioUseCase: ExportAudioUseCase
 ) : ViewModel() {
 
     init {
@@ -688,6 +694,53 @@ class EditNoteViewModel @Inject constructor(
 
     fun initActivityController(activityController: ActivityController) {
         this.activityController = activityController
+    }
+
+    fun exportImage(image: Image) {
+        activityController?.selectExportFile(
+            onComplete = {
+               ApplicationScope.launch(Dispatchers.IO) {
+                   try {
+                        exportImageUseCase.execute(image,it)
+                       withContext(Dispatchers.Main) {
+                           toastManager.showToast(R.string.Export_file_complited)
+                       }
+
+                   }catch (e:Exception) {
+                       withContext(Dispatchers.Main) {
+                           toastManager.showToast(R.string.Export_file_error)
+                       }
+                   }
+               }
+            },
+            onError = {
+
+            },
+            exportFileType = MainActivity.IMAGE_EXPORT_TYPE
+        )
+    }
+
+    fun exportAudio(audio: Audio) {
+        activityController?.selectExportFile(
+            onComplete = {
+                ApplicationScope.launch(Dispatchers.IO) {
+                    try {
+                        exportAudioUseCase.execute(audio,it)
+                        withContext(Dispatchers.Main) {
+                            toastManager.showToast(R.string.Export_file_complited)
+                        }
+                    }catch (e:Exception) {
+                        withContext(Dispatchers.Main) {
+                            toastManager.showToast(R.string.Export_file_error)
+                        }
+                    }
+                }
+            },
+            onError = {
+
+            },
+            exportFileType = MainActivity.AUDIO_EXPORT_TYPE
+        )
     }
 
 }

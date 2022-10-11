@@ -16,5 +16,10 @@ interface ActivityController {
     fun selectFileForAutoBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun createFileBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun openBackupFile(onComplete:(path: Uri) -> Unit, onError:(e:Exception) -> Unit = {})
+    fun selectExportFile(
+        onComplete: (path: Uri) -> Unit,
+        onError: (e: Exception) -> Unit,
+        exportFileType:String
+    )
     val googleAuthorizationCallBack: ActivityResultLauncher<Intent>
 }

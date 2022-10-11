@@ -17,7 +17,6 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -67,6 +66,7 @@ class MainActivityViewModel @Inject constructor(
     private var selectBackupFileCallBacks:Pair<(path: String) -> Unit,(e:Exception) -> Unit>? = null
     private var openBackupFileCallBacks:Pair<(path: Uri) -> Unit,(e:Exception) -> Unit>? = null
     private var createFileBackupCallBacks:Pair<(path: String) -> Unit,(e: Exception) -> Unit>? = null
+    private var selectExportFileCallBacks:Pair<(path:Uri) -> Unit,(e:Exception) -> Unit>? = null
 
     fun completedAuthCallBack(): (navigate:() -> Unit) -> Unit {
         return {
@@ -309,4 +309,31 @@ class MainActivityViewModel @Inject constructor(
             toastManager.showToast(R.string.Successful_authorization)
     }
 
+    fun registerSelectExportFileCallBack(
+        onComplete: (path: Uri) -> Unit,
+        onError: (e: Exception) -> Unit,
+    ) {
+        if(selectExportFileCallBacks != null) throw CallBackAlreadyRegisteredException()
+        selectExportFileCallBacks = Pair(onComplete,onError)
+        isNotLockApp = true
+    }
+
+    private fun unRegisterSelectExportFileCallBack() {
+        selectExportFileCallBacks = null
+        isNotLockApp = false
+    }
+
+    fun onCompleteSelectExportFile(path:Uri) {
+        selectExportFileCallBacks.ifNotNull {
+            it.first(path)
+        }
+        unRegisterSelectExportFileCallBack()
+    }
+
+    fun onErrorSelectExportFile(e:Exception) {
+        selectExportFileCallBacks.ifNotNull {
+            it.second(e)
+        }
+        unRegisterSelectExportFileCallBack()
+    }
 }

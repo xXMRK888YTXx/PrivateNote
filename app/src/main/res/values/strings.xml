@@ -214,4 +214,7 @@
     <string name="Not_Show_Nothing">Dont show again</string>
     <string name="Open_dontkillmyapp">Open DontKillMyApp</string>
     <string name="DontKillMyApp" translatable="false">DontKillMyApp.com</string>
+    <string name="Export_file_error">An error occurred while exporting the file.</string>
+    <string name="Export_file_complited">File export completed.</string>
+    <string name="Export">Export</string>
 </resources>

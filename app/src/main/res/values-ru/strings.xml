@@ -208,4 +208,7 @@
     <string name="DontKillMyApp_dialog_text">В связи с тем, что некоторые производители ограничивают работу вне приложения, необходимо провести дополнительные настройки. Перейдите на сайт dontkillmyapp.com, найдите своего производителя, и выполните находящийся там инструкции.</string>
     <string name="Not_Show_Nothing">Больше не показывать</string>
     <string name="Open_dontkillmyapp">Открыть DontKillMyApp</string>
+    <string name="Export_file_error">Во время экспорта файла, произошла ошибка.</string>
+    <string name="Export_file_complited">Экспорт файла завершен.</string>
+    <string name="Export">Экспортировать</string>
 </resources>

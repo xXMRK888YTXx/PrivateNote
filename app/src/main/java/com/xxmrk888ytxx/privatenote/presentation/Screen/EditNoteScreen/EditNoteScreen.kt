@@ -861,6 +861,9 @@ fun FilesDialog(
                 if(audios.value.isNotEmpty()) {
                     LazyRow(Modifier.padding(start = 5.dp)) {
                         items(audios.value) {
+                            val isOptionDropDownVisible = remember {
+                                mutableStateOf(false)
+                            }
                             Column(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -871,7 +874,7 @@ fun FilesDialog(
                                             editNoteViewModel.showPlayerDialog(it)
                                         },
                                         onLongClick = {
-                                            editNoteViewModel.showAudioRemoveDialogState(it.id)
+                                            isOptionDropDownVisible.value = true
                                         }
                                     )
                             ) {
@@ -895,6 +898,12 @@ fun FilesDialog(
                                     fontWeight = FontWeight.Medium,
                                 )
                             }
+                            FileOptionsDropBox(isVisible = isOptionDropDownVisible.value,
+                                onHide = { isOptionDropDownVisible.value = false },
+                                onDelete = { editNoteViewModel.showAudioRemoveDialogState(it.id) },
+                                onExportFile = {
+                                    editNoteViewModel.exportAudio(it)
+                                })
                         }
                     }
                 }
@@ -948,6 +957,9 @@ fun FilesDialog(
                         modifier = Modifier.padding(7.dp)
                     ) {
                         items(images.value) {
+                            val isOptionDropDownVisible = remember {
+                                mutableStateOf(false)
+                            }
                             AsyncImage(model = editNoteViewModel
                                 .getImageRequest(context,it.image.getBytes()),
                                 contentDescription = "",
@@ -962,12 +974,20 @@ fun FilesDialog(
                                                 )
                                         },
                                         onLongClick = {
-                                            editNoteViewModel.showRemoveImageDialog(it.id)
+                                            //editNoteViewModel.showRemoveImageDialog(it.id)
+                                            isOptionDropDownVisible.value = true
                                         }
                                     )
                                     .padding(end = 10.dp)
                                     .size(100.dp)
                                     .clip(RoundedCornerShape(10))
+                            )
+                            FileOptionsDropBox(isVisible = isOptionDropDownVisible.value,
+                                onHide = { isOptionDropDownVisible.value = false },
+                                onDelete = { editNoteViewModel.showRemoveImageDialog(it.id) },
+                                onExportFile = {
+                                    editNoteViewModel.exportImage(it)
+                                }
                             )
                           }
                     }
@@ -1031,3 +1051,48 @@ fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
    }
 }
 
+@Composable
+@MustBeLocalization
+fun FileOptionsDropBox(
+    isVisible:Boolean,
+    onHide:() -> Unit,
+    onDelete:() -> Unit,
+    onExportFile:() -> Unit
+) {
+    val items = listOf(
+        DropDownItem(
+            text = stringResource(R.string.Delete),
+            onClick = {
+                onDelete()
+                onHide()
+            }
+        ),
+        DropDownItem(
+            text = stringResource(R.string.Export),
+            onClick = {
+                onExportFile()
+                onHide()
+            }
+        )
+    )
+    Box() {
+        DropdownMenu(
+            expanded = isVisible,
+            onDismissRequest = { onHide() },
+            modifier = Modifier
+                .background(DropDownMenuColor)
+                .heightIn(max = 200.dp)
+        ) {
+            items.forEach {
+                DropdownMenuItem(onClick = { it.onClick() }) {
+                    Text(text = it.text,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = PrimaryFontColor
+                    )
+                }
+            }
+        }
+    }
+
+}

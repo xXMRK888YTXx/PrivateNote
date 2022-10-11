@@ -15,6 +15,10 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.Tod
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
@@ -145,5 +149,16 @@ class UseCases {
       return UploadBackupToGoogleDriveUseCaseImpl(context)
     }
 
+    @Provides
+    @Singleton
+    fun getExportImageUseCase(@ApplicationContext context: Context) : ExportImageUseCase {
+        return ExportImageUseCaseImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getExportAudioUseCase(@ApplicationContext context: Context) : ExportAudioUseCase {
+        return ExportAudioUseCaseImpl(context)
+    }
 
 }
