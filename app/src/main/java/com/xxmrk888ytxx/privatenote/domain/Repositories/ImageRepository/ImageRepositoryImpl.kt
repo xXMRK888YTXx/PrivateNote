@@ -15,6 +15,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveImageNotify_Even
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SaveBitmap_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.LoadRepositoryState
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
@@ -30,12 +31,19 @@ class ImageRepositoryImpl @Inject constructor(
     private val analytics: AnalyticsManager
 ) : ImageRepository {
 
+    private val _loadState:MutableStateFlow<LoadRepositoryState> =
+        MutableStateFlow(LoadRepositoryState.Loaded)
+    private val loadState:StateFlow<LoadRepositoryState> = _loadState
+
+    override fun getLoadState(): StateFlow<LoadRepositoryState> = loadState
+
     override suspend fun addImage(image:Bitmap,noteId:Int,saveInPng:Boolean,
                                   onError:(e:Exception) -> Unit) {
         analytics.sendEvent(AnalyticsEvents.Add_Note_Image_Event, bundleOf(Pair("SaveInPng",saveInPng)))
+        _loadState.emit(LoadRepositoryState.LoadNewFile)
         val newImage = saveBitmap(getNoteImageDir(noteId,context),image,saveInPng,onError) ?: return
         newImageNotify(newImage)
-
+        _loadState.emit(LoadRepositoryState.Loaded)
     }
     private val _noteImageList:MutableSharedFlow<List<Image>> = MutableSharedFlow(
         1
@@ -173,6 +181,7 @@ class ImageRepositoryImpl @Inject constructor(
             return Image(fileDir.fileNameToLong(),file)
         }catch (e:Exception) {
             onError(e)
+             _loadState.emit(LoadRepositoryState.Loaded)
             return null
         }
     }

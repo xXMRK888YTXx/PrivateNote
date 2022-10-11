@@ -2,7 +2,9 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository
 
 import android.net.Uri
 import androidx.security.crypto.EncryptedFile
+import com.xxmrk888ytxx.privatenote.Utils.LoadRepositoryState
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.io.File
 
 interface AudioRepository {
@@ -17,6 +19,7 @@ interface AudioRepository {
     suspend fun tempDirToAudioDir(noteId: Int)
     suspend fun clearTempDir()
     fun getAudioList() : SharedFlow<List<Audio>>
+    fun getLoadState() : StateFlow<LoadRepositoryState>
     suspend fun isHaveAudios(noteId: Int) : Boolean
     suspend fun getAudiosForBackup(noteId:List<Int>) : Map<Int,List<Audio>>
     suspend fun addAudioFromBackup(noteId: Int,audio:ByteArray)

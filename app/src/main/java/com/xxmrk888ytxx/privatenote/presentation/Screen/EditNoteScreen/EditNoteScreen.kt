@@ -793,6 +793,8 @@ fun FilesDialog(
     val scope = rememberCoroutineScope()
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf(),scope.coroutineContext)
     val audios = editNoteViewModel.getAudioFiles().collectAsState(listOf(),scope.coroutineContext)
+    val imageLoadState = editNoteViewModel.getImageRepositoryLoadState().collectAsState()
+    val audioLoadState = editNoteViewModel.getAudioRepositoryLoadState().collectAsState()
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -847,11 +849,21 @@ fun FilesDialog(
                             IconButton(onClick = {
                                 editNoteViewModel.showAddAudioDropDown()
                             }) {
-                                Icon(painter = painterResource(R.drawable.ic_plus),
-                                    contentDescription = "",
-                                    tint = PrimaryFontColor,
-                                    modifier = Modifier.size(30.dp)
-                                )
+                                if(audioLoadState.value is LoadRepositoryState.Loaded) {
+                                    Icon(painter = painterResource(R.drawable.ic_plus),
+                                        contentDescription = "",
+                                        tint = PrimaryFontColor,
+                                        modifier = Modifier.size(30.dp)
+                                    )
+                                }
+                                else {
+                                    Box(modifier = Modifier.fillMaxWidth(),
+                                        contentAlignment = Alignment.CenterEnd) {
+                                        CircularProgressIndicator(
+                                            modifier = Modifier.size(30.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                         AddAudioDropDown(editNoteViewModel = editNoteViewModel)
@@ -860,51 +872,51 @@ fun FilesDialog(
                 }
                 if(audios.value.isNotEmpty()) {
                     LazyRow(Modifier.padding(start = 5.dp)) {
-                        items(audios.value) {
-                            val isOptionDropDownVisible = remember {
-                                mutableStateOf(false)
-                            }
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .combinedClickable(
-                                        onClick = {
-                                            editNoteViewModel.showPlayerDialog(it)
-                                        },
-                                        onLongClick = {
-                                            isOptionDropDownVisible.value = true
-                                        }
-                                    )
-                            ) {
-                                Box(
+                            items(audios.value) {
+                                val isOptionDropDownVisible = remember {
+                                    mutableStateOf(false)
+                                }
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
-                                        .clip(CircleShape)
-                                        .background(SecondaryColor)
-                                        .size(40.dp),
-                                    contentAlignment = Alignment.CenterEnd
+                                        .padding(end = 8.dp)
+                                        .combinedClickable(
+                                            onClick = {
+                                                editNoteViewModel.showPlayerDialog(it)
+                                            },
+                                            onLongClick = {
+                                                isOptionDropDownVisible.value = true
+                                            }
+                                        )
                                 ) {
-                                    Icon(painter = painterResource(R.drawable.ic_play),
-                                        contentDescription = "",
-                                        tint = PrimaryFontColor,
-                                        modifier = Modifier.align(Alignment.Center)
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(CircleShape)
+                                            .background(SecondaryColor)
+                                            .size(40.dp),
+                                        contentAlignment = Alignment.CenterEnd
+                                    ) {
+                                        Icon(painter = painterResource(R.drawable.ic_play),
+                                            contentDescription = "",
+                                            tint = PrimaryFontColor,
+                                            modifier = Modifier.align(Alignment.Center)
+                                        )
+                                    }
+                                    Text(
+                                        text = it.duration.milliSecondToSecond(),
+                                        color = PrimaryFontColor,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium,
                                     )
                                 }
-                                Text(
-                                    text = it.duration.milliSecondToSecond(),
-                                    color = PrimaryFontColor,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Medium,
-                                )
+                                FileOptionsDropBox(isVisible = isOptionDropDownVisible.value,
+                                    onHide = { isOptionDropDownVisible.value = false },
+                                    onDelete = { editNoteViewModel.showAudioRemoveDialogState(it.id) },
+                                    onExportFile = {
+                                        editNoteViewModel.exportAudio(it)
+                                    })
                             }
-                            FileOptionsDropBox(isVisible = isOptionDropDownVisible.value,
-                                onHide = { isOptionDropDownVisible.value = false },
-                                onDelete = { editNoteViewModel.showAudioRemoveDialogState(it.id) },
-                                onExportFile = {
-                                    editNoteViewModel.exportAudio(it)
-                                })
-                        }
                     }
                 }
                 else {
@@ -942,13 +954,23 @@ fun FilesDialog(
                                     modifier = Modifier.size(30.dp)
                                 )
                             }
-                            IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
-                                Icon(painter = painterResource(R.drawable.ic_plus),
-                                    contentDescription = "",
-                                    tint = PrimaryFontColor,
-                                    modifier = Modifier.size(30.dp)
-                                )
+                            if(imageLoadState.value is LoadRepositoryState.Loaded) {
+                                IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
+                                    Icon(painter = painterResource(R.drawable.ic_plus),
+                                        contentDescription = "",
+                                        tint = PrimaryFontColor,
+                                        modifier = Modifier.size(30.dp)
+                                    )
+                                }
+                            }else {
+                                Box(modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.CenterEnd) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(30.dp)
+                                    )
+                                }
                             }
+
                         }
                     }
                 }

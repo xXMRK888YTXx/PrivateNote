@@ -49,10 +49,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActiv
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -742,5 +739,9 @@ class EditNoteViewModel @Inject constructor(
             exportFileType = MainActivity.AUDIO_EXPORT_TYPE
         )
     }
+
+    fun getImageRepositoryLoadState() = imageRepository.getLoadState()
+
+    fun getAudioRepositoryLoadState() = audioRepository.getLoadState()
 
 }

@@ -19,13 +19,12 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveAudio_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.TempDirToAudioDir_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import com.xxmrk888ytxx.privatenote.Utils.LoadRepositoryState
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.fileNameToLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
@@ -39,6 +38,12 @@ class AudioRepositoryImpl @Inject constructor(
 ) : AudioRepository {
     private val _audioFiles: MutableSharedFlow<List<Audio>> = MutableSharedFlow(1)
     private val  audioFiles:SharedFlow<List<Audio>> = _audioFiles
+
+    private val _loadState:MutableStateFlow<LoadRepositoryState> =
+        MutableStateFlow(LoadRepositoryState.Loaded)
+    private val loadState:StateFlow<LoadRepositoryState> = _loadState
+
+    override fun getLoadState() = loadState
 
     init {
         ApplicationScope.launch(Dispatchers.IO) {
@@ -59,6 +64,7 @@ class AudioRepositoryImpl @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     override suspend fun clearAudioBuffer() {
         analyticsManager.sendEvent(ClearAudioBuffer_Event,null)
+        _loadState.emit(LoadRepositoryState.Loaded)
         _audioFiles.resetReplayCache()
         _audioFiles.tryEmit(listOf())
     }
@@ -66,6 +72,7 @@ class AudioRepositoryImpl @Inject constructor(
     override suspend fun addNewAudio(recordedFile: File, noteId: Int) {
         analyticsManager.sendEvent(NotifyNewAudio_Event,null)
         try {
+            _loadState.emit(LoadRepositoryState.LoadNewFile)
             val inputStream = FileInputStream(recordedFile)
             val bytes = inputStream.readBytes()
 
@@ -86,13 +93,16 @@ class AudioRepositoryImpl @Inject constructor(
             val listInBuffer = _audioFiles.first().toMutableList()
             listInBuffer.add(getAudioFile(outputFile))
             _audioFiles.emit(listInBuffer)
+            _loadState.emit(LoadRepositoryState.Loaded)
         }catch (e:Exception) {
             Log.d("MyLog","add new audio error ${e.printStackTrace()}")
+            _loadState.emit(LoadRepositoryState.Loaded)
         }
     }
 
     override suspend fun saveAudioFromExternalStorage(file: Uri, noteId: Int) {
         try {
+            _loadState.emit(LoadRepositoryState.LoadNewFile)
             val inputStream = context.contentResolver.openInputStream(file) ?: return
             val bytes = inputStream.readBytes()
             val tempFile = File(context.cacheDir,"temp")
@@ -100,6 +110,7 @@ class AudioRepositoryImpl @Inject constructor(
             val outputStream = FileOutputStream(tempFile)
             outputStream.write(bytes)
             addNewAudio(tempFile,noteId)
+            _loadState.emit(LoadRepositoryState.Loaded)
         }catch (e:Exception) {
             Log.d("MyLog","Add audio from external storage ${e.printStackTrace()}")
         }
