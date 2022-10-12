@@ -115,4 +115,7 @@ fun DontKillMyAppDialog(
 @Composable
 @Preview()
 fun Pre() {
+    DontKillMyAppDialog(
+        {},{},{}
+    )
 }

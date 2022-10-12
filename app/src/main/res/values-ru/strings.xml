@@ -211,4 +211,7 @@
     <string name="Export_file_error">Во время экспорта файла, произошла ошибка.</string>
     <string name="Export_file_complited">Экспорт файла завершен.</string>
     <string name="Export">Экспортировать</string>
+    <string name="I_agree_with">Я согласен с</string>
+    <string name="Privacy_policy">Политика конфиденциальности</string>
+    <string name="Terms_of_use">Условия использования</string>
 </resources>

@@ -3,15 +3,18 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButtonController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -91,5 +94,13 @@ class MainViewModel @Inject constructor(
     }
 
     fun getNavigationSwipeState() = settingsRepository.getNavigationSwipeState()
+
+    fun isPolityAndTermsConfirmed() = settingsRepository.getPolicyAndTermsDialogState()
+
+    fun confirmPolityAndTerms() {
+        viewModelScope.launch {
+            settingsRepository.disablePolicyAndTermsDialogState()
+        }
+    }
 
 }

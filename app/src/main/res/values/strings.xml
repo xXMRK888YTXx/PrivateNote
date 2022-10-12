@@ -217,4 +217,7 @@
     <string name="Export_file_error">An error occurred while exporting the file.</string>
     <string name="Export_file_complited">File export completed.</string>
     <string name="Export">Export</string>
+    <string name="I_agree_with">I agree with</string>
+    <string name="Privacy_policy">Privacy Policy</string>
+    <string name="Terms_of_use">Terms of Use</string>
 </resources>

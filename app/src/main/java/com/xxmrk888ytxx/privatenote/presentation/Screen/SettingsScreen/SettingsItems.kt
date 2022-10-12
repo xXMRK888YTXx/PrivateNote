@@ -38,6 +38,8 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingTex
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
+import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
+import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
@@ -710,6 +712,74 @@ fun DontKillMyAppButton() {
     }
 }
 
+
+@Composable
+fun PrivatePolicyButton() {
+    val context = LocalContext.current
+    Row(Modifier
+        .fillMaxWidth()
+        .clickable {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY))
+            context.startActivity(browserIntent)
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.Privacy_policy),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun TermsButton() {
+    val context = LocalContext.current
+    Row(Modifier
+        .fillMaxWidth()
+        .clickable {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse(TERMS))
+            context.startActivity(browserIntent)
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.Terms_of_use),
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
 
 @Preview
 @Composable

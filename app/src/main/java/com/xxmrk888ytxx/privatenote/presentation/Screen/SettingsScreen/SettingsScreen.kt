@@ -253,6 +253,12 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 },
                 {
                     DontKillMyAppButton()
+                },
+                {
+                    PrivatePolicyButton()
+                },
+                {
+                    TermsButton()
                 }
             )
         )

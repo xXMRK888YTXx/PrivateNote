@@ -62,4 +62,8 @@ interface SettingsRepository {
     fun getDontKillMyAppDialogState() : Flow<Boolean>
 
     suspend fun hideDontKillMyAppDialogForever()
+
+    fun getPolicyAndTermsDialogState() : Flow<Boolean>
+
+    suspend fun disablePolicyAndTermsDialogState()
 }

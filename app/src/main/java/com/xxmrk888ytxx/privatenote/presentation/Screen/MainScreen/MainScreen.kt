@@ -16,6 +16,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
@@ -41,6 +42,7 @@ fun MainScreen(
         mainViewModel.getScrollBetweenScreenEnabled()
     }
     val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
+    val isPolityAndTermsConfirmed = mainViewModel.isPolityAndTermsConfirmed().collectAsState(true)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = { FloatButton(mainViewModel,navController) },
@@ -73,6 +75,11 @@ fun MainScreen(
                 }
 
             }
+        }
+    }
+    if(!isPolityAndTermsConfirmed.value) {
+        ConfirmPrivatePolicyAndTermsDialog {
+            mainViewModel.confirmPolityAndTerms()
         }
     }
     LaunchedEffect(key1 = Unit, block = {
