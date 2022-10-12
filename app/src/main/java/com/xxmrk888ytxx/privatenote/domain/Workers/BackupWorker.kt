@@ -13,6 +13,7 @@ import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppMa
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -22,7 +23,10 @@ class BackupWorker @AssistedInject constructor(
     @Assisted private val workerParameters: WorkerParameters,
     private val createBackupUseCase: CreateBackupUseCase,
     private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
+    private val workerObserver: WorkerObserver
 ) : CoroutineWorker(context,workerParameters) {
+
+
 
     override suspend fun doWork(): Result {
         try {
@@ -32,9 +36,11 @@ class BackupWorker @AssistedInject constructor(
                 createBackupUseCase.execute(settings)
             )
             writeBackupInFileUseCase.execute(jsonString,settings.backupPath)
+            workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.SUCCESS)
             return Result.success()
         }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())
+            workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.FAILURE)
             return Result.failure()
         }
     }
@@ -75,6 +81,7 @@ class BackupWorker @AssistedInject constructor(
         const val IS_BACKUP_NOT_COMPLETED_TODO = "IS_BACKUP_NOT_COMPLETED_TODO"
         const val IS_BACKUP_COMPLETED_TODO = "IS_BACKUP_COMPLETED_TODO"
         const val BACKUP_PATH = "BACKUP_PATH"
+        const val WORKER_ID = 456
     }
 
 }

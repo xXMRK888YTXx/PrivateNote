@@ -17,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBa
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
+import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -27,7 +28,8 @@ class RestoreBackupWorker @AssistedInject constructor(
     private val readBackupFileUseCaseImpl: ReadBackupFileUseCase,
     private val restoreCategoryFromUseCase: RestoreCategoryFromUseCase,
     private val restoreNoteFromBackupUseCase: RestoreNoteFromBackupUseCase,
-    private val restoreTodoFromUseCase: RestoreTodoFromUseCase
+    private val restoreTodoFromUseCase: RestoreTodoFromUseCase,
+    private val workerObserver: WorkerObserver
 ) : CoroutineWorker(context,workerParameters) {
 
     override suspend fun doWork(): Result {
@@ -45,9 +47,11 @@ class RestoreBackupWorker @AssistedInject constructor(
             if(restoreBackupParams.restoreTodo) {
                 restoreTodoFromUseCase.execute(backupModel.todo)
             }
+            workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.SUCCESS)
             return Result.success()
         }catch (e: Exception) {
             Log.d("MyLog",e.stackTraceToString())
+            workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.FAILURE)
             return Result.failure()
         }
     }
@@ -83,5 +87,6 @@ class RestoreBackupWorker @AssistedInject constructor(
         const val IS_RESTORE_NOTE_PARAMS = "IS_RESTORE_NOTE_PARAMS"
         const val IS_RESTORE_CATEGORY_PARAMS = "IS_RESTORE_CATEGORY_PARAMS"
         const val IS_RESTORE_TODO_PARAMS = "IS_RESTORE_TODO_PARAMS"
+        const val WORKER_ID = 812
     }
 }

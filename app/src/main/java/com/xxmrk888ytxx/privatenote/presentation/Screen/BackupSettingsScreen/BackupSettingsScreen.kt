@@ -54,9 +54,8 @@ fun BackupSettingsScreen(
     val settings = backupSettingsViewModel.getBackupSettings().collectAsState(BackupSettings())
     val restoreBackupDialogState = backupSettingsViewModel.getRestoreBackupDialogState().Remember()
     val createBackupDialogState = backupSettingsViewModel.getCreateBackupDialogState().Remember()
-    val backupWorkObserver = backupSettingsViewModel.getBackupWorkObserver().Remember()
-    val restoreBackupWorkObserver = backupSettingsViewModel.getRestoreBackupWorkObserver().Remember()
     val dontKillMyAppDialogState = backupSettingsViewModel.getDontKillMyAppDialogState().Remember()
+    val isLoadDialogShow = backupSettingsViewModel.isShowLoadDialog().Remember()
     LaunchedEffect(key1 = activityController, block = {
         backupSettingsViewModel.initActivityController(activityController)
     })
@@ -79,7 +78,7 @@ fun BackupSettingsScreen(
     if(createBackupDialogState.value) {
         CreateBackupDialog(backupSettingsViewModel)
     }
-    if(backupWorkObserver.value != null||restoreBackupWorkObserver.value != null) {
+    if(isLoadDialogShow.value) {
         LoadDialog()
     }
     if(dontKillMyAppDialogState.value.first) {

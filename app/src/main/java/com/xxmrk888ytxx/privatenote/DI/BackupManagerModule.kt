@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.DI
 import android.content.Context
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +16,7 @@ import javax.inject.Singleton
 class BackupManagerModule {
     @Provides
     @Singleton
-    fun getBackupManager(@ApplicationContext context: Context) : BackupManager {
-        return BackupManagerImpl(context)
+    fun getBackupManager(@ApplicationContext context: Context,workerObserver: WorkerObserver) : BackupManager {
+        return BackupManagerImpl(context,workerObserver)
     }
 }

@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.toState
@@ -20,13 +21,14 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class BackupSettingsViewModel @Inject constructor(
@@ -34,7 +36,8 @@ class BackupSettingsViewModel @Inject constructor(
     private val toastManager: ToastManager,
     private val backupManager: BackupManager,
     private val googleAuthorizationManager: GoogleAuthorizationManager,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val workerObserver: WorkerObserver
 ): ViewModel() {
 
     fun getBackupSettings() = settingsAutoBackupRepository.getBackupSettings()
@@ -55,11 +58,9 @@ class BackupSettingsViewModel @Inject constructor(
 
     private val isRepeatGDriveAutoBackupTimeDropDownVisible = mutableStateOf(false)
 
-    private val backupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
-    = mutableStateOf(null)
+    private val isShowLoadDialog = mutableStateOf(false)
 
-    private val restoreBackupWorkObserver:MutableState<Pair<LiveData<Operation.State>,Observer<Operation.State>>?>
-    = mutableStateOf(null)
+    fun isShowLoadDialog() = isShowLoadDialog.toState()
 
     private val dontKillMyAppDialogState:MutableState<Pair<Boolean,(() -> Unit)?>> = mutableStateOf(Pair(false,null))
 
@@ -76,10 +77,6 @@ class BackupSettingsViewModel @Inject constructor(
     fun hideDontKillMyAppDialog() {
         dontKillMyAppDialogState.value = Pair(false,null)
     }
-
-    fun getBackupWorkObserver() = backupWorkObserver.toState()
-
-    fun getRestoreBackupWorkObserver() = restoreBackupWorkObserver.toState()
 
     fun isRepeatLocalAutoBackupTimeDropDownVisible() = isRepeatLocalAutoBackupTimeDropDownVisible.toState()
 
@@ -278,24 +275,31 @@ class BackupSettingsViewModel @Inject constructor(
         this.activityController = activityController
     }
 
-    fun startBackup() {
-        backupSettingsInDialog.value?.ifNotNull {
-            if(it.backupPath == null) return@ifNotNull
-            if(backupWorkObserver.value != null) return@ifNotNull
-            val observer = Observer<Operation.State> { state ->
-                if(state is Operation.State.SUCCESS) {
-                    toastManager.showToast(R.string.Backup_completed)
+        fun startBackup() {
+        viewModelScope.launch {
+            backupSettingsInDialog.value?.asyncIfNotNull {
+                if(it.backupPath == null) return@asyncIfNotNull
+                val state = backupManager.createBackup(it)
+                isShowLoadDialog.value = true
+                WorkerObserverScope.launch {
+                    state.collect {
+                        if(it == null) return@collect
+                        if(it is WorkerObserver.Companion.WorkerState.SUCCESS) {
+                            withContext(Dispatchers.Main) {
+                                toastManager.showToast(R.string.Backup_completed)
+                            }
+                            removeBackupAndRestoreObservers()
+                        }
+                        if(it is WorkerObserver.Companion.WorkerState.FAILURE) {
+                            withContext(Dispatchers.Main) {
+                                toastManager.showToast(R.string.Backup_error)
+                            }
+                            removeBackupAndRestoreObservers()
+                        }
+                    }
                 }
-                if(state is Operation.State.FAILURE) {
-                    toastManager.showToast(R.string.Backup_error)
-                }
-                if(state !is Operation.State.IN_PROGRESS) {
-                    removeBackupObserver()
-                }
+
             }
-            val operation = backupManager.createBackup(it).state
-            operation.observeForever(observer)
-            backupWorkObserver.value = Pair(operation,observer)
         }
     }
 
@@ -313,28 +317,29 @@ class BackupSettingsViewModel @Inject constructor(
     }
 
     fun startRestoreBackup() {
-        val uri = currentBackupFileForRestore.value ?: return
-        val params = restoreParamsInDialog.value ?: return
-        val observer = Observer<Operation.State> { state ->
-            if(state is Operation.State.SUCCESS) {
-                toastManager.showToast(R.string.Restore_backup_complited)
-            }
-            if(state is Operation.State.FAILURE) {
-                toastManager.showToast(R.string.Restore_backup_error)
-            }
-            if(state !is Operation.State.IN_PROGRESS) {
-                removeRestoreBackupObserver()
-            }
-        }
-        val operation = backupManager.restoreBackup(uri,params).state
-        operation.observeForever(observer)
-        restoreBackupWorkObserver.value = Pair(operation,observer)
-    }
+        viewModelScope.launch {
+            val uri = currentBackupFileForRestore.value ?: return@launch
+            val params = restoreParamsInDialog.value ?: return@launch
+            val state = backupManager.restoreBackup(uri,params)
+            isShowLoadDialog.value = true
+            WorkerObserverScope.launch {
+                state.collect {
+                    if(it == null) return@collect
+                    if(it is WorkerObserver.Companion.WorkerState.SUCCESS) {
+                        withContext(Dispatchers.Main) {
+                            toastManager.showToast(R.string.Backup_completed)
+                        }
+                        removeBackupAndRestoreObservers()
+                    }
+                    if(it is WorkerObserver.Companion.WorkerState.FAILURE) {
+                        withContext(Dispatchers.Main) {
+                            toastManager.showToast(R.string.Backup_error)
+                        }
+                        removeBackupAndRestoreObservers()
+                    }
+                }
 
-    private fun removeRestoreBackupObserver() {
-        restoreBackupWorkObserver.value.ifNotNull {
-            it.first.removeObserver(it.second)
-            restoreBackupWorkObserver.value = null
+            }
         }
     }
 
@@ -357,11 +362,10 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    private fun removeBackupObserver() {
-        backupWorkObserver.value.ifNotNull {
-            it.first.removeObserver(it.second)
-            backupWorkObserver.value = null
-        }
+    private fun removeBackupAndRestoreObservers() {
+        isShowLoadDialog.value = false
+        viewModelScope.launch { workerObserver.unRegisterAll() }
+        WorkerObserverScope.coroutineContext.cancelChildren()
     }
 
     fun getGoogleAccount() = googleAuthorizationManager.googleAccount
@@ -382,5 +386,9 @@ class BackupSettingsViewModel @Inject constructor(
     }
 
     fun isDontKillMyAppHideForever() = settingsRepository.getDontKillMyAppDialogState().getData()
+
+    private object WorkerObserverScope : CoroutineScope {
+        override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default + CoroutineName("WorkerObserverScope")
+    }
 
 }
