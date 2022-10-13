@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -160,32 +161,35 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
-            listOf( {
-                SplashScreenSettings(
-                    settingsViewModel.getSplashScreenVisible().collectAsState(true),
-                    onChangeState = {
-                        settingsViewModel.changeSplashScreenVisible(it)
-                    }
-                )
-            },
-            {
-                ToThemeSettingsScreenButton(navController)
-            },
-            {
-                ToBackupSettingsScreenButton(navController)
-            }
+            listOf<SettingsItem>(
+                SettingsItem() {
+                        SplashScreenSettings(
+                            settingsViewModel.getSplashScreenVisible().collectAsState(true),
+                            onChangeState = {
+                                settingsViewModel.changeSplashScreenVisible(it)
+                            }
+                        )
+                },
+                SettingsItem() {
+                    ToThemeSettingsScreenButton(navController)
+                },
+                SettingsItem() {
+                    ToBackupSettingsScreenButton(navController)
+                }
             )
         ),
         SettingsCategory(
             stringResource(R.string.Localization),
-            listOf() {
-                LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
-            }
+            listOf<SettingsItem>(
+                SettingsItem() {
+                    LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
+                }
+            )
         ),
         SettingsCategory(
             stringResource(R.string.Security),
-            listOf(
-                {
+            listOf<SettingsItem>(
+                SettingsItem() {
                     SecureLoginSettings(appPasswordEnable)
                     {
                         if(it) {
@@ -195,13 +199,12 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                         }
                     }
                 },
-                {
-                    LockWhenLeaveSettings(lockWhenLeave, appPasswordEnable)
+                SettingsItem(appPasswordEnable.value) {
+                    LockWhenLeaveSettings(lockWhenLeave)
                     { settingsViewModel.changeLockWhenLeaveState(it) }
                 },
-                {
+                SettingsItem(lockWhenLeave.value) {
                     TimerLockWhenLeave(
-                        isLockWhenLeaveEnable = lockWhenLeave,
                         currentTime = settingsViewModel.getLockWhenLeaveTime().collectAsState(
                             initial = 0
                         ),
@@ -211,78 +214,79 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                         onTimeChanged = {settingsViewModel.setLockWhenLeaveTime(it)}
                     )
                 },
-                {
-                  BiometricAuthorizationSettings(
-                      BioMetricAuthorizationEnable = bioMetricAuthorizationState,
-                      onChangeBioMetricAuthorizationState =
-                      {settingsViewModel.changeBiometricAuthorizationState(it)},
-                      appPasswordEnable = appPasswordEnable,
-                      isFingerPrintAvailable = settingsViewModel.isFingerPrintAvailable()
-                  )
+                SettingsItem(appPasswordEnable.value&&settingsViewModel.isFingerPrintAvailable()) {
+                    BiometricAuthorizationSettings(
+                        BioMetricAuthorizationEnable = bioMetricAuthorizationState,
+                        onChangeBioMetricAuthorizationState =
+                        {settingsViewModel.changeBiometricAuthorizationState(it)},
+                    )
                 },
             )
         ),
         SettingsCategory(
             stringResource(R.string.Navigation),
-            listOf {
-                ScrollWithScreenSettings(settingsViewModel.getNavigationSwipeState().collectAsState(
-                    initial = true
-                ),
-                    onChangeState = {
-                        settingsViewModel.changeNavigationSwipeState(it)
-                    }
-                )
-            },
+            listOf<SettingsItem>(
+                SettingsItem() {
+                    ScrollWithScreenSettings(settingsViewModel.getNavigationSwipeState().collectAsState(
+                        initial = true
+                    ),
+                        onChangeState = {
+                            settingsViewModel.changeNavigationSwipeState(it)
+                        })
+                },
+            )
         ),
         SettingsCategory(
                     stringResource(R.string.About_app),
             listOf(
-                {
+                SettingsItem() {
                     Email() {
                         settingsViewModel.openEmailClient(context)
                     }
                 },
-                {
+                SettingsItem() {
                     AppVersion()
                 },
-                {
+                SettingsItem() {
                     AboutMainDeveloper_Me()
                 },
-                {
+                SettingsItem() {
                     AboutSubDeveloper()
                 },
-                {
+                SettingsItem() {
                     DontKillMyAppButton()
                 },
-                {
+                SettingsItem() {
                     PrivatePolicyButton()
                 },
-                {
+                SettingsItem() {
                     TermsButton()
-                }
+                },
             )
         )
     )
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         settingsCategory.forEach { category ->
-            itemsIndexed(category.settingsItems) { index, it ->
-                if(index == 0) {
-                    Text(text = category.categoryName,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 20.sp,
-                        color = SecondoryFontColor,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 15.dp, bottom = 13.dp)
-                    )
-                }
-                Row(
-                    Modifier
+            item {
+                Text(text = category.categoryName,
+                    fontWeight = FontWeight.Black,
+                    fontSize = 20.sp,
+                    color = SecondoryFontColor,
+                    modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 20.dp, end = 10.dp, bottom = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    it()
+                        .padding(start = 15.dp, bottom = 13.dp)
+                )
+            }
+            items(category.settingsItems) {
+                if(it.isEnable) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 10.dp, bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        it.content()
+                    }
                 }
 
             }

@@ -61,7 +61,7 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
         Text(
             text = stringResource(R.string.NavigationSwipeState),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
@@ -90,7 +90,7 @@ fun SplashScreenSettings(currentState: State<Boolean>,
         Text(
             text = stringResource(R.string.SplashScreenVisibleState),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
@@ -127,7 +127,7 @@ fun AppVersion() {
             Text(
                 text = BuildConfig.VERSION_NAME,
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = SecondoryFontColor,
             )
         }
@@ -156,7 +156,7 @@ fun Email(onSend:() -> Unit) {
             Text(
                 text = DEVELOPER_EMAIL,
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = SecondoryFontColor,
             )
         }
@@ -171,7 +171,7 @@ fun AboutMainDeveloper_Me() {
         Text(
             text = stringResource(R.string.Main_Developer),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
@@ -180,7 +180,7 @@ fun AboutMainDeveloper_Me() {
             Text(
                 text = stringResource(R.string.xXMRK888YTXx),
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = SecondoryFontColor,
             )
         }
@@ -194,7 +194,7 @@ fun AboutSubDeveloper() {
         Text(
             text = stringResource(R.string.Design_assistant),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
@@ -203,7 +203,7 @@ fun AboutSubDeveloper() {
             Text(
                 text = stringResource(R.string.xXKoksMenXx),
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = SecondoryFontColor,
             )
         }
@@ -217,7 +217,7 @@ fun LanguageChose(currentLanguage:State<String>,onShowLanguageDialog: () -> Unit
     ) {
         Text(text = stringResource(R.string.Language),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         val annotatedLabelString = buildAnnotatedString {
@@ -238,7 +238,7 @@ fun LanguageChose(currentLanguage:State<String>,onShowLanguageDialog: () -> Unit
         Text(text = annotatedLabelString,
             inlineContent = inlineContentMap,
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = SecondoryFontColor,
             textAlign = TextAlign.End,
             modifier = Modifier
@@ -286,7 +286,7 @@ fun LanguageChoseDialog(
                             modifier = Modifier.padding(end = 10.dp)
                         )
                         Text(text = it.name,
-                            fontSize = 16.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             color = PrimaryFontColor.copy(0.75f),
                             modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
@@ -309,7 +309,7 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
         Text(
             text = stringResource(R.string.Entering_password_login),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
@@ -388,7 +388,7 @@ fun EnterPassword(password:MutableState<String>,
             .clip(RoundedCornerShape(100))
             .padding(15.dp),
         label = { Text(text = stringResource(R.string.Enter_password),
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
         },
@@ -421,7 +421,7 @@ fun RepitPassword(repitPassword:MutableState<String>,
             .clip(RoundedCornerShape(100))
             .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
         label = { Text(text = stringResource(R.string.Repit_password),
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
         },
@@ -444,18 +444,15 @@ fun RepitPassword(repitPassword:MutableState<String>,
 @Composable
 fun BiometricAuthorizationSettings(
     BioMetricAuthorizationEnable:State<Boolean>,
-    onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit,
-    appPasswordEnable:State<Boolean>,
-    isFingerPrintAvailable:Boolean = true
+    onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit
 ) {
-    if(appPasswordEnable.value&&isFingerPrintAvailable) {
        Row(Modifier.fillMaxWidth(),
            verticalAlignment = Alignment.CenterVertically,
        ) {
            Text(
                text = stringResource(R.string.Biometric_login),
                fontWeight = FontWeight.Medium,
-               fontSize = 16.sp,
+               fontSize = 18.sp,
                color = PrimaryFontColor,
            )
            Box(Modifier.fillMaxWidth(),
@@ -473,22 +470,19 @@ fun BiometricAuthorizationSettings(
                )
            }
        }
-   }
 }
 
 @Composable
 fun LockWhenLeaveSettings(
     currentState: State<Boolean>,
-    isAppPasswordEnabled:State<Boolean>,
     onChangeState: (state: Boolean) -> Unit){
-   if(isAppPasswordEnabled.value) {
        Row(Modifier.fillMaxWidth(),
            verticalAlignment = Alignment.CenterVertically,
        ) {
            Text(
                text = stringResource(R.string.Block_on_collapse),
                fontWeight = FontWeight.Medium,
-               fontSize = 16.sp,
+               fontSize = 18.sp,
                color = PrimaryFontColor,
            )
            Box(Modifier.fillMaxWidth(),
@@ -506,7 +500,6 @@ fun LockWhenLeaveSettings(
                )
            }
        }
-   }
 }
 
 @Composable
@@ -531,7 +524,6 @@ fun getCurrent(currentTime:Int) : Pair<String,Int> {
 
 @Composable
 fun TimerLockWhenLeave(
-    isLockWhenLeaveEnable:State<Boolean>,
     currentTime:State<Int>,
     dropDownState:State<Boolean>,
     onShowDropDown:() -> Unit,
@@ -540,7 +532,6 @@ fun TimerLockWhenLeave(
 ) {
     val dropDownItems = getLockWhenLeaveItems()
     val current:Pair<String,Int> = getCurrent(currentTime.value)
-    if(isLockWhenLeaveEnable.value) {
         val annotatedLabelString = buildAnnotatedString {
             append(current.first)
             appendInlineContent("drop_down_triangle")
@@ -562,7 +553,7 @@ fun TimerLockWhenLeave(
             Text(
                 text = stringResource(R.string.Time_to_block),
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 color = PrimaryFontColor,
             )
             Box() {
@@ -585,7 +576,7 @@ fun TimerLockWhenLeave(
                                 onCancelDropDown() }) {
                                 Row {
                                     Text(text = it.first,
-                                        fontSize = 16.sp,
+                                        fontSize = 18.sp,
                                         fontWeight = FontWeight.Medium,
                                         color = PrimaryFontColor
                                     )
@@ -601,7 +592,7 @@ fun TimerLockWhenLeave(
                 Text(text = annotatedLabelString,
                     inlineContent = inlineContentMap,
                     fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     color = SecondoryFontColor,
                     textAlign = TextAlign.End,
                     modifier = Modifier
@@ -612,7 +603,6 @@ fun TimerLockWhenLeave(
                 )
             }
         }
-    }
 }
 
 @Composable
@@ -628,7 +618,7 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
         Text(
             text = stringResource(R.string.App_theme),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(
@@ -660,7 +650,7 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
         Text(
             text = stringResource(R.string.Backup),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(
@@ -694,7 +684,7 @@ fun DontKillMyAppButton() {
         Text(
             text = stringResource(R.string.DontKillMyApp),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(
@@ -729,7 +719,7 @@ fun PrivatePolicyButton() {
         Text(
             text = stringResource(R.string.Privacy_policy),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(
@@ -763,7 +753,7 @@ fun TermsButton() {
         Text(
             text = stringResource(R.string.Terms_of_use),
             fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
+            fontSize = 18.sp,
             color = PrimaryFontColor,
         )
         Box(
@@ -780,48 +770,3 @@ fun TermsButton() {
         }
     }
 }
-
-@Preview
-@Composable
-fun Preview() {
-
-}
-
-
-
-//@Composable
-//fun ThemeSettings() {
-//    Row(Modifier.fillMaxWidth(),
-//        verticalAlignment = Alignment.CenterVertically,
-//    ) {
-//        Text(text = "Тема приложения",
-//            fontWeight = FontWeight.Medium,
-//            fontSize = 16.sp,
-//            color = PrimaryFontColor,
-//        )
-//        val annotatedLabelString = buildAnnotatedString {
-//            append("Системная")
-//            appendInlineContent("drop_down_triangle")
-//        }
-//        val inlineContentMap = mapOf(
-//            "drop_down_triangle" to InlineTextContent(
-//                Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
-//            ) {
-//                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
-//                    contentDescription = "",
-//                    tint = SecondoryFontColor,
-//                    modifier = Modifier.padding(top = 12.dp)
-//                )
-//            }
-//        )
-//        Text(text = annotatedLabelString,
-//            inlineContent = inlineContentMap,
-//            fontWeight = FontWeight.Medium,
-//            fontSize = 16.sp,
-//            color = SecondoryFontColor,
-//            textAlign = TextAlign.End,
-//            modifier = Modifier.fillMaxWidth()
-//        )
-//
-//    }
-//}
