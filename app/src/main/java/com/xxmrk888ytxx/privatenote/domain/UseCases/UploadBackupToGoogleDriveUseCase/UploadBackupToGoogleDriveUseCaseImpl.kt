@@ -11,6 +11,7 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.GoogleDriveBadWrite
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import kotlinx.coroutines.joinAll
@@ -28,8 +29,8 @@ class UploadBackupToGoogleDriveUseCaseImpl(
             val backupFolderId = getBackupFolder(drive).id
             val backupFile = DriveFile()
             backupFile.parents = listOf(backupFolderId)
-            backupFile.name = "Backup-${System.currentTimeMillis().secondToData(context)}.json"
-            val backupFileContext = FileContent("application/json", loadFile)
+            backupFile.name = "Backup-${System.currentTimeMillis().secondToData(context)}.$BACKUP_FILE_EXTENSION"
+            val backupFileContext = FileContent("application/$BACKUP_FILE_EXTENSION", loadFile)
             getDrive(googleAccount).Files().create(backupFile,backupFileContext).execute()
         }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())

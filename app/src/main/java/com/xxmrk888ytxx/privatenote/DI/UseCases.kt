@@ -1,8 +1,6 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
-import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
@@ -12,13 +10,14 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepos
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
@@ -27,10 +26,12 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetT
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.ReadBackupFileUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreBackupUseCase.RestoreBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreBackupUseCase.RestoreBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCase
@@ -74,10 +75,8 @@ class UseCases {
     @Singleton
     fun getGetNotesForBackupUseCase(
         noteRepository: NoteRepository,
-        imageRepository: ImageRepository,
-        audioRepository: AudioRepository
     ) : GetNotesForBackupUseCase {
-        return GetNotesForBackupUseCaseImpl(noteRepository,imageRepository,audioRepository)
+        return GetNotesForBackupUseCaseImpl(noteRepository)
     }
 
     @Provides
@@ -104,8 +103,8 @@ class UseCases {
 
     @Provides
     @Singleton
-    fun getReadBackupFileUseCase(@ApplicationContext context: Context) : ReadBackupFileUseCase {
-        return ReadBackupFileUseCaseImpl(context)
+    fun getReadBackupFileUseCase(@ApplicationContext context: Context) : UnArcherBackupUseCase {
+        return UnArcherBackupUseCaseImpl(context)
     }
 
     @Provides
@@ -118,11 +117,11 @@ class UseCases {
     @Singleton
     fun getRestoreNoteFromUseCase(
         noteRepository: NoteRepository,
+        categoryRepository: CategoryRepository,
         imageRepository: ImageRepository,
-        audioRepository: AudioRepository,
-        categoryRepository: CategoryRepository
+        audioRepository: AudioRepository
     ) : RestoreNoteFromBackupUseCase {
-        return RestoreNoteFromBackupUseCaseImpl(noteRepository, imageRepository, audioRepository, categoryRepository)
+        return RestoreNoteFromBackupUseCaseImpl(noteRepository,categoryRepository,imageRepository, audioRepository)
     }
 
     @Provides
@@ -137,8 +136,8 @@ class UseCases {
         getNotesForBackupUseCase: GetNotesForBackupUseCase,
         getCategoryForBackupUseCase: GetCategoryForBackupUseCase,
         getTodoForBackupUseCase: GetTodoForBackupUseCase
-    ) : CreateBackupUseCase {
-        return CreateBackupUseCaseImpl(getNotesForBackupUseCase, getCategoryForBackupUseCase, getTodoForBackupUseCase)
+    ) : CreateBackupModelUseCase {
+        return CreateBackupModelUseCaseImpl(getNotesForBackupUseCase, getCategoryForBackupUseCase, getTodoForBackupUseCase)
     }
 
     @Provides
@@ -159,6 +158,27 @@ class UseCases {
     @Singleton
     fun getExportAudioUseCase(@ApplicationContext context: Context) : ExportAudioUseCase {
         return ExportAudioUseCaseImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun getGenerateBackupFileUseCase(
+        @ApplicationContext context: Context,
+        imageRepository: ImageRepository,
+        audioRepository: AudioRepository
+    ) : GenerateBackupFileUseCase {
+        return GenerateBackupFileUseCaseImpl(context, imageRepository, audioRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun getRestoreBackupUseCase(
+        @ApplicationContext context: Context,
+        restoreCategoryFromUseCase: RestoreCategoryFromUseCase,
+        restoreTodoFromUseCase: RestoreTodoFromUseCase,
+        restoreNoteFromBackupUseCase: RestoreNoteFromBackupUseCase
+    ) : RestoreBackupUseCase {
+        return RestoreBackupUseCaseImpl(context, restoreCategoryFromUseCase, restoreNoteFromBackupUseCase, restoreTodoFromUseCase)
     }
 
 }

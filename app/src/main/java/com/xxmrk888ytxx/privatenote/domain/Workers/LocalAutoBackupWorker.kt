@@ -15,7 +15,8 @@ import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
-import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -25,9 +26,10 @@ import kotlinx.coroutines.flow.first
 class LocalAutoBackupWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted private val workerParameters: WorkerParameters,
-    private val createBackupUseCase: CreateBackupUseCase,
+    private val createBackupModelUseCase: CreateBackupModelUseCase,
     private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
     private val notificationAppManager: NotificationAppManager,
+    private val generateBackupFileUseCase: GenerateBackupFileUseCase,
     private val settingsAutoBackupRepository : SettingsAutoBackupRepository
 ) : CoroutineWorker(context,workerParameters) {
 
@@ -40,11 +42,13 @@ class LocalAutoBackupWorker @AssistedInject constructor(
             val settings = settingsAutoBackupRepository.getBackupSettings().first()
             if(!settings.isEnableLocalBackup) return Result.failure()
             if(settings.backupPath == null) throw NotSetBackupPathException()
-            val jsonString = parseBackupModelToJson(
-                createBackupUseCase.execute(settings)
-            )
-            writeBackupInFileUseCase.execute(jsonString,settings.backupPath)
+            val backupModel = createBackupModelUseCase.execute(settings)
+            val backupFile = generateBackupFileUseCase.execute(backupModel,settings)
+            writeBackupInFileUseCase.execute(backupFile,settings.backupPath)
+
+            generateBackupFileUseCase.clearTempDir()
             return Result.success()
+
         } catch (e:BadFileAccessException) {
             notificationAppManager.sendBackupStateNotification(
                 title = context.getString(R.string.Error_with_local_backup),

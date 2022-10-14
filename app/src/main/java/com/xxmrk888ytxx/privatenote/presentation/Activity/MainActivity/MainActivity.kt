@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
@@ -242,8 +243,8 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
             mainActivityViewModel.registerSelectFileForAutoBackupCallBacks(onComplete, onError)
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json"
-                putExtra(Intent.EXTRA_TITLE, "Backup.json")
+                type = "application/$BACKUP_FILE_EXTENSION"
+                putExtra(Intent.EXTRA_TITLE, "Backup.$BACKUP_FILE_EXTENSION")
                 flags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
                         or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                         or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
@@ -262,8 +263,8 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
             mainActivityViewModel.registerCreateFileBackupCallBack(onComplete,onError)
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json"
-                putExtra(Intent.EXTRA_TITLE, "Backup.json")
+                type = "$BACKUP_FILE_EXTENSION/*"
+                putExtra(Intent.EXTRA_TITLE, "Backup.$BACKUP_FILE_EXTENSION")
             }
             createFileBackupCallBack.launch(intent)
         }catch (e:CallBackAlreadyRegisteredException) {
@@ -279,7 +280,7 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
             mainActivityViewModel.registerOpenBackupFileCallBacks(onComplete, onError)
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                 addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/json"
+                type = "application/*"
             }
             openBackupFileCallBack.launch(intent)
         }catch (e:CallBackAlreadyRegisteredException) {

@@ -9,5 +9,6 @@ object Const {
     const val DEVELOPER_EMAIL = "xxmrk888ytxx.rlc@gmail.com"
     const val PRIVACY_POLICY = "https://xxmrk888ytxx.github.io/privacy.htm"
     const val TERMS = "https://xxmrk888ytxx.github.io/terms.htm"
+    const val BACKUP_FILE_EXTENSION = "pndb"
 }
 

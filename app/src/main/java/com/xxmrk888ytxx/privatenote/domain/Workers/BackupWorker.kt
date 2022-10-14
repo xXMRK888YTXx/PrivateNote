@@ -9,9 +9,9 @@ import androidx.work.WorkerParameters
 import com.squareup.moshi.Moshi
 import com.xxmrk888ytxx.privatenote.Utils.Exception.NotSetBackupPathException
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
-import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import dagger.assisted.Assisted
@@ -21,7 +21,8 @@ import dagger.assisted.AssistedInject
 class BackupWorker @AssistedInject constructor(
     @Assisted private val context:Context,
     @Assisted private val workerParameters: WorkerParameters,
-    private val createBackupUseCase: CreateBackupUseCase,
+    private val createBackupModelUseCase: CreateBackupModelUseCase,
+    private val generateBackupFileUseCase: GenerateBackupFileUseCase,
     private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
     private val workerObserver: WorkerObserver
 ) : CoroutineWorker(context,workerParameters) {
@@ -32,14 +33,17 @@ class BackupWorker @AssistedInject constructor(
         try {
             val settings = getBackupSettings(workerParameters.inputData)
             if(settings.backupPath == null) throw NotSetBackupPathException()
-            val jsonString = parseBackupModelToJson(
-                createBackupUseCase.execute(settings)
-            )
-            writeBackupInFileUseCase.execute(jsonString,settings.backupPath)
+
+            val backupModel = createBackupModelUseCase.execute(settings)
+            val backupFile = generateBackupFileUseCase.execute(backupModel,settings)
+            writeBackupInFileUseCase.execute(backupFile,settings.backupPath)
+
+            generateBackupFileUseCase.clearTempDir()
             workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.SUCCESS)
             return Result.success()
         }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())
+            generateBackupFileUseCase.clearTempDir()
             workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.FAILURE)
             return Result.failure()
         }
@@ -64,12 +68,6 @@ class BackupWorker @AssistedInject constructor(
             isBackupCompletedTodo = isBackupCompletedTodo,
             backupPath = backupPath
         )
-    }
-
-    private fun parseBackupModelToJson(backupModel:BackupDataModel) : String {
-        val moshi = Moshi.Builder().build()
-        val adapter = moshi.adapter(BackupDataModel::class.java)
-        return adapter.toJson(backupModel)
     }
 
     companion object {
