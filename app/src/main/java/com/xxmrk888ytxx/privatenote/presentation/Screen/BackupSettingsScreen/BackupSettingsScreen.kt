@@ -22,6 +22,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -35,6 +36,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
@@ -811,9 +813,10 @@ fun GoogleSingInButton(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(40.dp)
         ) {
             Text(
-                text = stringResource(R.string.Google_sing_in),
+                text = stringResource(R.string.Authorization_google),
                 fontWeight = FontWeight.W800,
                 fontSize = 18.sp,
                 color = ThemeManager.PrimaryFontColor,
@@ -825,9 +828,8 @@ fun GoogleSingInButton(
                     .padding(end = 10.dp),
                 contentAlignment = Alignment.CenterEnd) {
                 Image(
-                    painter = painterResource(R.drawable.ic_google_icon),
+                    painter = painterResource(R.drawable.g_button),
                     contentDescription = "",
-                    //tint = ThemeManager.PrimaryFontColor,
                 )
             }
         }
