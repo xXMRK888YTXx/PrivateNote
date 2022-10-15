@@ -10,4 +10,6 @@ interface PlayerController {
     fun pause()
     fun reset()
     fun seekTo(pos:Long)
+    fun onEnableWakeLock()
+    fun onCancelWackLock()
 }

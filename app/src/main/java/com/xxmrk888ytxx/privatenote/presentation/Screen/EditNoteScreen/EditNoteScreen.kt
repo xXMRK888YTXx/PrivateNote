@@ -52,6 +52,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
@@ -70,7 +71,8 @@ import kotlinx.coroutines.launch
 fun EditNoteScreen(
     editNoteViewModel: EditNoteViewModel = hiltViewModel(),
     navController: NavController,
-    activityController: ActivityController
+    activityController: ActivityController,
+    wakeLockController: WakeLockController
 ) {
     val dialogState = remember {
         editNoteViewModel.dialogShowState
@@ -152,6 +154,7 @@ fun EditNoteScreen(
     }
     LaunchedEffect(key1 = activityController, block = {
         editNoteViewModel.initActivityController(activityController)
+        editNoteViewModel.initWakeLockController(wakeLockController)
     })
 
 }

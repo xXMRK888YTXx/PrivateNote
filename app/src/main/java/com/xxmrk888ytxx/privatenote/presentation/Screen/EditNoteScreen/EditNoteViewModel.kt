@@ -46,6 +46,7 @@ import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -117,6 +118,8 @@ class EditNoteViewModel @Inject constructor(
     private val currentRecordTime = mutableStateOf("00:00")
 
     private var activityController:ActivityController? = null
+
+    private var wakeLockController:WakeLockController? = null
 
     fun getCurrentRecordTime() = currentRecordTime
 
@@ -673,6 +676,14 @@ class EditNoteViewModel @Inject constructor(
                 }
             }
 
+            override fun onEnableWakeLock() {
+                wakeLockController?.lockScreen()
+            }
+
+            override fun onCancelWackLock() {
+                wakeLockController?.unlockScreen()
+            }
+
         }
     }
 
@@ -691,6 +702,10 @@ class EditNoteViewModel @Inject constructor(
 
     fun initActivityController(activityController: ActivityController) {
         this.activityController = activityController
+    }
+
+    fun initWakeLockController(wakeLockController: WakeLockController) {
+        this.wakeLockController = wakeLockController
     }
 
     fun exportImage(image: Image) {

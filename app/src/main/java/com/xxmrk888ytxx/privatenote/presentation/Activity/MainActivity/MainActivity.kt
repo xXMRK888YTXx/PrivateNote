@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -55,7 +56,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
+class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeLockController {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
@@ -109,7 +110,8 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
                     composable(Screen.EditNoteScreen.route) {
                         EditNoteScreen(
                             navController = navController,
-                            activityController = this@MainActivity
+                            activityController = this@MainActivity,
+                            wakeLockController = this@MainActivity
                     )}
                     composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
                     composable(Screen.DrawScreen.route) {
@@ -419,6 +421,14 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity {
     companion object {
         const val IMAGE_EXPORT_TYPE = "IMAGE_EXPORT_TYPE"
         const val AUDIO_EXPORT_TYPE = "AUDIO_EXPORT_TYPE"
+    }
+
+    override fun lockScreen() {
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun unlockScreen() {
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 }
 

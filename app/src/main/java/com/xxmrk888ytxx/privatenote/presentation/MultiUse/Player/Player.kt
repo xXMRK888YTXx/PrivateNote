@@ -5,10 +5,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -34,6 +31,12 @@ fun PlayerDialog(
     val playerState = controller.getPlayerState().collectAsState(PlayerState.Disable,scope.coroutineContext)
     LaunchedEffect(key1 = Unit, block = {
         controller.play(audio)
+        controller.onEnableWakeLock()
+    })
+    DisposableEffect(key1 = controller, effect = {
+        this.onDispose {
+            controller.onCancelWackLock()
+        }
     })
     val playerButtons = listOf<PlayerButton>(
         PlayerButton(
