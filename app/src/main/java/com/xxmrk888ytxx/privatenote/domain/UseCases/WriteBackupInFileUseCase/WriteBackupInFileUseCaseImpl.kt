@@ -4,25 +4,29 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import okio.IOException
-import java.io.File
-import java.io.FileInputStream
+import java.io.*
 
 
 class WriteBackupInFileUseCaseImpl(
-    private val context: Context
+    private val context: Context,
 ) : WriteBackupInFileUseCase {
     override suspend fun execute(backupFile:File, uriString:String) {
         try {
-            val readBackupStream = FileInputStream(backupFile)
-            val backupBytes = readBackupStream.readBytes()
-            readBackupStream.close()
             val uri = Uri.parse(uriString)
+            val readStream = FileInputStream(backupFile)
+            val readStreamBuffer = BufferedInputStream(readStream)
             val outputStream = context.contentResolver.openOutputStream(uri) ?: throw IOException()
-            outputStream.write(backupBytes)
+            val outputStreamBuffer = BufferedOutputStream(outputStream)
+            var b: Int
+            while (readStreamBuffer.read().also { b = it } != -1) {
+                outputStreamBuffer.write(b)
+            }
+            outputStreamBuffer.flush()
+
+            readStream.close()
+            readStreamBuffer.close()
             outputStream.close()
+            outputStreamBuffer.close()
         }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())
             throw BadFileAccessException()

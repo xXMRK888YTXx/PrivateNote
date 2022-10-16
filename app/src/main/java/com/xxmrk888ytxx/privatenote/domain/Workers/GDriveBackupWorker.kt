@@ -53,7 +53,6 @@ class GDriveBackupWorker @AssistedInject constructor (
 
             generateBackupFileUseCase.clearTempDir()
             return Result.success()
-            TODO()
         }catch (e:GoogleDriveBadWrite) {
             notificationAppManager.sendBackupStateNotification(
                 title = context.getString(R.string.Google_drive_backup_error_title),
@@ -72,17 +71,7 @@ class GDriveBackupWorker @AssistedInject constructor (
         }
     }
 
-    private fun parseBackupModelToJson(backupModel: BackupDataModel) : String {
-        val moshi = Moshi.Builder().build()
-        val adapter = moshi.adapter(BackupDataModel::class.java)
-        return adapter.toJson(backupModel)
-    }
 
-//    private fun getTempFile() : File = File(context.cacheDir,"tempBackup.json")
-//
-//    private fun removeTempFile() {
-//        getTempFile().delete()
-//    }
 
     private fun getForegroundNotification() : Notification {
         val notification =  NotificationCompat.Builder(context,
