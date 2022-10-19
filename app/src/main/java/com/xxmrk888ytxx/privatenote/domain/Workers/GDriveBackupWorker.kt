@@ -59,7 +59,7 @@ class GDriveBackupWorker @AssistedInject constructor (
         }catch (e:GoogleDriveBadWrite) {
             notificationAppManager.sendBackupStateNotification(
                 title = context.getString(R.string.Google_drive_backup_error_title),
-                text = context.getString(R.string.GoogleDriveBadWrite_description)
+                text = "${context.getString(R.string.GoogleDriveBadWrite_description)} + ${e.message ?: ""}"
             )
             generateBackupFileUseCase.clearTempDir()
             return Result.retry()

@@ -34,7 +34,7 @@ class UploadBackupToGoogleDriveUseCaseImpl(
             getDrive(googleAccount).Files().create(backupFile,backupFileContext).execute()
         }catch (e:Exception) {
             Log.d("MyLog",e.stackTraceToString())
-            throw GoogleDriveBadWrite()
+            throw GoogleDriveBadWrite(e.message)
         }
     }
 
