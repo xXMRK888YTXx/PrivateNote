@@ -29,13 +29,17 @@ class LocalAutoBackupWorker @AssistedInject constructor(
     private val createBackupModelUseCase: CreateBackupModelUseCase,
     private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
     private val notificationAppManager: NotificationAppManager,
-    private val generateBackupFileUseCase: GenerateBackupFileUseCase,
+    generateBackupFileUseCaseFactory: GenerateBackupFileUseCase.Factory,
     private val settingsAutoBackupRepository : SettingsAutoBackupRepository
 ) : CoroutineWorker(context,workerParameters) {
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(8,getForegroundNotification())
     }
+
+    private val DIR_NAME = "LocalAutoBackupTemp"
+
+    private val generateBackupFileUseCase = generateBackupFileUseCaseFactory.create(DIR_NAME)
 
     override suspend fun doWork(): Result {
         try {

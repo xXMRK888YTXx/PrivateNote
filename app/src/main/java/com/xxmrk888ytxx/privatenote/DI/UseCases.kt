@@ -17,7 +17,6 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAud
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
@@ -158,16 +157,6 @@ class UseCases {
     @Singleton
     fun getExportAudioUseCase(@ApplicationContext context: Context) : ExportAudioUseCase {
         return ExportAudioUseCaseImpl(context)
-    }
-
-    @Provides
-    @Singleton
-    fun getGenerateBackupFileUseCase(
-        @ApplicationContext context: Context,
-        imageRepository: ImageRepository,
-        audioRepository: AudioRepository
-    ) : GenerateBackupFileUseCase {
-        return GenerateBackupFileUseCaseImpl(context, imageRepository, audioRepository)
     }
 
     @Provides

@@ -22,11 +22,15 @@ class BackupWorker @AssistedInject constructor(
     @Assisted private val context:Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val createBackupModelUseCase: CreateBackupModelUseCase,
-    private val generateBackupFileUseCase: GenerateBackupFileUseCase,
+    generateBackupFileUseCaseFactory: GenerateBackupFileUseCase.Factory,
     private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
     private val workerObserver: WorkerObserver
 ) : CoroutineWorker(context,workerParameters) {
 
+    private val DIR_NAME = "BackupTemp"
+
+    private val generateBackupFileUseCase:GenerateBackupFileUseCase =
+        generateBackupFileUseCaseFactory.create(DIR_NAME)
 
 
     override suspend fun doWork(): Result {

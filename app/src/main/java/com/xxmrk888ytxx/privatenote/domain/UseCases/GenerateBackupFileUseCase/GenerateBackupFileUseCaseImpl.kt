@@ -8,22 +8,27 @@ import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.io.FileOutputStream
 
-class GenerateBackupFileUseCaseImpl(
-    private val context:Context,
+class GenerateBackupFileUseCase @AssistedInject constructor(
+    @ApplicationContext private val context:Context,
     private val imageRepository: ImageRepository,
-    private val audioRepository: AudioRepository
-) : GenerateBackupFileUseCase {
-    private val tempBackupDir = File(context.cacheDir,"TempBackupDir")
+    private val audioRepository: AudioRepository,
+    @Assisted tempDirName:String
+) {
+    private val tempBackupDir = File(context.cacheDir,tempDirName)
     private val imageTempDir = File(tempBackupDir,"Notes")
     private val audioTempDir = File(tempBackupDir,"Audios")
     private val backupDataFile = File(tempBackupDir,"BackupData.json")
-    private val finalBackupFileOutputPath = File(context.cacheDir,"backup.$BACKUP_FILE_EXTENSION")
+    private val finalBackupFileOutputPath = File(tempBackupDir,"backup.$BACKUP_FILE_EXTENSION")
 
-    override suspend fun execute(backupModel: BackupDataModel,settings: BackupSettings): File {
+    suspend fun execute(backupModel: BackupDataModel,settings: BackupSettings): File {
         clearTempDir()
         initDirs()
 
@@ -40,7 +45,7 @@ class GenerateBackupFileUseCaseImpl(
         return finalBackupFileOutputPath
     }
 
-    override fun clearTempDir() {
+     fun clearTempDir() {
         if(tempBackupDir.exists()) {
             tempBackupDir.deleteRecursively()
         }
@@ -107,5 +112,10 @@ class GenerateBackupFileUseCaseImpl(
         tempBackupDir.mkdir()
         imageTempDir.mkdir()
         audioTempDir.mkdir()
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(dirName:String) : GenerateBackupFileUseCase
     }
 }

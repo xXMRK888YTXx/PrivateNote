@@ -30,17 +30,20 @@ class GDriveBackupWorker @AssistedInject constructor (
     @Assisted private val context:Context,
     @Assisted private val workerParameters: WorkerParameters,
     private val createBackupModelUseCase: CreateBackupModelUseCase,
-    private val writeBackupInFileUseCase: WriteBackupInFileUseCase,
     private val notificationAppManager: NotificationAppManager,
     private val settingsAutoBackupRepository : SettingsAutoBackupRepository,
     private val googleAuthorizationManager: GoogleAuthorizationManager,
     private val uploadBackupToGoogleDriveUseCase: UploadBackupToGoogleDriveUseCase,
-    private val generateBackupFileUseCase: GenerateBackupFileUseCase
+    generateBackupFileUseCaseFactory: GenerateBackupFileUseCase.Factory
 ):CoroutineWorker(context,workerParameters) {
     override suspend fun getForegroundInfo(): ForegroundInfo {
         return ForegroundInfo(33,getForegroundNotification())
     }
+    private val DIR_NAME = "GDriveBackupTemp"
 
+
+    private val generateBackupFileUseCase:GenerateBackupFileUseCase =
+        generateBackupFileUseCaseFactory.create(DIR_NAME)
 
     override suspend fun doWork(): Result {
         try {
