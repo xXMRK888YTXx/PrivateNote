@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileNotFoundException
 
 @HiltWorker
 class GDriveBackupWorker @AssistedInject constructor (
@@ -60,7 +61,10 @@ class GDriveBackupWorker @AssistedInject constructor (
 
             generateBackupFileUseCase.clearTempDir()
             return Result.success()
-        }catch (e:GoogleDriveBadWrite) {
+        }catch (_:FileNotFoundException) {
+            return Result.retry()
+        }
+        catch (e:GoogleDriveBadWrite) {
             notificationAppManager.sendBackupStateNotification(
                 title = context.getString(R.string.Google_drive_backup_error_title),
                 text = "${context.getString(R.string.GoogleDriveBadWrite_description)} + ${e.message ?: ""}"
