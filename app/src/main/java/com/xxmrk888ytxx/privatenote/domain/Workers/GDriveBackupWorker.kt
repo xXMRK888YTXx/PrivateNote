@@ -9,6 +9,7 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import com.squareup.moshi.Moshi
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.Exception.GoogleDriveBadWrite
 import com.xxmrk888ytxx.privatenote.Utils.Exception.NotFoundGoogleAccount
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
@@ -22,7 +23,10 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.UploadBackupToGoogleDriveUse
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 @HiltWorker
