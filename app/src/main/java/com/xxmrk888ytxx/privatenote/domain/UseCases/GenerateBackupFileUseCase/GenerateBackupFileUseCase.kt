@@ -108,8 +108,6 @@ class GenerateBackupFileUseCase @AssistedInject constructor(
         return adapter.toJson(backupModel)
     }
 
-    fun isBackupFileExist() = finalBackupFileOutputPath.exists()
-
     private fun initDirs() {
         tempBackupDir.mkdir()
         imageTempDir.mkdir()
