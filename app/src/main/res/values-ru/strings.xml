@@ -215,4 +215,8 @@
     <string name="Privacy_policy">Политика конфиденциальности</string>
     <string name="Terms_of_use">Условия использования</string>
     <string name="Authorization_google">Авторизация</string>
+    <string name="Descending">По убыванию</string>
+    <string name="Ascending">По возрастанию</string>
+    <string name="Sorting_notes">Сортировка заметок</string>
+    <string name="Display">Отображение</string>
 </resources>

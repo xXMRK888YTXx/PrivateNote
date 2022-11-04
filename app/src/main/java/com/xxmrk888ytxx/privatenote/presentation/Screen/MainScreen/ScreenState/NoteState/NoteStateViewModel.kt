@@ -29,6 +29,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +45,8 @@ class NoteStateViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val toastManager: ToastManager,
     private val categoryRepository: CategoryRepository,
-    private val analytics: AnalyticsManager
+    private val analytics: AnalyticsManager,
+    private val settingsRepository: SettingsRepository
 ) : ViewModel() {
     val searchFieldText = mutableStateOf("")
         get() = field
@@ -305,6 +307,8 @@ class NoteStateViewModel @Inject constructor(
     fun changeChosenStatus(id: Int,currentStatus:Boolean) {
         noteRepository.changeChosenStatus(!currentStatus,id)
     }
+
+    fun getNoteSortNoteState() = settingsRepository.getSortNoteState()
     companion object {
         val SCREEN_ID = MainScreenState.NoteScreen.id
     }

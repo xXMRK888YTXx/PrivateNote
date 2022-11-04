@@ -45,6 +45,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
@@ -398,6 +399,7 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
 @Composable
 fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val noteList = noteStateViewModel.getNoteList().collectAsState(listOf())
+    val sortNoteState = noteStateViewModel.getNoteSortNoteState().collectAsState(SortNoteState.ByDescending)
     val mode = remember {
         noteStateViewModel.getCurrentMode()
     }
@@ -413,7 +415,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     val ListPadding = if(mode.value == SelectionScreenMode) 55 else 50
     val sortedNoteList = noteList.value.sortedByCategory(currentCategory.value)
         .searchFilter(mode.value == NoteScreenMode.SearchScreenMode,
-        searchSubString.value).sortNote()
+        searchSubString.value).sortNote(sortNoteState.value)
     
     noteStateViewModel.isSearchLineHide.value = sortedNoteList.isEmpty()
     if(mode.value == NoteScreenMode.SearchScreenMode && sortedNoteList.isEmpty()) {
@@ -666,7 +668,8 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
 @Composable
 fun DefaultNoteItem(note: Note) {
         Column(
-            Modifier.fillMaxSize()
+            Modifier
+                .fillMaxSize()
                 .padding(10.dp),
             verticalArrangement = Arrangement.Top,
         ) {

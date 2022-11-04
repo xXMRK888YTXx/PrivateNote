@@ -15,6 +15,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
@@ -116,12 +117,22 @@ fun List<Note>.searchFilter(enable:Boolean, subString: String) : List<Note> {
     return this.filter { search(subString,it) }
 }
 
-fun List<Note>.sortNote() : List<Note> {
-    val chosenNote = this.filter { it.isChosen }.sortedByDescending { it.created_at }
-    val otherNote = this.filter { !it.isChosen }.sortedByDescending { it.created_at }
+fun List<Note>.sortNote(sortNoteState: SortNoteState) : List<Note> {
+    val chosenNote = this.filter { it.isChosen }
+    val otherNote = this.filter { !it.isChosen }
     val joinList = mutableListOf<Note>()
-    joinList.addAll(chosenNote)
-    joinList.addAll(otherNote)
+    joinList.addAll(
+       if(sortNoteState is SortNoteState.ByDescending)
+           chosenNote.sortedByDescending { it.created_at }
+       else
+           chosenNote.sortedBy { it.created_at }
+    )
+    joinList.addAll(
+        if(sortNoteState is SortNoteState.ByDescending)
+            otherNote.sortedByDescending { it.created_at }
+        else
+            otherNote.sortedBy { it.created_at }
+    )
     return joinList
 }
 

@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository
 
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -66,4 +67,8 @@ interface SettingsRepository {
     fun getPolicyAndTermsDialogState() : Flow<Boolean>
 
     suspend fun disablePolicyAndTermsDialogState()
+
+    suspend fun changeSortNoteState(sortNoteState:SortNoteState)
+
+    fun getSortNoteState() : Flow<SortNoteState>
 }

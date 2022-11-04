@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -40,7 +39,10 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
+import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
@@ -767,6 +769,90 @@ fun TermsButton() {
                 tint = PrimaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
+        }
+    }
+}
+
+@Composable
+fun SelectSortState(
+    currentState:State<SortNoteState>,
+    onShowDropDown:() -> Unit,
+    onChangeSortState: (SortNoteState) -> Unit,
+    isVisibleDropDown: Boolean,
+    onHideDropDown:() -> Unit
+) {
+    Row(Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = stringResource(R.string.Sorting_notes),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        val annotatedLabelString = buildAnnotatedString {
+            append(stringResource(currentState.value.title))
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        if(isVisibleDropDown) {
+            Box() {
+                SelectSortDropDown(onChangeSortState,isVisibleDropDown,onHideDropDown)
+            }
+        }
+        Text(text = annotatedLabelString,
+            inlineContent = inlineContentMap,
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowDropDown()
+                }
+        )
+
+    }
+}
+
+@Composable
+fun SelectSortDropDown(
+    onChangeSortState: (SortNoteState) -> Unit,
+    isVisible:Boolean,
+    onHide:() -> Unit
+) {
+    val dropDownItem = listOf(SortNoteState.ByAscending,SortNoteState.ByDescending)
+    DropdownMenu(expanded = isVisible,
+        onDismissRequest = {
+            onHide()
+        },
+        modifier = Modifier
+            .background(ThemeManager.DropDownMenuColor)
+            .heightIn(max = 200.dp)
+    ) {
+        dropDownItem.forEach {
+            DropdownMenuItem(onClick = {
+                onChangeSortState(it)
+                onHide()
+            }) {
+                Row {
+                    Text(text = stringResource(it.title),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = ThemeManager.PrimaryFontColor
+                    )
+                }
+            }
         }
     }
 }

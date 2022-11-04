@@ -28,6 +28,8 @@ import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.Utils.Remember
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
@@ -145,6 +147,7 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
 }
 
 @Composable
+@MustBeLocalization
 fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavController) {
     val context = LocalContext.current
     val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
@@ -158,6 +161,8 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     val timeLockWhenLeaveDropDownState = remember {
         settingsViewModel.getTimeLockWhenLeaveDropDownState()
     }
+    val isShowDropDownSortStateVisible = settingsViewModel.isShowDropDownSortStateVisible().Remember()
+    val sortNoteState = settingsViewModel.getNoteSortState().collectAsState(SortNoteState.ByDescending)
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -183,6 +188,26 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
             listOf<SettingsItem>(
                 SettingsItem() {
                     LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
+                }
+            )
+        ),
+        SettingsCategory(
+            stringResource(R.string.Display),
+            listOf<SettingsItem>(
+                SettingsItem {
+                    SelectSortState(
+                        sortNoteState,
+                        onShowDropDown = {
+                            settingsViewModel.showDropDownSortState()
+                        },
+                        onChangeSortState = {
+                            settingsViewModel.changeNoteSortState(it)
+                        },
+                        isVisibleDropDown = isShowDropDownSortStateVisible.value,
+                        onHideDropDown = {
+                            settingsViewModel.hideDropDownSortState()
+                        }
+                    )
                 }
             )
         ),

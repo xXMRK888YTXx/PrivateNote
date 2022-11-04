@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ class SettingsRepositoryImpl (
     private val applicationTheme = intPreferencesKey("ApplicationTheme")
     private val dontKillMyAppState = booleanPreferencesKey("dontKillMyAppState")
     private val policyAndTermsDialog = booleanPreferencesKey("PolicyAndTermsDialog")
+    private val sortNoteStateKey = intPreferencesKey("sortNoteState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -237,6 +239,24 @@ class SettingsRepositoryImpl (
     override suspend fun disablePolicyAndTermsDialogState() {
         context.dataStore.edit {
             it[policyAndTermsDialog] = true
+        }
+    }
+
+    override suspend fun changeSortNoteState(sortNoteState: SortNoteState) {
+        context.dataStore.edit {
+            it[sortNoteStateKey] = sortNoteState.id
+        }
+    }
+
+    override fun getSortNoteState(): Flow<SortNoteState> {
+        return context.dataStore.data.map {
+            it[sortNoteStateKey] ?: SortNoteState.ByDescending.id
+        }.map {
+            when(it) {
+                SortNoteState.ByDescending.id -> SortNoteState.ByDescending
+                SortNoteState.ByAscending.id -> SortNoteState.ByAscending
+                else -> error("Incorrect sort id")
+            }
         }
     }
 }

@@ -1077,7 +1077,6 @@ fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
 }
 
 @Composable
-@MustBeLocalization
 fun FileOptionsDropBox(
     isVisible:Boolean,
     onHide:() -> Unit,

@@ -15,9 +15,13 @@ import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.toState
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -46,6 +50,11 @@ class SettingsViewModel @Inject constructor(
     private val timeLockWhenLeaveDropDownState:MutableState<Boolean> = mutableStateOf(false)
 
     fun getTimeLockWhenLeaveDropDownState() = timeLockWhenLeaveDropDownState
+
+    private val isShowDropDownSortStateVisible = mutableStateOf(false)
+
+    fun isShowDropDownSortStateVisible() = isShowDropDownSortStateVisible.toState()
+
 
     fun showTimeLockWhenLeaveDropDown() {
         timeLockWhenLeaveDropDownState.value = true
@@ -177,6 +186,22 @@ class SettingsViewModel @Inject constructor(
     fun changeLockWhenLeaveState(state: Boolean) {
         viewModelScope.launch {
             settingsRepository.setLockWhenLeaveState(state)
+        }
+    }
+
+    fun showDropDownSortState() {
+        isShowDropDownSortStateVisible.value = true
+    }
+
+    fun hideDropDownSortState() {
+        isShowDropDownSortStateVisible.value = false
+    }
+
+    fun getNoteSortState() = settingsRepository.getSortNoteState()
+
+    fun changeNoteSortState(sortNoteState: SortNoteState) {
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsRepository.changeSortNoteState(sortNoteState)
         }
     }
 }

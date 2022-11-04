@@ -221,4 +221,8 @@
     <string name="Privacy_policy">Privacy Policy</string>
     <string name="Terms_of_use">Terms of Use</string>
     <string name="Authorization_google">Authorization</string>
+    <string name="Descending">By descending</string>
+    <string name="Ascending">By ascending</string>
+    <string name="Sorting_notes">Sorting notes</string>
+    <string name="Display">Display</string>
 </resources>
