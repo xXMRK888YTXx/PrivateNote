@@ -225,4 +225,7 @@
     <string name="Ascending">By ascending</string>
     <string name="Sorting_notes">Sorting notes</string>
     <string name="Display">Display</string>
+    <string name="TestBannerKey" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="MainScreenBannerKey" translatable="false">ca-app-pub-6313040706847570/1457310143</string>
+    <string name="EditScreenBannerKey" translatable="false">ca-app-pub-6313040706847570/4830375102</string>
 </resources>

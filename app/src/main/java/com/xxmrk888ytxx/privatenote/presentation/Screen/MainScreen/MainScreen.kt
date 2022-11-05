@@ -14,8 +14,10 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
@@ -49,10 +51,18 @@ fun MainScreen(
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
             if(bottomBarState.value) {
-                BottomBar(
-                    mainViewModel = mainViewModel,
-                    pageState = state.value,
-                    navController = navController)
+                Column() {
+                    BottomBar(
+                        mainViewModel = mainViewModel,
+                        pageState = state.value,
+                        navController = navController
+                    )
+                    AdMobBanner(
+                        if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
+                        else stringResource(R.string.MainScreenBannerKey)
+                    )
+                }
+
 
             }
         },

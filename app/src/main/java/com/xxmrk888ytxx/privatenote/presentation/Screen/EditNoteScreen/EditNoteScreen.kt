@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
@@ -53,6 +54,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.Sh
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
@@ -107,6 +109,10 @@ fun EditNoteScreen(
             TitleEditField(editNoteViewModel,textFieldFocus)
             TimeCreated(editNoteViewModel)
             CategorySelector(editNoteViewModel)
+            AdMobBanner(
+                if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
+                else stringResource(R.string.EditScreenBannerKey)
+            )
             NoteTextEdit(editNoteViewModel,textFieldFocus)
         }
     when(dialogState.value) {

@@ -27,6 +27,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeL
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        MobileAds.initialize(this)
         val themeId = settingsRepository.getApplicationThemeId().getData()
         notifyAppThemeChanged(this,themeId)
         val languageCode = mainActivityViewModel.getAppLanguage()
