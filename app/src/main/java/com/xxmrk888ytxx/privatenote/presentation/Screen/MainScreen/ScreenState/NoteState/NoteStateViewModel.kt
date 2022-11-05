@@ -31,6 +31,7 @@ import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +60,13 @@ class NoteStateViewModel @Inject constructor(
     private val categoryFilterStatus = mutableStateOf(IGNORE_CATEGORY)
 
     private var mainScreenController: MainScreenController? = null
+
+    private var interstitialAdsController:InterstitialAdsController? = null
+
+    fun initInterstitialAdsController(interstitialAdsController:InterstitialAdsController) {
+        this.interstitialAdsController = interstitialAdsController
+    }
+
 
     fun setMainScreenController(mainScreenController: MainScreenController?) {
         if(mainScreenController == null) return
@@ -116,7 +124,16 @@ class NoteStateViewModel @Inject constructor(
 
     fun toEditNoteScreen(navController: NavController, id:Int) {
         NavArguments.bundle.putInt(getNoteId,id)
-        navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
+        val onNavigate = {
+            navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
+        }
+        if(interstitialAdsController == null) {
+            onNavigate()
+        }
+        else {
+            onNavigate()
+            interstitialAdsController?.showAd()
+        }
     }
     fun toSelectionMode() {
         analytics.sendEvent(SelectionMode_In_NoteScreen,null)

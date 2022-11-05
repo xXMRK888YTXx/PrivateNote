@@ -17,6 +17,7 @@ import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
@@ -32,7 +33,8 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavController,
-    activityController: ActivityController
+    activityController: ActivityController,
+    interstitialAdsController: InterstitialAdsController
 ) {
     val state = remember {
         mainViewModel.screenState
@@ -77,7 +79,11 @@ fun MainScreen(
             ) {
                 when(it) {
                      MainScreenState.NoteScreen.id -> {
-                         NoteScreenState(navController = navController, mainScreenController = mainViewModel)
+                         NoteScreenState(
+                             navController = navController,
+                             mainScreenController = mainViewModel,
+                             interstitialAdsController = interstitialAdsController
+                         )
                      }
                     MainScreenState.ToDoScreen.id -> {
                         ToDoScreen(mainScreenController = mainViewModel, activityController = activityController)

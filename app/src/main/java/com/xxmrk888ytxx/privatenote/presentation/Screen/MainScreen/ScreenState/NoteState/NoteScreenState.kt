@@ -46,6 +46,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
@@ -64,8 +65,12 @@ import me.saket.swipe.SwipeableActionsBox
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
-                    navController: NavController, mainScreenController: MainScreenController) {
+fun NoteScreenState(
+    noteStateViewModel: NoteStateViewModel = hiltViewModel(),
+    navController: NavController,
+    mainScreenController: MainScreenController,
+    interstitialAdsController: InterstitialAdsController
+) {
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
     }
@@ -85,6 +90,7 @@ fun NoteScreenState(noteStateViewModel: NoteStateViewModel = hiltViewModel(),
     BackPressController.setHandler(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
        noteStateViewModel.hideCategoryList()
     }
+    noteStateViewModel.initInterstitialAdsController(interstitialAdsController)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) {

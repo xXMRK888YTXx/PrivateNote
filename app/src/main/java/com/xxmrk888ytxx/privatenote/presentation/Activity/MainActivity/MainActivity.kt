@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
@@ -27,8 +28,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.xxmrk888ytxx.privatenote.BuildConfig
+import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
@@ -57,19 +62,27 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeLockController {
+class MainActivity :
+    AppCompatActivity(),
+    ActivityController,
+    ThemeActivity,
+    WakeLockController,
+    InterstitialAdsController
+{
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
+    private var mInterstitialAd: InterstitialAd? = null
+
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        MobileAds.initialize(this)
         val themeId = settingsRepository.getApplicationThemeId().getData()
         notifyAppThemeChanged(this,themeId)
+        initAd()
         val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {
             val locale = Locale(languageCode)
@@ -107,7 +120,8 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeL
                     composable(Screen.MainScreen.route) {
                         MainScreen(
                             navController = navController,
-                            activityController = this@MainActivity
+                            activityController = this@MainActivity,
+                            interstitialAdsController = this@MainActivity
                         )}
                     composable(Screen.EditNoteScreen.route) {
                         EditNoteScreen(
@@ -139,6 +153,28 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeL
             }
         }
     }
+
+    private fun initAd() {
+        MobileAds.initialize(this)
+        val adKey = if(BuildConfig.DEBUG) getString(R.string.TestInterstitialAdsKey)
+        else getString(R.string.InterstitialAdsKey)
+        val adRequest = AdRequest.Builder().build()
+        InterstitialAd.load(this,
+            adKey,
+            adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdFailedToLoad(adError: LoadAdError) {
+                Log.e("MyLog", adError.toString())
+                mInterstitialAd = null
+            }
+
+            override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                Log.e("MyLog", "Ad was loaded.")
+                mInterstitialAd = interstitialAd
+            }
+        })
+
+    }
+
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
         val executor = ContextCompat.getMainExecutor(this)
         mainActivityViewModel.biometricAuthorizationRequest(this,executor,callBack)
@@ -431,6 +467,37 @@ class MainActivity : AppCompatActivity(), ActivityController,ThemeActivity,WakeL
 
     override fun unlockScreen() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+    override fun showAd() {
+        if(mInterstitialAd == null) return
+        mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+            override fun onAdClicked() {
+                // Called when a click is recorded for an ad.
+                Log.d("MyLog", "Ad was clicked.")
+            }
+
+            override fun onAdDismissedFullScreenContent() {
+                // Called when ad is dismissed.
+                Log.d("MyLog", "Ad dismissed fullscreen content.")
+                mInterstitialAd = null
+            }
+
+            override fun onAdImpression() {
+                // Called when an impression is recorded for an ad.
+                Log.d("MyLog", "Ad recorded an impression.")
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                // Called when ad is shown.
+                Log.d("MyLog", "Ad showed fullscreen content.")
+            }
+
+            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                mInterstitialAd = null
+            }
+        }
+        mInterstitialAd?.show(this)
     }
 }
 
