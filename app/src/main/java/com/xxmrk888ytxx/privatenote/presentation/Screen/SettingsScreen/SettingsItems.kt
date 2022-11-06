@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -36,7 +37,6 @@ import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
@@ -47,6 +47,7 @@ import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Green
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
@@ -859,19 +860,21 @@ fun SelectSortDropDown(
 }
 
 @Composable
-@MustBeLocalization
-fun DisableAdsButton(onOpenDisableDialog: () -> Unit) {
+fun DisableAdsButton(
+    onOpenDisableDialog: () -> Unit,
+    isAdEnabled:Boolean
+) {
     Row(Modifier
         .fillMaxWidth()
         .padding(start = 20.dp, end = 10.dp, bottom = 10.dp)
-        .clickable {
+        .clickable(enabled = isAdEnabled) {
             onOpenDisableDialog()
         },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Отключить рекламу",
+            text = if(isAdEnabled) stringResource(R.string.Disable_Ad) else stringResource(R.string.Ad_is_disabled),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             color = PrimaryFontColor,
@@ -881,21 +884,30 @@ fun DisableAdsButton(onOpenDisableDialog: () -> Unit) {
                 .fillMaxWidth()
                 .padding(end = 10.dp),
             contentAlignment = Alignment.CenterEnd) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_arrow),
-                contentDescription = "",
-                tint = PrimaryFontColor,
-                modifier = Modifier.size(20.dp)
-            )
+           if(isAdEnabled) {
+               Icon(
+                   painter = painterResource(id = R.drawable.ic_arrow),
+                   contentDescription = "",
+                   tint = PrimaryFontColor,
+                   modifier = Modifier.size(20.dp)
+               )
+           } else {
+               Icon(
+                   painter = painterResource(id = R.drawable.ic_done),
+                   contentDescription = "",
+                   tint = Green,
+                   modifier = Modifier.size(20.dp)
+               )
+           }
         }
     }
 }
 
 @Composable
-@MustBeLocalization
 fun DisableAdsDialog(
     onOpenBuyDisableAds:() -> Unit,
-    onCloseDialog:() -> Unit
+    onCloseDialog:() -> Unit,
+    isBueAvailable:Boolean
 ) {
     Dialog(
         onDismissRequest = { onCloseDialog() }
@@ -910,7 +922,7 @@ fun DisableAdsDialog(
                 .padding(10.dp)
                 .verticalScroll(rememberScrollState())) {
                 Text(
-                    text = "Вы можете отключить рекламу, произведя единоразовый платёж, который пойдет на подрержку разработчика",
+                    text = stringResource(R.string.Bue_disable_ad_test),
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -924,14 +936,30 @@ fun DisableAdsDialog(
                         onOpenBuyDisableAds()
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeManager.SecondaryColor),
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = SecondaryColor,
+                        disabledBackgroundColor = SecondaryColor.copy(0.4f)
+                    ),
+                    enabled = isBueAvailable,
                     shape = RoundedCornerShape(80),
                 ) {
-                    Text(text = "Отключить рекламу",
-                        color = ThemeManager.PrimaryFontColor
-                    )
+                    if(isBueAvailable) {
+                        Text(text = stringResource(R.string.Disable_Ad),
+                            color = ThemeManager.PrimaryFontColor
+                        )
+                    } else {
+                        Text(text = stringResource(R.string.Repit_after),
+                            color = ThemeManager.PrimaryFontColor
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+@Preview(backgroundColor = 0xFF000000)
+@Composable
+fun Preview() {
+    DisableAdsButton({},false)
 }

@@ -93,6 +93,7 @@ fun EditNoteScreen(
     }
     val playerDialogState = editNoteViewModel.getPlayerDialogState().Remember()
     val removeAudioDialogState = editNoteViewModel.getAudioRemoveDialogState().Remember()
+    val isNeedShowAd = editNoteViewModel.isNeedShowAd().collectAsState(true)
 
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.updateImagesCount()
@@ -109,10 +110,12 @@ fun EditNoteScreen(
             TitleEditField(editNoteViewModel,textFieldFocus)
             TimeCreated(editNoteViewModel)
             CategorySelector(editNoteViewModel)
-            AdMobBanner(
-                if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
-                else stringResource(R.string.EditScreenBannerKey)
-            )
+            if(isNeedShowAd.value) {
+                AdMobBanner(
+                    if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
+                    else stringResource(R.string.EditScreenBannerKey)
+                )
+            }
             NoteTextEdit(editNoteViewModel,textFieldFocus)
         }
     when(dialogState.value) {

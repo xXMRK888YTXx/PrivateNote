@@ -71,4 +71,8 @@ interface SettingsRepository {
     suspend fun changeSortNoteState(sortNoteState:SortNoteState)
 
     fun getSortNoteState() : Flow<SortNoteState>
+
+    fun getAdState() : Flow<Boolean>
+
+    suspend fun setAdState(state:Boolean)
 }

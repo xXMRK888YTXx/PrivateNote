@@ -22,6 +22,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.State
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
@@ -40,6 +41,8 @@ import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManager
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
@@ -67,12 +70,15 @@ class MainActivity :
     ActivityController,
     ThemeActivity,
     WakeLockController,
-    InterstitialAdsController
+    InterstitialAdsController,
+    BullingController
 {
     @Inject lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
     @Inject lateinit var notificationManager: NotificationAppManagerImpl
     @Inject lateinit var notifyTaskManager: NotifyTaskManager
     @Inject lateinit var settingsRepository: SettingsRepository
+    @Inject lateinit var billingManager: BillingManager
+    @Inject lateinit var adManager: AdManager
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
     private var mInterstitialAd: InterstitialAd? = null
@@ -82,7 +88,6 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         val themeId = settingsRepository.getApplicationThemeId().getData()
         notifyAppThemeChanged(this,themeId)
-        initAd()
         val languageCode = mainActivityViewModel.getAppLanguage()
         if(languageCode != SYSTEM_LANGUAGE_CODE) {
             val locale = Locale(languageCode)
@@ -129,7 +134,12 @@ class MainActivity :
                             activityController = this@MainActivity,
                             wakeLockController = this@MainActivity
                     )}
-                    composable(Screen.SettingsScreen.route) { SettingsScreen(navController = navController) }
+                    composable(Screen.SettingsScreen.route) {
+                        SettingsScreen(
+                            navController = navController,
+                            bullingController = this@MainActivity
+                        )
+                    }
                     composable(Screen.DrawScreen.route) {
                         DrawScreen(
                             navController = navController,
@@ -152,10 +162,13 @@ class MainActivity :
                 }
             }
         }
+        initAd()
+        billingManager.connectToGooglePlay()
     }
 
     private fun initAd() {
         MobileAds.initialize(this)
+        if(!adManager.isNeedShowAds().getData()) return
         val adKey = if(BuildConfig.DEBUG) getString(R.string.TestInterstitialAdsKey)
         else getString(R.string.InterstitialAdsKey)
         val adRequest = AdRequest.Builder().build()
@@ -189,6 +202,7 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
+        billingManager.handlingPendingTransactions()
         lifecycleScope.launch{
             lifecycleState.emit(LifeCycleState.onResume)
         }
@@ -470,7 +484,7 @@ class MainActivity :
     }
 
     override fun showAd() {
-        if(mInterstitialAd == null) return
+        if(mInterstitialAd == null||!adManager.isNeedShowAds().getData()) return
         mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
             override fun onAdClicked() {
                 // Called when a click is recorded for an ad.
@@ -499,6 +513,13 @@ class MainActivity :
         }
         mInterstitialAd?.show(this)
     }
+
+    override fun bueDisableAds() {
+        billingManager.bueDisableAds(this)
+    }
+
+    override val isBillingAvailable: Boolean
+        get() = billingManager.isDisableAdsAvailable
 }
 
 

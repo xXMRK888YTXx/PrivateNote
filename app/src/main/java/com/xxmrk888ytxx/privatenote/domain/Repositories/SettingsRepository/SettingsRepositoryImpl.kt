@@ -36,6 +36,7 @@ class SettingsRepositoryImpl (
     private val dontKillMyAppState = booleanPreferencesKey("dontKillMyAppState")
     private val policyAndTermsDialog = booleanPreferencesKey("PolicyAndTermsDialog")
     private val sortNoteStateKey = intPreferencesKey("sortNoteState")
+    private val adState = booleanPreferencesKey("adState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
         return@runBlocking context.dataStore.data.map {
@@ -257,6 +258,18 @@ class SettingsRepositoryImpl (
                 SortNoteState.ByAscending.id -> SortNoteState.ByAscending
                 else -> error("Incorrect sort id")
             }
+        }
+    }
+
+    override fun getAdState(): Flow<Boolean> {
+        return context.dataStore.data.map {
+            it[adState] ?: true
+        }
+    }
+
+    override suspend fun setAdState(state: Boolean) {
+        context.dataStore.edit {
+            it[adState] = state
         }
     }
 }

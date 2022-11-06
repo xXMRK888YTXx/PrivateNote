@@ -45,6 +45,7 @@ fun MainScreen(
     val getScrollBetweenScreenEnabled = remember {
         mainViewModel.getScrollBetweenScreenEnabled()
     }
+    val isNeedShowAd = mainViewModel.isNeedShowAd().collectAsState(initial = true)
     val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
     val isPolityAndTermsConfirmed = mainViewModel.isPolityAndTermsConfirmed().collectAsState(true)
     Scaffold(
@@ -59,10 +60,12 @@ fun MainScreen(
                         pageState = state.value,
                         navController = navController
                     )
-                    AdMobBanner(
-                        if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
-                        else stringResource(R.string.MainScreenBannerKey)
-                    )
+                    if(isNeedShowAd.value) {
+                        AdMobBanner(
+                            if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
+                            else stringResource(R.string.MainScreenBannerKey)
+                        )
+                    }
                 }
 
 

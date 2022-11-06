@@ -31,6 +31,7 @@ import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
@@ -38,7 +39,14 @@ import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.large
 import kotlinx.coroutines.launch
 
 @Composable
-fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navController: NavController) {
+fun SettingsScreen(
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    navController: NavController,
+    bullingController: BullingController
+) {
+    LaunchedEffect(key1 = bullingController, block = {
+        settingsViewModel.initOnBueDisableAd(bullingController)
+    })
     val languageDialogState = remember {
         settingsViewModel.getShowLanguageDialogState()
     }
@@ -83,10 +91,13 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
     }
     if(isShowDisableAdsDialog.value) {
         DisableAdsDialog(
-            onOpenBuyDisableAds = {},
+            onOpenBuyDisableAds = {
+                settingsViewModel.onOpenBuyDisableAds()
+            },
             onCloseDialog = {
                 settingsViewModel.closeDisableAdsDialog()
-            }
+            },
+            isBueAvailable = settingsViewModel.isBueDisableAdAvailable()
         )
     }
     if(enterAppPasswordDialogState.value) {
@@ -157,7 +168,6 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
 }
 
 @Composable
-@MustBeLocalization
 fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavController) {
     val context = LocalContext.current
     val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
@@ -173,6 +183,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     }
     val isShowDropDownSortStateVisible = settingsViewModel.isShowDropDownSortStateVisible().Remember()
     val sortNoteState = settingsViewModel.getNoteSortState().collectAsState(SortNoteState.ByDescending)
+    val isShowAd = settingsViewModel.isNeedShowAd().collectAsState(true)
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -301,13 +312,14 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         )
     )
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-        item {
-            DisableAdsButton(
-                onOpenDisableDialog = {
-                    settingsViewModel.openDisableAdsDialog()
-                },
-            )
-        }
+           item {
+                   DisableAdsButton(
+                    onOpenDisableDialog = {
+                       settingsViewModel.openDisableAdsDialog()
+                   },
+                   isAdEnabled = isShowAd.value
+              )
+           }
         settingsCategory.forEach { category ->
             item {
                 Text(text = category.categoryName,

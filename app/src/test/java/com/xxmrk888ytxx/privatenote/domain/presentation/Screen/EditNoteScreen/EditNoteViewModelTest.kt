@@ -5,6 +5,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
@@ -52,6 +53,7 @@ class EditNoteViewModelTest {
     private val imageRepository: ImageRepository = mockk(relaxed = true)
     private val exportImageUseCase : ExportImageUseCase = mockk(relaxed = true)
     private val exportAudioUseCase : ExportAudioUseCase = mockk(relaxed = true)
+    private val adManager = mockk<AdManager>(relaxed = true)
 
     @Before
     fun init() {
@@ -68,7 +70,8 @@ class EditNoteViewModelTest {
             audioRepository,
             imageRepository,
             exportImageUseCase,
-            exportAudioUseCase
+            exportAudioUseCase,
+            adManager
         )
     }
 

@@ -6,9 +6,11 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
@@ -32,9 +34,10 @@ class NoteStateViewModelTest {
     private val toastManager:ToastManager = mockk(relaxed = true)
     private val categoryRepository = mockk<CategoryRepository>(relaxed = true)
     private val analytics = mockk<AnalyticsManager>(relaxed = true)
+    private val settingsRepository:SettingsRepository = mockk(relaxed = true)
     @Before
     fun init() {
-        viewModel = NoteStateViewModel(noteRepository,toastManager,categoryRepository,analytics)
+        viewModel = NoteStateViewModel(noteRepository,toastManager,categoryRepository,analytics,settingsRepository)
     }
 
     @Test
