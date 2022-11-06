@@ -5,9 +5,14 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
@@ -18,7 +23,6 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.util.*
@@ -216,4 +220,9 @@ fun Any?.runOnMainThread(Runnable: () -> Unit) {
 }
 
 fun <T> MutableState<T>.toState():State<T> = this
+
+@Composable
+fun LazySpacer(height:Int = 0,width:Int = 0) {
+    Spacer(Modifier.height(height.dp).width(width.dp))
+}
 

@@ -39,6 +39,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
+import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
@@ -155,11 +156,11 @@ fun Email(onSend:() -> Unit) {
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
-            Text(
-                text = DEVELOPER_EMAIL,
-                fontWeight = FontWeight.Medium,
-                fontSize = 18.sp,
-                color = SecondoryFontColor,
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
             )
         }
     }
@@ -849,6 +850,84 @@ fun SelectSortDropDown(
                     Text(text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
+                        color = ThemeManager.PrimaryFontColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+@MustBeLocalization
+fun DisableAdsButton(onOpenDisableDialog: () -> Unit) {
+    Row(Modifier
+        .fillMaxWidth()
+        .padding(start = 20.dp, end = 10.dp, bottom = 10.dp)
+        .clickable {
+            onOpenDisableDialog()
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Отключить рекламу",
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+@MustBeLocalization
+fun DisableAdsDialog(
+    onOpenBuyDisableAds:() -> Unit,
+    onCloseDialog:() -> Unit
+) {
+    Dialog(
+        onDismissRequest = { onCloseDialog() }
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            backgroundColor = CardColor
+        ) {
+            Column(Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .verticalScroll(rememberScrollState())) {
+                Text(
+                    text = "Вы можете отключить рекламу, произведя единоразовый платёж, который пойдет на подрержку разработчика",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    fontSize = 17.sp,
+                    color = ThemeManager.PrimaryFontColor,
+                    fontWeight = FontWeight.Bold
+                )
+                LazySpacer(10)
+                OutlinedButton(
+                    onClick = {
+                        onOpenBuyDisableAds()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeManager.SecondaryColor),
+                    shape = RoundedCornerShape(80),
+                ) {
+                    Text(text = "Отключить рекламу",
                         color = ThemeManager.PrimaryFontColor
                     )
                 }

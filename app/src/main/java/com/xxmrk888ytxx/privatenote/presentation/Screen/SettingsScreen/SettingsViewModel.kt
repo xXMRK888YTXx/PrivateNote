@@ -55,6 +55,18 @@ class SettingsViewModel @Inject constructor(
 
     fun isShowDropDownSortStateVisible() = isShowDropDownSortStateVisible.toState()
 
+    private val isShowDisableAdsDialog = mutableStateOf(false)
+
+    fun isShowDisableAdsDialog() = isShowDisableAdsDialog.toState()
+
+    fun openDisableAdsDialog() {
+        isShowDisableAdsDialog.value = true
+    }
+
+    fun closeDisableAdsDialog() {
+        isShowDisableAdsDialog.value = false
+    }
+
 
     fun showTimeLockWhenLeaveDropDown() {
         timeLockWhenLeaveDropDownState.value = true

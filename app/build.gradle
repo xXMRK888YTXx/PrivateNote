@@ -16,7 +16,7 @@ android {
         applicationId "com.xxmrk888ytxx.privatenote"
         minSdk 23
         targetSdk 33
-        versionCode 1
+        versionCode 3
         versionName "Alpha 1.8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -146,4 +146,6 @@ dependencies {
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.2'
     //Google AdMob
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    //google Billing In App
+    implementation "com.android.billingclient:billing-ktx:5.0.0"
 }

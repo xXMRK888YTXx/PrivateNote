@@ -29,6 +29,7 @@ import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
+import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
@@ -50,6 +51,7 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
     val enterAppPasswordDialogState = remember {
         settingsViewModel.getEnterAppPasswordDialogState()
     }
+    val isShowDisableAdsDialog = settingsViewModel.isShowDisableAdsDialog().Remember()
     Column(
         Modifier
             .fillMaxSize()
@@ -77,6 +79,14 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel = hiltViewModel(),navCon
         EnterLoginPasswordDialog(
             onCancel = {settingsViewModel.hideAppPasswordDialog()},
             onComplete = {settingsViewModel.enableAppPassword(it)}
+        )
+    }
+    if(isShowDisableAdsDialog.value) {
+        DisableAdsDialog(
+            onOpenBuyDisableAds = {},
+            onCloseDialog = {
+                settingsViewModel.closeDisableAdsDialog()
+            }
         )
     }
     if(enterAppPasswordDialogState.value) {
@@ -291,6 +301,13 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         )
     )
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
+        item {
+            DisableAdsButton(
+                onOpenDisableDialog = {
+                    settingsViewModel.openDisableAdsDialog()
+                },
+            )
+        }
         settingsCategory.forEach { category ->
             item {
                 Text(text = category.categoryName,
@@ -322,6 +339,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         settingsViewModel.cashedBiometricAuthorizationState = bioMetricAuthorizationState.value
     }
 }
+
 
 @Composable
 fun TopBar(settingsViewModel: SettingsViewModel,navController: NavController) {
