@@ -148,4 +148,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
     //google Billing In App
     implementation "com.android.billingclient:billing-ktx:5.0.0"
+
+    implementation "com.google.accompanist:accompanist-insets:0.27.0"
+    // If using insets-ui
+    implementation "com.google.accompanist:accompanist-insets-ui:0.27.0"
 }

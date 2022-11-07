@@ -24,11 +24,13 @@ import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.State
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.security.crypto.EncryptedFile
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback

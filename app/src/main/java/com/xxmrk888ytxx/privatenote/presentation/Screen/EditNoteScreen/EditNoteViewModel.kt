@@ -127,7 +127,7 @@ class EditNoteViewModel @Inject constructor(
 
     fun getCurrentRecordTime() = currentRecordTime
 
-    private var note: Note = Note(title = "", text = "")
+    private var note: Note = Note(id = 0,title = "", text = "")
 
     //режим сохранения заметки
     private val saveNoteState = mutableStateOf<SaveNoteState>(SaveNoteState.None)
@@ -318,52 +318,54 @@ class EditNoteViewModel @Inject constructor(
         private fun saveNote() {
             val noteId = note.id
         ApplicationScope.launch(Dispatchers.IO+CoroutineName("SaveNoteCoroutine")) {
-            when(saveNoteState.value) {
-                is SaveNoteState.DefaultSaveNote -> {
-                    if((textField.value == note.text&&
-                        titleTextField.value == note.title &&
-                        !checkChangeNoteConfiguration())
-                    )
-                        return@launch
+            try {
+                when(saveNoteState.value) {
+                    is SaveNoteState.DefaultSaveNote -> {
+                        if((textField.value == note.text&&
+                                    titleTextField.value == note.title &&
+                                    !checkChangeNoteConfiguration())
+                        )
+                            return@launch
 
-                    noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
-                        title = titleTextField.value,
-                        text = textField.value,
-                        isChosen = isChosenNoteState.value,
-                        category = currentCategory.value?.categoryId
-                    ))
-                }
-                is SaveNoteState.RemoveNote -> {
-                    if(note.id != 0) {
-                        noteRepository.removeNote(note.id)
-                    }
-                }
-                is SaveNoteState.NotSaveChanges -> {
-                    noteRepository.insertNote(primaryNoteVersion!!)
-                }
-                is SaveNoteState.CryptSaveNote -> {
-                    try {
-                        val title = securityUtils.encrypt(titleTextField.value,notePassword!!)
-                        val text = securityUtils.encrypt(textField.value,notePassword!!)
-                        if(text == note.text&&title == note.title
-                            &&!checkChangeNoteConfiguration()) return@launch
                         noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
-                            title = title,
-                            text = text,
+                            title = titleTextField.value,
+                            text = textField.value,
                             isChosen = isChosenNoteState.value,
                             category = currentCategory.value?.categoryId
                         ))
-                    }catch (e:Exception){}
+                    }
+                    is SaveNoteState.RemoveNote -> {
+                        if(note.id != 0) {
+                            noteRepository.removeNote(note.id)
+                        }
+                    }
+                    is SaveNoteState.NotSaveChanges -> {
+                        noteRepository.insertNote(primaryNoteVersion!!)
+                    }
+                    is SaveNoteState.CryptSaveNote -> {
+                        try {
+                            val title = securityUtils.encrypt(titleTextField.value,notePassword!!)
+                            val text = securityUtils.encrypt(textField.value,notePassword!!)
+                            if(text == note.text&&title == note.title
+                                &&!checkChangeNoteConfiguration()) return@launch
+                            noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
+                                title = title,
+                                text = text,
+                                isChosen = isChosenNoteState.value,
+                                category = currentCategory.value?.categoryId
+                            ))
+                        }catch (e:Exception){}
 
+                    }
+
+                    is SaveNoteState.None -> return@launch
                 }
-
-                is SaveNoteState.None -> return@launch
-            }
-            if(noteId == 0) {
-                val newNoteId = noteRepository.getAllNote().getData().maxBy { it.id }.id
-                imageRepository.tempDirToImageDir(newNoteId)
-                audioRepository.tempDirToAudioDir(newNoteId)
-            }
+                if(noteId == 0) {
+                    val newNoteId = noteRepository.getAllNote().getData().maxBy { it.id }.id
+                    imageRepository.tempDirToImageDir(newNoteId)
+                    audioRepository.tempDirToAudioDir(newNoteId)
+                }
+            }catch (e:Exception) {}
         }
     }
 
@@ -620,7 +622,9 @@ class EditNoteViewModel @Inject constructor(
             recordManager.stopRecord()
         }
         viewModelScope.launch {
-            updateAudiosCount()
+            try {
+                updateAudiosCount()
+            }catch (e:Exception) {}
         }
     }
 

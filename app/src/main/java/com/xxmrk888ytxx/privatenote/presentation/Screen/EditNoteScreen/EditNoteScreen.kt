@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,6 +39,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.BuildConfig
@@ -101,14 +104,20 @@ fun EditNoteScreen(
         editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
     })
     val textFieldFocus = remember { FocusRequester() }
+    ProvideWindowInsets(consumeWindowInsets = true) {
         Column(
             Modifier
                 .fillMaxSize()
+                .height(LocalConfiguration.current.screenHeightDp.dp)
                 .background(MainBackGroundColor)
+                .statusBarsPadding()
+                .navigationBarsWithImePadding()
+                .verticalScroll(rememberScrollState())
         ) {
             Toolbar(editNoteViewModel,navController)
             TitleEditField(editNoteViewModel,textFieldFocus)
             TimeCreated(editNoteViewModel)
+            LazySpacer(5)
             CategorySelector(editNoteViewModel)
             if(isNeedShowAd.value) {
                 AdMobBanner(
@@ -118,6 +127,7 @@ fun EditNoteScreen(
             }
             NoteTextEdit(editNoteViewModel,textFieldFocus)
         }
+    }
     when(dialogState.value) {
        is ShowDialogState.EncryptDialog -> {CryptDialog(editNoteViewModel)}
         is ShowDialogState.DecryptDialog -> {DecriptDialog(editNoteViewModel,navController)}
@@ -458,7 +468,7 @@ fun TitleEditField(editNoteViewModel: EditNoteViewModel, textFieldFocus: FocusRe
             onValueChange = {textState.value = it;editNoteViewModel.checkChanges()},
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 20.dp),
+                .padding(top = 10.dp),
             singleLine = true,
             placeholder = {Text(stringResource(R.string.Title),
                 fontSize = 30.sp,
@@ -761,12 +771,12 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
         }
         val inlineContentMap = mapOf(
             "drop_down_triangle" to InlineTextContent(
-                Placeholder(50.sp, 50.sp, PlaceholderVerticalAlign.TextCenter)
+                Placeholder(30.sp, 30.sp, PlaceholderVerticalAlign.TextCenter)
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
                     tint = PrimaryFontColor,
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier.padding(top = 1.dp)
                 )
             }
         )
@@ -785,7 +795,7 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
             fontWeight = FontWeight.Medium,
             color = PrimaryFontColor.copy(0.75f),
             modifier = Modifier
-                .padding(top = 15.dp, bottom = 15.dp)
+                .padding(top = 10.dp, bottom = 15.dp)
                 .clickable {
                     editNoteViewModel.dialogShowState.value = ShowDialogState.EditCategoryDialog
                 }
