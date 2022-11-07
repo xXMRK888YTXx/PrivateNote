@@ -11,6 +11,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsStart
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerSeekTo_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -22,7 +23,7 @@ import javax.inject.Inject
 @SendAnalytics
 class PlayerManagerImpl @Inject constructor(
     private val analytics: AnalyticsManager,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : PlayerManager  {
     private var mediaPlayer: MediaPlayer? = null
 

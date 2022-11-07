@@ -9,9 +9,11 @@ import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FileNotAvalibleException
 import com.xxmrk888ytxx.privatenote.Utils.getBytes
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.Image
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class ExportImageUseCaseImpl(
-    private val context: Context
+class ExportImageUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context: Context
 ) : ExportImageUseCase {
 
     override suspend fun execute(image: Image, path: Uri) {

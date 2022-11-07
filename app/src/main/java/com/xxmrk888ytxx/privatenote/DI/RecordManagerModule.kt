@@ -5,6 +5,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -14,14 +15,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class AudioManagerModule {
-    @Provides
-    @Singleton
-    fun getAudioManager(
-        @ApplicationContext context: Context,
-        audioRepository: AudioRepository,
-        analyticsManager: AnalyticsManager
-    ) : RecordManager {
-        return RecordManagerImpl(context,audioRepository,analyticsManager)
-    }
+interface RecordManagerModule {
+    @Binds
+    fun bindsRecordManager(recordManagerImpl: RecordManagerImpl) : RecordManager
 }

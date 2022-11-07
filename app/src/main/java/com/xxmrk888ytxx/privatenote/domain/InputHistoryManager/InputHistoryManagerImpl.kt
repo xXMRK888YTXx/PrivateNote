@@ -1,8 +1,9 @@
 package com.xxmrk888ytxx.privatenote.domain.InputHistoryManager
 
+import javax.inject.Inject
 import kotlin.random.Random
 
-class InputHistoryManagerImpl() : InputHistoryManager {
+class InputHistoryManagerImpl @Inject constructor() : InputHistoryManager {
     private val historyBuffer:MutableList<String> = mutableListOf()
     var currentPos = -1
     get() = field

@@ -45,24 +45,6 @@ class SettingsViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `test getShowLanguageDialogState show&hideLanguageDialog change state on true and return to false`() = runTest {
-        Assert.assertEquals(false,viewModel.getShowLanguageDialogState().value)
-        every { viewModel.getAppLanguage() } returns flowOf("Ru")
-
-        viewModel.showLanguageDialog()
-        delay(100)
-        val stateAfterShowLanguageDialog = viewModel.getShowLanguageDialogState().value
-        val currentLanguage = viewModel.getCurrentSelectedLanguage().value
-        viewModel.hideLanguageDialog()
-
-        Assert.assertEquals(true,stateAfterShowLanguageDialog)
-        Assert.assertEquals(true,currentLanguage.isNotEmpty())
-        Assert.assertEquals(false,viewModel.getShowLanguageDialogState().value)
-        Assert.assertEquals(true,viewModel.getCurrentSelectedLanguage().value.isEmpty())
-    }
-
     @Test
     fun `test getEnterAppPasswordDialogState show&hideEnterAppPasswordDialog change state on true and return to false`() {
         Assert.assertEquals(false,viewModel.getEnterAppPasswordDialogState().value)

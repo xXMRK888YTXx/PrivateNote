@@ -6,17 +6,18 @@ import com.xxmrk888ytxx.privatenote.Utils.Exception.ConvertBackupFileToDataExcep
 import com.xxmrk888ytxx.privatenote.Utils.Exception.RestoreBackupException
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreCategoryFromUseCase.RestoreCategoryFromBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileInputStream
 import java.nio.charset.Charset
+import javax.inject.Inject
 
-class RestoreBackupUseCaseImpl(
-    private val context: Context,
-    private val restoreCategoryFromUseCase: RestoreCategoryFromUseCase,
+class RestoreBackupUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val restoreCategoryFromBackupUseCase: RestoreCategoryFromBackupUseCase,
     private val restoreNoteFromBackupUseCase: RestoreNoteFromBackupUseCase,
     private val restoreTodoFromUseCase: RestoreTodoFromUseCase,
 ) : RestoreBackupUseCase {
@@ -28,7 +29,7 @@ class RestoreBackupUseCaseImpl(
         val backupModel = getBackupModel(backupDir)
 
         if(settings.restoreCategory) {
-            restoreCategoryFromUseCase.execute(backupModel.category)
+            restoreCategoryFromBackupUseCase.execute(backupModel.category)
         }
         if(settings.restoreTodo) {
             restoreTodoFromUseCase.execute(backupModel.todo)

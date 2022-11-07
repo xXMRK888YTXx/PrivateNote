@@ -5,8 +5,9 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetCategoryForBackupUseCase.GetCategoryForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCase
+import javax.inject.Inject
 
-class CreateBackupModelUseCaseImpl(
+class CreateBackupModelUseCaseImpl @Inject constructor(
     private val getNotesForBackupUseCase: GetNotesForBackupUseCase,
     private val getCategoryForBackupUseCase: GetCategoryForBackupUseCase,
     private val getTodoForBackupUseCase: GetTodoForBackupUseCase,

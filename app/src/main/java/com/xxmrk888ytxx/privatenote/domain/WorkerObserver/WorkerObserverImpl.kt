@@ -6,8 +6,11 @@ import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class WorkerObserverImpl (
+@Singleton
+class WorkerObserverImpl @Inject constructor(
 
 ) : WorkerObserver {
     private val observers:MutableMap<Int,MutableStateFlow<WorkerObserver.Companion.WorkerState?>?> = mutableMapOf()

@@ -4,6 +4,7 @@ import android.content.Context
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManagerImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,10 +14,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class PlayerManagerModule {
-    @Provides
-    @Singleton
-    fun getPlayerManager(analyticsManager: AnalyticsManager,@ApplicationContext context: Context) : PlayerManager {
-        return PlayerManagerImpl(analyticsManager,context)
-    }
+interface PlayerManagerModule {
+    @Binds
+    fun bindsPlayerManager(playerManagerImpl: PlayerManagerImpl) : PlayerManager
 }

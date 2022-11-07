@@ -4,8 +4,9 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class GetTodoForBackupUseCaseImpl(
+class GetTodoForBackupUseCaseImpl @Inject constructor(
     private val toDoRepository: ToDoRepository
 ) : GetTodoForBackupUseCase {
     override suspend fun execute(settings: BackupSettings): List<ToDoItem> {

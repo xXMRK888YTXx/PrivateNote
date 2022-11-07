@@ -11,6 +11,7 @@ import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,7 +21,7 @@ import javax.inject.Inject
 
 @SendAnalytics
 class RecordManagerImpl @Inject constructor(
-    private val context: Context,
+    @ApplicationContext private val context: Context,
     private val audioRepository: AudioRepository,
     private val analyticsManager: AnalyticsManager
 ) : RecordManager {

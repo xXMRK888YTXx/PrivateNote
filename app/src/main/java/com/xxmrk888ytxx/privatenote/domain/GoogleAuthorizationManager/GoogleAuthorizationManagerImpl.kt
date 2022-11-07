@@ -17,9 +17,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.Scope
 import com.google.api.services.drive.DriveScopes
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class GoogleAuthorizationManagerImpl(
-    private val context:Context
+@Singleton
+class GoogleAuthorizationManagerImpl @Inject constructor(
+    @ApplicationContext private val context:Context
 ) : GoogleAuthorizationManager {
 
     private val _googleAccount: MutableState<GoogleSignInAccount?> = mutableStateOf(null)

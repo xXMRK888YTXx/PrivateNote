@@ -13,15 +13,14 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class SystemServiceModule {
-    @Singleton
+
     @Provides
-    fun getAlarmManager(@ApplicationContext context: Context) : AlarmManager {
+    fun provideAlarmManager(@ApplicationContext context: Context) : AlarmManager {
         return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
 
-    @Singleton
     @Provides
-    fun getFingerPrintManager(@ApplicationContext context: Context) : FingerprintManager {
+    fun provideFingerPrintManager(@ApplicationContext context: Context) : FingerprintManager {
         return context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
     }
 }

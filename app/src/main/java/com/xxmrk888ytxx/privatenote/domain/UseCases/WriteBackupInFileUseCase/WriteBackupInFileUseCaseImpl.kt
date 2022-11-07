@@ -4,11 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.*
+import javax.inject.Inject
 
 
-class WriteBackupInFileUseCaseImpl(
-    private val context: Context,
+class WriteBackupInFileUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
 ) : WriteBackupInFileUseCase {
     override suspend fun execute(backupFile:File, uriString:String) {
         try {

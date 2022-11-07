@@ -23,12 +23,16 @@ import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget.Companion.widg
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-class TodoWidgetRepositoryImpl constructor(
-    private val context:Context,
+@Singleton
+class TodoWidgetRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context:Context,
     private val toDoDao: ToDoDao,
     private val analyticsManager: AnalyticsManager
 ) : TodoWidgetRepository {

@@ -5,9 +5,11 @@ import android.net.Uri
 import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
 import com.xxmrk888ytxx.privatenote.Utils.getBytes
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class ExportAudioUseCaseImpl(
-    private val context:Context
+class ExportAudioUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context:Context
 ) : ExportAudioUseCase {
     override suspend fun execute(audio: Audio, path: Uri) {
         val bytes = audio.file.getBytes()

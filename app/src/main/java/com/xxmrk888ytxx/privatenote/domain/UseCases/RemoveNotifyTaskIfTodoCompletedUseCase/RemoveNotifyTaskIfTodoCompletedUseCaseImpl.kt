@@ -6,8 +6,9 @@ import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RemoveNotifyTaskIfTodoCompletedUseCaseImpl constructor(
+class RemoveNotifyTaskIfTodoCompletedUseCaseImpl @Inject constructor(
     private val notifyTaskRepository: NotifyTaskRepository
 ) : RemoveNotifyTaskIfTodoCompletedUseCase {
     override fun execute(todoId: Int) {

@@ -4,15 +4,17 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.net.toFile
 import com.xxmrk888ytxx.privatenote.Utils.Exception.ReadBackupFileException
+import dagger.hilt.android.qualifiers.ApplicationContext
 import net.lingala.zip4j.ZipFile
 import okio.IOException
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class UnArcherBackupUseCaseImpl(
-    private val context:Context
+class UnArcherBackupUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context:Context
 ) : UnArcherBackupUseCase {
     private val tempFile = File(context.cacheDir,"tempRestoreBackupArcher.zip")
     private var unArcherBackupDir = File(context.cacheDir,"RestoreBackupTempDir")

@@ -6,12 +6,13 @@ import java.security.MessageDigest
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.jvm.Throws
 
 
 @Singleton
-class SecurityUtilsImpl : SecurityUtils {
+class SecurityUtilsImpl @Inject constructor() : SecurityUtils {
 
     @Throws(
         PasswordIsEmptyException::class,

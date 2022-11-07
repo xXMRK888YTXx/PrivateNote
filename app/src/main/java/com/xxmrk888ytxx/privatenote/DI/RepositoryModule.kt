@@ -27,6 +27,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.Tod
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,79 +37,32 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class RepositoryModule {
-    @Singleton
-    @Provides
-    fun getNoteRepositoryImpl(
-        noteDao: NoteDao,
-        removeNoteFileUseCase: RemoveNoteFileUseCase,
-        analytics: AnalyticsManager
-    ) : NoteRepositoryImpl {
-        return NoteRepositoryImpl(noteDao,removeNoteFileUseCase,analytics)
-    }
+interface RepositoryModule {
 
-    @Provides
-    @Singleton
-    fun getNoteRepository(noteRepositoryImpl: NoteRepositoryImpl) : NoteRepository {
-        return noteRepositoryImpl
-    }
+    @Binds
+    fun bindsNoteRepositoryImpl(noteRepositoryImpl: NoteRepositoryImpl) : NoteRepository
 
-    @Provides
-    @Singleton
-    fun getCategoryRepositoryImpl(categoryDao: CategoryDao,analytics: AnalyticsManager) : CategoryRepositoryImpl {
-        return CategoryRepositoryImpl(categoryDao,analytics)
-    }
+    @Binds
+    fun bindsCategoryRepository(categoryRepositoryImpl: CategoryRepositoryImpl): CategoryRepository
 
-    @Provides
-    @Singleton
-    fun getCategoryRepository(categoryRepositoryImpl: CategoryRepositoryImpl): CategoryRepository {
-        return categoryRepositoryImpl
-    }
+    @Binds
+    fun bindsToDoRepoRepositoryImpl(toDoRepositoryImpl: ToDoRepositoryImpl) : ToDoRepository
 
-    @Provides
-    @Singleton
-    fun getToDoRepoRepositoryImpl(
-        toDoDao: ToDoDao,
-        analytics: AnalyticsManager,
-        removeNotifyTaskIfTodoCompletedUseCase: RemoveNotifyTaskIfTodoCompletedUseCase,
-        notifyWidgetDataChangedUseCase : NotifyWidgetDataChangedUseCase
-    ) : ToDoRepository {
-        return ToDoRepositoryImpl(toDoDao,notifyWidgetDataChangedUseCase, removeNotifyTaskIfTodoCompletedUseCase,analytics)
-    }
+    @Binds
+    fun bindsNotifyTaskRepositoryImpl(notifyTaskRepositoryImpl: NotifyTaskRepositoryImpl) : NotifyTaskRepository
 
-    @Provides
-    @Singleton
-    fun getNotifyTaskRepositoryImpl(notifyTaskDao: NotifyTaskDao,analytics: AnalyticsManager) : NotifyTaskRepository {
-        return NotifyTaskRepositoryImpl(notifyTaskDao,analytics)
-    }
+    @Binds
+    fun bindsSettingsRepositoryImpl(settingsRepositoryImpl: SettingsRepositoryImpl) : SettingsRepository
 
-    @Provides
-    @Singleton
-    fun getSettingsRepositoryImpl(@ApplicationContext context:Context ) : SettingsRepository {
-        return SettingsRepositoryImpl(context)
-    }
+    @Binds
+    fun bindsAudioRepository(audioRepositoryImpl: AudioRepositoryImpl) : AudioRepository
 
-    @Provides
-    @Singleton
-    fun getAudioRepository(@ApplicationContext context: Context,analytics: AnalyticsManager ) : AudioRepository {
-        return AudioRepositoryImpl(context,analytics)
-    }
+    @Binds
+    fun bindsImageRepository(imageRepositoryImpl: ImageRepositoryImpl) : ImageRepository
 
-    @Provides
-    @Singleton
-    fun getImageRepository(@ApplicationContext context: Context, analytics: AnalyticsManager) : ImageRepository {
-        return ImageRepositoryImpl(context,analytics)
-    }
+    @Binds
+    fun bindsTodoWidgetRepository(todoWidgetRepositoryImpl: TodoWidgetRepositoryImpl) : TodoWidgetRepository
 
-    @Provides
-    @Singleton
-    fun getTodoWidgetRepository(@ApplicationContext context: Context, toDoDao: ToDoDao,analytics: AnalyticsManager) : TodoWidgetRepository {
-        return TodoWidgetRepositoryImpl(context,toDoDao,analytics)
-    }
-
-    @Provides
-    @Singleton
-    fun getBackupSettingsRepository(@ApplicationContext context: Context) : SettingsAutoBackupRepository {
-        return SettingsAutoBackupRepositoryImpl(context)
-    }
+    @Binds
+    fun bindsBackupSettingsRepository(settingsAutoBackupRepositoryImpl: SettingsAutoBackupRepositoryImpl) : SettingsAutoBackupRepository
 }

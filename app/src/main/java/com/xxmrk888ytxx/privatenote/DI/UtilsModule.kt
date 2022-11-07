@@ -26,8 +26,7 @@ class UtilsModule {
     }
 
     @Provides
-    @Singleton
-    fun getAnalyticsManager(@ApplicationContext context: Context ) : AnalyticsManager {
+    fun getAnalyticsManager(@ApplicationContext context: Context) : AnalyticsManager {
         val analytics = FirebaseAnalytics.getInstance(context)
         return AnalyticsManagerImpl(analytics)
     }

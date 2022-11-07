@@ -4,8 +4,9 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class GetCategoryForBackupUseCaseImpl(
+class GetCategoryForBackupUseCaseImpl @Inject constructor(
     private val categoryRepository: CategoryRepository
 ) : GetCategoryForBackupUseCase  {
 

@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserverImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,10 +11,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class WorkerObserverModule {
-    @Provides
-    @Singleton
-    fun getWorkerObserver() : WorkerObserver {
-        return WorkerObserverImpl()
-    }
+interface WorkerObserverModule {
+    @Binds
+    fun getWorkerObserver(workerObserverImpl: WorkerObserverImpl) : WorkerObserver
 }

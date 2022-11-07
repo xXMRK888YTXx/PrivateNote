@@ -10,11 +10,13 @@ import com.xxmrk888ytxx.privatenote.domain.Workers.LocalAutoBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.GDriveBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.RestoreBackupWorker
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.StateFlow
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-class BackupManagerImpl constructor(
-    private val context:Context,
+class BackupManagerImpl @Inject constructor(
+    @ApplicationContext private val context:Context,
     private val workerObserver: WorkerObserver
 ) : BackupManager {
 

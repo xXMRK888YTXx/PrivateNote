@@ -7,6 +7,7 @@ import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,16 +17,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NotifyTaskManagerModule {
-    @Provides
-    @Singleton
-    fun getNotifyTaskManager(
-        notifyTaskRepository: NotifyTaskRepository,
-        alarmManager: AlarmManager,
-        toDoRepository : ToDoRepository,
-        notificationAppManager : NotificationAppManager,
-        @ApplicationContext context: Context
-    ) : NotifyTaskManager {
-        return NotifyTaskManagerImpl(notifyTaskRepository,alarmManager,toDoRepository,notificationAppManager,context)
-    }
+interface NotifyTaskManagerModule {
+    @Binds
+    fun bindsNotifyTaskManager(notifyTaskManagerImpl: NotifyTaskManagerImpl) : NotifyTaskManager
 }

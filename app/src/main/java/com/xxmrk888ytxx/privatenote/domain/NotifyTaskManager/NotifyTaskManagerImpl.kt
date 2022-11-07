@@ -14,6 +14,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.Not
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -22,7 +23,7 @@ class NotifyTaskManagerImpl @Inject constructor(
     private val alarmManager: AlarmManager,
     private val toDoRepository: ToDoRepository,
     private val notificationManager: NotificationAppManager,
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) : NotifyTaskManager {
     override fun getAllTasks()  = notifyTaskRepository.getAllTasks()
 

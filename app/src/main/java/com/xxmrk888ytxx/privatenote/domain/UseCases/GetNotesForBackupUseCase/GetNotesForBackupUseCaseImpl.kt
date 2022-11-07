@@ -9,8 +9,9 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRep
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import kotlinx.coroutines.flow.first
+import javax.inject.Inject
 
-class GetNotesForBackupUseCaseImpl(
+class GetNotesForBackupUseCaseImpl @Inject constructor(
     private val noteRepository: NoteRepository,
 ) : GetNotesForBackupUseCase {
 

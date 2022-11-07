@@ -9,8 +9,9 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepos
 import kotlinx.coroutines.flow.first
 import java.io.File
 import java.io.FileInputStream
+import javax.inject.Inject
 
-class RestoreNoteFromBackupUseCaseImpl(
+class RestoreNoteFromBackupUseCaseImpl @Inject constructor(
     private val noteRepository:NoteRepository,
     private val categoryRepository: CategoryRepository,
     private val imageRepository: ImageRepository,

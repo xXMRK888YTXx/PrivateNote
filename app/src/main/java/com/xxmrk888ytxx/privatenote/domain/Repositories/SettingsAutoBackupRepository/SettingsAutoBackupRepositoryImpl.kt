@@ -5,12 +5,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SettingsAutoBackupRepositoryImpl constructor(
-    private val context:Context
+@Singleton
+class SettingsAutoBackupRepositoryImpl @Inject constructor(
+    @ApplicationContext private val context:Context
 ) : SettingsAutoBackupRepository {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "backup_settings")
 

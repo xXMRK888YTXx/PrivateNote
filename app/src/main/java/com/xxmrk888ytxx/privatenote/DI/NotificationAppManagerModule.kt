@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.DI
 import android.content.Context
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,10 +13,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NotificationAppManagerModule {
-    @Provides
-    @Singleton
-    fun getNotificationAppManager(@ApplicationContext context: Context ) : NotificationAppManager {
-        return NotificationAppManagerImpl(context)
-    }
+interface NotificationAppManagerModule {
+    @Binds
+    fun getNotificationAppManager(notificationAppManagerImpl: NotificationAppManagerImpl) : NotificationAppManager
 }

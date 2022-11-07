@@ -15,14 +15,16 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.GoogleDriveBadWrite
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.joinAll
 import java.io.File
 import java.io.FileNotFoundException
 import java.util.*
+import javax.inject.Inject
 import com.google.api.services.drive.model.File as DriveFile
 
-class UploadBackupToGoogleDriveUseCaseImpl(
-    private val context:Context
+class UploadBackupToGoogleDriveUseCaseImpl @Inject constructor(
+    @ApplicationContext private val context:Context
 ) : UploadBackupToGoogleDriveUseCase {
 
     override suspend fun execute(

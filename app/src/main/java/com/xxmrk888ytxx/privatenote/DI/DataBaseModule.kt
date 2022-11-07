@@ -18,7 +18,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DataBaseModule {
     @Provides
-    fun getDataBase(@ApplicationContext context: Context ) : AppDataBase {
+    @Singleton
+    fun getDataBase(@ApplicationContext context: Context) : AppDataBase {
         return Room.databaseBuilder(context, AppDataBase::class.java,"dataBase.db").build()
     }
 
