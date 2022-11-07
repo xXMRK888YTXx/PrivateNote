@@ -97,15 +97,17 @@ class EditNoteViewModel @Inject constructor(
                         isNotLock = Pair(false){}
                     }
                 }catch (e:Exception) {}
-                if(it == LifeCycleState.onPause) {
-                    stopRecord()
-                    if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
-                        isHideText.value = true
-                        dialogShowState.value = ShowDialogState.DecryptDialog
+                try {
+                    if(it == LifeCycleState.onPause) {
+                        stopRecord()
+                        if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
+                            isHideText.value = true
+                            dialogShowState.value = ShowDialogState.DecryptDialog
+                        }
+                        if(note.id == 0) return@collect
+                        saveNote()
                     }
-                    if(note.id == 0) return@collect
-                    saveNote()
-                }
+                }catch (e:Exception) {}
             }
         }
     }
