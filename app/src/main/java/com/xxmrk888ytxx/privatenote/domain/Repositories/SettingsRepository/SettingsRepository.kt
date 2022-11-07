@@ -28,10 +28,6 @@ interface SettingsRepository {
 
     suspend fun setSplashScreenVisibleState(state: Boolean)
 
-    fun getAppLanguage() : Flow<String>
-
-    suspend fun setAppLanguage(languageCode:String)
-
     fun isAppPasswordEnable() : Flow<Boolean>
 
     suspend fun setupAppPassword(password:String)

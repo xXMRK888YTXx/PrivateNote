@@ -107,8 +107,6 @@ class MainActivityViewModel @Inject constructor(
 
     fun getLockWhenLeaveTime() = settingsRepository.getLockWhenLeaveTime().getData()
 
-    fun getAppLanguage() = settingsRepository.getAppLanguage().getData()
-
     fun biometricAuthorizationRequest(
         mainActivity: MainActivity,
         executor: Executor,

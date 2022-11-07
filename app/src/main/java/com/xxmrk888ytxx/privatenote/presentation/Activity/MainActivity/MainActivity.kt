@@ -88,17 +88,6 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         val themeId = settingsRepository.getApplicationThemeId().getData()
         notifyAppThemeChanged(this,themeId)
-        val languageCode = mainActivityViewModel.getAppLanguage()
-        if(languageCode != SYSTEM_LANGUAGE_CODE) {
-            val locale = Locale(languageCode)
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.locale = locale
-            baseContext.resources.updateConfiguration(
-                config,
-                baseContext.resources.displayMetrics
-            )
-        }
         notificationManager.createNotificationChannels()
         restoreTasks()
         if(intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION) mainActivityViewModel.registerTodoDeepLink(intent)

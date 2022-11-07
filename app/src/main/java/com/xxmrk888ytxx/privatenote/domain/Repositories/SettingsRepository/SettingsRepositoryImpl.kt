@@ -26,7 +26,6 @@ class SettingsRepositoryImpl (
     private val missedToDoVisible = booleanPreferencesKey("MissedToDoVisible")
     private val navigationSwipeState = booleanPreferencesKey("NavigationSwipeState")
     private val splashScreenVisibleState = booleanPreferencesKey("SplashScreenVisibleState")
-    private val appLanguage = stringPreferencesKey("AppLanguage")
     private val appPassword = stringPreferencesKey("AppId")
     private val biometricAuthorizationState = booleanPreferencesKey("BiometricAuthorizationState")
     private val lockWhenLeaveState = booleanPreferencesKey("LockWhenLeaveState")
@@ -111,18 +110,6 @@ class SettingsRepositoryImpl (
     override suspend fun setSplashScreenVisibleState(state: Boolean) {
         context.dataStore.edit {
             it[splashScreenVisibleState] = state
-        }
-    }
-
-    override fun getAppLanguage(): Flow<String> = runBlocking(Dispatchers.IO) {
-       return@runBlocking  context.dataStore.data.map {
-            it[appLanguage] ?: SYSTEM_LANGUAGE_CODE
-        }
-    }
-
-    override suspend fun setAppLanguage(languageCode: String) {
-        context.dataStore.edit {
-            it[appLanguage] = languageCode
         }
     }
 

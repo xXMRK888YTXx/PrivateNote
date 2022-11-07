@@ -15,35 +15,18 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.*
 import java.util.concurrent.Executor
 import javax.inject.Inject
 @SendAnalytics
 class BiometricAuthorizationManagerImpl @Inject constructor(
-    private val context: Context,
-    settingsRepository: SettingsRepository,
+    @ApplicationContext private val context: Context,
     private val fingerprintManager: FingerprintManager,
     private val analytics: AnalyticsManager
 ) : BiometricAuthorizationManager {
-    init {
-        val languageCode = settingsRepository.getAppLanguage().getData()
-        if(languageCode != LanguagesCodes.SYSTEM_LANGUAGE_CODE) {
-            val locale = Locale(languageCode)
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.locale = locale
-            context.resources.updateConfiguration(
-                config,
-                context.resources.displayMetrics
-            )
-        }
-    }
+
     override fun isHaveFingerPrint() : Boolean {
-//        val biometricManager = BiometricManager.from(context)
-//        when (biometricManager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
-//            BiometricManager.BIOMETRIC_SUCCESS -> return true
-//            else -> return false
-//        }
         val state = fingerprintManager.hasEnrolledFingerprints()
         analytics.sendEvent(Check_Available_FingerPrint,
             bundleOf(Pair("is_FingerPrint_Available",state)))

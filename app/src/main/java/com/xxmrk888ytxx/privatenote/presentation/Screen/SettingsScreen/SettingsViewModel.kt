@@ -110,17 +110,6 @@ class SettingsViewModel @Inject constructor(
         currentSelectedLanguage.value = languageCode
     }
 
-    fun showLanguageDialog() {
-        viewModelScope.launch {
-            currentSelectedLanguage.value = getAppLanguage().getData()
-            showLanguageDialogState.value = true
-        }
-    }
-
-    fun getAppLanguage() : Flow<String> {
-        return settingsRepository.getAppLanguage()
-    }
-
     fun hideLanguageDialog() {
         showLanguageDialogState.value = false
         currentSelectedLanguage.value = ""
@@ -131,14 +120,6 @@ class SettingsViewModel @Inject constructor(
     }
     fun hideAppPasswordDialog() {
         showAppPasswordDialog.value = false
-    }
-
-    fun changeAppLanguage() {
-        viewModelScope.launch {
-            settingsRepository.setAppLanguage(currentSelectedLanguage.value)
-            hideLanguageDialog()
-            toastManager.showToast(R.string.Notify_Language_Changed)
-        }
     }
 
     fun leaveFromSettingScreen(navController: NavController) {

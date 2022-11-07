@@ -7,6 +7,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,16 +17,10 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class BiometricAuthorizationManagerModule {
-    @Provides
-    @Singleton
-    fun getBiometricAuthorizationManager(@ApplicationContext context: Context,
-                                         settingsRepository: SettingsRepository,
-                                         fingerprintManager: FingerprintManager,
-                                         analytics: AnalyticsManager
-    )
-    : BiometricAuthorizationManager {
-        return BiometricAuthorizationManagerImpl(context,settingsRepository,
-            fingerprintManager,analytics)
-    }
+interface BiometricAuthorizationManagerModule {
+    @Binds
+    fun bindsBiometricAuthorizationManager(
+        biometricAuthorizationManagerImpl: BiometricAuthorizationManagerImpl
+    ) : BiometricAuthorizationManager
+
 }

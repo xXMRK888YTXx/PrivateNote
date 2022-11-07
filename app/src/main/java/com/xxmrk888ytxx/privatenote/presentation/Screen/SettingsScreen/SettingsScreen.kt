@@ -74,15 +74,6 @@ fun SettingsScreen(
         )
         SettingsList(settingsViewModel,navController)
     }
-    if(languageDialogState.value) {
-        LanguageChoseDialog(
-            languageList = getLanguages(),
-            currentSelected = currentSelectedLanguage,
-            onNewSelected = {settingsViewModel.changeCurrentSelectedLanguage(it) },
-            onCancel = {settingsViewModel.hideLanguageDialog()},
-            onComplete = {settingsViewModel.changeAppLanguage()}
-        )
-    }
     if(appPasswordDialogState.value) {
         EnterLoginPasswordDialog(
             onCancel = {settingsViewModel.hideAppPasswordDialog()},
@@ -170,7 +161,6 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
 @Composable
 fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavController) {
     val context = LocalContext.current
-    val currentLanguage =  settingsViewModel.getAppLanguage().collectAsState(SYSTEM_LANGUAGE_CODE)
     val appPasswordEnable = settingsViewModel.isAppPasswordEnable()
         .collectAsState(initial = settingsViewModel.cashedAppPasswordState)
     val lockWhenLeave = settingsViewModel.isLockWhenLeaveEnable().collectAsState(
@@ -201,14 +191,6 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 },
                 SettingsItem() {
                     ToBackupSettingsScreenButton(navController)
-                }
-            )
-        ),
-        SettingsCategory(
-            stringResource(R.string.Localization),
-            listOf<SettingsItem>(
-                SettingsItem() {
-                    LanguageChose(currentLanguage){settingsViewModel.showLanguageDialog()}
                 }
             )
         ),
@@ -372,17 +354,4 @@ fun TopBar(settingsViewModel: SettingsViewModel,navController: NavController) {
             )
         }
     }
-}
-@Composable
-fun getLanguageName(languageCode:String) : String {
-    return getLanguages().first { it.languageCode == languageCode }.name
-}
-
-@Composable
-fun getLanguages() : List<LanguageItem> {
-    return listOf(
-        LanguageItem(stringResource(R.string.System),SYSTEM_LANGUAGE_CODE),
-        LanguageItem(stringResource(R.string.English),EN_CODE),
-        LanguageItem(stringResource(R.string.Russian),RU_CODE)
-    )
 }

@@ -27,19 +27,7 @@ class DelayNotifyViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
-    init {
-        val languageCode = settingsRepository.getAppLanguage().getData()
-        if(languageCode != LanguagesCodes.SYSTEM_LANGUAGE_CODE) {
-            val locale = Locale(languageCode)
-            Locale.setDefault(locale)
-            val config = Configuration()
-            config.locale = locale
-            context.resources.updateConfiguration(
-                config,
-                context.resources.displayMetrics
-            )
-        }
-    }
+
     private var currentTask:IntentNotifyTask? = null
     private var notificationId = -1
 

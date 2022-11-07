@@ -21,18 +21,6 @@ import javax.inject.Singleton
 class UtilsModule {
     @Provides
     @Singleton
-    fun getShowToastRealisation(@ApplicationContext context: Context,settingsRepository: SettingsRepository,analyticsManager: AnalyticsManager) : ToastManagerImpl {
-        return ToastManagerImpl(context,settingsRepository,analyticsManager)
-    }
-
-    @Provides
-    @Singleton
-    fun getShowToast(toastManagerImpl: ToastManagerImpl) : ToastManager {
-        return toastManagerImpl
-    }
-
-    @Provides
-    @Singleton
     fun getLifeCycleState() : MutableStateFlow<LifeCycleState> {
         return MutableStateFlow(LifeCycleState.onResume)
     }
