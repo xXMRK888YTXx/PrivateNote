@@ -46,6 +46,7 @@ fun SplashScreen(
     finishApp:() -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val animationTime = 500L
     val startAnimation = remember {
         mutableStateOf(false)
     }
@@ -54,7 +55,7 @@ fun SplashScreen(
     }
     val alphaAnim = animateFloatAsState(
         targetValue = if (startAnimation.value) 1f else 0f,
-        animationSpec = tween(2500)
+        animationSpec = tween(animationTime.toInt())
     )
     var isNextBackPressLeaveApp = false
     BackPressController.setHandler(true) {
@@ -72,7 +73,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = true, block = {
         if(animationShowState) {
             startAnimation.value = true
-            delay(2500)
+            delay(animationTime)
         }
         if (!isAppPasswordInstalled) {
             if(isFirstStart)

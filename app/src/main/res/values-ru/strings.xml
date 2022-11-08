@@ -150,7 +150,7 @@
     <string name="System_theme">Системная тема</string>
     <string name="White_theme">Светлая тема</string>
     <string name="Black_theme">Тёмная тема</string>
-    <string name="Backup">Бэкаб</string>
+    <string name="Backup">Бэкап</string>
     <string name="Not_copy_encrypt_note">Копировать\nне зашифрованные заметки</string>
     <string name="Copy_encrypt_note">Копировать зашифрованые заметки</string>
     <string name="Copy_note_images">Копировать изображение в заметках</string>
@@ -167,7 +167,7 @@
     <string name="Path_set">Путь указан</string>
     <string name="Backup_path_setuped">Путь бэкапа установлен</string>
     <string name="Backup_channel_name">Уведомления о состоянии бэкапа</string>
-    <string name="Backup_channel_description">В этом канале появляются уведомления о состоянии бекапа</string>
+    <string name="Backup_channel_description">В этом канале появляются уведомления о состоянии бэкапа</string>
     <string name="Create_backup_now">Создать бэкап</string>
     <string name="Restore_backup">Восстановить из бэкапа</string>
     <string name="Restore_notes">Восстановить заметки</string>
