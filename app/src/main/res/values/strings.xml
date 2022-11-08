@@ -97,12 +97,6 @@
     <string name="xXKoksMenXx" translatable="false">xXKoksMenXx</string>
     <string name="Text_rollback_error">Text rollback error</string>
     <string name="My_tasks">My tasks</string>
-    <string name="Language">Language</string>
-    <string name="System">System</string>
-    <string name="Localization">Localization</string>
-    <string name="English" translatable="false">English</string>
-    <string name="Russian" translatable="false">Русский</string>
-    <string name="Notify_Language_Changed">Changes will be applied after application restart</string>
     <string name="warming_remember_app_password">Remember this password. If you lose it, you will not be able
         to access the application.</string>
     <string name="Warming_disable_app_password">The password will be removed from the application. Are you sure you want to turn it off?</string>

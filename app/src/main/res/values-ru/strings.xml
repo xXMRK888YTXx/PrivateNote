@@ -94,10 +94,6 @@
     <string name="Design_assistant">Помощник по дизайну</string>
     <string name="Text_rollback_error">Ошибка отката текста</string>
     <string name="My_tasks">Мои задачи</string>
-    <string name="Language">Язык</string>
-    <string name="System">Системный</string>
-    <string name="Localization">Локализация</string>
-    <string name="Notify_Language_Changed">Изменения будут применены после перезагрузки приложения.</string>
     <string name="warming_remember_app_password">Запомните этот пароль. Если вы потеряете его,
         вы не сможете получить доступ к приложению.</string>
     <string name="Warming_disable_app_password">Пароль будет удалён из приложения. Вы действительно хотите отключить его?</string>
@@ -152,7 +148,7 @@
     <string name="Black_theme">Тёмная тема</string>
     <string name="Backup">Бэкап</string>
     <string name="Not_copy_encrypt_note">Копировать\nне зашифрованные заметки</string>
-    <string name="Copy_encrypt_note">Копировать зашифрованые заметки</string>
+    <string name="Copy_encrypt_note">Копировать зашифрованные заметки</string>
     <string name="Copy_note_images">Копировать изображение в заметках</string>
     <string name="Copy_notes_audio">Копировать аудио в заметках</string>
     <string name="Copy_note_category">Копировать категории заметок</string>
@@ -199,7 +195,7 @@
     <string name="Google_drive_backup_error_title">Во время бэкапа на Google Drive произошла ошибка</string>
     <string name="GoogleDriveBadWrite_description">Google Drive отказал в доступе, проверьте что приложение имеет доступ к Google Drive</string>
     <string name="Not_known_error">Во время бэкапа произошла неизвестная ошибка.</string>
-    <string name="Successful_authorization">Авторизировано успешно</string>
+    <string name="Successful_authorization">Авторизовано успешно</string>
     <string name="Need_login_to_google">Для работы необходимо войти в аккаунт Google</string>
     <string name="Load_only_from_WIFI">Загружать только по WiFi</string>
     <string name="Login_out_from_account">Выйти из аккаунта Google</string>
