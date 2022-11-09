@@ -219,4 +219,7 @@
     <string name="Ad_is_disabled">Реклама отключена</string>
     <string name="Bue_disable_ad_test">Вы можете отключить рекламу, произведя единоразовый платёж, который пойдет на поддержку разработчика</string>
     <string name="Repit_after">Повторите позже</string>
+    <string name="Open_license">Лицензии с открытым\nисходным кодом</string>
+    <string name="To_source">Перейти к источнику</string>
+    <string name="To_licence">Перейти к лицензии</string>
 </resources>

@@ -51,6 +51,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
+import com.xxmrk888ytxx.privatenote.presentation.Screen.LicenseScreen.LicenseScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsScreen
@@ -149,6 +150,9 @@ class MainActivity :
                             navController = navController,
                             activityController = this@MainActivity
                         )
+                    }
+                    composable(Screen.LicenseScreen.route) {
+                        LicenseScreen()
                     }
                 }
             }

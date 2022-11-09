@@ -867,6 +867,36 @@ fun DisableAdsDialog(
     }
 }
 
+@Composable
+fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
+    Row(Modifier
+        .fillMaxWidth().clickable() {
+            onNavigateToLicenseScreen()
+        },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = stringResource(R.string.Open_license),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = 10.dp),
+            contentAlignment = Alignment.CenterEnd) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow),
+                contentDescription = "",
+                tint = PrimaryFontColor,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}
+
 @Preview(backgroundColor = 0xFF000000)
 @Composable
 fun Preview() {

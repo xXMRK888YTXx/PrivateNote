@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
@@ -226,3 +227,5 @@ fun LazySpacer(height:Int = 0,width:Int = 0) {
     Spacer(Modifier.height(height.dp).width(width.dp))
 }
 
+@Composable
+fun ComposeContext() = LocalContext.current

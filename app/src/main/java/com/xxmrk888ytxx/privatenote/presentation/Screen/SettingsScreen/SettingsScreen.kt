@@ -32,6 +32,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
@@ -290,6 +291,11 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 SettingsItem() {
                     TermsButton()
                 },
+                SettingsItem() {
+                    LicenseButton() {
+                        navController.navigate(Screen.LicenseScreen.route) { launchSingleTop = true }
+                    }
+                }
             )
         )
     )

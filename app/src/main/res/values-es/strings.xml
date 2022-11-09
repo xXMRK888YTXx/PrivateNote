@@ -221,5 +221,7 @@
     <string name="Ad_is_disabled">Anuncios desactivados</string>
     <string name="Bue_disable_ad_test">Puede deshabilitar los anuncios haciendo un pago único que se destinará a apoyar al desarrollador</string>
     <string name="Repit_after">Vuelva a intentarlo más tarde</string>
-
+    <string name="Open_license">Licencias de código\nabiertocódigo fuente</string>
+    <string name="To_source">Ir a la fuente</string>
+    <string name="To_licence">Ir a licencia</string>
 </resources>

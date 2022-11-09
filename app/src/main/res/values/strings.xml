@@ -228,4 +228,7 @@
     <string name="Ad_is_disabled">Ads disabled</string>
     <string name="Bue_disable_ad_test">You can disable ads by making a one-time payment that will go to support the developer</string>
     <string name="Repit_after">Try again later</string>
+    <string name="Open_license">Open source licenses source code</string>
+    <string name="To_source">Go to source</string>
+    <string name="To_licence">Go to license</string>
 </resources>
