@@ -82,7 +82,7 @@
     <string name="Remove_this_todo">Delete task?</string>
     <string name="Settings">Settings</string>
     <string name="Chose_client">Choose a client</string>
-    <string name="Todo_stub_text">There are no tasks yet, but you can fix it.</string>
+    <string name="Todo_stub_text">There are no tasks yet</string>
     <string name="Add_in">Add to</string>
     <string name="General">General</string>
     <string name="Navigation">Navigation</string>

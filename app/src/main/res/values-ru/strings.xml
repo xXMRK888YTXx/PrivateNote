@@ -77,11 +77,11 @@
     <string name="Overdue">ПРОСРОЧЕНО</string>
     <string name="Later">ПОЗЖЕ</string>
     <string name="No_date">НЕТ ДАТЫ</string>
-    <string name="Completed">ВЫПОЛНЕНЫЕ</string>
+    <string name="Completed">ВЫПОЛНЕННЫЕ</string>
     <string name="Remove_this_todo">Удалить задачу?</string>
     <string name="Settings">Настройки</string>
     <string name="Chose_client">Выберете клиент</string>
-    <string name="Todo_stub_text">Задач пока нет,но вы можете это исправить.</string>
+    <string name="Todo_stub_text">Задач пока нет</string>
     <string name="Add_in">Добавить в</string>
     <string name="General">Общее</string>
     <string name="Navigation">Навигация</string>
@@ -128,7 +128,7 @@
     <string name="No_Audio">Нет аудиозаписей</string>
     <string name="Audio_records">Аудиозаписи</string>
     <string name="Record_give_permissions">Для записи звука необходимо, предоставить разрешение на это.</string>
-    <string name="Record_error">Произошла ошибка при попытки записи. Пожалуйста, проверте выдали ли вы разрешение на запись звука</string>
+    <string name="Record_error">Произошла ошибка при попытке записи. Пожалуйста, проверьте выданы ли разрешение на запись звука</string>
     <string name="Yes">Да</string>
     <string name="No">Нет</string>
     <string name="Request_user_for_send_alarms">Для отправки напоминаний необходимо предоставить дополнительное разрешение.\nПерейти в настройки?</string>
