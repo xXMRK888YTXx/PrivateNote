@@ -19,3 +19,17 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-keep class com.google.** { *;}
+-keep interface com.google.** { *;}
+-dontwarn com.google.**
+
+#-dontwarn sun.misc.Unsafe
+-dontwarn com.google.common.collect.MinMaxPriorityQueue
+-keepattributes *Annotation*,Signature
+-keep class * extends com.google.api.client.json.GenericJson {
+*;
+}
+-keep class com.google.api.services.drive.** {
+*;
+}

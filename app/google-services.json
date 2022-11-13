@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "352221401627-952kg05nd7c9sds5urnoc6nmghsiqo55.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xxmrk888ytxx.privatenote",
+            "certificate_hash": "3d9add7598848f224669368ca0d648a65566e6d7"
+          }
+        },
+        {
           "client_id": "352221401627-b57j8vhicvc112r4u92to1ksvch32n9l.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
