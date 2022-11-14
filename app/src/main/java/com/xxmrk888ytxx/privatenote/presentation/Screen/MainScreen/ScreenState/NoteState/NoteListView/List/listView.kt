@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
 import com.xxmrk888ytxx.privatenote.Utils.getColor
 import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
@@ -44,13 +45,16 @@ fun ListNoteView(
     navController: NavController,
     selectedItemCount: MutableState<Int>
 ) {
-    val listPadding = if(screenMode.value == NoteScreenMode.SelectionScreenMode) 55 else 110
+    val listPadding = when(screenMode.value) {
+        is NoteScreenMode.SelectionScreenMode -> 55
+        is NoteScreenMode.SearchScreenMode -> 0
+        else -> 165
+    }
     LazyColumn(
         Modifier
             .fillMaxSize()
-            .padding(bottom = listPadding.dp)
     ) {
-        items(notes, key = { it.id }) {
+        items(notes,key = {it.id}) {
             val check = remember {
                 mutableStateOf(false)
             }
@@ -182,6 +186,9 @@ fun ListNoteView(
                 }
             }
 
+        }
+        item {
+            LazySpacer(listPadding)
         }
 
     }
