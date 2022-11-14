@@ -40,6 +40,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
@@ -362,7 +363,6 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 50.dp)
         ) {
             categoryList.forEach { category ->
                 val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
@@ -432,6 +432,9 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                         }
                     }
                 }
+            }
+            item {
+                LazySpacer(120)
             }
         }
     }
