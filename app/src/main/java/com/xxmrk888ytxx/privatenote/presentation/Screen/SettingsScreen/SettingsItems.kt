@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -35,13 +36,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingText
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
@@ -684,6 +684,7 @@ fun TermsButton() {
     }
 }
 
+@SuppressLint("ResourceType")
 @Composable
 fun SelectSortState(
     currentState:State<SortNoteState>,
@@ -736,6 +737,7 @@ fun SelectSortState(
     }
 }
 
+@SuppressLint("ResourceType")
 @Composable
 fun SelectSortDropDown(
     onChangeSortState: (SortNoteState) -> Unit,
@@ -893,6 +895,92 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
                 tint = PrimaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
+        }
+    }
+}
+
+@SuppressLint("ResourceType")
+@Composable
+fun SelectViewNoteListStateButton(
+    currentState:State<ViewNoteListState>,
+    onShowDropDown:() -> Unit,
+    onChangeViewNoteListState: (ViewNoteListState) -> Unit,
+    isVisibleDropDown: Boolean,
+    onHideDropDown:() -> Unit
+) {
+    Row(Modifier.fillMaxWidth().padding(top = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = stringResource(R.string.Notes_display),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        val annotatedLabelString = buildAnnotatedString {
+            append(stringResource(currentState.value.title))
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        if(isVisibleDropDown) {
+            Box() {
+                SelectionViewNoteListStateDropDown(onChangeViewNoteListState,isVisibleDropDown,onHideDropDown)
+            }
+        }
+        Text(text = annotatedLabelString,
+            inlineContent = inlineContentMap,
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowDropDown()
+                }
+        )
+
+    }
+}
+
+@SuppressLint("ResourceType")
+@Composable
+fun SelectionViewNoteListStateDropDown(
+    onChangeSortState: (ViewNoteListState) -> Unit,
+    isVisible:Boolean,
+    onHide:() -> Unit
+) {
+    val dropDownItem = listOf(ViewNoteListState.List,ViewNoteListState.Table)
+    DropdownMenu(expanded = isVisible,
+        onDismissRequest = {
+            onHide()
+        },
+        modifier = Modifier
+            .background(ThemeManager.DropDownMenuColor)
+            .heightIn(max = 200.dp)
+    ) {
+        dropDownItem.forEach {
+            DropdownMenuItem(onClick = {
+                onChangeSortState(it)
+                onHide()
+            }) {
+                Row {
+                    Text(text = stringResource(it.title),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = ThemeManager.PrimaryFontColor
+                    )
+                }
+            }
         }
     }
 }

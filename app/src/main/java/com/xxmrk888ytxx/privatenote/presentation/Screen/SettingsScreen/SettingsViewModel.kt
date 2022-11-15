@@ -19,6 +19,7 @@ import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -64,6 +65,18 @@ class SettingsViewModel @Inject constructor(
     fun isShowDropDownSortStateVisible() = isShowDropDownSortStateVisible.toState()
 
     private val isShowDisableAdsDialog = mutableStateOf(false)
+
+    private val isShowViewNoteListDropDown = mutableStateOf(false)
+
+    fun showViewNoteListDropDown() {
+        isShowViewNoteListDropDown.value = true
+    }
+
+    fun hideViewNoteListDropDown() {
+        isShowViewNoteListDropDown.value = false
+    }
+
+    fun isViewNoteListDropDownVisible() = isShowViewNoteListDropDown.toState()
 
     fun isShowDisableAdsDialog() = isShowDisableAdsDialog.toState()
 
@@ -213,4 +226,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun isBueDisableAdAvailable() = bullingController?.isBillingAvailable ?: false
+
+    fun getViewNoteListState() = settingsRepository.getViewNoteListState()
+
+    fun changeViewNoteListState(viewNoteListState: ViewNoteListState) {
+        viewModelScope.launch {
+            settingsRepository.changeViewNoteListState(viewNoteListState)
+        }
+    }
 }

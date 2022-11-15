@@ -33,6 +33,7 @@ import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -330,6 +331,9 @@ class NoteStateViewModel @Inject constructor(
 
 
     fun getNoteSortNoteState() = settingsRepository.getSortNoteState()
+
+    fun getViewNoteListState(): Flow<ViewNoteListState> = settingsRepository.getViewNoteListState()
+
     companion object {
         val SCREEN_ID = MainScreenState.NoteScreen.id
     }

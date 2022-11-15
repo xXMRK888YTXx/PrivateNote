@@ -224,4 +224,7 @@
     <string name="Open_license">Licencias de código\nabiertocódigo fuente</string>
     <string name="To_source">Ir a la fuente</string>
     <string name="To_licence">Ir a licencia</string>
+    <string name="List">Listado</string>
+    <string name="Table">Mesa</string>
+    <string name="Notes_display">Mostrar notas como</string>
 </resources>

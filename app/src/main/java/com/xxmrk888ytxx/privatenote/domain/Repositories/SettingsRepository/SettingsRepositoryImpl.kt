@@ -8,6 +8,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -39,6 +40,7 @@ class SettingsRepositoryImpl @Inject constructor(
     private val dontKillMyAppState = booleanPreferencesKey("dontKillMyAppState")
     private val policyAndTermsDialog = booleanPreferencesKey("PolicyAndTermsDialog")
     private val sortNoteStateKey = intPreferencesKey("sortNoteState")
+    private val viewNoteListStateKey = intPreferencesKey("viewNoteListStateKey")
     private val adState = booleanPreferencesKey("adState")
 
     override fun getToDoWithDateVisible(): Flow<Boolean> = runBlocking(Dispatchers.IO) {
@@ -247,7 +249,25 @@ class SettingsRepositoryImpl @Inject constructor(
             when(it) {
                 SortNoteState.ByDescending.id -> SortNoteState.ByDescending
                 SortNoteState.ByAscending.id -> SortNoteState.ByAscending
-                else -> error("Incorrect sort id")
+                else -> SortNoteState.ByDescending
+            }
+        }
+    }
+
+    override suspend fun changeViewNoteListState(viewNoteListState: ViewNoteListState) {
+        context.dataStore.edit {
+            it[viewNoteListStateKey] = viewNoteListState.id
+        }
+    }
+
+    override fun getViewNoteListState(): Flow<ViewNoteListState> {
+        return context.dataStore.data.map {
+            it[viewNoteListStateKey] ?: ViewNoteListState.List.id
+        }.map {
+            when(it) {
+                ViewNoteListState.List.id -> ViewNoteListState.List
+                ViewNoteListState.Table.id -> ViewNoteListState.Table
+                else -> ViewNoteListState.List
             }
         }
     }

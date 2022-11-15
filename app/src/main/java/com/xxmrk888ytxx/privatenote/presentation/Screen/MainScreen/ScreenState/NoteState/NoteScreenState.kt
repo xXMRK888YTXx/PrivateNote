@@ -3,14 +3,10 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,10 +48,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.Interstit
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid.GridNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.List.ListNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
@@ -64,10 +56,6 @@ import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Prima
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SelectedCategoryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.WHITE_THEME
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.themeId
-import me.saket.swipe.SwipeAction
-import me.saket.swipe.SwipeableActionsBox
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -412,7 +400,8 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
 @OptIn(ExperimentalFoundationApi::class)
 fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val noteList = noteStateViewModel.getNoteList().collectAsState(listOf())
-    val viewState:ViewNoteListState = ViewNoteListState.Grid
+    val viewState = noteStateViewModel.getViewNoteListState()
+        .collectAsState(initial = ViewNoteListState.List)
     val sortNoteState = noteStateViewModel.getNoteSortNoteState().collectAsState(SortNoteState.ByDescending)
     val mode = remember {
         noteStateViewModel.getCurrentMode()
@@ -438,7 +427,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
         Stub()
     }
     else {
-        when(viewState) {
+        when(viewState.value) {
             is ViewNoteListState.List -> {
                 ListNoteView(
                     noteStateViewModel = noteStateViewModel,
@@ -448,7 +437,7 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                     selectedItemCount = selectedItemCount
                 )
             }
-            is ViewNoteListState.Grid -> {
+            is ViewNoteListState.Table -> {
                 GridNoteView(
                     noteStateViewModel = noteStateViewModel,
                     screenMode = mode,
