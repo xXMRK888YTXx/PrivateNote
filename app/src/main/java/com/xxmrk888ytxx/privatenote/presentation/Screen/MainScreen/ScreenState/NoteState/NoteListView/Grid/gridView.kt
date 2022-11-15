@@ -1,18 +1,16 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,16 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
-import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
-import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteStateViewModel
 import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 
 val GRID_CELLS_SIZE = 110.dp
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun GridNoteView(
     noteStateViewModel: NoteStateViewModel,
@@ -55,11 +54,29 @@ fun GridNoteView(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(notes) {
+        items(notes, key = getLazyKey(screenMode.value !is NoteScreenMode.SearchScreenMode)
+        ) {
+            val dismissState = rememberDismissState(confirmStateChange = { DismissState ->
+
+               when(DismissState) {
+                   DismissValue.DismissedToEnd -> {noteStateViewModel.changeChosenStatus(it.id,
+                   noteStateViewModel.isNoteChosen(it.id) ) }
+                   DismissValue.DismissedToStart -> {noteStateViewModel.showDeleteDialog(it.id)}
+                   else -> {}
+               }
+                false
+            })
+            val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
+            val backGroundColor =  category?.value?.getColor() ?: ThemeManager.CardColor
+            val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
+            val cardBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) MaterialTheme.colors.surface
+            else backGroundColor.copy(alpha)
+            val swapBoxBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) backGroundColor.copy(alpha)
+            else Color.Transparent.copy(0f)
             val additionalSizeForStar = if(it.isChosen) 7.dp else 0.dp
             Card(modifier = Modifier
                 .fillMaxHeight()
-                .height(GRID_CELLS_SIZE + additionalSizeForStar)
+                //.height(GRID_CELLS_SIZE + additionalSizeForStar)
                 .padding(10.dp)
                 .combinedClickable(
                     onClick = {
@@ -69,21 +86,84 @@ fun GridNoteView(
                 .animateItemPlacement()
                 ,
                 shape = RoundedCornerShape(10.dp),
-                backgroundColor = ThemeManager.CardColor
+                backgroundColor = cardBackground
             ) {
-                if(it.isEncrypted) {
-                    EncryptNoteItem_GridView(it)
-                }
-                else {
-                    DefaultNoteItem_GridView(it)
-                }
+                SwipeToDismiss(
+                    state = dismissState,
+                    dismissThresholds = { FractionalThreshold(0.3f) },
+                    dismissContent = {
+                        Box(modifier = Modifier.background(
+                            when(dismissState.progress.to) {
+                                DismissValue.DismissedToEnd -> Color.Yellow.copy(0.6f)
+                                DismissValue.DismissedToStart -> DeleteOverSwapColor
+                                else -> swapBoxBackground
+                            }
+                        )) {
+                            if(it.isEncrypted) {
+                                EncryptNoteItem_GridView(it)
+                            }
+                            else {
+                                DefaultNoteItem_GridView(it)
+                            }
+                        }
+                    },
+                    background = {
+                        if(dismissState.progress.to != DismissValue.Default) {
+                            when(dismissState.progress.to) {
+                                DismissValue.DismissedToEnd -> {
+                                    Box(Modifier
+                                        .fillMaxSize()
+                                        .background(Color.Yellow.copy(0.6f)),
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_star),
+                                            contentDescription = "",
+                                            tint = ThemeManager.PrimaryFontColor,
+                                            modifier = Modifier.padding(start = 10.dp)
+                                        )
+                                    }
+                                }
+                                DismissValue.DismissedToStart -> {
+                                    Box(Modifier
+                                        .fillMaxSize()
+                                        .background(DeleteOverSwapColor),
+                                        contentAlignment = Alignment.CenterEnd
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_backet),
+                                            contentDescription = "",
+                                            tint = ThemeManager.PrimaryFontColor,
+                                            modifier = Modifier.padding(end = 10.dp)
+                                        )
+                                    }
+                                }
+                                else -> {}
+                            }
+
+                        }
+
+                    }
+                )
 
             }
         }
         item {
             LazySpacer(listPadding)
         }
+        if(!notes.size.isEvenNumber()) {
+            item {
+                LazySpacer(listPadding)
+            }
+        }
     }
+}
+
+
+fun getLazyKey(isNeedKey:Boolean) : ((Note) -> Any)? {
+    if(isNeedKey) return {
+        it.id
+    } else return null
 }
 
 @Composable
@@ -150,7 +230,7 @@ fun DefaultNoteItem_GridView(note: Note) {
 fun EncryptNoteItem_GridView(note: Note) {
     Column(
         Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(10.dp),
         verticalArrangement = Arrangement.Top
     ){

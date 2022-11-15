@@ -29,6 +29,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
+import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
@@ -324,6 +325,9 @@ class NoteStateViewModel @Inject constructor(
     fun changeChosenStatus(id: Int,currentStatus:Boolean) {
         noteRepository.changeChosenStatus(!currentStatus,id)
     }
+
+    fun isNoteChosen(noteId: Int) : Boolean = noteRepository.getNoteById(noteId).getData().isChosen
+
 
     fun getNoteSortNoteState() = settingsRepository.getSortNoteState()
     companion object {

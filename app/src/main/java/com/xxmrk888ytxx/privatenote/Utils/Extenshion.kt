@@ -229,3 +229,5 @@ fun LazySpacer(height:Int = 0,width:Int = 0) {
 
 @Composable
 fun ComposeContext() = LocalContext.current
+
+fun Int.isEvenNumber() : Boolean = this % 2 == 0

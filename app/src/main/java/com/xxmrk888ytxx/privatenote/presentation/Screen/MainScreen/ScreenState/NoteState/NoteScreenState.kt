@@ -412,7 +412,7 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
 @OptIn(ExperimentalFoundationApi::class)
 fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val noteList = noteStateViewModel.getNoteList().collectAsState(listOf())
-    val viewState:ViewNoteListState = ViewNoteListState.List
+    val viewState:ViewNoteListState = ViewNoteListState.Grid
     val sortNoteState = noteStateViewModel.getNoteSortNoteState().collectAsState(SortNoteState.ByDescending)
     val mode = remember {
         noteStateViewModel.getCurrentMode()
