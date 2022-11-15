@@ -16,8 +16,8 @@ android {
         applicationId "com.xxmrk888ytxx.privatenote"
         minSdk 23
         targetSdk 33
-        versionCode 17
-        versionName "1.0.0"
+        versionCode 18
+        versionName "1.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
