@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -66,6 +67,9 @@ fun GridNoteView(
                }
                 false
             })
+            val isSelected = remember {
+                mutableStateOf(false)
+            }
             val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
             val backGroundColor =  category?.value?.getColor() ?: ThemeManager.CardColor
             val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
@@ -74,13 +78,25 @@ fun GridNoteView(
             val swapBoxBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) backGroundColor.copy(alpha)
             else Color.Transparent.copy(0f)
             val additionalSizeForStar = if(it.isChosen) 7.dp else 0.dp
+            LaunchedEffect(key1 = selectedItemCount.value, block = {
+                isSelected.value = noteStateViewModel.isItemSelected(it.id)
+            })
             Card(modifier = Modifier
                 .fillMaxHeight()
                 //.height(GRID_CELLS_SIZE + additionalSizeForStar)
                 .padding(10.dp)
+                .borderIf(isSelected.value && screenMode.value is NoteScreenMode.SelectionScreenMode)
                 .combinedClickable(
                     onClick = {
+                        if(screenMode.value is NoteScreenMode.SelectionScreenMode) {
+                          noteStateViewModel.changeSelectedState(it.id,!isSelected.value)
+                        } else
                         noteStateViewModel.toEditNoteScreen(navController, it.id)
+                    },
+                    onLongClick = {
+                        isSelected.value = true
+                        noteStateViewModel.changeSelectedState(it.id, isSelected.value)
+                        noteStateViewModel.toSelectionMode()
                     }
                 )
                 .animateItemPlacement()
@@ -156,6 +172,17 @@ fun GridNoteView(
                 LazySpacer(listPadding)
             }
         }
+    }
+}
+
+@Composable
+fun MultiSelectCheckBox() {
+    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Checkbox(checked = true, onCheckedChange = {},colors = CheckboxDefaults.colors(
+            checkedColor = ThemeManager.SecondaryColor,
+            checkmarkColor = ThemeManager.PrimaryFontColor,
+            uncheckedColor = ThemeManager.SecondaryColor
+        ))
     }
 }
 
