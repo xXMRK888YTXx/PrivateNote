@@ -18,9 +18,4 @@ class SystemServiceModule {
     fun provideAlarmManager(@ApplicationContext context: Context) : AlarmManager {
         return context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     }
-
-    @Provides
-    fun provideFingerPrintManager(@ApplicationContext context: Context) : FingerprintManager {
-        return context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
-    }
 }

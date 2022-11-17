@@ -22,15 +22,19 @@ import javax.inject.Inject
 @SendAnalytics
 class BiometricAuthorizationManagerImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val fingerprintManager: FingerprintManager,
     private val analytics: AnalyticsManager
 ) : BiometricAuthorizationManager {
 
     override fun isHaveFingerPrint() : Boolean {
-        val state = fingerprintManager.hasEnrolledFingerprints()
-        analytics.sendEvent(Check_Available_FingerPrint,
-            bundleOf(Pair("is_FingerPrint_Available",state)))
-        return state
+        try {
+            val fingerprintManager = context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
+            val state = fingerprintManager.hasEnrolledFingerprints()
+            analytics.sendEvent(Check_Available_FingerPrint,
+                bundleOf(Pair("is_FingerPrint_Available",state)))
+            return state
+        }catch (e:Exception) {
+            return false
+        }
     }
 
     override fun biometricAuthorizationRequest(
