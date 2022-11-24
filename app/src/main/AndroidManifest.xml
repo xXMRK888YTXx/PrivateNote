@@ -16,6 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:name=".App"
+        android:localeConfig="@xml/locale_config"
         android:theme="@style/Theme.PrivateNote"
         android:largeHeap="true"
         tools:targetApi="33">
