@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -95,6 +96,21 @@ fun SettingsScreen(
     }
     if(enterAppPasswordDialogState.value) {
         EnterAppPasswordDialog(settingsViewModel)
+    }
+    if(languageDialogState.value) {
+        LanguageChoseDialog(languageList = getLanguageList(),
+            currentSelected = currentSelectedLanguage,
+            onNewSelected = {
+                settingsViewModel.changeCurrentSelectedLanguage(it.languageCode)
+            },
+            onCancel = {
+                settingsViewModel.hideLanguageDialog()
+            },
+            onComplete = {
+                settingsViewModel.changeAppLanguage()
+                settingsViewModel.hideLanguageDialog()
+            }
+        )
     }
 }
 
@@ -196,6 +212,15 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 },
                 SettingsItem() {
                     ToBackupSettingsScreenButton(navController)
+                },
+                SettingsItem {
+                    LanguageChose(
+                        currentLanguage = languageCodeToItem(AppCompatDelegate
+                            .getApplicationLocales()[0]?.language ?: "xx"),
+                        onShowLanguageDialog = {
+                            settingsViewModel.showLanguageDialog()
+                        }
+                    )
                 }
             )
         ),

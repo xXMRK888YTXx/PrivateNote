@@ -225,4 +225,6 @@
     <string name="List">Liste</string>
     <string name="Table">Tabelle</string>
     <string name="Notes_display">Anzeigetyp Notizen</string>
+    <string name="System_language">Systemisch</string>
+    <string name="Language">Sprache</string>
 </resources>

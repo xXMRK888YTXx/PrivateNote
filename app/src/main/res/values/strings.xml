@@ -234,4 +234,6 @@
     <string name="List">List</string>
     <string name="Table">Table</string>
     <string name="Notes_display">Notes display</string>
+    <string name="System_language">Systemic</string>
+    <string name="Language">Language</string>
 </resources>

@@ -225,4 +225,6 @@
     <string name="List">Список</string>
     <string name="Table">Таблица</string>
     <string name="Notes_display">Отображение заметок</string>
+    <string name="System_language">Системный</string>
+    <string name="Language">Язык</string>
 </resources>

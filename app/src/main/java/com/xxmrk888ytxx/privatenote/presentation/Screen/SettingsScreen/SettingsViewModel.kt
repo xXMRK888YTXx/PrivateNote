@@ -3,8 +3,10 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -121,6 +123,18 @@ class SettingsViewModel @Inject constructor(
 
     fun changeCurrentSelectedLanguage(languageCode:String) {
         currentSelectedLanguage.value = languageCode
+    }
+
+    fun changeAppLanguage() {
+        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(currentSelectedLanguage.value)
+        AppCompatDelegate.setApplicationLocales(appLocale)
+
+    }
+
+    fun showLanguageDialog() {
+        showLanguageDialogState.value = true
+        currentSelectedLanguage.value = AppCompatDelegate
+            .getApplicationLocales()[0]?.language ?: "xx"
     }
 
     fun hideLanguageDialog() {

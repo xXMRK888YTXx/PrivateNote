@@ -227,4 +227,6 @@
     <string name="List">Listado</string>
     <string name="Table">Mesa</string>
     <string name="Notes_display">Mostrar notas como</string>
+    <string name="System_language">Sistémica</string>
+    <string name="Language">Lengua</string>
 </resources>
