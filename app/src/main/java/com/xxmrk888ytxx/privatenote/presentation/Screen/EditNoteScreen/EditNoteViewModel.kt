@@ -40,6 +40,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
@@ -62,7 +63,6 @@ class EditNoteViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val securityUtils: SecurityUtils,
     private val toastManager: ToastManager,
-    private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
     private val analytics: AnalyticsManager,
     private val recordManager: RecordManager,
@@ -71,7 +71,8 @@ class EditNoteViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val exportImageUseCase: ExportImageUseCase,
     private val exportAudioUseCase: ExportAudioUseCase,
-    private val adManager: AdManager
+    private val adManager: AdManager,
+    private val lifecycleProvider: LifecycleProvider
 ) : ViewModel() {
 
     init {
@@ -86,7 +87,7 @@ class EditNoteViewModel @Inject constructor(
         }
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
-            lifeCycleState.collect() {
+            lifecycleProvider.currentState.collect() {
                 try {
                     if(isNotLock.first) {
                         if(it == LifeCycleState.onPause){

@@ -17,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
+import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
@@ -26,6 +27,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
+import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifeCycleNotifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +42,8 @@ class MainActivityViewModel @Inject constructor(
     private val authorizationManager: BiometricAuthorizationManager,
     private val toastManager: ToastManager,
     private val deepLinkController: DeepLinkController,
-    private val googleAuthorizationManager: GoogleAuthorizationManager
+    private val googleAuthorizationManager: GoogleAuthorizationManager,
+    private val lifeCycleNotifier: LifeCycleNotifier
 ) : ViewModel() {
      var isFirstStart:Boolean = true
     get() = field
@@ -333,5 +336,13 @@ class MainActivityViewModel @Inject constructor(
             it.second(e)
         }
         unRegisterSelectExportFileCallBack()
+    }
+
+    fun onResume() {
+        lifeCycleNotifier.onStateChanged(LifeCycleState.onResume)
+    }
+
+    fun onPause() {
+        lifeCycleNotifier.onStateChanged(LifeCycleState.onPause)
     }
 }

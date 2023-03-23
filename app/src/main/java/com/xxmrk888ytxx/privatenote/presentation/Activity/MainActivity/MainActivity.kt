@@ -76,8 +76,6 @@ class MainActivity :
     InterstitialAdsController,
     BullingController {
     @Inject
-    lateinit var lifecycleState: MutableStateFlow<LifeCycleState>
-    @Inject
     lateinit var notificationManager: NotificationAppManagerImpl
     @Inject
     lateinit var notifyTaskManager: NotifyTaskManager
@@ -211,9 +209,7 @@ class MainActivity :
     override fun onResume() {
         super.onResume()
         billingManager.handlingPendingTransactions()
-        lifecycleScope.launch {
-            lifecycleState.emit(LifeCycleState.onResume)
-        }
+        mainActivityViewModel.onResume()
         lifecycleScope.launch(Dispatchers.Main) {
             mainActivityViewModel.checkAndLockApp {
                 val navController = mainActivityViewModel.getNavController()
@@ -225,9 +221,7 @@ class MainActivity :
 
     override fun onPause() {
         super.onPause()
-        lifecycleScope.launch {
-            lifecycleState.emit(LifeCycleState.onPause)
-        }
+        mainActivityViewModel.onPause()
         lifecycleScope.launch(Dispatchers.Main) {
             val navController = mainActivityViewModel.getNavController()
             if (mainActivityViewModel.getLockWhenLeaveState() &&
