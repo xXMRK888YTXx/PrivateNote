@@ -2,14 +2,13 @@ package com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 
-class PickImageContract() : ActivityResultContract<Unit,Uri?>() {
-    override fun createIntent(context: Context, input: Unit): Intent {
+class PickFileContract : ActivityResultContract<String,Uri?>() {
+    override fun createIntent(context: Context, input: String): Intent {
         return Intent(Intent.ACTION_PICK).apply {
-            type = "image/*"
+            type = input
         }
     }
 

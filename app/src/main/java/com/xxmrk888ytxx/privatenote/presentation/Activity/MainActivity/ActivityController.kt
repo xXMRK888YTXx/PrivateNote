@@ -8,7 +8,6 @@ import androidx.security.crypto.EncryptedFile
 
 
 interface ActivityController {
-    fun pickAudio(onComplete: (audioUri: Uri) -> Unit,onError: (e: Exception) -> Unit)
     suspend fun sendShowImageIntent(imageFile: EncryptedFile)
     suspend fun clearShareDir()
     fun openAlarmSettings()

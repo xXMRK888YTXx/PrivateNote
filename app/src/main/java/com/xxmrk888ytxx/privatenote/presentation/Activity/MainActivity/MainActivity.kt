@@ -242,17 +242,6 @@ class MainActivity :
         }
     }
 
-    override fun pickAudio(onComplete: (audioUri: Uri) -> Unit, onError: (e: Exception) -> Unit) {
-        try {
-            mainActivityViewModel.registerPickAudioCallBack(onComplete, onError)
-            val intent = Intent(ACTION_GET_CONTENT)
-            intent.type = "audio/*"
-            audioPickCallBack.launch(intent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
     override suspend fun sendShowImageIntent(imageFile: EncryptedFile) {
         val uri = mainActivityViewModel.saveInCache(imageFile, this) ?: return
         val intent = Intent(Intent.ACTION_VIEW)
@@ -427,20 +416,6 @@ class MainActivity :
                 }
             } else {
                 mainActivityViewModel.onErrorSelectFileForAutoBackup(Exception("selectBackupFileCancel"))
-            }
-        }
-
-    private val audioPickCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val uri = it.data?.data
-                if (uri != null) {
-                    mainActivityViewModel.onCompletePickAudio(uri)
-                } else {
-                    mainActivityViewModel.onErrorPickAudio(Exception())
-                }
-            } else {
-                mainActivityViewModel.onErrorPickAudio(Exception("Cancel"))
             }
         }
 

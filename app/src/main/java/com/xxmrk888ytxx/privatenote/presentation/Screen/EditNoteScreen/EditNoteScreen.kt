@@ -57,8 +57,8 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
-import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickImageContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import kotlinx.coroutines.launch
@@ -813,7 +813,7 @@ fun FilesDialog(
     val audioLoadState = editNoteViewModel.getAudioRepositoryLoadState().collectAsState()
 
     val pickImageContract = rememberLauncherForActivityResult(
-        contract = PickImageContract(),
+        contract = PickFileContract(),
         onResult = editNoteViewModel::onImagePicked
     )
 
@@ -1056,6 +1056,12 @@ fun FilesDialog(
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
+    val selectAudioContract = rememberLauncherForActivityResult(
+        contract = PickContentContract(),
+        onResult = {
+            editNoteViewModel.onAudioSelected(it)
+        }
+    )
     val state = editNoteViewModel.addAudioDropDownState().Remember()
     val permission = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
     val items = listOf(
@@ -1069,7 +1075,7 @@ fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
         DropDownItem(
             stringResource(R.string.From_device),
             onClick = {
-                editNoteViewModel.selectAudioFromExternalStorage()
+                editNoteViewModel.selectAudioFromExternalStorage(selectAudioContract)
                 editNoteViewModel.hideAddAudioDropDown()
             }
         )

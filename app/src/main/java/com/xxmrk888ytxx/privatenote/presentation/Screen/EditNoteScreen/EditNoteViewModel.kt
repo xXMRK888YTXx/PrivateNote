@@ -557,11 +557,11 @@ class EditNoteViewModel @Inject constructor(
         return imageRepository.getNoteImages()
     }
 
-    fun addImage(contract: ActivityResultLauncher<Unit>) {
+    fun addImage(contract: ActivityResultLauncher<String>) {
         isNotLock = Pair(true) {}
         analytics.sendEvent(SELECT_IMAGE_EVENT, Bundle())
 
-        contract.launch(Unit)
+        contract.launch("image/*")
     }
 
     fun onImagePicked(uri: Uri?) {
@@ -723,17 +723,16 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    fun selectAudioFromExternalStorage() {
-        activityController?.pickAudio(
-            onComplete = {
-                viewModelScope.launch(Dispatchers.IO) {
-                    audioRepository.saveAudioFromExternalStorage(it, note.id)
-                }
-            },
-            onError = {
+    fun selectAudioFromExternalStorage(activityResultLauncher: ActivityResultLauncher<String>) {
+        activityResultLauncher.launch("audio/*")
+    }
 
-            }
-        )
+    fun onAudioSelected(uri: Uri?) {
+        if(uri == null) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            audioRepository.saveAudioFromExternalStorage(uri, note.id)
+        }
     }
 
     fun initActivityController(activityController: ActivityController) {
