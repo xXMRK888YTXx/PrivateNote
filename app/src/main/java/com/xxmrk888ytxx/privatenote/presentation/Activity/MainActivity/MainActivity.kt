@@ -2,7 +2,6 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.LocaleManager
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -20,10 +19,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
-import androidx.core.os.LocaleListCompat
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +36,6 @@ import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
 import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
-import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
@@ -48,6 +44,7 @@ import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManager
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
@@ -58,11 +55,9 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsS
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
-import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -74,7 +69,9 @@ class MainActivity :
     ActivityController,
     WakeLockController,
     InterstitialAdsController,
-    BullingController {
+    BullingController,
+    OrientationLockManager
+{
     @Inject
     lateinit var notificationManager: NotificationAppManagerImpl
     @Inject
@@ -107,7 +104,12 @@ class MainActivity :
             val startScreen = getStartScreen()
             val navController = rememberNavController()
             mainActivityViewModel.saveNavController(navController)
-            AppTheme(themeId = themeId.value) {
+            AppTheme(
+                themeId = themeId.value,
+                otherProviders = arrayOf(
+                    LocalOrientationLockManager provides this
+                ),
+            ) {
                 Scaffold(
                     backgroundColor = themeColors.mainBackGroundColor
                 ) {
@@ -147,7 +149,6 @@ class MainActivity :
                         composable(Screen.DrawScreen.route) {
                             DrawScreen(
                                 navController = navController,
-                                activityController = this@MainActivity,
                             )
                         }
                         composable(Screen.ThemeSettingsScreen.route) {
