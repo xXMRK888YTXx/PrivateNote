@@ -22,10 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.ComposeContext
-import com.xxmrk888ytxx.privatenote.Utils.Const
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.Screen.LicenseScreen.models.licenseList
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
 
 @Composable
 fun LicenseScreen() {
@@ -37,7 +35,7 @@ fun LicenseScreen() {
                     .fillMaxWidth()
                     .padding(10.dp),
                 shape = RoundedCornerShape(20.dp),
-                backgroundColor = CardColor
+                backgroundColor = themeColors.cardColor
             ) {
                 Column(
                     Modifier
@@ -50,7 +48,7 @@ fun LicenseScreen() {
                         text = it.libName,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                     if(it.url.isNotEmpty()) {
                         Button(
@@ -58,14 +56,14 @@ fun LicenseScreen() {
                                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.url)))
                             },
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = ThemeManager.SecondaryColor
+                                backgroundColor = themeColors.secondaryColor
                             )
                         ) {
                             Text(
                                 text = stringResource(R.string.To_source),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = ThemeManager.PrimaryFontColor
+                                color = themeColors.primaryFontColor
                             )
                         }
                     }
@@ -75,14 +73,14 @@ fun LicenseScreen() {
                                 context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.licenseUrl)))
                             },
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = ThemeManager.SecondaryColor
+                                backgroundColor = themeColors.secondaryColor
                             )
                         ) {
                             Text(
                                 text = stringResource(R.string.To_licence),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = ThemeManager.PrimaryFontColor
+                                color = themeColors.primaryFontColor
                             )
                         }
                     }

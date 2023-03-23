@@ -93,7 +93,5 @@ class DelayNotifyViewModel @Inject constructor(
         }
     }
 
-    fun getThemeId(): Int {
-        return settingsRepository.getApplicationThemeId().getData()
-    }
+    fun getThemeId() = settingsRepository.getApplicationThemeId()
 }

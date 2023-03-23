@@ -2,7 +2,6 @@ package com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyA
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.CheckBox
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,8 +24,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
@@ -44,7 +41,7 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = ThemeManager.CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(
@@ -56,14 +53,14 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = privatePolicy.value, onCheckedChange = {
                         privatePolicy.value = it
-                    }, colors = CheckboxDefaults.colors(checkedColor = ThemeManager.SecondaryColor,
-                        uncheckedColor = ThemeManager.SecondaryColor))
+                    }, colors = CheckboxDefaults.colors(checkedColor = themeColors.secondaryColor,
+                        uncheckedColor = themeColors.secondaryColor))
                     Column(Modifier.padding(start = 10.dp)) {
                         Text(
                             text = stringResource(R.string.I_agree_with),
                             modifier = Modifier,
                             fontSize = 17.sp,
-                            color = ThemeManager.PrimaryFontColor,
+                            color = themeColors.primaryFontColor,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
@@ -74,7 +71,7 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
                                 context.startActivity(browserIntent)
                             },
                             fontSize = 17.sp,
-                            color = ThemeManager.SecondaryColor,
+                            color = themeColors.secondaryColor,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -83,14 +80,14 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = terms.value, onCheckedChange = {
                         terms.value = it
-                    }, colors = CheckboxDefaults.colors(checkedColor = ThemeManager.SecondaryColor,
-                        uncheckedColor = ThemeManager.SecondaryColor)
+                    }, colors = CheckboxDefaults.colors(checkedColor = themeColors.secondaryColor,
+                        uncheckedColor = themeColors.secondaryColor)
                     )
                     Column(Modifier.padding(start = 10.dp)) {
                         Text(
                             text = stringResource(R.string.I_agree_with),
                             fontSize = 17.sp,
-                            color = ThemeManager.PrimaryFontColor,
+                            color = themeColors.primaryFontColor,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
@@ -101,7 +98,7 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
                                 context.startActivity(browserIntent)
                             },
                             fontSize = 17.sp,
-                            color = ThemeManager.SecondaryColor,
+                            color = themeColors.secondaryColor,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -112,13 +109,13 @@ fun ConfirmPrivatePolicyAndTermsDialog(onConfirm:() -> Unit) {
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors
-                        (backgroundColor = ThemeManager.SecondaryColor,
-                        disabledBackgroundColor = ThemeManager.SecondaryColor.copy(0.4f)),
+                        (backgroundColor = themeColors.secondaryColor,
+                        disabledBackgroundColor = themeColors.secondaryColor.copy(0.4f)),
                     shape = RoundedCornerShape(80),
                     enabled = terms.value&&privatePolicy.value
                 ) {
                     Text(text = stringResource(R.string.Ok),
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }

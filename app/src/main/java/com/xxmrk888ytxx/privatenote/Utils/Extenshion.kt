@@ -24,7 +24,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -243,3 +243,8 @@ fun Modifier.borderIf(isNeedBorder:Boolean) : Modifier {
         shape = RoundedCornerShape(10.dp),
     )
 }
+val themeColors : com.xxmrk888ytxx.privatenote.presentation.theme.Colors
+    @Composable get() = Theme.LocalColors.current
+
+val themeValues : com.xxmrk888ytxx.privatenote.presentation.theme.Values
+    @Composable get() = Theme.LocalValues.current

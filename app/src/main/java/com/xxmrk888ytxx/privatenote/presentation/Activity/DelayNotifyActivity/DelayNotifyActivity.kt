@@ -1,7 +1,5 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.DelayNotifyActivity
 
-import android.app.Activity
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +18,7 @@ import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,28 +30,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeActivity
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeHolder
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DelayNotifyActivity : ComponentActivity(),DelayDialogController,ThemeActivity {
+class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
     private val delayNotifyViewModel:DelayNotifyViewModel by viewModels()
-
-    override fun notifyAppThemeChanged(activity: Activity, themeId: Int) {
-        super.notifyAppThemeChanged(activity, themeId)
-        setTheme(R.style.DialogTheme)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(intent.action != DELAY_TASK_ACTION) this.finish()
-        val themeId = delayNotifyViewModel.getThemeId()
-        notifyAppThemeChanged(this,themeId)
+
         val currentTask = intent.getParcelableExtra<IntentNotifyTask>(DELAY_TASK_DATA_KEY)
         if(currentTask == null) this.finish()
         val notificationId = intent.getIntExtra(NOTIFICATION_ID_KEY,-1)
@@ -60,7 +54,11 @@ class DelayNotifyActivity : ComponentActivity(),DelayDialogController,ThemeActiv
             delayNotifyViewModel.initDialog(it,notificationId)
         }
         setContent {
-            DelayDialog(this)
+            val themeId = delayNotifyViewModel.getThemeId().collectAsState(initial = ThemeType.System.id)
+
+            AppTheme(themeId = themeId.value) {
+                DelayDialog(this)
+            }
         }
     }
 
@@ -99,7 +97,7 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
     Dialog(onDismissRequest = { delayDialogController.onDismissRequest() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = ThemeManager.CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(
@@ -123,8 +121,8 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
                                     delayDialogController.changeCurrentSelectedTime(it)
                                 },
                                 colors = RadioButtonDefaults.colors(
-                                    selectedColor = SecondaryColor,
-                                    unselectedColor =SecondaryColor
+                                    selectedColor =  themeColors.secondaryColor,
+                                    unselectedColor = themeColors.secondaryColor
                                 ),
                                 modifier = Modifier.padding(end = 10.dp)
                             )
@@ -132,7 +130,7 @@ fun DelayDialog(delayDialogController: DelayDialogController) {
                                 text = it.title,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
-                                color = PrimaryFontColor,
+                                color = themeColors.primaryFontColor,
                                 maxLines = 1,
                             )
                         }

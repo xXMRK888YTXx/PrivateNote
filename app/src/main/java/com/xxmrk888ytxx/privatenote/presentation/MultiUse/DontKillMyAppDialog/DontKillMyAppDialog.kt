@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 
 @Composable
@@ -42,7 +42,7 @@ fun DontKillMyAppDialog(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            backgroundColor = ThemeManager.CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Column(Modifier
                 .fillMaxWidth().padding(10.dp)
@@ -53,7 +53,7 @@ fun DontKillMyAppDialog(
                     modifier = Modifier
                         .fillMaxWidth(),
                     fontSize = 17.sp,
-                    color = ThemeManager.PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     fontWeight = FontWeight.Bold
                 )
                 Row(
@@ -63,8 +63,8 @@ fun DontKillMyAppDialog(
                     Checkbox(checked = isHideForeverCheckBoxState.value, onCheckedChange = {
                         isHideForeverCheckBoxState.value = it
                     },
-                    colors = CheckboxDefaults.colors(checkedColor = ThemeManager.SecondaryColor,
-                        uncheckedColor = ThemeManager.SecondaryColor)
+                    colors = CheckboxDefaults.colors(checkedColor = themeColors.secondaryColor,
+                        uncheckedColor = themeColors.secondaryColor)
                     )
                     Text(
                         text = stringResource(R.string.Not_Show_Nothing),
@@ -73,7 +73,7 @@ fun DontKillMyAppDialog(
                             .padding(start = 10.dp)
                             .clickable { onHideDialogForever() },
                         fontSize = 17.sp,
-                        color = ThemeManager.PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -84,11 +84,11 @@ fun DontKillMyAppDialog(
                         context.startActivity(browserIntent)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeManager.TitleHintColor),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = themeColors.titleHintColor),
                     shape = RoundedCornerShape(80),
                 ) {
                     Text(text = stringResource(R.string.Open_dontkillmyapp),
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
                 OutlinedButton(
@@ -100,11 +100,11 @@ fun DontKillMyAppDialog(
                         onDismissRequest()
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = ThemeManager.SecondaryColor),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = themeColors.secondaryColor),
                     shape = RoundedCornerShape(80),
                 ) {
                     Text(text = stringResource(R.string.Ok),
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }

@@ -5,11 +5,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -202,7 +201,7 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override fun getApplicationThemeId(): Flow<Int> = runBlocking(Dispatchers.IO) {
         context.dataStore.data.map {
-            it[applicationTheme] ?: ThemeManager.SYSTEM_THEME
+            it[applicationTheme] ?: ThemeType.System.id
         }
     }
 

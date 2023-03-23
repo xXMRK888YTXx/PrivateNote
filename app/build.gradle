@@ -160,4 +160,7 @@ dependencies {
     //for change language
     implementation "androidx.appcompat:appcompat:$AppCompatVersion"
     implementation "androidx.appcompat:appcompat-resources:$AppCompatVersion"
+
+    //System Controller
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.29.2-rc"
 }

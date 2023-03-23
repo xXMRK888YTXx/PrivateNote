@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun WarmingText(text:String) {
@@ -30,7 +30,7 @@ fun WarmingText(text:String) {
             modifier = Modifier.padding(end = 10.dp)
         )
         Text(text = text,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             fontSize = 18.sp,
             fontStyle = FontStyle.Italic,
         )

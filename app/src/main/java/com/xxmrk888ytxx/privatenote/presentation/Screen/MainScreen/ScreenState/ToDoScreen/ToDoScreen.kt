@@ -46,15 +46,8 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenCon
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Yellow
 import kotlinx.coroutines.launch
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -63,7 +56,7 @@ import me.saket.swipe.SwipeableActionsBox
 fun ToDoScreen(
     toDoViewModel: ToDoViewModel = hiltViewModel(),
     mainScreenController: MainScreenController,
-    activityController: ActivityController
+    activityController: ActivityController,
 ) {
     val state = remember {
         toDoViewModel.getScreenState()
@@ -85,26 +78,26 @@ fun ToDoScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MainBackGroundColor)
+            .background(themeColors.mainBackGroundColor)
     ) {
         TopLabel(toDoViewModel)
         ToDoList(toDoViewModel)
     }
-    if(state.value == ToDoScreenState.EditToDoDialog) {
+    if (state.value == ToDoScreenState.EditToDoDialog) {
         EditToDoDialog(toDoViewModel)
-        if(notifyDialogState.value) {
-           NotifyDialog(toDoViewModel)
+        if (notifyDialogState.value) {
+            NotifyDialog(toDoViewModel)
         }
     }
-    if(isRemoveDialogShow.value.first) {
+    if (isRemoveDialogShow.value.first) {
         YesNoDialog(title = stringResource(R.string.Remove_this_todo),
             onCancel = { toDoViewModel.hideRemoveDialog() }) {
-            if(isRemoveDialogShow.value.second == null) return@YesNoDialog
+            if (isRemoveDialogShow.value.second == null) return@YesNoDialog
             toDoViewModel.removeToDo(isRemoveDialogShow.value.second!!)
             toDoViewModel.hideRemoveDialog()
         }
     }
-    if(requestPermissionSendAlarmsDialog.value) {
+    if (requestPermissionSendAlarmsDialog.value) {
         YesNoDialog(
             title = stringResource(R.string.Request_user_for_send_alarms),
             confirmButtonText = stringResource(R.string.Yes),
@@ -117,7 +110,7 @@ fun ToDoScreen(
             }
         )
     }
-    if(dontKillMyAppState.value.first) {
+    if (dontKillMyAppState.value.first) {
         DontKillMyAppDialog(
             onHideDialogForever = {
                 toDoViewModel.hideDontKillMyAppDialogForever()
@@ -131,9 +124,9 @@ fun ToDoScreen(
         )
     }
     LaunchedEffect(key1 = Unit, block = {
-       launch {
-           toDoViewModel.checkDeepLinks()
-       }
+        launch {
+            toDoViewModel.checkDeepLinks()
+        }
     })
 }
 
@@ -164,23 +157,26 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
         ToDoEditItem(
             icon = R.drawable.ic_priority_high,
             activate = currentToDoImpotent.value,
-            activateColor = Color.Red.copy(0.9f)
+            activateColor = Color.Red.copy(0.9f),
+            deActivateColor = themeColors.primaryFontColor
         ) {
-          toDoViewModel.changeImpotentStatus()
+            toDoViewModel.changeImpotentStatus()
         },
         ToDoEditItem(
             icon = R.drawable.ic_calendar,
             activate = currentToDoTime.value != null,
-            activateColor = SecondaryColor
+            activateColor = themeColors.secondaryColor,
+            deActivateColor = themeColors.primaryFontColor
         ) {
-            if(currentToDoTime.value == null)
-            toDoViewModel.showDataPickerDialog(context)
+            if (currentToDoTime.value == null)
+                toDoViewModel.showDataPickerDialog(context)
             else toDoViewModel.removeCurrentToDoTime()
         },
         ToDoEditItem(
             icon = R.drawable.ic_notifications,
             activate = currentNotifyTime.value != null,
-            activateColor = Yellow
+            activateColor = themeColors.yellow,
+            deActivateColor = themeColors.primaryFontColor
         ) {
             toDoViewModel.showDontKillMyAppDialog {
                 toDoViewModel.showNotifyDialog(permission = notificationPermissionState)
@@ -190,37 +186,42 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
     val textField = remember {
         toDoViewModel.dialogTextField
     }
-    Dialog(onDismissRequest = { toDoViewModel.toDefaultMode()},
+    Dialog(
+        onDismissRequest = { toDoViewModel.toDefaultMode() },
 
-    ) {
-        Card(modifier = Modifier.fillMaxWidth(),
+        ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            backgroundColor = CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(value = textField.value, onValueChange = {
-                    if(it.length > 90) return@OutlinedTextField
-                    textField.value = it
-                },
+                OutlinedTextField(
+                    value = textField.value,
+                    onValueChange = {
+                        if (it.length > 90) return@OutlinedTextField
+                        textField.value = it
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp),
                     singleLine = true,
                     label = {
-                        Text(text = stringResource(R.string.Task),
+                        Text(
+                            text = stringResource(R.string.Task),
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryFontColor
+                            color = themeColors.primaryFontColor
                         )
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = PrimaryFontColor,
-                        backgroundColor = SearchColor,
-                        placeholderColor = PrimaryFontColor.copy(0.7f),
-                        focusedBorderColor = PrimaryFontColor,
-                        focusedLabelColor = PrimaryFontColor,
-                        cursorColor = PrimaryFontColor,
-                        unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+                        textColor = themeColors.primaryFontColor,
+                        backgroundColor = themeColors.searchColor,
+                        placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+                        focusedBorderColor = themeColors.primaryFontColor,
+                        focusedLabelColor = themeColors.primaryFontColor,
+                        cursorColor = themeColors.primaryFontColor,
+                        unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
                     ),
                     textStyle = TextStyle(
                         fontWeight = FontWeight.Medium,
@@ -232,13 +233,14 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         items(toDoEditItems) {
-                            val tint = if(it.activate) it.activateColor else it.deActivateColor
+                            val tint = if (it.activate) it.activateColor else it.deActivateColor
                             Row(verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.clickable {
                                     it.onClick()
                                 }
                             ) {
-                                Icon(painter = painterResource(it.icon),
+                                Icon(
+                                    painter = painterResource(it.icon),
                                     contentDescription = "",
                                     tint = tint,
                                     modifier = Modifier
@@ -248,11 +250,14 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                             }
                         }
                     }
-                    Box(contentAlignment = Alignment.CenterEnd, modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        contentAlignment = Alignment.CenterEnd,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = SecondaryColor,
-                                disabledBackgroundColor = SecondaryColor.copy(0.3f)
+                                backgroundColor = themeColors.secondaryColor,
+                                disabledBackgroundColor = themeColors.secondaryColor.copy(0.3f)
                             ),
                             enabled = textField.value.isNotEmpty(),
                             onClick = {
@@ -263,8 +268,9 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
                                 .padding(start = 5.dp, end = 5.dp),
                             shape = RoundedCornerShape(80),
                         ) {
-                            Text(text = stringResource(R.string.Save),
-                                color = PrimaryFontColor
+                            Text(
+                                text = stringResource(R.string.Save),
+                                color = themeColors.primaryFontColor
                             )
                         }
                     }
@@ -273,7 +279,7 @@ fun EditToDoDialog(toDoViewModel: ToDoViewModel) {
             }
         }
     }
-    if(showDataPickerDialog.value) {
+    if (showDataPickerDialog.value) {
 
     }
 }
@@ -285,7 +291,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     val isCompletedToDoVisible = toDoViewModel.isCompletedToDoVisible().collectAsState(true)
     val isToDoWithDateVisible = toDoViewModel.isToDoWithDateVisible().collectAsState(true)
     val isToDoWithoutDateVisible = toDoViewModel.isToDoWithoutDateVisible().collectAsState(true)
-    val isMissedToDoVisible =  toDoViewModel.isMissedToDoVisible().collectAsState(true)
+    val isMissedToDoVisible = toDoViewModel.isMissedToDoVisible().collectAsState(true)
     val categoryList = listOf<TodoCategory>(
         TodoCategory(
             categoryName = stringResource(R.string.Overdue),
@@ -295,8 +301,10 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 toDoViewModel.changeMissedToDoVisible()
             },
             validator = {
-                return@TodoCategory it.filter { it.todoTime != null&&
-                        !it.isCompleted&&it.todoTime < System.currentTimeMillis() }
+                return@TodoCategory it.filter {
+                    it.todoTime != null &&
+                            !it.isCompleted && it.todoTime < System.currentTimeMillis()
+                }
             }
         ),
         TodoCategory(
@@ -307,8 +315,10 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 toDoViewModel.changeToDoWithDateVisible()
             },
             validator = {
-                return@TodoCategory it.filter { it.todoTime != null
-                        &&!it.isCompleted&&it.todoTime > System.currentTimeMillis() }
+                return@TodoCategory it.filter {
+                    it.todoTime != null
+                            && !it.isCompleted && it.todoTime > System.currentTimeMillis()
+                }
             }
         ),
         TodoCategory(
@@ -319,7 +329,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 toDoViewModel.changeToDoWithoutDateVisible()
             },
             validator = {
-                return@TodoCategory it.filter { it.todoTime == null&&!it.isCompleted }
+                return@TodoCategory it.filter { it.todoTime == null && !it.isCompleted }
             }
         ),
         TodoCategory(
@@ -341,7 +351,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             Icon(
                 painter = painterResource(R.drawable.ic_drop_down_triangle),
                 contentDescription = "",
-                tint = SecondoryFontColor,
+                tint = themeColors.secondaryFontColor,
                 modifier = Modifier.padding(top = 12.dp)
             )
         },
@@ -351,12 +361,13 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             Icon(
                 painter = painterResource(R.drawable.ic_arrow_drop_up),
                 contentDescription = "",
-                tint = SecondoryFontColor,
+                tint = themeColors.secondaryFontColor,
                 modifier = Modifier.padding(top = 12.dp)
             )
         }
     )
-    AnimatedVisibility(visible = toDoList.value.isNotEmpty(),
+    AnimatedVisibility(
+        visible = toDoList.value.isNotEmpty(),
         enter = slideInVertically(),
         exit = slideOutVertically()
     ) {
@@ -365,7 +376,8 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                 .fillMaxWidth()
         ) {
             categoryList.forEach { category ->
-                val sortedList = category.validator(category.items).sortedByDescending { it.isImportant }
+                val sortedList =
+                    category.validator(category.items).sortedByDescending { it.isImportant }
                 itemsIndexed(sortedList, key = { _, it ->
                     it.id
                 }) { index, it ->
@@ -381,7 +393,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                             inlineContent = inlineContentMap,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            color = PrimaryFontColor,
+                            color = themeColors.primaryFontColor,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .animateItemPlacement()
@@ -397,11 +409,11 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                                 Icon(
                                     painter = painterResource(R.drawable.ic_backet),
                                     contentDescription = "",
-                                    tint = PrimaryFontColor,
+                                    tint = themeColors.primaryFontColor,
                                     modifier = Modifier.padding(start = 50.dp)
                                 )
                             },
-                            background = DeleteOverSwapColor,
+                            background = themeColors.deleteOverSwapColor,
                             onSwipe = {
                                 toDoViewModel.showRemoveDialog(it.id)
                             },
@@ -418,7 +430,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
                                 }
                                 .animateItemPlacement(),
                             shape = RoundedCornerShape(15),
-                            backgroundColor = CardColor
+                            backgroundColor = themeColors.cardColor
                         ) {
                             SwipeableActionsBox(
                                 startActions = listOf(removeSwipeAction),
@@ -438,7 +450,8 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
             }
         }
     }
-    AnimatedVisibility(visible = toDoList.value.isEmpty(),
+    AnimatedVisibility(
+        visible = toDoList.value.isEmpty(),
         enter = scaleIn(),
         exit = scaleOut()
     ) {
@@ -449,6 +462,7 @@ fun ToDoList(toDoViewModel: ToDoViewModel) {
     }
 
 }
+
 @Composable
 fun ToDoStub() {
     Column(
@@ -458,16 +472,18 @@ fun ToDoStub() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(painter = painterResource(R.drawable.ic_todo_icon),
+        Icon(
+            painter = painterResource(R.drawable.ic_todo_icon),
             contentDescription = "",
-            tint = PrimaryFontColor,
+            tint = themeColors.primaryFontColor,
             modifier = Modifier.size(100.dp)
         )
-        Text(text = stringResource(R.string.Todo_stub_text),
+        Text(
+            text = stringResource(R.string.Todo_stub_text),
             fontSize = 20.sp,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.Medium,
-            color = SecondoryFontColor,
+            color = themeColors.secondaryFontColor,
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .fillMaxWidth()
@@ -477,19 +493,25 @@ fun ToDoStub() {
 
 @Composable
 fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
-    val fontColor = if(todo.isCompleted) PrimaryFontColor.copy(0.3f) else PrimaryFontColor
+    val fontColor =
+        if (todo.isCompleted) themeColors.primaryFontColor.copy(0.3f) else themeColors.primaryFontColor
     val todoTimeText = remember {
         mutableStateOf("")
     }
-    val subTextColor:MutableState<Color> = remember {
-        mutableStateOf(SecondoryFontColor)
+
+    val theme = themeColors
+
+    val subTextColor: MutableState<Color> = remember {
+        mutableStateOf(theme.secondaryFontColor)
     }
     val task = toDoViewModel.getTask(todo.id).collectAsState(null)
     todoTimeText.value = getTodoSubText(todo, LocalContext.current)
     subTextColor.value = getTodoSubTextColor(todo)
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 5.dp, bottom = 5.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp, bottom = 5.dp)
+    ) {
         Row(
             modifier = Modifier,
             verticalAlignment = Alignment.CenterVertically
@@ -499,9 +521,9 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 onCheckedChange = { toDoViewModel.changeMarkStatus(it, todo.id) },
                 modifier = Modifier.padding(start = 0.dp),
                 colors = CheckboxDefaults.colors(
-                    checkedColor = SecondaryColor,
-                    checkmarkColor = PrimaryFontColor,
-                    uncheckedColor = SecondaryColor
+                    checkedColor = themeColors.secondaryColor,
+                    checkmarkColor = themeColors.primaryFontColor,
+                    uncheckedColor = themeColors.secondaryColor
                 )
             )
             if (todo.isImportant) {
@@ -513,22 +535,24 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 )
             }
 
-                Text(
-                    text = todo.todoText,
-                    modifier = Modifier
-                        .padding(start = 5.dp)
-                        ,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black,
-                    color = fontColor,
-                    fontStyle = FontStyle.Italic,
-                )
-            if(task.value != null&&todo.todoTime == null&&!todo.isCompleted) {
-                Box(Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd) {
-                    Icon(painter = painterResource(R.drawable.ic_notifications),
+            Text(
+                text = todo.todoText,
+                modifier = Modifier
+                    .padding(start = 5.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Black,
+                color = fontColor,
+                fontStyle = FontStyle.Italic,
+            )
+            if (task.value != null && todo.todoTime == null && !todo.isCompleted) {
+                Box(
+                    Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_notifications),
                         contentDescription = "",
-                        tint = Yellow,
+                        tint = themeColors.yellow,
                         modifier = Modifier
                             .padding(end = 5.dp)
                             .size(20.dp)
@@ -536,18 +560,20 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
                 }
             }
         }
-        if(!todo.isCompleted&&todo.todoTime != null) {
+        if (!todo.isCompleted && todo.todoTime != null) {
             Row(modifier = Modifier.padding(start = 10.dp)) {
-                Text(text = todoTimeText.value,
+                Text(
+                    text = todoTimeText.value,
                     fontSize = 12.sp,
                     color = subTextColor.value,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(end = 5.dp)
                 )
-                if(task.value != null) {
-                    Icon(painter = painterResource(R.drawable.ic_notifications),
+                if (task.value != null) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_notifications),
                         contentDescription = "",
-                        tint = Yellow,
+                        tint = themeColors.yellow,
                         modifier = Modifier.size(15.dp)
                     )
                 }
@@ -555,18 +581,20 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
         }
     }
 }
+
 @Composable
 fun getTodoSubText(todo: ToDoItem, context: Context): String {
-    if(!todo.isCompleted&&todo.todoTime != null) return "${todo.todoTime.secondToData(context)}"
+    if (!todo.isCompleted && todo.todoTime != null) return "${todo.todoTime.secondToData(context)}"
     return ""
 }
+
 @Composable
-fun getTodoSubTextColor(todo: ToDoItem) : Color {
-    if(!todo.isCompleted&&todo.todoTime != null) {
-        if(todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
-      //  else return Color.Cyan.copy(0.7f)
+fun getTodoSubTextColor(todo: ToDoItem): Color {
+    if (!todo.isCompleted && todo.todoTime != null) {
+        if (todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
+        //  else return Color.Cyan.copy(0.7f)
     }
-    return SecondoryFontColor
+    return themeColors.secondaryFontColor
 }
 
 @Composable
@@ -574,19 +602,20 @@ fun TopLabel(toDoViewModel: ToDoViewModel) {
     val todo = toDoViewModel.getToDoList().collectAsState(listOf()).value.filter {
         !it.isCompleted
     }
-    val subtext = if(todo.isEmpty()) stringResource(R.string.all_task_complited) else
-          "${todo.size} ${stringResource(R.string.Tasks_left)}"
+    val subtext = if (todo.isEmpty()) stringResource(R.string.all_task_complited) else
+        "${todo.size} ${stringResource(R.string.Tasks_left)}"
     Column(modifier = Modifier.padding(start = 25.dp, bottom = 0.dp, top = 20.dp)) {
-        Text(text = stringResource(R.string.My_tasks),
+        Text(
+            text = stringResource(R.string.My_tasks),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Text(
             text = subtext,
             fontStyle = FontStyle.Italic,
             fontSize = 18.sp,
-            color = SecondoryFontColor,
+            color = themeColors.secondaryFontColor,
             modifier = Modifier.padding(top = 5.dp)
         )
     }
@@ -612,32 +641,38 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
     LaunchedEffect(key1 = Unit, block = {
         notifyEnabled.value = currentNotifyTime.value != null
     })
-    val textAlpha:Float by animateFloatAsState(
-        if(notifyEnabled.value) 1f else 0.3f
+    val textAlpha: Float by animateFloatAsState(
+        if (notifyEnabled.value) 1f else 0.3f
     )
     val context = LocalContext.current
-    val timeText = if(currentNotifyTime.value != null) currentNotifyTime.value!!.secondToData(context)
-    else stringResource(R.string.Select_time)
+    val timeText =
+        if (currentNotifyTime.value != null) currentNotifyTime.value!!.secondToData(context)
+        else stringResource(R.string.Select_time)
     Dialog(onDismissRequest = { toDoViewModel.hideNotifyDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10),
-            backgroundColor = CardColor
+            backgroundColor = themeColors.cardColor
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)) {
-                Row(modifier = Modifier
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 0.dp),
+                    .padding(10.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 0.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(R.string.Reminder_on),
+                    Text(
+                        text = stringResource(R.string.Reminder_on),
                         fontSize = 21.sp,
                         fontWeight = FontWeight.Bold,
-                        color = PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
-                    Box(modifier = Modifier.fillMaxWidth(),
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         Switch(
@@ -646,29 +681,32 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                                 notifyEnabled.value = it
                             },
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = SecondaryColor,
-                                uncheckedThumbColor = SecondoryFontColor
+                                checkedThumbColor = themeColors.secondaryColor,
+                                uncheckedThumbColor = themeColors.secondaryFontColor
                             ),
                             modifier = Modifier.padding(start = 10.dp)
                         )
                     }
                 }
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(R.string.Reminder_in),
+                    Text(
+                        text = stringResource(R.string.Reminder_in),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
-                        color = PrimaryFontColor.copy(textAlpha)
+                        color = themeColors.primaryFontColor.copy(textAlpha)
                     )
-                    Box(Modifier.fillMaxWidth(),
+                    Box(
+                        Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
-                        ) {
+                    ) {
                         Text(text = timeText,
                             fontSize = 14.sp,
-                            color = PrimaryFontColor.copy(textAlpha),
+                            color = themeColors.primaryFontColor.copy(textAlpha),
                             modifier = Modifier.clickable(
                                 enabled = notifyEnabled.value
                             ) {
@@ -677,17 +715,20 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                         )
                     }
                 }
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = stringResource(R.string.Priority),
+                    Text(
+                        text = stringResource(R.string.Priority),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
-                        color = PrimaryFontColor.copy(textAlpha)
+                        color = themeColors.primaryFontColor.copy(textAlpha)
                     )
-                    Box(modifier = Modifier.fillMaxWidth(),
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         Switch(
@@ -697,17 +738,18 @@ fun NotifyDialog(toDoViewModel: ToDoViewModel) {
                             },
                             enabled = notifyEnabled.value,
                             colors = SwitchDefaults.colors(
-                                checkedThumbColor = SecondaryColor,
-                                uncheckedThumbColor = SecondoryFontColor
+                                checkedThumbColor = themeColors.secondaryColor,
+                                uncheckedThumbColor = themeColors.secondaryFontColor
                             ),
                             modifier = Modifier.padding(start = 10.dp)
                         )
                     }
                 }
-                YesNoButton(onCancel = { toDoViewModel.cancelNotifyDialog() },
-                modifier = Modifier.padding(top = 20.dp),
+                YesNoButton(
+                    onCancel = { toDoViewModel.cancelNotifyDialog() },
+                    modifier = Modifier.padding(top = 20.dp),
                     isOkButtonEnable = currentNotifyTime.value != null
-                    ) {
+                ) {
                     toDoViewModel.confirmNotifyDialog()
                 }
             }

@@ -17,10 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun YesNoDialog(
@@ -41,7 +38,7 @@ fun YesNoDialog(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(CardColor),
+                    .background(themeColors.cardColor),
                 verticalArrangement = Arrangement.Bottom,
             ) {
                 Text(
@@ -51,7 +48,7 @@ fun YesNoDialog(
                         .padding(bottom = 25.dp, top = 25.dp)
                         .fillMaxWidth(),
                     fontSize = 17.sp,
-                    color = PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     fontWeight = FontWeight.Bold
                 )
                 Row(
@@ -68,16 +65,16 @@ fun YesNoDialog(
                             .padding(start = 5.dp, end = 5.dp),
                         shape = RoundedCornerShape(80),
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = TitleHintColor,
+                            backgroundColor = themeColors.titleHintColor,
                         )
                     ) {
                         Text(text = cancelButtonText,
-                            color = PrimaryFontColor
+                            color = themeColors.primaryFontColor
                         )
                     }
                     OutlinedButton(
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = SecondaryColor,
+                            backgroundColor = themeColors.secondaryColor,
                         ),
                         onClick = {
                             onConfirm()
@@ -88,7 +85,7 @@ fun YesNoDialog(
                         shape = RoundedCornerShape(80),
                     ) {
                         Text(text = confirmButtonText,
-                            color = PrimaryFontColor
+                            color = themeColors.primaryFontColor
                         )
                     }
                 }
