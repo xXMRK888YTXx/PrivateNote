@@ -29,8 +29,8 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteStateViewModel
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DeleteOverSwapColor
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -70,12 +70,15 @@ fun GridNoteView(
             val isSelected = remember {
                 mutableStateOf(false)
             }
+            val themeType = Theme.LocalThemeType.current
             val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
-            val backGroundColor =  category?.value?.getColor() ?: ThemeManager.CardColor
-            val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
-            val cardBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) MaterialTheme.colors.surface
+            val backGroundColor =  category?.value?.getColor() ?: themeColors.cardColor
+            val alpha = if(category?.value?.getColor() != null) themeValues.categoryColorAlphaNoteCard else 1f
+
+            val cardBackground = if(themeType == ThemeType.White) MaterialTheme.colors.surface
             else backGroundColor.copy(alpha)
-            val swapBoxBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) backGroundColor.copy(alpha)
+
+            val swapBoxBackground = if(themeType == ThemeType.White) backGroundColor.copy(alpha)
             else Color.Transparent.copy(0f)
             val additionalSizeForStar = if(it.isChosen) 7.dp else 0.dp
             LaunchedEffect(key1 = selectedItemCount.value, block = {
@@ -110,8 +113,8 @@ fun GridNoteView(
                     dismissContent = {
                         Box(modifier = Modifier.background(
                             when(dismissState.progress.to) {
-                                DismissValue.DismissedToEnd -> Color.Yellow.copy(0.6f)
-                                DismissValue.DismissedToStart -> DeleteOverSwapColor
+                                DismissValue.DismissedToEnd -> themeColors.yellow.copy(0.6f)
+                                DismissValue.DismissedToStart -> themeColors.deleteOverSwapColor
                                 else -> swapBoxBackground
                             }
                         )) {
@@ -135,7 +138,7 @@ fun GridNoteView(
                                         Icon(
                                             painter = painterResource(R.drawable.ic_star),
                                             contentDescription = "",
-                                            tint = ThemeManager.PrimaryFontColor,
+                                            tint = themeColors.primaryFontColor,
                                             modifier = Modifier.padding(start = 10.dp)
                                         )
                                     }
@@ -143,13 +146,13 @@ fun GridNoteView(
                                 DismissValue.DismissedToStart -> {
                                     Box(Modifier
                                         .fillMaxSize()
-                                        .background(DeleteOverSwapColor),
+                                        .background(themeColors.deleteOverSwapColor),
                                         contentAlignment = Alignment.CenterEnd
                                     ) {
                                         Icon(
                                             painter = painterResource(R.drawable.ic_backet),
                                             contentDescription = "",
-                                            tint = ThemeManager.PrimaryFontColor,
+                                            tint = themeColors.primaryFontColor,
                                             modifier = Modifier.padding(end = 10.dp)
                                         )
                                     }
@@ -179,9 +182,9 @@ fun GridNoteView(
 fun MultiSelectCheckBox() {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Checkbox(checked = true, onCheckedChange = {},colors = CheckboxDefaults.colors(
-            checkedColor = ThemeManager.SecondaryColor,
-            checkmarkColor = ThemeManager.PrimaryFontColor,
-            uncheckedColor = ThemeManager.SecondaryColor
+            checkedColor = themeColors.secondaryColor,
+            checkmarkColor = themeColors.primaryFontColor,
+            uncheckedColor = themeColors.secondaryColor
         ))
     }
 }
@@ -206,7 +209,7 @@ fun DefaultNoteItem_GridView(note: Note) {
                 modifier = Modifier,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 maxLines = 1,
             )
         }
@@ -215,7 +218,7 @@ fun DefaultNoteItem_GridView(note: Note) {
                 modifier = Modifier,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 fontStyle = FontStyle.Italic
             )
         }
@@ -223,7 +226,7 @@ fun DefaultNoteItem_GridView(note: Note) {
             Text(text = note.text.getFirstChars(),
                 modifier = Modifier,
                 fontSize = 16.sp,
-                color = ThemeManager.SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
                 maxLines = 1,
 
                 )
@@ -232,7 +235,7 @@ fun DefaultNoteItem_GridView(note: Note) {
             Text(text = stringResource(R.string.No_text),
                 modifier = Modifier,
                 fontSize = 16.sp,
-                color = ThemeManager.SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
                 maxLines = 1,
                 fontWeight = FontWeight.Medium,
                 fontStyle = FontStyle.Italic
@@ -241,7 +244,7 @@ fun DefaultNoteItem_GridView(note: Note) {
         Text(text = note.created_at.secondToData(LocalContext.current),
                 // modifier = Modifier.fillMaxWidth(),
             fontSize = 12.sp,
-            color = ThemeManager.SecondoryFontColor
+            color = themeColors.secondaryFontColor
         )
         if(note.isChosen) {
             Icon(painter = painterResource(R.drawable.ic_full_star),
@@ -266,20 +269,20 @@ fun EncryptNoteItem_GridView(note: Note) {
         ) {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
                 contentDescription = "lock",
-                tint = ThemeManager.SecondoryFontColor,
+                tint = themeColors.secondaryFontColor,
             )
             Text(text = stringResource(R.string.This_note_is_encrypted),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 fontStyle = FontStyle.Italic,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier.padding(start = 7.dp)
             )
         }
         LazySpacer(5)
             Text(text = note.created_at.secondToData(LocalContext.current),
                 fontSize = 12.sp,
-                color = ThemeManager.SecondoryFontColor
+                color = themeColors.secondaryFontColor
             )
             if(note.isChosen) {
                 Icon(painter = painterResource(R.drawable.ic_full_star),

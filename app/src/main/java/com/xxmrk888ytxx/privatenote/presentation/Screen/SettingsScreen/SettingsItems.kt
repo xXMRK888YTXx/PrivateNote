@@ -40,6 +40,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
@@ -909,7 +910,7 @@ fun SelectViewNoteListStateButton(
         Text(text = stringResource(R.string.Notes_display),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         val annotatedLabelString = buildAnnotatedString {
             append(stringResource(currentState.value.title))
@@ -921,7 +922,7 @@ fun SelectViewNoteListStateButton(
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
-                    tint = SecondoryFontColor,
+                    tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
@@ -935,7 +936,7 @@ fun SelectViewNoteListStateButton(
             inlineContent = inlineContentMap,
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = SecondoryFontColor,
+            color = themeColors.secondaryFontColor,
             textAlign = TextAlign.End,
             modifier = Modifier
                 .fillMaxWidth()
@@ -960,7 +961,7 @@ fun SelectionViewNoteListStateDropDown(
             onHide()
         },
         modifier = Modifier
-            .background(ThemeManager.DropDownMenuColor)
+            .background(themeColors.dropDownMenuColor)
             .heightIn(max = 200.dp)
     ) {
         dropDownItem.forEach {
@@ -972,7 +973,7 @@ fun SelectionViewNoteListStateDropDown(
                     Text(text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }
@@ -989,7 +990,7 @@ fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit)
         Text(text = stringResource(R.string.Language),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         val annotatedLabelString = buildAnnotatedString {
             append(currentLanguage.name)
@@ -1001,7 +1002,7 @@ fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit)
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
-                    tint = SecondoryFontColor,
+                    tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
@@ -1010,7 +1011,7 @@ fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit)
             inlineContent = inlineContentMap,
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = SecondoryFontColor,
+            color = themeColors.secondaryFontColor,
             textAlign = TextAlign.End,
             modifier = Modifier
                 .fillMaxWidth()
@@ -1038,7 +1039,7 @@ fun LanguageChoseDialog(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            backgroundColor = CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Column(modifier = Modifier
                 .fillMaxWidth()) {
@@ -1053,15 +1054,15 @@ fun LanguageChoseDialog(
                         RadioButton(selected = currentSelected.value == it.languageCode ,
                             onClick = { onNewSelected(it) },
                             colors = RadioButtonDefaults.colors(
-                                selectedColor = PrimaryFontColor,
-                                unselectedColor =PrimaryFontColor
+                                selectedColor = themeColors.primaryFontColor,
+                                unselectedColor = themeColors.primaryFontColor
                             ),
                             modifier = Modifier.padding(end = 10.dp)
                         )
                         Text(text = it.name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryFontColor.copy(0.75f),
+                            color = themeColors.primaryFontColor.copy(0.75f),
                             modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                         )
                     }

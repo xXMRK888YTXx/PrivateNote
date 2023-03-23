@@ -235,11 +235,12 @@ fun ComposeContext() = LocalContext.current
 
 fun Int.isEvenNumber() : Boolean = this % 2 == 0
 
+@Composable
 fun Modifier.borderIf(isNeedBorder:Boolean) : Modifier {
     if(!isNeedBorder) return this
     return this.border(
         width =  2.dp,
-        color = ThemeManager.SecondaryColor,
+        color = themeColors.secondaryColor,
         shape = RoundedCornerShape(10.dp),
     )
 }

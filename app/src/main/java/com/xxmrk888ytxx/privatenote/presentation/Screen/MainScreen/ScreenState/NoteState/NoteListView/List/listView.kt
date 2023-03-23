@@ -25,14 +25,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
-import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.Utils.getFirstChars
-import com.xxmrk888ytxx.privatenote.Utils.secondToData
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenMode
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteStateViewModel
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -63,23 +61,27 @@ fun ListNoteView(
                 animationSpec = tween(250)
             )
             //if (mode.value == SelectionScreenMode) 0.9f else 1f
+            val themeType = Theme.LocalThemeType.current
             val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
-            val backGroundColor =  category?.value?.getColor() ?: ThemeManager.CardColor
-            val alpha = if(category?.value?.getColor() != null) ThemeManager.categoryColorAlphaNoteCard else 1f
-            val cardBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) MaterialTheme.colors.surface
+            val backGroundColor =  category?.value?.getColor() ?: themeColors.cardColor
+            val alpha = if(category?.value?.getColor() != null) themeValues.categoryColorAlphaNoteCard else 1f
+
+            val cardBackground = if(themeType == ThemeType.White) MaterialTheme.colors.surface
             else backGroundColor.copy(alpha)
-            val swapBoxBackground = if(ThemeManager.themeId == ThemeManager.WHITE_THEME) backGroundColor.copy(alpha)
+
+            val swapBoxBackground = if(themeType == ThemeType.White) backGroundColor.copy(alpha)
             else Color.Transparent.copy(0f)
+
             val removeSwipeAction = SwipeAction(
                 icon = {
                     Icon(
                         painter = painterResource(R.drawable.ic_backet),
                         contentDescription = "",
-                        tint = ThemeManager.PrimaryFontColor,
+                        tint = themeColors.primaryFontColor,
                         modifier = Modifier.padding(start = 50.dp)
                     )
                 },
-                background = ThemeManager.DeleteOverSwapColor,
+                background = themeColors.deleteOverSwapColor,
                 onSwipe = {
                     noteStateViewModel.showDeleteDialog(it.id)
                 },
@@ -90,7 +92,7 @@ fun ListNoteView(
                     Icon(
                         painter = painterResource(R.drawable.ic_star),
                         contentDescription = "",
-                        tint = ThemeManager.PrimaryFontColor,
+                        tint = themeColors.primaryFontColor,
                         modifier = Modifier.padding(end = 50.dp)
                     )
                 },
@@ -173,9 +175,9 @@ fun ListNoteView(
                             },
                             modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
                             colors = CheckboxDefaults.colors(
-                                checkedColor = ThemeManager.SecondaryColor,
-                                checkmarkColor = ThemeManager.PrimaryFontColor,
-                                uncheckedColor = ThemeManager.SecondaryColor
+                                checkedColor = themeColors.secondaryColor,
+                                checkmarkColor = themeColors.primaryFontColor,
+                                uncheckedColor = themeColors.secondaryColor
                             )
 
                         )
@@ -207,7 +209,7 @@ fun DefaultNoteItem_ListView(note: Note) {
                 modifier = Modifier,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Black,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 maxLines = 1,
             )
         }
@@ -216,7 +218,7 @@ fun DefaultNoteItem_ListView(note: Note) {
                 modifier = Modifier,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 fontStyle = FontStyle.Italic
             )
         }
@@ -224,7 +226,7 @@ fun DefaultNoteItem_ListView(note: Note) {
             Text(text = note.text.getFirstChars(),
                 modifier = Modifier,
                 fontSize = 16.sp,
-                color = ThemeManager.SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
                 maxLines = 1,
 
                 )
@@ -233,7 +235,7 @@ fun DefaultNoteItem_ListView(note: Note) {
             Text(text = stringResource(R.string.No_text),
                 modifier = Modifier,
                 fontSize = 16.sp,
-                color = ThemeManager.SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
                 maxLines = 1,
                 fontWeight = FontWeight.Medium,
                 fontStyle = FontStyle.Italic
@@ -246,7 +248,7 @@ fun DefaultNoteItem_ListView(note: Note) {
             Text(text = note.created_at.secondToData(LocalContext.current),
                 // modifier = Modifier.fillMaxWidth(),
                 fontSize = 12.sp,
-                color = ThemeManager.SecondoryFontColor
+                color = themeColors.secondaryFontColor
             )
             if(note.isChosen) {
                 Icon(painter = painterResource(R.drawable.ic_full_star),
@@ -273,13 +275,13 @@ fun EncryptNoteItem_ListView(note: Note) {
         ) {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
                 contentDescription = "lock",
-                tint = ThemeManager.SecondoryFontColor,
+                tint = themeColors.secondaryFontColor,
             )
             Text(text = stringResource(R.string.This_note_is_encrypted),
                 textAlign = TextAlign.Center,
                 fontSize = 16.sp,
                 fontStyle = FontStyle.Italic,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier.padding(start = 7.dp)
             )
         }
@@ -291,7 +293,7 @@ fun EncryptNoteItem_ListView(note: Note) {
         ) {
             Text(text = note.created_at.secondToData(LocalContext.current),
                 fontSize = 12.sp,
-                color = ThemeManager.SecondoryFontColor
+                color = themeColors.secondaryFontColor
             )
             if(note.isChosen) {
                 Icon(painter = painterResource(R.drawable.ic_full_star),

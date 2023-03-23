@@ -11,6 +11,7 @@ fun AppTheme(
     content: @Composable () -> Unit
 ) {
     val themeType = ThemeType.fromInt(themeId)
+    val isDarkTheme = isSystemInDarkTheme()
 
     val colors = when(themeType) {
         ThemeType.Black -> ThemeHolder.Black.colors
@@ -28,7 +29,6 @@ fun AppTheme(
         ThemeType.Black -> ThemeHolder.Black.values
         ThemeType.White -> ThemeHolder.White.values
         ThemeType.System -> {
-            val isDarkTheme = isSystemInDarkTheme()
 
             if(isDarkTheme)
                 ThemeHolder.Black.values
@@ -41,11 +41,13 @@ fun AppTheme(
     systemUIController.setStatusBarColor(colors.statusBarColor)
     systemUIController.setNavigationBarColor(colors.navigationBarColor)
 
+    val providedThemeType = if(themeType != ThemeType.System) themeType
+        else if(isDarkTheme) ThemeType.Black else ThemeType.White
 
     CompositionLocalProvider(
         Theme.LocalColors provides colors,
         Theme.LocalValues provides values,
-        Theme.LocalThemeType provides themeType,
+        Theme.LocalThemeType provides providedThemeType,
         content = content
     )
 

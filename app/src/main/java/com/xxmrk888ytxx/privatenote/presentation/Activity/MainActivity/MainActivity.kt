@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
-import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat

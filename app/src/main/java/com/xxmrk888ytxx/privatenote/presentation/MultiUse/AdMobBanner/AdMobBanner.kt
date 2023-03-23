@@ -9,10 +9,10 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
-fun AdMobBanner(bannerKey:String,background: Color = ThemeManager.MainBackGroundColor) {
+fun AdMobBanner(bannerKey:String,background: Color = themeColors.mainBackGroundColor) {
     AndroidView(
         modifier = Modifier.fillMaxWidth().background(background),
         factory = { context ->

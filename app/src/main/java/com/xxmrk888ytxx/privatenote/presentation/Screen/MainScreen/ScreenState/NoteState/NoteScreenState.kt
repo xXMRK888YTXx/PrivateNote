@@ -48,10 +48,6 @@ import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.Interstit
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid.GridNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.List.ListNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
-import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
-import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
-import me.saket.swipe.SwipeAction
-import me.saket.swipe.SwipeableActionsBox
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -78,7 +74,7 @@ fun NoteScreenState(
         noteStateViewModel.toDefaultMode()
     }
     BackPressController.setHandler(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
-       noteStateViewModel.hideCategoryList()
+        noteStateViewModel.hideCategoryList()
     }
     noteStateViewModel.initInterstitialAdsController(interstitialAdsController)
     Scaffold(
@@ -90,9 +86,9 @@ fun NoteScreenState(
                 .fillMaxSize(),
         ) {
 
-                AnimatedVisibility(visible = currentMode.value == NoteScreenMode.ShowCategoryMenu) {
-                    CategoryMenu(noteStateViewModel)
-                }
+            AnimatedVisibility(visible = currentMode.value == NoteScreenMode.ShowCategoryMenu) {
+                CategoryMenu(noteStateViewModel)
+            }
             if (currentMode.value != NoteScreenMode.ShowCategoryMenu) {
                 Topbar(noteStateViewModel)
                 NoteList(noteStateViewModel, navController)
@@ -148,7 +144,7 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
     val noteList = noteStateViewModel.getNoteList()
         .collectAsState(initial = listOf<Note>().fillList(Note(0,"","")
             ,noteStateViewModel.lastNoteCount.value),
-    rememberCoroutineScope().coroutineContext)
+            rememberCoroutineScope().coroutineContext)
     val currentCategory = remember {
         noteStateViewModel.getCategoryFilterStatus()
     }
@@ -175,7 +171,7 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
                 contentDescription = "",
                 tint = themeColors.primaryFontColor,
                 modifier = Modifier.padding(top = 10.dp)
-                )
+            )
         }
     )
     SideEffect {
@@ -210,10 +206,10 @@ fun DefaultTopBar(noteStateViewModel: NoteStateViewModel) {
                 }
             }
             Text(text = textUnderLabelText,
-            fontStyle = FontStyle.Italic,
+                fontStyle = FontStyle.Italic,
                 fontSize = 18.sp,
                 color = themeColors.secondaryFontColor
-                )
+            )
         }
 
     }
@@ -239,22 +235,22 @@ fun SelectionTopBar(noteStateViewModel: NoteStateViewModel) {
                 .clickable {
                     noteStateViewModel.toDefaultMode()
                 }
-            )
+        )
         Text(text = "${stringResource(R.string.Selected)}: ${selectionCount.value}",
-        color = themeColors.primaryFontColor,
+            color = themeColors.primaryFontColor,
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(0.9f)
-            )
-            Icon(painter = painterResource(R.drawable.ic_all_done),
-                contentDescription = "done all",
-                tint = themeColors.primaryFontColor,
-                modifier = Modifier
-                    .size(28.dp)
-                    .clickable {
-                        noteStateViewModel.selectAll()
-                    }
-            )
+        )
+        Icon(painter = painterResource(R.drawable.ic_all_done),
+            contentDescription = "done all",
+            tint = themeColors.primaryFontColor,
+            modifier = Modifier
+                .size(28.dp)
+                .clickable {
+                    noteStateViewModel.selectAll()
+                }
+        )
     }
 }
 
@@ -262,11 +258,11 @@ fun SelectionTopBar(noteStateViewModel: NoteStateViewModel) {
 @Composable
 fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
     val isSelectedItemNotEmpty = remember {
-       noteStateViewModel.isSelectedItemNotEmpty
+        noteStateViewModel.isSelectedItemNotEmpty
     }
     val items = listOf(
         SelectionBarItem(R.drawable.ic_backet, stringResource(R.string.Remove),
-        enable = isSelectedItemNotEmpty.value)
+            enable = isSelectedItemNotEmpty.value)
         {
             noteStateViewModel.removeSelected()
         },
@@ -290,43 +286,43 @@ fun SelectionBottomBar(noteStateViewModel : NoteStateViewModel) {
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier.fillMaxSize()
     ) {
-            Row(
-                modifier = Modifier
-                    .background(themeColors.searchColor)
-                    .fillMaxWidth()
-                    .padding(10.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.Bottom
-            ) {
-                LazyRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                    items(items) {
-                        val enableColor = animateFloatAsState(if(it.enable) 1f else 0.4f)
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .clickable {
-                                    if (!it.enable) return@clickable
-                                    it.onClick()
-                                    if (it.closeAfterClick)
-                                        noteStateViewModel.toDefaultMode()
-                                }
-                                .padding(start = 15.dp)
-                                .alpha(enableColor.value)
-                        ) {
-                            Icon(painter = painterResource(it.icon),
-                                contentDescription = it.title,
-                                tint = themeColors.primaryFontColor,
-                                modifier = Modifier.size(25.dp)
-                            )
-                            Text(text = it.title,
-                                color = themeColors.primaryFontColor,
-                            )
+        Row(
+            modifier = Modifier
+                .background(themeColors.searchColor)
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom
+        ) {
+            LazyRow(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                items(items) {
+                    val enableColor = animateFloatAsState(if(it.enable) 1f else 0.4f)
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .clickable {
+                                if (!it.enable) return@clickable
+                                it.onClick()
+                                if (it.closeAfterClick)
+                                    noteStateViewModel.toDefaultMode()
+                            }
+                            .padding(start = 15.dp)
+                            .alpha(enableColor.value)
+                    ) {
+                        Icon(painter = painterResource(it.icon),
+                            contentDescription = it.title,
+                            tint = themeColors.primaryFontColor,
+                            modifier = Modifier.size(25.dp)
+                        )
+                        Text(text = it.title,
+                            color = themeColors.primaryFontColor,
+                        )
 
-                        }
                     }
                 }
             }
+        }
     }
 }
 
@@ -364,9 +360,9 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
         textStyle = TextStyle(fontSize = 16.sp),
         leadingIcon = {
             Icon(painter = painterResource(id = R.drawable.ic_baseline_search_24),
-            contentDescription = "Search",
-            tint = themeColors.primaryFontColor.copy(0.7f)
-        )
+                contentDescription = "Search",
+                tint = themeColors.primaryFontColor.copy(0.7f)
+            )
         },
         shape = RoundedCornerShape(100) ,
         trailingIcon = {
@@ -413,8 +409,8 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
     }
     val sortedNoteList = noteList.value.sortedByCategory(currentCategory.value)
         .searchFilter(mode.value == NoteScreenMode.SearchScreenMode,
-        searchSubString.value).sortNote(sortNoteState.value)
-    
+            searchSubString.value).sortNote(sortNoteState.value)
+
     noteStateViewModel.isSearchLineHide.value = sortedNoteList.isEmpty()
     if(mode.value == NoteScreenMode.SearchScreenMode && sortedNoteList.isEmpty()) {
         SearchStub()
@@ -423,7 +419,6 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
         Stub()
     }
     else {
-
         when(viewState.value) {
             is ViewNoteListState.List -> {
                 ListNoteView(
@@ -442,156 +437,6 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
                     navController = navController,
                     selectedItemCount = selectedItemCount
                 )
-
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun ListNoteView(
-    noteStateViewModel: NoteStateViewModel,
-    screenMode:State<NoteScreenMode>,
-    notes:List<Note>,
-    navController:NavController,
-    selectedItemCount:MutableState<Int>
-) {
-    val themeType = Theme.LocalThemeType.current
-    val ListPadding = if(screenMode.value == SelectionScreenMode) 55 else 50
-    LazyColumn(
-        Modifier
-            .fillMaxSize()
-            .padding(bottom = ListPadding.dp)
-    ) {
-        items(notes, key = { it.id }) {
-            val check = remember {
-                mutableStateOf(false)
-            }
-            val cardSize : Float by animateFloatAsState(
-                targetValue =  if (screenMode.value == SelectionScreenMode) 0.9f else 1f,
-                animationSpec = tween(250)
-            )
-            //if (mode.value == SelectionScreenMode) 0.9f else 1f
-            val category = noteStateViewModel.getCategoryById(it.category)?.collectAsState(null)
-            val backGroundColor = category?.value?.getColor() ?: themeColors.cardColor
-            val alpha = if(category?.value?.getColor() != null) themeValues.categoryColorAlphaNoteCard else 1f
-            val cardBackground = if(themeType == ThemeType.White) MaterialTheme.colors.surface
-            else backGroundColor.copy(alpha)
-            val swapBoxBackground = if(themeType == ThemeType.White) backGroundColor.copy(alpha)
-            else Color.Transparent.copy(0f)
-            val removeSwipeAction = SwipeAction(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_backet),
-                        contentDescription = "",
-                        tint = themeColors.primaryFontColor,
-                        modifier = Modifier.padding(start = 50.dp)
-                    )
-                },
-                background = themeColors.deleteOverSwapColor,
-                onSwipe = {
-                    noteStateViewModel.showDeleteDialog(it.id)
-                },
-                isUndo = true,
-            )
-            val chosenSwipeAction = SwipeAction(
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_star),
-                        contentDescription = "",
-                        tint = themeColors.primaryFontColor,
-                        modifier = Modifier.padding(end = 50.dp)
-                    )
-                },
-                background = Color.Yellow.copy(0.6f),
-                onSwipe = {
-                    noteStateViewModel.changeChosenStatus(it.id,it.isChosen)
-                },
-                isUndo = true,
-            )
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement()
-            ) {
-                Card(
-                    Modifier
-                        .fillMaxWidth(cardSize)
-                        .padding(10.dp)
-                        .animateItemPlacement()
-                        .combinedClickable(
-                            onClick = {
-                                if (noteStateViewModel.getCurrentMode().value != SelectionScreenMode) {
-                                    noteStateViewModel.toEditNoteScreen(
-                                        navController,
-                                        it.id
-                                    )
-                                } else {
-                                    check.value = !check.value
-                                    noteStateViewModel.changeSelectedState(
-                                        it.id,
-                                        check.value
-                                    )
-                                }
-                            },
-                            onLongClick = {
-                                check.value = true
-                                noteStateViewModel.changeSelectedState(it.id, check.value)
-                                noteStateViewModel.toSelectionMode()
-
-                            }
-                        ),
-                    shape = RoundedCornerShape(15),
-                    backgroundColor = cardBackground,
-                ) {
-                    SwipeableActionsBox(
-                        startActions = if(screenMode.value != SelectionScreenMode)
-                            listOf(chosenSwipeAction)
-                        else listOf(),
-                        endActions = if(screenMode.value != SelectionScreenMode)
-                            listOf(removeSwipeAction) else listOf(),
-                        backgroundUntilSwipeThreshold = swapBoxBackground,
-                        swipeThreshold = 190.dp,
-                    ) {
-                        if (!it.isEncrypted) {
-                            DefaultNoteItem(it)
-                        } else {
-                            EncryptNoteItem(it)
-                        }
-                    }
-                }
-
-                AnimatedVisibility(visible = screenMode.value == SelectionScreenMode) {
-                    LaunchedEffect(key1 = selectedItemCount.value, block = {
-                        check.value = noteStateViewModel.isItemSelected(it.id)
-                    })
-                    val padding = if (it.isEncrypted) 85 else 100
-                    check.value = noteStateViewModel.isItemSelected(it.id)
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(padding.dp)
-                    ) {
-                        Checkbox(
-                            checked = check.value,
-                            onCheckedChange = { checkState ->
-                                check.value = checkState
-                                noteStateViewModel.changeSelectedState(it.id, checkState)
-                            },
-                            modifier = Modifier.padding(top = 27.dp, bottom = 27.dp),
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = themeColors.secondaryColor,
-                                checkmarkColor = themeColors.primaryFontColor,
-                                uncheckedColor = themeColors.secondaryColor
-                            )
-
-                        )
-                    }
-                }
-                if(screenMode.value != SelectionScreenMode) {
-                    check.value = false
-                }
             }
         }
     }
@@ -604,17 +449,17 @@ fun SearchStub() {
         Modifier
             .fillMaxSize()
             .padding(bottom = 50.dp),
-    verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    ) {
         Text(text = "¯\\_(ツ)_/¯",
-        fontSize = 35.sp,
+            fontSize = 35.sp,
             color = themeColors.primaryFontColor,
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
-            )
+        )
         Text(text = stringResource(R.string.Not_Found),
-        fontSize = 20.sp,
+            fontSize = 20.sp,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.Medium,
             color = themeColors.secondaryFontColor,
@@ -622,7 +467,7 @@ fun SearchStub() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 5.dp)
-            )
+        )
 
     }
 }
@@ -633,14 +478,14 @@ fun Stub() {
         Modifier
             .fillMaxSize()
             .padding(bottom = 100.dp),
-    verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    ) {
         Icon(painterResource(R.drawable.ic_edit_note),
             contentDescription = "edit_note",
-        tint = themeColors.primaryFontColor,
+            tint = themeColors.primaryFontColor,
             modifier = Modifier.size(100.dp)
-            )
+        )
         Text(text = stringResource(R.string.Empty),
             fontSize = 20.sp,
             fontStyle = FontStyle.Italic,
@@ -694,119 +539,6 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
         }
     }
 }
-
-
-@Composable
-fun DefaultNoteItem(note: Note) {
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(10.dp),
-            verticalArrangement = Arrangement.Top,
-        ) {
-            if(note.title.isNotEmpty()) {
-                Text(text = note.title,
-                    modifier = Modifier,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Black,
-                    color = themeColors.primaryFontColor,
-                )
-            }
-            else {
-                Text(text = stringResource(R.string.No_title),
-                    modifier = Modifier,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = themeColors.primaryFontColor,
-                    fontStyle = FontStyle.Italic
-                )
-            }
-            if(note.text.getFirstChars() != "") {
-                Text(text = note.text.getFirstChars(),
-                    modifier = Modifier,
-                    fontSize = 16.sp,
-                    color = themeColors.secondaryFontColor,
-                    maxLines = 1,
-
-                )
-            }
-            else {
-                Text(text = stringResource(R.string.No_text),
-                    modifier = Modifier,
-                    fontSize = 16.sp,
-                    color = themeColors.secondaryFontColor,
-                    maxLines = 1,
-                    fontWeight = FontWeight.Medium,
-                    fontStyle = FontStyle.Italic
-                    )
-            }
-            Row(
-                Modifier,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = note.created_at.secondToData(LocalContext.current),
-                   // modifier = Modifier.fillMaxWidth(),
-                    fontSize = 12.sp,
-                    color = themeColors.secondaryFontColor
-                )
-                if(note.isChosen) {
-                    Icon(painter = painterResource(R.drawable.ic_full_star),
-                        contentDescription = null,
-                        tint = Color.Yellow.copy(0.9f),
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(16.dp)
-                    )
-                }
-            }
-        }
-}
-@Composable
-fun EncryptNoteItem(note: Note) {
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        verticalArrangement = Arrangement.Top
-    ){
-        Row(Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(painter = painterResource(id = R.drawable.ic_baseline_lock_24),
-                contentDescription = "lock",
-                tint = themeColors.secondaryFontColor,
-            )
-            Text(text = stringResource(R.string.This_note_is_encrypted),
-                textAlign = TextAlign.Center,
-                fontSize = 16.sp,
-                fontStyle = FontStyle.Italic,
-                color = themeColors.primaryFontColor,
-                modifier = Modifier.padding(start = 7.dp)
-            )
-        }
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 7.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = note.created_at.secondToData(LocalContext.current),
-                fontSize = 12.sp,
-                color = themeColors.secondaryFontColor
-            )
-            if(note.isChosen) {
-                Icon(painter = painterResource(R.drawable.ic_full_star),
-                    contentDescription = null,
-                    tint = Color.Yellow.copy(0.9f),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(16.dp)
-                )
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -966,20 +698,20 @@ fun CategoryOptionMenu(noteStateViewModel: NoteStateViewModel, isShow:MutableSta
                        category: Category
 ) {
     val content = LocalContext.current
-        DropdownMenu(expanded = isShow.value == category.categoryId, onDismissRequest = {
-            isShow.value = -1
-        },
-            modifier = Modifier.background(themeColors.dropDownMenuColor)
-        ) {
-            DropdownMenuItem(onClick = {
-                noteStateViewModel.showEditCategoryDialog(category)
-            }) {
-                Text(text = stringResource(R.string.edit),color = themeColors.primaryFontColor)
-            }
-            DropdownMenuItem(onClick = {
-                noteStateViewModel.removeCategory(category,content)
-            }) {
-                Text(text = stringResource(R.string.Remove),color = themeColors.primaryFontColor)
-            }
+    DropdownMenu(expanded = isShow.value == category.categoryId, onDismissRequest = {
+        isShow.value = -1
+    },
+        modifier = Modifier.background(themeColors.dropDownMenuColor)
+    ) {
+        DropdownMenuItem(onClick = {
+            noteStateViewModel.showEditCategoryDialog(category)
+        }) {
+            Text(text = stringResource(R.string.edit),color = themeColors.primaryFontColor)
         }
+        DropdownMenuItem(onClick = {
+            noteStateViewModel.removeCategory(category,content)
+        }) {
+            Text(text = stringResource(R.string.Remove),color = themeColors.primaryFontColor)
+        }
+    }
 }
