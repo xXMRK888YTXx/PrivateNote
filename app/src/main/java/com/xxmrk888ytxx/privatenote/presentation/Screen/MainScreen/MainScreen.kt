@@ -17,14 +17,14 @@ import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -147,8 +147,8 @@ fun BottomBar(
         ),
     )
     BottomNavigation(
-        backgroundColor = MainBackGroundColor,
-        contentColor = PrimaryFontColor
+        backgroundColor = themeColors.mainBackGroundColor,
+        contentColor = themeColors.primaryFontColor
     ) {
         items.forEach {
             BottomNavigationItem(
@@ -157,8 +157,8 @@ fun BottomBar(
                     modifier = Modifier.size(20.dp)
                 )},
                 label = { Text(text = it.name)},
-                selectedContentColor = PrimaryFontColor,
-                unselectedContentColor = PrimaryFontColor.copy(0.4f),
+                selectedContentColor = themeColors.primaryFontColor,
+                unselectedContentColor = themeColors.primaryFontColor.copy(0.4f),
                 alwaysShowLabel = true,
                 selected = it.id == pageState.currentPage,
                 onClick = {it.onClick()}

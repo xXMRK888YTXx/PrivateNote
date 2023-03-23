@@ -14,9 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
@@ -40,17 +38,17 @@ fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
                 .padding(start = 5.dp, end = 5.dp),
             shape = RoundedCornerShape(80),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = TitleHintColor,
+                backgroundColor = themeColors.titleHintColor,
             )
         ) {
             Text(text = stringResource(R.string.cancel),
-                color = PrimaryFontColor
+                color = themeColors.primaryFontColor
             )
         }
         OutlinedButton(
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = SecondaryColor,
-                disabledBackgroundColor = SecondaryColor.copy(0.6f)
+                backgroundColor = themeColors.secondaryColor,
+                disabledBackgroundColor = themeColors.secondaryColor.copy(0.6f)
             ),
             enabled = isOkButtonEnable,
             onClick = {
@@ -62,7 +60,7 @@ fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
             shape = RoundedCornerShape(80),
         ) {
             Text(text = stringResource(R.string.Ok),
-                color = PrimaryFontColor
+                color = themeColors.primaryFontColor
             )
         }
     }

@@ -25,10 +25,8 @@ import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -42,8 +40,8 @@ fun SplashScreen(
     isBiometricAuthorizationEnable: Boolean,
     onAuthorization: (callBack: BiometricPrompt.AuthenticationCallback) -> Unit,
     isFirstStart: Boolean,
-    onCompletedAuth:(navigate:() -> Unit) -> Unit,
-    finishApp:() -> Unit
+    onCompletedAuth: (navigate: () -> Unit) -> Unit,
+    finishApp: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     val animationTime = 500L
@@ -59,8 +57,8 @@ fun SplashScreen(
     )
     var isNextBackPressLeaveApp = false
     BackPressController.setHandler(true) {
-        if(isNextBackPressLeaveApp)
-        finishApp()
+        if (isNextBackPressLeaveApp)
+            finishApp()
         else {
             splashViewModel.showToastForLeaveApp()
             isNextBackPressLeaveApp = true
@@ -71,41 +69,46 @@ fun SplashScreen(
         }
     }
     LaunchedEffect(key1 = true, block = {
-        if(animationShowState) {
+        if (animationShowState) {
             startAnimation.value = true
             delay(animationTime)
         }
         if (!isAppPasswordInstalled) {
-            if(isFirstStart)
-            onCompletedAuth { splashViewModel.toMainScreen(navController) }
+            if (isFirstStart)
+                onCompletedAuth { splashViewModel.toMainScreen(navController) }
             else onCompletedAuth { navController.navigateUp() }
-        }
-        else isShowAnimation.value = false
+        } else isShowAnimation.value = false
     })
-    AnimatedVisibility(visible = isShowAnimation.value,
+    AnimatedVisibility(
+        visible = isShowAnimation.value,
         exit = shrinkHorizontally(
             animationSpec = tween(250)
         ),
     ) {
         Splash(alpha = alphaAnim.value)
     }
-    AnimatedVisibility(visible = !isShowAnimation.value,
+    AnimatedVisibility(
+        visible = !isShowAnimation.value,
         enter = scaleIn(),
-        exit =  scaleOut()
+        exit = scaleOut()
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Authorization(splashViewModel, navController,onCompletedAuth)
+            Authorization(splashViewModel, navController, onCompletedAuth)
             if (isBiometricAuthorizationEnable) {
                 LaunchedEffect(key1 = true, block = {
-                    onAuthorization(splashViewModel
-                        .getAuthorizationCallBack(navController,isFirstStart,onCompletedAuth))
+                    onAuthorization(
+                        splashViewModel
+                            .getAuthorizationCallBack(navController, isFirstStart, onCompletedAuth)
+                    )
                 })
-                FingerPrintButton(onAuthorization,splashViewModel
-                    .getAuthorizationCallBack(navController,isFirstStart,onCompletedAuth))
+                FingerPrintButton(
+                    onAuthorization, splashViewModel
+                        .getAuthorizationCallBack(navController, isFirstStart, onCompletedAuth)
+                )
             }
         }
     }
@@ -113,27 +116,31 @@ fun SplashScreen(
 }
 
 @Composable
-fun FingerPrintButton(onAuthorization: (callBack: BiometricPrompt.AuthenticationCallback) -> Unit,
-                      callBack: BiometricPrompt.AuthenticationCallback
+fun FingerPrintButton(
+    onAuthorization: (callBack: BiometricPrompt.AuthenticationCallback) -> Unit,
+    callBack: BiometricPrompt.AuthenticationCallback,
 ) {
     IconButton(
         onClick = { onAuthorization(callBack) },
         modifier = Modifier
             .size(60.dp)
             .clip(RoundedCornerShape(40))
-            .background(largeButtonColor)
+            .background(themeColors.largeButtonColor)
     ) {
-        Icon(painter = painterResource(R.drawable.ic_fingerprint),
+        Icon(
+            painter = painterResource(R.drawable.ic_fingerprint),
             contentDescription = "",
-            tint = PrimaryFontColor,
+            tint = themeColors.primaryFontColor,
             modifier = Modifier.size(70.dp)
         )
     }
 }
 
 @Composable
-fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
-                  onCompletedAuth: (navigate: () -> Unit) -> Unit) {
+fun Authorization(
+    splashViewModel: SplashViewModel, navController: NavController,
+    onCompletedAuth: (navigate: () -> Unit) -> Unit,
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val titleText = remember {
@@ -150,10 +157,10 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
         PasswordEditText(titleText = titleText,
             password = password,
             onDoneClick = {
-                coroutineScope.launch{
-                    if(splashViewModel.checkPassword(password.value)) {
-                        onCompletedAuth() {splashViewModel.toMainScreen(navController)}
-                    }else {
+                coroutineScope.launch {
+                    if (splashViewModel.checkPassword(password.value)) {
+                        onCompletedAuth() { splashViewModel.toMainScreen(navController) }
+                    } else {
                         titleText.value = context.getString(R.string.Invalid_password)
                     }
                 }
@@ -164,11 +171,11 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
                 .fillMaxWidth()
                 .align(Alignment.CenterHorizontally)
                 .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
-            onClick =  {
-                coroutineScope.launch{
-                    if(splashViewModel.checkPassword(password.value)) {
-                        onCompletedAuth() {splashViewModel.toMainScreen(navController)}
-                    }else {
+            onClick = {
+                coroutineScope.launch {
+                    if (splashViewModel.checkPassword(password.value)) {
+                        onCompletedAuth() { splashViewModel.toMainScreen(navController) }
+                    } else {
                         titleText.value = context.getString(R.string.Invalid_password)
                     }
                 }
@@ -176,12 +183,13 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
             shape = RoundedCornerShape(50),
             enabled = password.value.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = largeButtonColor,
-                disabledContentColor = largeButtonColor.copy(0.3f),
-                disabledBackgroundColor = largeButtonColor.copy(0.3f)
+                backgroundColor = themeColors.largeButtonColor,
+                disabledContentColor =  themeColors.largeButtonColor.copy(0.3f),
+                disabledBackgroundColor = themeColors.largeButtonColor.copy(0.3f)
             )
-        ){
-            Text(text = stringResource(R.string.Login),
+        ) {
+            Text(
+                text = stringResource(R.string.Login),
                 fontSize = 18.sp,
                 color = Color.Black
             )
@@ -190,10 +198,11 @@ fun Authorization(splashViewModel: SplashViewModel,navController: NavController,
 }
 
 @Composable
-fun Splash(alpha:Float) {
-    Box(modifier = Modifier
-        .background(MainBackGroundColor)
-        .fillMaxSize(),
+fun Splash(alpha: Float) {
+    Box(
+        modifier = Modifier
+            .background(themeColors.mainBackGroundColor)
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     )
     {

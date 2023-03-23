@@ -17,9 +17,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
 import com.xxmrk888ytxx.privatenote.Utils.milliSecondToSecond
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun PlayerDialog(
@@ -62,7 +60,7 @@ fun PlayerDialog(
     Dialog(onDismissRequest = { onHideDialog();controller.reset() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(
@@ -77,7 +75,7 @@ fun PlayerDialog(
                     Text(
                         text = playerState.value.currentPos.milliSecondToSecond(),
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         modifier = Modifier.padding(end = 5.dp),
                         fontSize = 14.sp
                     )
@@ -87,14 +85,14 @@ fun PlayerDialog(
                         modifier = Modifier.fillMaxWidth(0.8f),
                         valueRange = 0f..audio.duration.toFloat(),
                         colors = SliderDefaults.colors(
-                            thumbColor = SecondaryColor,
-                            activeTrackColor = SecondaryColor
+                            thumbColor = themeColors.secondaryColor,
+                            activeTrackColor = themeColors.secondaryColor
                         )
                     )
                     Text(
                         text = audio.duration.milliSecondToSecond(),
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         modifier = Modifier.padding(start = 5.dp),
                         fontSize = 14.sp
                     )
@@ -112,7 +110,7 @@ fun PlayerDialog(
                                 IconButton(onClick = { it.onClick() }) {
                                     Icon(painter = painterResource(it.icon),
                                         contentDescription = "",
-                                        tint = PrimaryFontColor,
+                                        tint = themeColors.primaryFontColor,
                                         modifier = Modifier.size(30.dp)
                                     )
                                 }

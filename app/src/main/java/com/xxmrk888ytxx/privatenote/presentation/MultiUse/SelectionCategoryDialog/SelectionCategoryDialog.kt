@@ -21,10 +21,7 @@ import androidx.compose.ui.window.Dialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.SelectionCategoryDialog.SelectionCategoryController
 import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController: SelectionCategoryController)
@@ -38,7 +35,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                 .fillMaxWidth()
                 .fillMaxHeight(0.7f)
             ,
-            backgroundColor = MainBackGroundColor,
+            backgroundColor = themeColors.mainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(Modifier.verticalScroll(rememberScrollState()).fillMaxSize()
@@ -53,19 +50,19 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                     RadioButton(selected = currentSelected.value == 0,
                         onClick = { currentSelected.value = 0 },
                         colors = RadioButtonDefaults.colors(
-                            selectedColor = PrimaryFontColor,
-                            unselectedColor =PrimaryFontColor
+                            selectedColor = themeColors.primaryFontColor,
+                            unselectedColor = themeColors.primaryFontColor
                         )
                     )
                     Icon(painterResource(R.drawable.ic_remove_category),
                         contentDescription = "",
-                        tint = PrimaryFontColor,
+                        tint = themeColors.primaryFontColor,
                         modifier = Modifier.padding(10.dp)
                     )
                     Text(text = stringResource(R.string.Without_category),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryFontColor.copy(0.75f),
+                        color = themeColors.primaryFontColor.copy(0.75f),
                         modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                     )
                 }
@@ -92,7 +89,7 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                         Text(text = it.categoryName,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
-                            color = PrimaryFontColor.copy(0.75f),
+                            color = themeColors.primaryFontColor.copy(0.75f),
                             modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
                         )
                     }
@@ -108,32 +105,32 @@ fun SelectionCategoryDialog(currentSelected:MutableState<Int>, dialogController:
                         dialogController.onCanceled()
                     },
                     modifier = Modifier
-                        .fillMaxWidth(0.5f).background(MainBackGroundColor)
+                        .fillMaxWidth(0.5f).background(themeColors.mainBackGroundColor)
                         .padding(start = 5.dp, end = 5.dp),
                     shape = RoundedCornerShape(80),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = TitleHintColor,
+                        backgroundColor = themeColors.titleHintColor,
                     )
                 ) {
                     Text(text = stringResource(R.string.Cancel),
-                        color = PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
                 OutlinedButton(
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = SecondaryColor,
-                        disabledBackgroundColor = SecondaryColor.copy(0.4f)
+                        backgroundColor = themeColors.secondaryColor,
+                        disabledBackgroundColor = themeColors.secondaryColor.copy(0.4f)
                     ),
                     onClick = {
                         dialogController.onConfirmed()
                     },
                     modifier = Modifier
-                        .fillMaxWidth().background(MainBackGroundColor)
+                        .fillMaxWidth().background(themeColors.mainBackGroundColor)
                         .padding(start = 5.dp, end = 5.dp),
                     shape = RoundedCornerShape(80),
                 ) {
                     Text(text = stringResource(R.string.Ok),
-                        color = PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }

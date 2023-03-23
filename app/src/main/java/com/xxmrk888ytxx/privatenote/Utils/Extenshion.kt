@@ -22,6 +22,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -229,3 +230,9 @@ fun LazySpacer(height:Int = 0,width:Int = 0) {
 
 @Composable
 fun ComposeContext() = LocalContext.current
+
+val themeColors : com.xxmrk888ytxx.privatenote.presentation.theme.Colors
+    @Composable get() = Theme.LocalColors.current
+
+val themeValues : com.xxmrk888ytxx.privatenote.presentation.theme.Values
+    @Composable get() = Theme.LocalValues.current

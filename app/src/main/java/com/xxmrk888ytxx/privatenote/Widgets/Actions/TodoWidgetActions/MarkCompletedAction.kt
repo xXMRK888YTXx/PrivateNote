@@ -18,7 +18,7 @@ class MarkCompletedAction : ActionCallback {
         parameters: ActionParameters,
     ) {
         val todo = parameters[actionWidgetKey] ?: return
-        val intent = Intent(context,TodoWidgetReceiver::class.java)
+        val intent = Intent(context, TodoWidgetReceiver::class.java)
         intent.action = CHANGE_MARK_TODO_STATUS
         intent.putExtra(TodoPutKey,todo)
         context.sendBroadcast(intent)

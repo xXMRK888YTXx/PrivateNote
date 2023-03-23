@@ -11,8 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -26,13 +25,13 @@ fun FloatButton(floatButtonController: FloatButtonController,navController: NavC
     ) {
         FloatingActionButton(
             onClick = { floatButtonController.setOnClickListener(navController) },
-            backgroundColor = SecondaryColor,
+            backgroundColor = themeColors.secondaryColor,
             modifier = Modifier.size(65.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_float_button_plus),
                 contentDescription = "plus",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(35.dp)
             )
         }

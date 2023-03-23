@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -20,23 +19,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.EN_CODE
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.RU_CODE
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes.SYSTEM_LANGUAGE_CODE
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
 import com.xxmrk888ytxx.privatenote.Utils.Remember
-import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 import kotlinx.coroutines.launch
 
 @Composable
@@ -64,13 +54,13 @@ fun SettingsScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .background(MainBackGroundColor)
+            .background(themeColors.mainBackGroundColor)
     ) {
         TopBar(settingsViewModel, navController)
         Text(text = stringResource(R.string.Settings),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
         )
         SettingsList(settingsViewModel,navController)
@@ -110,7 +100,7 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
         }
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = MainBackGroundColor,
+            backgroundColor = themeColors.mainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(
@@ -144,9 +134,9 @@ fun EnterAppPasswordDialog(settingsViewModel: SettingsViewModel) {
                     shape = RoundedCornerShape(50),
                     enabled = password.value.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = largeButtonColor,
-                        disabledContentColor = largeButtonColor.copy(0.3f),
-                        disabledBackgroundColor = PrimaryFontColor.copy(0.3f)
+                        backgroundColor = themeColors.largeButtonColor,
+                        disabledContentColor = themeColors.largeButtonColor.copy(0.3f),
+                        disabledBackgroundColor = themeColors.primaryFontColor.copy(0.3f)
                     )
                 ){
                     Text(text = stringResource(R.string.Disable),
@@ -313,7 +303,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 Text(text = category.categoryName,
                     fontWeight = FontWeight.Black,
                     fontSize = 20.sp,
-                    color = SecondoryFontColor,
+                    color = themeColors.secondaryFontColor,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 15.dp, bottom = 13.dp)
@@ -356,7 +346,7 @@ fun TopBar(settingsViewModel: SettingsViewModel,navController: NavController) {
                 contentDescription = "",
                 modifier = Modifier
                     .size(30.dp),
-                tint = PrimaryFontColor
+                tint = themeColors.primaryFontColor
             )
         }
     }

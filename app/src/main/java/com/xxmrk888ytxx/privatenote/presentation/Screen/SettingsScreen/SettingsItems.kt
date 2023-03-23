@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -35,25 +36,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingText
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.Green
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 
 
 @Composable
@@ -66,7 +55,7 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
             text = stringResource(R.string.NavigationSwipeState),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -77,8 +66,8 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = SecondaryColor,
-                    uncheckedThumbColor = SecondoryFontColor
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
                 ),
             )
         }
@@ -95,7 +84,7 @@ fun SplashScreenSettings(currentState: State<Boolean>,
             text = stringResource(R.string.SplashScreenVisibleState),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -106,8 +95,8 @@ fun SplashScreenSettings(currentState: State<Boolean>,
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = SecondaryColor,
-                    uncheckedThumbColor = SecondoryFontColor
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
                 ),
             )
         }
@@ -123,7 +112,7 @@ fun AppVersion() {
             text = stringResource(R.string.App_Version),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -132,7 +121,7 @@ fun AppVersion() {
                 text = BuildConfig.VERSION_NAME,
                 fontWeight = FontWeight.Medium,
                 fontSize = 18.sp,
-                color = SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
             )
         }
     }
@@ -152,7 +141,7 @@ fun Email(onSend:() -> Unit) {
             text = stringResource(R.string.Write_developer),
             fontWeight = FontWeight.Medium,
             fontSize = 16.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -160,7 +149,7 @@ fun Email(onSend:() -> Unit) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -176,7 +165,7 @@ fun AboutMainDeveloper_Me() {
             text = stringResource(R.string.Main_Developer),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -185,7 +174,7 @@ fun AboutMainDeveloper_Me() {
                 text = stringResource(R.string.xXMRK888YTXx),
                 fontWeight = FontWeight.Medium,
                 fontSize = 18.sp,
-                color = SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
             )
         }
     }
@@ -199,7 +188,7 @@ fun AboutSubDeveloper() {
             text = stringResource(R.string.Design_assistant),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -208,7 +197,7 @@ fun AboutSubDeveloper() {
                 text = stringResource(R.string.xXKoksMenXx),
                 fontWeight = FontWeight.Medium,
                 fontSize = 18.sp,
-                color = SecondoryFontColor,
+                color = themeColors.secondaryFontColor,
             )
         }
     }
@@ -223,7 +212,7 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
             text = stringResource(R.string.Entering_password_login),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -234,8 +223,8 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
                     onChangeState(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = SecondaryColor,
-                    uncheckedThumbColor = SecondoryFontColor
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
                 ),
             )
         }
@@ -256,7 +245,7 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
         Card(modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
-            backgroundColor = MainBackGroundColor,
+            backgroundColor = themeColors.mainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(modifier = Modifier
@@ -273,9 +262,9 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
                             &&repitPassword.value.isNotEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = largeButtonColor,
-                        disabledContentColor = largeButtonColor.copy(0.3f),
-                        disabledBackgroundColor = largeButtonColor.copy(0.3f)
+                        backgroundColor = themeColors.largeButtonColor,
+                        disabledContentColor = themeColors.largeButtonColor.copy(0.3f),
+                        disabledBackgroundColor = themeColors.largeButtonColor.copy(0.3f)
                     )
                 ){
                     Text(text = stringResource(R.string.Confirm),
@@ -306,13 +295,13 @@ fun EnterPassword(password:MutableState<String>,
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+            textColor = themeColors.primaryFontColor,
+            backgroundColor = themeColors.searchColor,
+            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+            focusedBorderColor = themeColors.searchColor,
+            focusedLabelColor = themeColors.primaryFontColor.copy(alpha = 0.85f),
+            cursorColor = themeColors.cursorColor,
+            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -339,13 +328,13 @@ fun RepitPassword(repitPassword:MutableState<String>,
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+            textColor = themeColors.primaryFontColor,
+            backgroundColor = themeColors.searchColor,
+            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+            focusedBorderColor = themeColors.searchColor,
+            focusedLabelColor = themeColors.primaryFontColor.copy(alpha = 0.85f),
+            cursorColor = themeColors.cursorColor,
+            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -366,7 +355,7 @@ fun BiometricAuthorizationSettings(
                text = stringResource(R.string.Biometric_login),
                fontWeight = FontWeight.Medium,
                fontSize = 18.sp,
-               color = PrimaryFontColor,
+               color = themeColors.primaryFontColor,
            )
            Box(Modifier.fillMaxWidth(),
                contentAlignment = Alignment.CenterEnd
@@ -377,8 +366,8 @@ fun BiometricAuthorizationSettings(
                        onChangeBioMetricAuthorizationState(it)
                    },
                    colors = SwitchDefaults.colors(
-                       checkedThumbColor = SecondaryColor,
-                       uncheckedThumbColor = SecondoryFontColor
+                       checkedThumbColor = themeColors.secondaryColor,
+                       uncheckedThumbColor = themeColors.secondaryFontColor
                    ),
                )
            }
@@ -396,7 +385,7 @@ fun LockWhenLeaveSettings(
                text = stringResource(R.string.Block_on_collapse),
                fontWeight = FontWeight.Medium,
                fontSize = 18.sp,
-               color = PrimaryFontColor,
+               color = themeColors.primaryFontColor,
            )
            Box(Modifier.fillMaxWidth(),
                contentAlignment = Alignment.CenterEnd
@@ -407,8 +396,8 @@ fun LockWhenLeaveSettings(
                        onChangeState(it)
                    },
                    colors = SwitchDefaults.colors(
-                       checkedThumbColor = SecondaryColor,
-                       uncheckedThumbColor = SecondoryFontColor
+                       checkedThumbColor = themeColors.secondaryColor,
+                       uncheckedThumbColor = themeColors.secondaryFontColor
                    ),
                )
            }
@@ -455,7 +444,7 @@ fun TimerLockWhenLeave(
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
-                    tint = SecondoryFontColor,
+                    tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
@@ -467,13 +456,13 @@ fun TimerLockWhenLeave(
                 text = stringResource(R.string.Time_to_block),
                 fontWeight = FontWeight.Medium,
                 fontSize = 18.sp,
-                color = PrimaryFontColor,
+                color = themeColors.primaryFontColor,
             )
             Box() {
                 DropdownMenu(expanded = dropDownState.value,
                     onDismissRequest = {onCancelDropDown()},
                     modifier = Modifier
-                        .background(DropDownMenuColor)
+                        .background(themeColors.dropDownMenuColor)
                         .verticalScroll(
                             rememberScrollState()
                         )
@@ -491,7 +480,7 @@ fun TimerLockWhenLeave(
                                     Text(text = it.first,
                                         fontSize = 18.sp,
                                         fontWeight = FontWeight.Medium,
-                                        color = PrimaryFontColor
+                                        color = themeColors.primaryFontColor
                                     )
                                 }
                             }
@@ -506,7 +495,7 @@ fun TimerLockWhenLeave(
                     inlineContent = inlineContentMap,
                     fontWeight = FontWeight.Medium,
                     fontSize = 18.sp,
-                    color = SecondoryFontColor,
+                    color = themeColors.secondaryFontColor,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -532,7 +521,7 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
             text = stringResource(R.string.App_theme),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -542,7 +531,7 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -564,7 +553,7 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
             text = stringResource(R.string.Backup),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -574,7 +563,7 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -598,7 +587,7 @@ fun DontKillMyAppButton() {
             text = stringResource(R.string.DontKillMyApp),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -608,7 +597,7 @@ fun DontKillMyAppButton() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -633,7 +622,7 @@ fun PrivatePolicyButton() {
             text = stringResource(R.string.Privacy_policy),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -643,7 +632,7 @@ fun PrivatePolicyButton() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
         }
@@ -667,7 +656,7 @@ fun TermsButton() {
             text = stringResource(R.string.Terms_of_use),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -677,13 +666,14 @@ fun TermsButton() {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
         }
     }
 }
 
+@SuppressLint("ResourceType")
 @Composable
 fun SelectSortState(
     currentState:State<SortNoteState>,
@@ -698,7 +688,7 @@ fun SelectSortState(
         Text(text = stringResource(R.string.Sorting_notes),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         val annotatedLabelString = buildAnnotatedString {
             append(stringResource(currentState.value.title))
@@ -710,7 +700,7 @@ fun SelectSortState(
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
-                    tint = SecondoryFontColor,
+                    tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
@@ -724,7 +714,7 @@ fun SelectSortState(
             inlineContent = inlineContentMap,
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = SecondoryFontColor,
+            color = themeColors.secondaryFontColor,
             textAlign = TextAlign.End,
             modifier = Modifier
                 .fillMaxWidth()
@@ -736,6 +726,7 @@ fun SelectSortState(
     }
 }
 
+@SuppressLint("ResourceType")
 @Composable
 fun SelectSortDropDown(
     onChangeSortState: (SortNoteState) -> Unit,
@@ -748,7 +739,7 @@ fun SelectSortDropDown(
             onHide()
         },
         modifier = Modifier
-            .background(ThemeManager.DropDownMenuColor)
+            .background(themeColors.dropDownMenuColor)
             .heightIn(max = 200.dp)
     ) {
         dropDownItem.forEach {
@@ -760,7 +751,7 @@ fun SelectSortDropDown(
                     Text(text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }
@@ -786,7 +777,7 @@ fun DisableAdsButton(
             text = if(isAdEnabled) stringResource(R.string.Disable_Ad) else stringResource(R.string.Ad_is_disabled),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -797,14 +788,14 @@ fun DisableAdsButton(
                Icon(
                    painter = painterResource(id = R.drawable.ic_arrow),
                    contentDescription = "",
-                   tint = PrimaryFontColor,
+                   tint = themeColors.primaryFontColor,
                    modifier = Modifier.size(20.dp)
                )
            } else {
                Icon(
                    painter = painterResource(id = R.drawable.ic_done),
                    contentDescription = "",
-                   tint = Green,
+                   tint = themeColors.green,
                    modifier = Modifier.size(20.dp)
                )
            }
@@ -824,7 +815,7 @@ fun DisableAdsDialog(
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            backgroundColor = CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Column(Modifier
                 .fillMaxWidth()
@@ -836,7 +827,7 @@ fun DisableAdsDialog(
                     modifier = Modifier
                         .fillMaxWidth(),
                     fontSize = 17.sp,
-                    color = ThemeManager.PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     fontWeight = FontWeight.Bold
                 )
                 LazySpacer(10)
@@ -846,19 +837,19 @@ fun DisableAdsDialog(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = SecondaryColor,
-                        disabledBackgroundColor = SecondaryColor.copy(0.4f)
+                        backgroundColor = themeColors.secondaryColor,
+                        disabledBackgroundColor = themeColors.secondaryColor.copy(0.4f)
                     ),
                     enabled = isBueAvailable,
                     shape = RoundedCornerShape(80),
                 ) {
                     if(isBueAvailable) {
                         Text(text = stringResource(R.string.Disable_Ad),
-                            color = ThemeManager.PrimaryFontColor
+                            color = themeColors.primaryFontColor
                         )
                     } else {
                         Text(text = stringResource(R.string.Repit_after),
-                            color = ThemeManager.PrimaryFontColor
+                            color = themeColors.primaryFontColor
                         )
                     }
                 }
@@ -880,7 +871,7 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
             text = stringResource(R.string.Open_license),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = PrimaryFontColor,
+            color = themeColors.primaryFontColor,
         )
         Box(
             modifier = Modifier
@@ -890,7 +881,7 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(16.dp)
             )
         }

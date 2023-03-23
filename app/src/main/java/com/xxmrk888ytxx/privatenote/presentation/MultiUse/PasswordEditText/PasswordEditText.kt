@@ -22,10 +22,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.ErrorColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
+
 
 @Composable
 fun PasswordEditText(titleText: MutableState<String>,
@@ -48,14 +46,14 @@ fun PasswordEditText(titleText: MutableState<String>,
         },
         isError = titleText.value == stringResource(id = R.string.Invalid_password),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f),
-            errorBorderColor = ErrorColor
+            textColor = themeColors.primaryFontColor,
+            backgroundColor = themeColors.searchColor,
+            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+            focusedBorderColor = themeColors.searchColor,
+            focusedLabelColor = themeColors.primaryFontColor.copy(alpha = 0.85f),
+            cursorColor = themeColors.cursorColor,
+            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f),
+            errorBorderColor = themeColors.errorColor
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,

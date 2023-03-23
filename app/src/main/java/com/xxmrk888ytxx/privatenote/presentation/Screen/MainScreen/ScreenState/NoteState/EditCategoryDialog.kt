@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -24,11 +25,8 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.getColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
+import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 
 @Composable
 fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category? = null) {
@@ -46,15 +44,13 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
     LaunchedEffect(key1 = Unit, block = {
         enableScroll.value = orientation == ORIENTATION_LANDSCAPE
     })
+
     LaunchedEffect(key1 = Unit, block = {
         if(category != null) {
             if(nameCategoryFieldText.value == "")
                 nameCategoryFieldText.value = category.categoryName
-            if(currentColor.value == PrimaryFontColor) {
+            if(currentColor.value == Color.White) {
                 currentColor.value = category.getColor()
-            }
-            else {
-
             }
         }
     })
@@ -73,7 +69,7 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
             Card(
                 Modifier
                     .fillMaxWidth(),
-                backgroundColor = CardColor,
+                backgroundColor = themeColors.cardColor,
                 shape = RoundedCornerShape(25.dp)
             ) {
                 Column(
@@ -96,13 +92,13 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                             )
                         },
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            textColor = PrimaryFontColor,
-                            backgroundColor = SearchColor,
-                            placeholderColor = PrimaryFontColor.copy(0.7f),
+                            textColor = themeColors.primaryFontColor,
+                            backgroundColor = themeColors.searchColor,
+                            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
                             focusedBorderColor = currentColor.value,
                             focusedLabelColor = currentColor.value,
                             cursorColor = currentColor.value,
-                            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+                            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
                         ),
                         textStyle = TextStyle(
                             fontWeight = FontWeight.Medium,
@@ -144,17 +140,17 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                                 .padding(start = 5.dp, end = 5.dp),
                             shape = RoundedCornerShape(80),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = TitleHintColor,
+                                backgroundColor = themeColors.titleHintColor,
                             )
                         ) {
                             Text(text = stringResource(R.string.Cancel),
-                                color = PrimaryFontColor
+                                color = themeColors.primaryFontColor
                             )
                         }
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = SecondaryColor,
-                                disabledBackgroundColor = SecondaryColor.copy(0.3f)
+                                backgroundColor = themeColors.secondaryColor,
+                                disabledBackgroundColor = themeColors.secondaryColor.copy(0.3f)
                             ),
                             enabled = nameCategoryFieldText.value.isNotEmpty(),
                             onClick = {
@@ -170,7 +166,7 @@ fun EditCategoryDialog(noteStateViewModel: NoteStateViewModel, category:Category
                             shape = RoundedCornerShape(80),
                         ) {
                             Text(text = stringResource(R.string.Save),
-                                color = PrimaryFontColor
+                                color = themeColors.primaryFontColor
                             )
                         }
                     }

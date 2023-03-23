@@ -32,7 +32,6 @@ import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -91,7 +90,7 @@ class NoteStateViewModel @Inject constructor(
     
     val nameCategoryFieldText = mutableStateOf("")
 
-    val currentCategoryColor = mutableStateOf(PrimaryFontColor)
+    val currentCategoryColor = mutableStateOf(Color.White)
 
     val isShowSelectedCategoryMenu = mutableStateOf(false)
 
@@ -244,7 +243,7 @@ class NoteStateViewModel @Inject constructor(
         analytics.sendEvent(Hide_EditCategory_Dialog,null)
         showEditCategoryDialog.value = Pair(false,null)
         nameCategoryFieldText.value = ""
-        currentCategoryColor.value = PrimaryFontColor
+        currentCategoryColor.value = Color.White
     }
 
     fun getEditCategoryStatus() = showEditCategoryDialog
@@ -326,6 +325,8 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun getNoteSortNoteState() = settingsRepository.getSortNoteState()
+
+    fun getThemeId() = settingsRepository.getApplicationThemeId()
     companion object {
         val SCREEN_ID = MainScreenState.NoteScreen.id
     }

@@ -75,7 +75,8 @@ class TodoWidgetRepositoryImpl @Inject constructor(
         try {
             val dataModel = TodoWidgetDataModel(todoList)
             val moshi: Moshi = Moshi.Builder().build()
-            val jsonAdapter: JsonAdapter<TodoWidgetDataModel> = moshi.adapter(TodoWidgetDataModel::class.java)
+            val jsonAdapter: JsonAdapter<TodoWidgetDataModel> = moshi.adapter(
+                TodoWidgetDataModel::class.java)
             val jsonString = jsonAdapter.toJson(dataModel)
                 GlanceAppWidgetManager(context).getGlanceIds(TodoWidget::class.java).forEach { glanceId ->
                     updateAppWidgetState(context, glanceId) { pref ->

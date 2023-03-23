@@ -1,7 +1,5 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,12 +18,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,16 +30,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
 
 @Composable
 fun BackupSettingsScreen(
@@ -69,7 +62,7 @@ fun BackupSettingsScreen(
         Text(text = stringResource(R.string.Backup),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
         )
         AutoBackupSettingsList(backupSettingsViewModel,settings)
@@ -220,12 +213,12 @@ fun AutoBackupSettingsList(
                 text = stringResource(R.string.Auto_Backup_Settings_Local),
                 fontWeight = FontWeight.W800,
                 fontSize = 20.sp,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier.padding(start = 10.dp)
             )
             Divider(modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
         }
         item {
             Row(
@@ -236,7 +229,7 @@ fun AutoBackupSettingsList(
                     text = stringResource(R.string.Backup_is_active),
                     fontWeight = FontWeight.W800,
                     fontSize = 18.sp,
-                    color = ThemeManager.PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
@@ -253,8 +246,8 @@ fun AutoBackupSettingsList(
                             }
                         },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = ThemeManager.SecondaryColor,
-                            uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                            checkedThumbColor = themeColors.secondaryColor,
+                            uncheckedThumbColor = themeColors.secondaryFontColor
                         ),
                     )
                 }
@@ -292,14 +285,14 @@ fun AutoBackupSettingsList(
                 text = stringResource(R.string.Auto_Backup_Settings_GDrive),
                 fontWeight = FontWeight.W800,
                 fontSize = 20.sp,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier.padding(start = 10.dp,top = 10.dp)
             )
         }
         item {
             Divider(modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
         }
         item {
             Row(
@@ -310,7 +303,7 @@ fun AutoBackupSettingsList(
                     text = stringResource(R.string.Backup_is_active),
                     fontWeight = FontWeight.W800,
                     fontSize = 18.sp,
-                    color = ThemeManager.PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
@@ -326,8 +319,8 @@ fun AutoBackupSettingsList(
                             }
                         },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = ThemeManager.SecondaryColor,
-                            uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                            checkedThumbColor = themeColors.secondaryColor,
+                            uncheckedThumbColor = themeColors.secondaryFontColor
                         ),
                     )
                 }
@@ -379,7 +372,7 @@ fun AutoBackupSettingsList(
         item {
             Divider(modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
+                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
         }
         items(paramsList) {
             Row(
@@ -390,7 +383,7 @@ fun AutoBackupSettingsList(
                     text = it.title,
                     fontWeight = FontWeight.W800,
                     fontSize = 16.sp,
-                    color = ThemeManager.PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
                 )
                 Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
@@ -400,8 +393,8 @@ fun AutoBackupSettingsList(
                             it.updateStateInAutoBackupParams(newState)
                         },
                         colors = SwitchDefaults.colors(
-                            checkedThumbColor = ThemeManager.SecondaryColor,
-                            uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                            checkedThumbColor = themeColors.secondaryColor,
+                            uncheckedThumbColor = themeColors.secondaryFontColor
                         ),
                         enabled = it.isEnable
                     )
@@ -427,7 +420,7 @@ fun MainBackupSettings(
             text = stringResource(R.string.Create_backup_now),
             fontWeight = FontWeight.W800,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 10.dp, bottom = 15.dp)
         )
         Box(
@@ -438,7 +431,7 @@ fun MainBackupSettings(
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = ThemeManager.PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -456,7 +449,7 @@ fun MainBackupSettings(
             text = stringResource(R.string.Restore_backup),
             fontWeight = FontWeight.W800,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
         )
         Box(
@@ -467,7 +460,7 @@ fun MainBackupSettings(
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = ThemeManager.PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -483,7 +476,7 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
         Card(
             modifier = Modifier
                 .fillMaxWidth(),
-            backgroundColor = ThemeManager.CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -496,7 +489,7 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                             })
                         Divider(modifier = Modifier
                             .fillMaxWidth() ,
-                            color = ThemeManager.PrimaryFontColor)
+                            color = themeColors.primaryFontColor)
                     }
                     items(backupParamsList) {
                         BackupItemCheckBox(
@@ -566,7 +559,7 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
     Dialog(onDismissRequest = { backupSettingsViewModel.hideRestoreBackupDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = ThemeManager.CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -582,7 +575,7 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                             )
                             Divider(modifier = Modifier
                                 .fillMaxWidth() ,
-                                color = ThemeManager.PrimaryFontColor)
+                                color = themeColors.primaryFontColor)
                         }
                         BackupItemCheckBox(
                             title = it.title,
@@ -593,7 +586,7 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                             Spacer(modifier = Modifier.height(7.dp))
                             Divider(modifier = Modifier
                                 .fillMaxWidth() ,
-                                color = ThemeManager.PrimaryFontColor)
+                                color =themeColors.primaryFontColor)
                             Spacer(modifier = Modifier.height(7.dp))
                             BackupItemCheckBox(title = stringResource(R.string.Restore_backup_warming),
                                 userConfirmRemoveOldDataState.value,
@@ -637,8 +630,8 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
         Checkbox(
             checked = state,
             onCheckedChange = {onChange(it)},
-            colors = CheckboxDefaults.colors(checkedColor = ThemeManager.SecondaryColor,
-                ThemeManager.SecondaryColor,
+            colors = CheckboxDefaults.colors(checkedColor = themeColors.secondaryColor,
+                themeColors.secondaryColor,
             ),
             modifier = Modifier.padding(end = 10.dp)
         )
@@ -646,7 +639,7 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
             text = title,
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 10.dp, bottom = 10.dp),
         )
     }
@@ -664,7 +657,7 @@ fun RepeatAutoBackupTimeDropDownList(
             onHide()
         },
         modifier = Modifier
-            .background(ThemeManager.DropDownMenuColor)
+            .background(themeColors.dropDownMenuColor)
             .heightIn(max = 200.dp)
     ) {
         dropDownItem.forEach {
@@ -675,7 +668,7 @@ fun RepeatAutoBackupTimeDropDownList(
                     Text(text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = ThemeManager.PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }
@@ -708,7 +701,7 @@ fun SelectBackupPathButton(
                 text = title,
                 fontWeight = FontWeight.W800,
                 fontSize = 18.sp,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier
             )
             Box(
@@ -719,7 +712,7 @@ fun SelectBackupPathButton(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow),
                     contentDescription = "",
-                    tint = ThemeManager.PrimaryFontColor,
+                    tint = themeColors.primaryFontColor,
                     modifier = Modifier.size(20.dp)
                 )
             }
@@ -729,7 +722,7 @@ fun SelectBackupPathButton(
                 text = textIfPathNotSelected,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = ThemeManager.ErrorColor,
+                color = themeColors.errorColor,
                 modifier = Modifier
             )
         }
@@ -738,7 +731,7 @@ fun SelectBackupPathButton(
                 text = textIfPathSelected,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = ThemeManager.Green,
+                color = themeColors.green,
                 modifier = Modifier
             )
         }
@@ -765,7 +758,7 @@ fun SelectRepeatBackupButton(
         ) {
             Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                 contentDescription = "",
-                tint = ThemeManager.SecondoryFontColor,
+                tint = themeColors.secondaryFontColor,
                 modifier = Modifier.padding(top = 0.dp)
             )
         }
@@ -783,7 +776,7 @@ fun SelectRepeatBackupButton(
             text = stringResource(R.string.Repeat_every),
             fontWeight = FontWeight.W800,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier
         )
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
@@ -791,7 +784,7 @@ fun SelectRepeatBackupButton(
                 inlineContent = inlineContentMap,
                 fontWeight = FontWeight.W800,
                 fontSize = 16.sp,
-                color = ThemeManager.SecondoryFontColor)
+                color = themeColors.secondaryFontColor)
             RepeatAutoBackupTimeDropDownList(onChange,isVisible,onHide)
         }
     }
@@ -819,7 +812,7 @@ fun GoogleSingInButton(
                 text = stringResource(R.string.Authorization_google),
                 fontWeight = FontWeight.W800,
                 fontSize = 18.sp,
-                color = ThemeManager.PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 modifier = Modifier
             )
             Box(
@@ -850,7 +843,7 @@ fun LoadDialog() {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20),
-            backgroundColor = ThemeManager.CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -863,7 +856,7 @@ fun LoadDialog() {
                     text = stringResource(R.string.Wait_please),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = ThemeManager.PrimaryFontColor
+                    color = themeColors.primaryFontColor
                 )
             }
         }
@@ -884,7 +877,7 @@ fun SettingsRadioButton(
             text = text,
             fontWeight = FontWeight.W800,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
         )
         Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
@@ -894,8 +887,8 @@ fun SettingsRadioButton(
                     onChange(it)
                 },
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = ThemeManager.SecondaryColor,
-                    uncheckedThumbColor = ThemeManager.SecondoryFontColor
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
                 ),
             )
         }
@@ -920,7 +913,7 @@ fun SettingsButton(
             text = text,
             fontWeight = FontWeight.W800,
             fontSize = 18.sp,
-            color = ThemeManager.PrimaryFontColor,
+            color = themeColors.primaryFontColor,
             modifier = Modifier
         )
         Box(
@@ -931,7 +924,7 @@ fun SettingsButton(
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
-                tint = ThemeManager.PrimaryFontColor,
+                tint = themeColors.primaryFontColor,
                 modifier = Modifier.size(20.dp)
             )
         }

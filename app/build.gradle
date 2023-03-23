@@ -152,4 +152,7 @@ dependencies {
     implementation "com.google.accompanist:accompanist-insets:0.27.0"
     // If using insets-ui
     implementation "com.google.accompanist:accompanist-insets-ui:0.27.0"
+
+    //System Controller
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.29.2-rc"
 }

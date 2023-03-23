@@ -33,9 +33,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.Utils.NavArguments
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
 
@@ -128,7 +126,7 @@ fun SelectColorDialog(drawViewModel: DrawViewModel) {
     Dialog(onDismissRequest = { drawViewModel.hideSelectColorDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         ) {
             Column(Modifier.fillMaxWidth()) {
@@ -180,7 +178,7 @@ fun SaveLoadDialog() {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20),
-            backgroundColor = CardColor
+            backgroundColor = themeColors.cardColor
         ) {
             Row(modifier = Modifier
                 .fillMaxWidth()
@@ -193,7 +191,7 @@ fun SaveLoadDialog() {
                     text = stringResource(R.string.Saving),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryFontColor
+                    color = themeColors.primaryFontColor
                 )
             }
         }
@@ -217,22 +215,26 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
 
     val listOptions = listOf(
         DrawOptionItem(
-            R.drawable.ic_save
+            R.drawable.ic_save,
+            iconColor = themeColors.primaryFontColor
         ){
          drawViewModel.saveDraw(navController)
         },
         DrawOptionItem(
-            R.drawable.ic_undo_up
+            R.drawable.ic_undo_up,
+            iconColor = themeColors.primaryFontColor
         ){
          drawViewModel.undo()
         },
         DrawOptionItem(
-            R.drawable.ic_redo_up
+            R.drawable.ic_redo_up,
+            iconColor = themeColors.primaryFontColor
         ){
          drawViewModel.redo()
         },
         DrawOptionItem(
-            R.drawable.ic_clear
+            R.drawable.ic_clear,
+            iconColor = themeColors.primaryFontColor
         ){
          drawViewModel.clearDrawPlace()
         },
@@ -243,7 +245,8 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
             drawViewModel.changeSelectColorListShow()
         },
         DrawOptionItem(
-            R.drawable.ic_thickness
+            R.drawable.ic_thickness,
+            iconColor = themeColors.primaryFontColor
         ){
             drawViewModel.changeStrokeWidthSliderState()
         },
@@ -273,8 +276,8 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 },
                     valueRange = 1f..100f,
                     colors = SliderDefaults.colors(
-                        thumbColor = SecondaryColor,
-                        activeTrackColor = SecondaryColor
+                        thumbColor = themeColors.secondaryColor,
+                        activeTrackColor = themeColors.secondaryColor
                     )
                 )
             }
@@ -305,7 +308,7 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_add_circle),
                                 contentDescription = "",
-                                tint = PrimaryFontColor,
+                                tint = themeColors.primaryFontColor,
                                 modifier = Modifier.padding(
                                     start = 10.dp,
                                     end = 10.dp

@@ -15,58 +15,47 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.glance.appwidget.lazy.items
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
-import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.TopBar
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.BLACK_THEME
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SYSTEM_THEME
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.WHITE_THEME
+import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
 fun ThemeSettingsScreen(
     themeSettingsViewModel: ThemeSettingsViewModel = hiltViewModel(),
     navController: NavController,
-    onUpdateTheme:(Int) -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
         TopBar(navController)
-        Text(text = stringResource(R.string.Themes),
+        Text(
+            text = stringResource(R.string.Themes),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
-            color = PrimaryFontColor,
-            modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
+            color = themeColors.primaryFontColor,
+            modifier = Modifier.padding(start = 20.dp, bottom = 15.dp)
         )
         ThemeList(themeSettingsViewModel)
     }
-    LaunchedEffect(key1 = Unit, block = {
-        themeSettingsViewModel.initOnUpdateTheme(onUpdateTheme)
-    })
 }
 
 @Composable
 fun ThemeList(themeSettingsViewModel: ThemeSettingsViewModel) {
     val currentTheme = themeSettingsViewModel
         .getCurrentApplicationThemeId()
-        .collectAsState(initial = SYSTEM_THEME)
+        .collectAsState(initial = com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.System.id)
     val themeList = listOf(
         ThemeType(
-            SYSTEM_THEME,
+            com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.System.id,
             stringResource(R.string.System_theme)
         ),
         ThemeType(
-            WHITE_THEME,
+            com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.White.id,
             stringResource(R.string.White_theme)
         ),
         ThemeType(
-            BLACK_THEME,
+            com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.Black.id,
             stringResource(R.string.Black_theme)
         ),
     )
@@ -82,20 +71,21 @@ fun ThemeList(themeSettingsViewModel: ThemeSettingsViewModel) {
                     },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RadioButton(selected =it.themeId == currentTheme.value,
+                RadioButton(
+                    selected = it.themeId == currentTheme.value,
                     onClick = {
                         themeSettingsViewModel.updateApplicationTheme(it.themeId)
                     },
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = ThemeManager.SecondaryColor,
-                        unselectedColor = ThemeManager.SecondaryColor
+                        selectedColor = themeColors.secondaryColor,
+                        unselectedColor = themeColors.secondaryColor
                     ),
                 )
                 Text(
                     text = it.themeName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = PrimaryFontColor,
+                    color = themeColors.primaryFontColor,
                     maxLines = 1,
                 )
             }
@@ -118,7 +108,7 @@ fun TopBar(navController: NavController) {
                 contentDescription = "",
                 modifier = Modifier
                     .size(30.dp),
-                tint = PrimaryFontColor
+                tint = themeColors.primaryFontColor
             )
         }
     }

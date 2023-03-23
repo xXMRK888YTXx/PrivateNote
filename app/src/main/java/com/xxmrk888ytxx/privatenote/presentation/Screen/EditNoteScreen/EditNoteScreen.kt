@@ -58,17 +58,6 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CardColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.CursorColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.DropDownMenuColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondaryColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.MainBackGroundColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.PrimaryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SearchColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.SecondoryFontColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.TitleHintColor
-import com.xxmrk888ytxx.privatenote.presentation.ThemeManager.ThemeManager.largeButtonColor
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -109,7 +98,7 @@ fun EditNoteScreen(
             Modifier
                 .fillMaxSize()
                 .height(LocalConfiguration.current.screenHeightDp.dp)
-                .background(MainBackGroundColor)
+                .background(themeColors.mainBackGroundColor)
                 .statusBarsPadding()
                 .navigationBarsWithImePadding()
                 .verticalScroll(rememberScrollState())
@@ -193,7 +182,7 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
     Dialog(onDismissRequest = { editNoteViewModel.hideAudioRecorderDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(20.dp)
         )
         {
@@ -223,7 +212,7 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
                             if(recordState.value == RecorderState.RecordDisable) painterResource(R.drawable.ic_record)
                             else painterResource(R.drawable.ic_stop),
                                 contentDescription = "",
-                                tint = PrimaryFontColor
+                                tint = themeColors.primaryFontColor
                             )
                         }
 
@@ -242,7 +231,7 @@ fun RecordTimer(editNoteViewModel: EditNoteViewModel,recorderState: RecorderStat
     Text(
         text = currentRecordTime.value,
         fontSize = 30.sp,
-        color = PrimaryFontColor,
+        color = themeColors.primaryFontColor,
         fontWeight = FontWeight.Medium,
         modifier = Modifier.padding(bottom = 10.dp)
     )
@@ -252,7 +241,7 @@ fun RecordTimer(editNoteViewModel: EditNoteViewModel,recorderState: RecorderStat
 fun TimeCreated(editNoteViewModel: EditNoteViewModel) {
     if(editNoteViewModel.currentTime.value == 0L) return
     Text(text = editNoteViewModel.currentTime.value.secondToData(LocalContext.current),
-        color = PrimaryFontColor.copy(0.5f),
+        color = themeColors.primaryFontColor.copy(0.5f),
         fontSize = 14.sp,
         fontWeight = FontWeight.Light,
         modifier = Modifier
@@ -292,11 +281,11 @@ fun NoteTextEdit(editNoteViewModel: EditNoteViewModel, textFieldFocus: FocusRequ
                 backgroundColor = Color.White.copy(0f),
                 focusedIndicatorColor = Color.White.copy(0f),
                 unfocusedIndicatorColor = Color.White.copy(0f),
-                cursorColor = CursorColor,
-                placeholderColor = TitleHintColor.copy(0.6f)
+                cursorColor = themeColors.cursorColor,
+                placeholderColor = themeColors.titleHintColor.copy(0.6f)
             ),
             textStyle = TextStyle(
-                color = PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Medium,
             )
@@ -352,12 +341,12 @@ fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) 
     val isRedoAvailable = remember {
         editNoteViewModel.isHaveRepo
     }
-    val undoArrowColor = if(isUndoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
-    val redoArrowColor = if(isRedoAvailable.value) PrimaryFontColor else PrimaryFontColor.copy(0.4f)
+    val undoArrowColor = if(isUndoAvailable.value) themeColors.primaryFontColor else themeColors.primaryFontColor.copy(0.4f)
+    val redoArrowColor = if(isRedoAvailable.value) themeColors.primaryFontColor else themeColors.primaryFontColor.copy(0.4f)
     Row(
         Modifier
             .fillMaxWidth()
-            .background(MainBackGroundColor),
+            .background(themeColors.mainBackGroundColor),
         verticalAlignment = Alignment.CenterVertically,
         ) {
         IconButton(
@@ -372,7 +361,7 @@ fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) 
                 contentDescription = "Back Arrow",
                 modifier = Modifier
                     .size(30.dp),
-                tint = PrimaryFontColor
+                tint = themeColors.primaryFontColor
             )
         }
         Row(
@@ -418,7 +407,7 @@ fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) 
                            contentDescription = "",
                            modifier = Modifier
                                .size(35.dp),
-                           tint = PrimaryFontColor
+                           tint = themeColors.primaryFontColor
                        )
                    }
                    IconButton(
@@ -430,19 +419,19 @@ fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) 
                            contentDescription = "Dots",
                            modifier = Modifier
                                .size(40.dp),
-                           tint = PrimaryFontColor
+                           tint = themeColors.primaryFontColor
                        )
                    }
                    Box(
                    ) {
                        DropdownMenu(expanded = isDropDownMenuShow.value,
                            onDismissRequest = { isDropDownMenuShow.value = false },
-                           modifier = Modifier.background(DropDownMenuColor)
+                           modifier = Modifier.background(themeColors.dropDownMenuColor)
                        ) {
                            dropDownItemList.forEach {
                                if(it.isEnable) {
                                    DropdownMenuItem(onClick = { it.onClick.invoke() }) {
-                                       Text(it.text,color = PrimaryFontColor)
+                                       Text(it.text,color = themeColors.primaryFontColor)
                                    }
                                }
                            }
@@ -478,11 +467,11 @@ fun TitleEditField(editNoteViewModel: EditNoteViewModel, textFieldFocus: FocusRe
                 backgroundColor = Color.White.copy(0f),
                 focusedIndicatorColor = Color.White.copy(0f),
                 unfocusedIndicatorColor = Color.White.copy(0f),
-                cursorColor = CursorColor,
-                placeholderColor = TitleHintColor.copy(0.6f)
+                cursorColor = themeColors.cursorColor,
+                placeholderColor = themeColors.titleHintColor.copy(0.6f)
             ),
             textStyle = TextStyle(
-                color = PrimaryFontColor,
+                color = themeColors.primaryFontColor,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 ),
@@ -514,7 +503,7 @@ fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
             shape = RoundedCornerShape(10)
         ) {
             Column(
-                Modifier.background(MainBackGroundColor)
+                Modifier.background(themeColors.mainBackGroundColor)
 
             ) {
                 PasswordTextEdit(editNoteViewModel,passwordText,repitPasswordText,isEnabled)
@@ -529,9 +518,9 @@ fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
                             &&!repitPasswordText.value.isEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = largeButtonColor,
-                        disabledContentColor = largeButtonColor.copy(0.3f),
-                        disabledBackgroundColor = largeButtonColor.copy(0.3f)
+                        backgroundColor = themeColors.largeButtonColor,
+                        disabledContentColor = themeColors.largeButtonColor.copy(0.3f),
+                        disabledBackgroundColor = themeColors.largeButtonColor.copy(0.3f)
                         )
                 ){
                     Text(text = stringResource(R.string.Encrypt),
@@ -560,13 +549,13 @@ fun PasswordTextEdit(editNoteViewModel: EditNoteViewModel, password: MutableStat
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+            textColor = themeColors.primaryFontColor,
+            backgroundColor = themeColors.searchColor,
+            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+            focusedBorderColor = themeColors.searchColor,
+            focusedLabelColor = themeColors.primaryFontColor.copy(alpha = 0.85f),
+            cursorColor = themeColors.cursorColor,
+            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -594,13 +583,13 @@ fun RepitPasswordTextEdit(editNoteViewModel: EditNoteViewModel, repitPassword:Mu
         )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = PrimaryFontColor,
-            backgroundColor = SearchColor,
-            placeholderColor = PrimaryFontColor.copy(0.7f),
-            focusedBorderColor = SearchColor,
-            focusedLabelColor = PrimaryFontColor.copy(alpha = 0.85f),
-            cursorColor = CursorColor,
-            unfocusedLabelColor = PrimaryFontColor.copy(0.6f)
+            textColor = themeColors.primaryFontColor,
+            backgroundColor = themeColors.searchColor,
+            placeholderColor = themeColors.primaryFontColor.copy(0.7f),
+            focusedBorderColor = themeColors.searchColor,
+            focusedLabelColor = themeColors.primaryFontColor.copy(alpha = 0.85f),
+            cursorColor = themeColors.cursorColor,
+            unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions(autoCorrect = false,
@@ -631,7 +620,7 @@ fun DecriptDialog(editNoteViewModel: EditNoteViewModel, navController: NavContro
             shape = RoundedCornerShape(10)
         ) {
             Column(
-                Modifier.background(MainBackGroundColor)
+                Modifier.background(themeColors.mainBackGroundColor)
 
             ) {
                 PasswordEditText(titleText,passwordText) {
@@ -666,9 +655,9 @@ fun DecriptDialog(editNoteViewModel: EditNoteViewModel, navController: NavContro
                         shape = RoundedCornerShape(50),
                         enabled = passwordText.value.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            backgroundColor = largeButtonColor,
-                            disabledContentColor = largeButtonColor.copy(0.3f),
-                            disabledBackgroundColor = largeButtonColor.copy(0.3f)
+                            backgroundColor = themeColors.largeButtonColor,
+                            disabledContentColor = themeColors.largeButtonColor.copy(0.3f),
+                            disabledBackgroundColor = themeColors.largeButtonColor.copy(0.3f)
                         )
                     ){
                         Text(text = stringResource(R.string.Decrypt),
@@ -697,7 +686,7 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(CardColor),
+                        .background(themeColors.cardColor),
                     verticalArrangement = Arrangement.Bottom,
                 ) {
                     Text(
@@ -707,7 +696,7 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                             .padding(bottom = 25.dp, top = 25.dp)
                             .fillMaxWidth(),
                         fontSize = 17.sp,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         fontWeight = FontWeight.Bold
                     )
                     Row(
@@ -724,16 +713,16 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                                 .padding(start = 5.dp, end = 5.dp),
                             shape = RoundedCornerShape(80),
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = TitleHintColor,
+                                backgroundColor = themeColors.titleHintColor,
                             )
                         ) {
                             Text(text = stringResource(R.string.Not_save),
-                                color = PrimaryFontColor
+                                color = themeColors.primaryFontColor
                             )
                         }
                         OutlinedButton(
                             colors = ButtonDefaults.buttonColors(
-                                backgroundColor = SecondaryColor,
+                                backgroundColor = themeColors.secondaryColor,
                             ),
                             onClick = {
                                 editNoteViewModel.dialogShowState.value = ShowDialogState.None
@@ -745,7 +734,7 @@ fun ExitDialog(editNoteViewModel: EditNoteViewModel, navController: NavControlle
                             shape = RoundedCornerShape(80),
                         ) {
                             Text(text = stringResource(R.string.Save),
-                            color = PrimaryFontColor
+                            color = themeColors.primaryFontColor
                                 )
                         }
                     }
@@ -762,7 +751,7 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val iconColor = category.value?.getColor() ?: PrimaryFontColor
+        val iconColor = category.value?.getColor() ?: themeColors.primaryFontColor
         val icon = if(category.value != null) painterResource(R.drawable.ic_category_icon)
         else painterResource(R.drawable.ic_add_category)
         val categoryName = buildAnnotatedString {
@@ -775,7 +764,7 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
             ) {
                 Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
-                    tint = PrimaryFontColor,
+                    tint = themeColors.primaryFontColor,
                     modifier = Modifier.padding(top = 1.dp)
                 )
             }
@@ -793,7 +782,7 @@ fun CategorySelector(editNoteViewModel: EditNoteViewModel) {
             inlineContent = inlineContentMap,
             fontSize = 16.sp,
             fontWeight = FontWeight.Medium,
-            color = PrimaryFontColor.copy(0.75f),
+            color = themeColors.primaryFontColor.copy(0.75f),
             modifier = Modifier
                 .padding(top = 10.dp, bottom = 15.dp)
                 .clickable {
@@ -823,7 +812,7 @@ fun FilesDialog(
     ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            backgroundColor = CardColor,
+            backgroundColor = themeColors.cardColor,
             shape = RoundedCornerShape(25.dp)
         ) {
             Column(
@@ -837,7 +826,7 @@ fun FilesDialog(
                     Text(
                         text = stringResource(R.string.Files),
                         fontSize = 24.sp,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -849,7 +838,7 @@ fun FilesDialog(
                             Icon(
                                 painter = painterResource(R.drawable.ic_cancel),
                                 contentDescription = "",
-                                tint = PrimaryFontColor,
+                                tint = themeColors.primaryFontColor,
                                 modifier = Modifier.size(30.dp)
                             )
                         }
@@ -862,7 +851,7 @@ fun FilesDialog(
                     Text(
                             text = stringResource(R.string.Audio_records),
                         fontSize = 24.sp,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(start = 10.dp)
                     )
@@ -874,7 +863,7 @@ fun FilesDialog(
                                 if(audioLoadState.value is LoadRepositoryState.Loaded) {
                                     Icon(painter = painterResource(R.drawable.ic_plus),
                                         contentDescription = "",
-                                        tint = PrimaryFontColor,
+                                        tint = themeColors.primaryFontColor,
                                         modifier = Modifier.size(30.dp)
                                     )
                                 }
@@ -915,19 +904,19 @@ fun FilesDialog(
                                     Box(
                                         modifier = Modifier
                                             .clip(CircleShape)
-                                            .background(SecondaryColor)
+                                            .background(themeColors.secondaryColor)
                                             .size(40.dp),
                                         contentAlignment = Alignment.CenterEnd
                                     ) {
                                         Icon(painter = painterResource(R.drawable.ic_play),
                                             contentDescription = "",
-                                            tint = PrimaryFontColor,
+                                            tint = themeColors.primaryFontColor,
                                             modifier = Modifier.align(Alignment.Center)
                                         )
                                     }
                                     Text(
                                         text = it.duration.milliSecondToSecond(),
-                                        color = PrimaryFontColor,
+                                        color = themeColors.primaryFontColor,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.Medium,
                                     )
@@ -945,7 +934,7 @@ fun FilesDialog(
                     Text(
                         text = stringResource(R.string.No_Audio),
                         fontSize = 26.sp,
-                        color = SecondoryFontColor.copy(1f),
+                        color = themeColors.secondaryFontColor.copy(1f),
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -963,7 +952,7 @@ fun FilesDialog(
                     Text(
                         text = stringResource(R.string.Images),
                         fontSize = 24.sp,
-                        color = PrimaryFontColor,
+                        color = themeColors.primaryFontColor,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(start = 10.dp)
                     )
@@ -972,7 +961,7 @@ fun FilesDialog(
                             IconButton(onClick = { editNoteViewModel.toDrawScreen(navController) }) {
                                 Icon(painter = painterResource(R.drawable.ic_baseline_draw_24),
                                     contentDescription = "",
-                                    tint = PrimaryFontColor,
+                                    tint = themeColors.primaryFontColor,
                                     modifier = Modifier.size(30.dp)
                                 )
                             }
@@ -980,7 +969,7 @@ fun FilesDialog(
                                 IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
                                     Icon(painter = painterResource(R.drawable.ic_plus),
                                         contentDescription = "",
-                                        tint = PrimaryFontColor,
+                                        tint = themeColors.primaryFontColor,
                                         modifier = Modifier.size(30.dp)
                                     )
                                 }
@@ -1040,7 +1029,7 @@ fun FilesDialog(
                     Text(
                         text = stringResource(R.string.No_Images),
                         fontSize = 26.sp,
-                        color = SecondoryFontColor.copy(1f),
+                        color = themeColors.secondaryFontColor.copy(1f),
                         fontWeight = FontWeight.Medium,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -1079,7 +1068,7 @@ fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
            expanded = state.value,
            onDismissRequest = { editNoteViewModel.hideAddAudioDropDown() },
            modifier = Modifier
-               .background(DropDownMenuColor)
+               .background(themeColors.dropDownMenuColor)
                .heightIn(max = 200.dp)
        ) {
            items.forEach {
@@ -1087,7 +1076,7 @@ fun AddAudioDropDown(editNoteViewModel: EditNoteViewModel) {
                    Text(text = it.text,
                        fontSize = 16.sp,
                        fontWeight = FontWeight.Medium,
-                       color = ThemeManager.PrimaryFontColor
+                       color = themeColors.primaryFontColor
                    )
                }
            }
@@ -1123,7 +1112,7 @@ fun FileOptionsDropBox(
             expanded = isVisible,
             onDismissRequest = { onHide() },
             modifier = Modifier
-                .background(DropDownMenuColor)
+                .background(themeColors.dropDownMenuColor)
                 .heightIn(max = 200.dp)
         ) {
             items.forEach {
@@ -1131,7 +1120,7 @@ fun FileOptionsDropBox(
                     Text(text = it.text,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        color = PrimaryFontColor
+                        color = themeColors.primaryFontColor
                     )
                 }
             }
