@@ -242,17 +242,6 @@ class MainActivity :
         }
     }
 
-    override fun pickImage(onComplete: (image: Bitmap) -> Unit, onError: (e: Exception) -> Unit) {
-        try {
-            mainActivityViewModel.registerImagePickCallBacks(onComplete, onError)
-            val photoPickerIntent = Intent(Intent.ACTION_PICK)
-            photoPickerIntent.type = "image/*"
-            imagePickCallBack.launch(photoPickerIntent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
     override fun pickAudio(onComplete: (audioUri: Uri) -> Unit, onError: (e: Exception) -> Unit) {
         try {
             mainActivityViewModel.registerPickAudioCallBack(onComplete, onError)
@@ -441,25 +430,6 @@ class MainActivity :
             }
         }
 
-    private val imagePickCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val uri = it.data?.data
-                try {
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val bitmap = MediaStore.Images.Media
-                            .getBitmap(this@MainActivity.contentResolver, uri)
-                        mainActivityViewModel.onPickComplete(bitmap)
-                    }
-
-                } catch (e: Exception) {
-                    mainActivityViewModel.onPickError(e)
-                }
-            } else {
-                mainActivityViewModel.onPickError(Exception())
-            }
-        }
-
     private val audioPickCallBack =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
@@ -474,6 +444,7 @@ class MainActivity :
             }
         }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     private fun lockOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }

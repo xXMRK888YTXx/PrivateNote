@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -57,6 +58,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.Sh
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickImageContract
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import kotlinx.coroutines.launch
 
@@ -806,6 +808,12 @@ fun FilesDialog(
     val audios = editNoteViewModel.getAudioFiles().collectAsState(listOf(),scope.coroutineContext)
     val imageLoadState = editNoteViewModel.getImageRepositoryLoadState().collectAsState()
     val audioLoadState = editNoteViewModel.getAudioRepositoryLoadState().collectAsState()
+
+    val pickImageContract = rememberLauncherForActivityResult(
+        contract = PickImageContract(),
+        onResult = editNoteViewModel::onImagePicked
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -966,7 +974,7 @@ fun FilesDialog(
                                 )
                             }
                             if(imageLoadState.value is LoadRepositoryState.Loaded) {
-                                IconButton(onClick = { editNoteViewModel.addImage(activityController) }) {
+                                IconButton(onClick = { editNoteViewModel.addImage(pickImageContract) }) {
                                     Icon(painter = painterResource(R.drawable.ic_plus),
                                         contentDescription = "",
                                         tint = themeColors.primaryFontColor,

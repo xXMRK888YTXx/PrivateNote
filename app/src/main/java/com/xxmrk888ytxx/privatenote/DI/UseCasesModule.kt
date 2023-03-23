@@ -23,6 +23,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetT
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
@@ -51,63 +53,69 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 interface UseCasesModule {
     @Binds
-    fun bindsRemoveNoteFileUseCase(removeNoteFileUseCaseImpl: RemoveNoteFileUseCaseImpl) : RemoveNoteFileUseCase
+    fun bindsRemoveNoteFileUseCase(removeNoteFileUseCaseImpl: RemoveNoteFileUseCaseImpl): RemoveNoteFileUseCase
 
     @Binds
     fun bindsNotifyWidgetDataChangedUseCase(notifyWidgetDataChangedUseCaseImpl: NotifyWidgetDataChangedUseCaseImpl)
-    : NotifyWidgetDataChangedUseCase
+            : NotifyWidgetDataChangedUseCase
 
     @Binds
     fun bindsRemoveNotifyTaskIfTodoCompletedUseCase(
-        notifyTaskIfTodoCompletedUseCaseImpl: RemoveNotifyTaskIfTodoCompletedUseCaseImpl)
-    : RemoveNotifyTaskIfTodoCompletedUseCase
+        notifyTaskIfTodoCompletedUseCaseImpl: RemoveNotifyTaskIfTodoCompletedUseCaseImpl,
+    )
+            : RemoveNotifyTaskIfTodoCompletedUseCase
 
     @Binds
     fun bindsGetNotesForBackupUseCase(getNotesForBackupUseCaseImpl: GetNotesForBackupUseCaseImpl)
-    : GetNotesForBackupUseCase
+            : GetNotesForBackupUseCase
 
     @Binds
     fun bindsGetCategoryForBackupUseCase(getCategoryForBackupUseCaseImpl: GetCategoryForBackupUseCaseImpl)
-    : GetCategoryForBackupUseCase
+            : GetCategoryForBackupUseCase
 
     @Binds
     fun bindsTodoGetForBackupUseCase(getTodoForBackupUseCaseImpl: GetTodoForBackupUseCaseImpl)
-    : GetTodoForBackupUseCase
+            : GetTodoForBackupUseCase
 
     @Binds
     fun bindsWriteBackupInFileUseCase(writeBackupInFileUseCaseImpl: WriteBackupInFileUseCaseImpl)
-    : WriteBackupInFileUseCase
+            : WriteBackupInFileUseCase
 
     @Binds
     fun bindsReadBackupFileUseCase(unArcherBackupUseCaseImpl: UnArcherBackupUseCaseImpl)
-    : UnArcherBackupUseCase
+            : UnArcherBackupUseCase
 
     @Binds
     fun bindsRestoreCategoryFromUseCase(restoreCategoryFromBackupUseCase: RestoreCategoryFromBackupUseCaseImpl)
-    : RestoreCategoryFromBackupUseCase
+            : RestoreCategoryFromBackupUseCase
 
     @Binds
     fun bindsRestoreNoteFromUseCase(restoreNoteFromBackupUseCaseImpl: RestoreNoteFromBackupUseCaseImpl)
-    : RestoreNoteFromBackupUseCase
+            : RestoreNoteFromBackupUseCase
 
     @Binds
     fun bindsRestoreTodoFromBackupUseCase(restoreTodoFromUseCaseImpl: RestoreTodoFromUseCaseImpl)
-    : RestoreTodoFromUseCase
+            : RestoreTodoFromUseCase
 
     @Binds
-    fun bindsCreateBackupUseCase(createBackupModelUseCaseImpl: CreateBackupModelUseCaseImpl) : CreateBackupModelUseCase
+    fun bindsCreateBackupUseCase(createBackupModelUseCaseImpl: CreateBackupModelUseCaseImpl): CreateBackupModelUseCase
 
     @Binds
     fun bindsUploadBackupToGoogleDriveUseCaseImpl(uploadBackupToGoogleDriveUseCaseImpl: UploadBackupToGoogleDriveUseCaseImpl)
-    : UploadBackupToGoogleDriveUseCase
+            : UploadBackupToGoogleDriveUseCase
 
     @Binds
-    fun bindsExportImageUseCase(exportImageUseCaseImpl: ExportImageUseCaseImpl) : ExportImageUseCase
+    fun bindsExportImageUseCase(exportImageUseCaseImpl: ExportImageUseCaseImpl): ExportImageUseCase
 
     @Binds
-    fun bindsExportAudioUseCase(exportAudioUseCaseImpl: ExportAudioUseCaseImpl) : ExportAudioUseCase
+    fun bindsExportAudioUseCase(exportAudioUseCaseImpl: ExportAudioUseCaseImpl): ExportAudioUseCase
 
     @Binds
-    fun bindsRestoreBackupUseCase(restoreBackupUseCaseImpl: RestoreBackupUseCaseImpl) : RestoreBackupUseCase
+    fun bindsRestoreBackupUseCase(restoreBackupUseCaseImpl: RestoreBackupUseCaseImpl): RestoreBackupUseCase
+
+    @Binds
+    fun bindProvideDataFromFileUriUseCase(
+        ProvideDataFromFileUriUseCaseImpl: ProvideDataFromFileUriUseCaseImpl
+    ): ProvideDataFromFileUriUseCase
 
 }
