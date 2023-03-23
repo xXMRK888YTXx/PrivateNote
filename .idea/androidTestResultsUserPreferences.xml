@@ -55,6 +55,23 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-533127002">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="00499dbf0412" value="120" />
+                  <entry key="Devace_API_26" value="120" />
+                  <entry key="Duration" value="90" />
+                  <entry key="Pixel_6_Pro_API_26" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="Xiaomi" value="120" />
+                  <entry key="Xiaomi&#10; M2004J19C" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-437595879">
           <value>
             <AndroidTestResultsTableState>
@@ -90,6 +107,19 @@
                 <map>
                   <entry key="Devace_API_26" value="120" />
                   <entry key="Duration" value="90" />
+                  <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="784614730">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="HUAWEI&#10; YAL-L21" value="120" />
                   <entry key="Tests" value="360" />
                 </map>
               </option>

@@ -3,7 +3,6 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.
 import android.annotation.SuppressLint
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,6 +45,9 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid.GridNoteView
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.List.ListNoteView
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import me.saket.swipe.SwipeAction
@@ -395,6 +396,8 @@ fun SearchLine(noteStateViewModel: NoteStateViewModel) {
 @OptIn(ExperimentalFoundationApi::class)
 fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavController) {
     val noteList = noteStateViewModel.getNoteList().collectAsState(listOf())
+    val viewState = noteStateViewModel.getViewNoteListState()
+        .collectAsState(initial = ViewNoteListState.List)
     val sortNoteState = noteStateViewModel.getNoteSortNoteState().collectAsState(SortNoteState.ByDescending)
     val mode = remember {
         noteStateViewModel.getCurrentMode()
@@ -420,13 +423,26 @@ fun NoteList(noteStateViewModel: NoteStateViewModel, navController: NavControlle
         Stub()
     }
     else {
-        ListNoteView(
-            noteStateViewModel = noteStateViewModel,
-            screenMode = mode,
-            notes = sortedNoteList,
-            navController = navController,
-            selectedItemCount = selectedItemCount
-        )
+
+        when(viewState.value) {
+            is ViewNoteListState.List -> {
+                ListNoteView(
+                    noteStateViewModel = noteStateViewModel,
+                    screenMode = mode,
+                    notes = sortedNoteList,
+                    navController = navController,
+                    selectedItemCount = selectedItemCount
+                )
+            }
+            is ViewNoteListState.Table -> {
+                GridNoteView(
+                    noteStateViewModel = noteStateViewModel,
+                    screenMode = mode,
+                    notes = sortedNoteList,
+                    navController = navController,
+                    selectedItemCount = selectedItemCount
+                )
+
     }
 }
 
@@ -577,11 +593,10 @@ fun ListNoteView(
                     check.value = false
                 }
             }
-
         }
-
     }
 }
+
 
 @Composable
 fun SearchStub() {
@@ -679,6 +694,7 @@ fun CategoryMenuStub(noteStateViewModel: NoteStateViewModel) {
         }
     }
 }
+
 
 @Composable
 fun DefaultNoteItem(note: Note) {
@@ -790,6 +806,7 @@ fun EncryptNoteItem(note: Note) {
         }
     }
 }
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

@@ -222,4 +222,9 @@
     <string name="Open_license">Open Source-Lizenzen</string>
     <string name="To_source">Gehen Sie zur Quelle</string>
     <string name="To_licence">Gehen Sie zur Lizenz</string>
+    <string name="List">Liste</string>
+    <string name="Table">Tabelle</string>
+    <string name="Notes_display">Anzeigetyp Notizen</string>
+    <string name="System_language">Systemisch</string>
+    <string name="Language">Sprache</string>
 </resources>

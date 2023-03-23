@@ -2,6 +2,7 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.LocaleManager
 import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -19,8 +20,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
+import androidx.core.content.ContextCompat
+import androidx.core.os.LocaleListCompat
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope

@@ -222,4 +222,9 @@
     <string name="Open_license">Лицензии с открытым\nисходным кодом</string>
     <string name="To_source">Перейти к источнику</string>
     <string name="To_licence">Перейти к лицензии</string>
+    <string name="List">Список</string>
+    <string name="Table">Таблица</string>
+    <string name="Notes_display">Отображение заметок</string>
+    <string name="System_language">Системный</string>
+    <string name="Language">Язык</string>
 </resources>

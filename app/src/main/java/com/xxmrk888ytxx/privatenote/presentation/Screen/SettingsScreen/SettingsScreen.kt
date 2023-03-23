@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,6 +27,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import kotlinx.coroutines.launch
 
@@ -84,6 +86,21 @@ fun SettingsScreen(
     }
     if(enterAppPasswordDialogState.value) {
         EnterAppPasswordDialog(settingsViewModel)
+    }
+    if(languageDialogState.value) {
+        LanguageChoseDialog(languageList = getLanguageList(),
+            currentSelected = currentSelectedLanguage,
+            onNewSelected = {
+                settingsViewModel.changeCurrentSelectedLanguage(it.languageCode)
+            },
+            onCancel = {
+                settingsViewModel.hideLanguageDialog()
+            },
+            onComplete = {
+                settingsViewModel.changeAppLanguage()
+                settingsViewModel.hideLanguageDialog()
+            }
+        )
     }
 }
 
@@ -165,6 +182,9 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     val isShowDropDownSortStateVisible = settingsViewModel.isShowDropDownSortStateVisible().Remember()
     val sortNoteState = settingsViewModel.getNoteSortState().collectAsState(SortNoteState.ByDescending)
     val isShowAd = settingsViewModel.isNeedShowAd().collectAsState(true)
+    val currentViewNoteListState = settingsViewModel.getViewNoteListState()
+        .collectAsState(ViewNoteListState.List)
+    val isViewNoteListDropDownVisible = settingsViewModel.isViewNoteListDropDownVisible().Remember()
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
@@ -182,6 +202,15 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                 },
                 SettingsItem() {
                     ToBackupSettingsScreenButton(navController)
+                },
+                SettingsItem {
+                    LanguageChose(
+                        currentLanguage = languageCodeToItem(AppCompatDelegate
+                            .getApplicationLocales()[0]?.language ?: "xx"),
+                        onShowLanguageDialog = {
+                            settingsViewModel.showLanguageDialog()
+                        }
+                    )
                 }
             )
         ),
@@ -202,8 +231,23 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
                             settingsViewModel.hideDropDownSortState()
                         }
                     )
+                },
+                SettingsItem {
+                    SelectViewNoteListStateButton(
+                        currentState = currentViewNoteListState,
+                        onShowDropDown = {
+                            settingsViewModel.showViewNoteListDropDown()
+                        },
+                        onChangeViewNoteListState = { viewNoteListState ->
+                            settingsViewModel.changeViewNoteListState(viewNoteListState)
+                        },
+                        isVisibleDropDown = isViewNoteListDropDownVisible.value,
+                        onHideDropDown = {
+                            settingsViewModel.hideViewNoteListDropDown()
+                        }
+                    )
                 }
-            )
+            ),
         ),
         SettingsCategory(
             stringResource(R.string.Security),

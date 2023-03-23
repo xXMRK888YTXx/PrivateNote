@@ -3,8 +3,10 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.os.LocaleListCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -19,6 +21,7 @@ import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -65,6 +68,18 @@ class SettingsViewModel @Inject constructor(
 
     private val isShowDisableAdsDialog = mutableStateOf(false)
 
+    private val isShowViewNoteListDropDown = mutableStateOf(false)
+
+    fun showViewNoteListDropDown() {
+        isShowViewNoteListDropDown.value = true
+    }
+
+    fun hideViewNoteListDropDown() {
+        isShowViewNoteListDropDown.value = false
+    }
+
+    fun isViewNoteListDropDownVisible() = isShowViewNoteListDropDown.toState()
+
     fun isShowDisableAdsDialog() = isShowDisableAdsDialog.toState()
 
     fun openDisableAdsDialog() {
@@ -108,6 +123,18 @@ class SettingsViewModel @Inject constructor(
 
     fun changeCurrentSelectedLanguage(languageCode:String) {
         currentSelectedLanguage.value = languageCode
+    }
+
+    fun changeAppLanguage() {
+        val appLocale: LocaleListCompat = LocaleListCompat.forLanguageTags(currentSelectedLanguage.value)
+        AppCompatDelegate.setApplicationLocales(appLocale)
+
+    }
+
+    fun showLanguageDialog() {
+        showLanguageDialogState.value = true
+        currentSelectedLanguage.value = AppCompatDelegate
+            .getApplicationLocales()[0]?.language ?: "xx"
     }
 
     fun hideLanguageDialog() {
@@ -213,4 +240,12 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun isBueDisableAdAvailable() = bullingController?.isBillingAvailable ?: false
+
+    fun getViewNoteListState() = settingsRepository.getViewNoteListState()
+
+    fun changeViewNoteListState(viewNoteListState: ViewNoteListState) {
+        viewModelScope.launch {
+            settingsRepository.changeViewNoteListState(viewNoteListState)
+        }
+    }
 }

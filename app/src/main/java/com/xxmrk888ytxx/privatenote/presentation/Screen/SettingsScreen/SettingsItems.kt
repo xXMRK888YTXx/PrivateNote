@@ -40,9 +40,11 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Const.PRIVACY_POLICY
 import com.xxmrk888ytxx.privatenote.Utils.Const.TERMS
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
-import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
+import java.util.*
 
 
 @Composable
@@ -861,7 +863,8 @@ fun DisableAdsDialog(
 @Composable
 fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
     Row(Modifier
-        .fillMaxWidth().clickable() {
+        .fillMaxWidth()
+        .clickable() {
             onNavigateToLicenseScreen()
         },
         verticalAlignment = Alignment.CenterVertically,
@@ -887,6 +890,223 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
         }
     }
 }
+
+@SuppressLint("ResourceType")
+@Composable
+fun SelectViewNoteListStateButton(
+    currentState:State<ViewNoteListState>,
+    onShowDropDown:() -> Unit,
+    onChangeViewNoteListState: (ViewNoteListState) -> Unit,
+    isVisibleDropDown: Boolean,
+    onHideDropDown:() -> Unit
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = stringResource(R.string.Notes_display),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        val annotatedLabelString = buildAnnotatedString {
+            append(stringResource(currentState.value.title))
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        if(isVisibleDropDown) {
+            Box() {
+                SelectionViewNoteListStateDropDown(onChangeViewNoteListState,isVisibleDropDown,onHideDropDown)
+            }
+        }
+        Text(text = annotatedLabelString,
+            inlineContent = inlineContentMap,
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowDropDown()
+                }
+        )
+
+    }
+}
+
+@SuppressLint("ResourceType")
+@Composable
+fun SelectionViewNoteListStateDropDown(
+    onChangeSortState: (ViewNoteListState) -> Unit,
+    isVisible:Boolean,
+    onHide:() -> Unit
+) {
+    val dropDownItem = listOf(ViewNoteListState.List,ViewNoteListState.Table)
+    DropdownMenu(expanded = isVisible,
+        onDismissRequest = {
+            onHide()
+        },
+        modifier = Modifier
+            .background(ThemeManager.DropDownMenuColor)
+            .heightIn(max = 200.dp)
+    ) {
+        dropDownItem.forEach {
+            DropdownMenuItem(onClick = {
+                onChangeSortState(it)
+                onHide()
+            }) {
+                Row {
+                    Text(text = stringResource(it.title),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = ThemeManager.PrimaryFontColor
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit) {
+    Row(Modifier.fillMaxWidth().padding(top = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = stringResource(R.string.Language),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = PrimaryFontColor,
+        )
+        val annotatedLabelString = buildAnnotatedString {
+            append(currentLanguage.name)
+            appendInlineContent("drop_down_triangle")
+        }
+        val inlineContentMap = mapOf(
+            "drop_down_triangle" to InlineTextContent(
+                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
+            ) {
+                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                    contentDescription = "",
+                    tint = SecondoryFontColor,
+                    modifier = Modifier.padding(top = 0.dp)
+                )
+            }
+        )
+        Text(text = annotatedLabelString,
+            inlineContent = inlineContentMap,
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = SecondoryFontColor,
+            textAlign = TextAlign.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onShowLanguageDialog()
+                }
+        )
+
+    }
+}
+
+
+
+@Composable
+fun LanguageChoseDialog(
+    languageList:List<LanguageItem>,
+    currentSelected:MutableState<String>,
+    onNewSelected:(languageCode:LanguageItem) -> Unit,
+    onCancel:() -> Unit,
+    onComplete:() -> Unit
+) {
+    Dialog(onDismissRequest = {
+        onCancel()
+    }) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(20.dp),
+            backgroundColor = CardColor
+        ) {
+            Column(modifier = Modifier
+                .fillMaxWidth()) {
+                languageList.forEach {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onNewSelected(it)
+                            }
+                    ) {
+                        RadioButton(selected = currentSelected.value == it.languageCode ,
+                            onClick = { onNewSelected(it) },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = PrimaryFontColor,
+                                unselectedColor =PrimaryFontColor
+                            ),
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                        Text(text = it.name,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = PrimaryFontColor.copy(0.75f),
+                            modifier = Modifier.padding(top = 15.dp, bottom = 15.dp)
+                        )
+                    }
+                }
+                YesNoButton(onCancel = { onCancel() }) {
+                    onComplete()
+                }
+            }
+        }
+    }
+}
+@Composable
+fun getLanguageList() : List<LanguageItem> {
+    return listOf(
+        LanguageItem(
+            stringResource(R.string.System_language),
+            "xx"
+        ),
+        LanguageItem(
+            "English",
+             Locale.ENGLISH.language
+        ),
+        LanguageItem(
+            "Русский",
+            "ru"
+        ),
+        LanguageItem(
+            "Deutsch",
+            Locale.GERMAN.language
+        ),
+        LanguageItem(
+            "Español",
+            "es"
+        )
+    )
+}
+
+@Composable
+fun languageCodeToItem(languageCode:String) : LanguageItem {
+    getLanguageList().forEach {
+        if(it.languageCode == languageCode) return it
+    }
+    return getLanguageList()[0]
+}
+
 
 @Preview(backgroundColor = 0xFF000000)
 @Composable

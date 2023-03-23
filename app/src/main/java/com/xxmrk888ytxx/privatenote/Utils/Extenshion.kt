@@ -5,9 +5,11 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -231,6 +233,16 @@ fun LazySpacer(height:Int = 0,width:Int = 0) {
 @Composable
 fun ComposeContext() = LocalContext.current
 
+fun Int.isEvenNumber() : Boolean = this % 2 == 0
+
+fun Modifier.borderIf(isNeedBorder:Boolean) : Modifier {
+    if(!isNeedBorder) return this
+    return this.border(
+        width =  2.dp,
+        color = ThemeManager.SecondaryColor,
+        shape = RoundedCornerShape(10.dp),
+    )
+}
 val themeColors : com.xxmrk888ytxx.privatenote.presentation.theme.Colors
     @Composable get() = Theme.LocalColors.current
 

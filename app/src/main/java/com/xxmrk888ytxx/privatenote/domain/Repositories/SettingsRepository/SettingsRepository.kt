@@ -1,6 +1,7 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository
 
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
@@ -67,6 +68,10 @@ interface SettingsRepository {
     suspend fun changeSortNoteState(sortNoteState:SortNoteState)
 
     fun getSortNoteState() : Flow<SortNoteState>
+
+    suspend fun changeViewNoteListState(viewNoteListState: ViewNoteListState)
+
+    fun getViewNoteListState() : Flow<ViewNoteListState>
 
     fun getAdState() : Flow<Boolean>
 
