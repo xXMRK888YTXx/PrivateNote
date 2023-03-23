@@ -59,6 +59,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickImageContract
+import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import kotlinx.coroutines.launch
 
@@ -68,7 +69,6 @@ fun EditNoteScreen(
     editNoteViewModel: EditNoteViewModel = hiltViewModel(),
     navController: NavController,
     activityController: ActivityController,
-    wakeLockController: WakeLockController
 ) {
     val dialogState = remember {
         editNoteViewModel.dialogShowState
@@ -162,6 +162,9 @@ fun EditNoteScreen(
             }
         )
     }
+
+    val wakeLockController = LocalWakeLockController.current
+
     LaunchedEffect(key1 = activityController, block = {
         editNoteViewModel.initActivityController(activityController)
         editNoteViewModel.initWakeLockController(wakeLockController)

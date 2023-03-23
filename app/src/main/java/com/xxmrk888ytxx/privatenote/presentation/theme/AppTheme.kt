@@ -8,7 +8,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.Orientati
 @Composable
 fun AppTheme(
     themeId:Int,
-    vararg otherProviders: ProvidedValue<OrientationLockManager>,
+    vararg otherProviders: ProvidedValue<*>,
     content: @Composable () -> Unit
 ) {
     val themeType = ThemeType.fromInt(themeId)

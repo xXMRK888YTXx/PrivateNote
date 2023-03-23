@@ -6,11 +6,9 @@ import android.content.Intent
 import android.content.Intent.ACTION_GET_CONTENT
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.pm.ActivityInfo
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.view.WindowManager
@@ -21,6 +19,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
 import androidx.compose.material.Scaffold
+import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.collectAsState
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -45,6 +44,7 @@ import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppMa
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
+import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.DrawScreen.DrawScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.EditNoteScreen
@@ -106,8 +106,9 @@ class MainActivity :
             mainActivityViewModel.saveNavController(navController)
             AppTheme(
                 themeId = themeId.value,
-                otherProviders = arrayOf(
-                    LocalOrientationLockManager provides this
+                otherProviders = arrayOf<ProvidedValue<*>>(
+                    LocalOrientationLockManager provides this,
+                    LocalWakeLockController provides this,
                 ),
             ) {
                 Scaffold(
@@ -137,7 +138,6 @@ class MainActivity :
                             EditNoteScreen(
                                 navController = navController,
                                 activityController = this@MainActivity,
-                                wakeLockController = this@MainActivity
                             )
                         }
                         composable(Screen.SettingsScreen.route) {
