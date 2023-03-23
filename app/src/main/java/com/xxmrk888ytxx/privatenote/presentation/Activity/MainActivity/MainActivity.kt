@@ -259,17 +259,6 @@ class MainActivity :
         else unLockOrientation()
     }
 
-
-    override fun openAlarmSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            intent = Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-                data = Uri.parse("package:" + baseContext.applicationInfo.packageName)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            startActivity(intent)
-        }
-    }
-
     override fun selectFileForAutoBackup(
         onComplete: (path: String) -> Unit,
         onError: (e: Exception) -> Unit,

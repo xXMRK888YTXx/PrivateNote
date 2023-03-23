@@ -1,7 +1,10 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -29,6 +32,7 @@ import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -41,7 +45,8 @@ class ToDoViewModel @Inject constructor(
     private val notifyTaskManager: NotifyTaskManager,
     private val settingsRepository: SettingsRepository,
     private val notificationAppManager: NotificationAppManager,
-    private val deepLinkController: DeepLinkController
+    private val deepLinkController: DeepLinkController,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 
@@ -407,8 +412,17 @@ class ToDoViewModel @Inject constructor(
         )
     }
 
-    fun openAlarmSettings(activityController: ActivityController) {
-        activityController.openAlarmSettings()
+    fun openAlarmSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:" + context.packageName)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            try {
+                 context.startActivity(intent)
+            }catch (_:Exception) {}
+
+        }
     }
 
     suspend fun checkDeepLinks() {

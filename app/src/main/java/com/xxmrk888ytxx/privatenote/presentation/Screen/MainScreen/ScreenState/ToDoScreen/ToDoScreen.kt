@@ -56,7 +56,6 @@ import me.saket.swipe.SwipeableActionsBox
 fun ToDoScreen(
     toDoViewModel: ToDoViewModel = hiltViewModel(),
     mainScreenController: MainScreenController,
-    activityController: ActivityController,
 ) {
     val state = remember {
         toDoViewModel.getScreenState()
@@ -106,7 +105,7 @@ fun ToDoScreen(
             },
             onConfirm = {
                 toDoViewModel.hideRequestPermissionSendAlarmsDialog()
-                toDoViewModel.openAlarmSettings(activityController)
+                toDoViewModel.openAlarmSettings()
             }
         )
     }
