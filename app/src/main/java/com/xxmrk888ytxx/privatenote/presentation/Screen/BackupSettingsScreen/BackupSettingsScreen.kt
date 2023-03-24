@@ -40,6 +40,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.OpenExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
@@ -590,6 +591,12 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
             }
         ),
     )
+
+    val selectFileForRestoreBackupContract = rememberLauncherForActivityResult(
+        contract = OpenExternalFileContract(),
+        onResult = backupSettingsViewModel::onFileForRestoreBackupSelected
+    )
+
     Dialog(onDismissRequest = { backupSettingsViewModel.hideRestoreBackupDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -604,7 +611,9 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                             SelectBackupPathButton(
                                 isPathSelected = restoreBackupFile.value != null,
                                 onClick = {
-                                    backupSettingsViewModel.selectFileForRestoreBackup()
+                                    backupSettingsViewModel.selectFileForRestoreBackup(
+                                        selectFileForRestoreBackupContract
+                                    )
                                 }
                             )
                             Divider(

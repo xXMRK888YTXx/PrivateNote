@@ -8,8 +8,6 @@ import androidx.security.crypto.EncryptedFile
 
 
 interface ActivityController {
-    fun createFileBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
-    fun openBackupFile(onComplete:(path: Uri) -> Unit, onError:(e:Exception) -> Unit = {})
     fun selectExportFile(
         onComplete: (path: Uri) -> Unit,
         onError: (e: Exception) -> Unit,

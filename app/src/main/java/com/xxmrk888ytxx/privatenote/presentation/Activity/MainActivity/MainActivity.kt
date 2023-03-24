@@ -246,39 +246,6 @@ class MainActivity :
         else unLockOrientation()
     }
 
-    override fun createFileBackup(
-        onComplete: (path: String) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        try {
-            mainActivityViewModel.registerCreateFileBackupCallBack(onComplete, onError)
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "$BACKUP_FILE_EXTENSION/*"
-                putExtra(Intent.EXTRA_TITLE, "Backup.$BACKUP_FILE_EXTENSION")
-            }
-            createFileBackupCallBack.launch(intent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
-    override fun openBackupFile(
-        onComplete: (path: Uri) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        try {
-            mainActivityViewModel.registerOpenBackupFileCallBacks(onComplete, onError)
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/*"
-            }
-            openBackupFileCallBack.launch(intent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
     override fun selectExportFile(
         onComplete: (path: Uri) -> Unit,
         onError: (e: Exception) -> Unit,
@@ -329,51 +296,7 @@ class MainActivity :
             }
         }
 
-    private val createFileBackupCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val data = it.data?.data ?: return@registerForActivityResult
-                mainActivityViewModel.onCompleteCreateFileBackup(data)
-            } else {
-                mainActivityViewModel.onErrorCreateFileBackup(Exception("Cancel"))
-            }
-        }
 
-    private val openBackupFileCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val uri = it.data?.data ?: return@registerForActivityResult
-                try {
-                    mainActivityViewModel.onOpenBackupFileCompleted(uri)
-                } catch (e: Exception) {
-                    mainActivityViewModel.onErrorOpenBackupFile(e)
-                }
-            } else {
-                mainActivityViewModel.onErrorOpenBackupFile(Exception("openBackupFileCancel"))
-            }
-        }
-
-    private val selectFileForAutoBackupCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val uri = it.data?.data ?: return@registerForActivityResult
-                try {
-                    baseContext.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                    )
-                    baseContext.contentResolver.takePersistableUriPermission(
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    )
-                    mainActivityViewModel.onSelectFileForAutoBackupCompleted(uri.toString())
-                } catch (e: Exception) {
-                    mainActivityViewModel.onErrorSelectFileForAutoBackup(e)
-                }
-            } else {
-                mainActivityViewModel.onErrorSelectFileForAutoBackup(Exception("selectBackupFileCancel"))
-            }
-        }
 
     @SuppressLint("SourceLockedOrientationActivity")
     private fun lockOrientation() {

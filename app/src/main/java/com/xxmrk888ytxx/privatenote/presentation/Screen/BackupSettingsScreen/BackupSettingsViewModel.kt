@@ -248,15 +248,18 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    fun selectFileForRestoreBackup() {
-        activityController?.openBackupFile(
-            onComplete = { path:Uri ->
-                currentBackupFileForRestore.value = path
-            },
-            onError = {
+    fun selectFileForRestoreBackup(activityResultLauncher: ActivityResultLauncher<FileParams>) {
 
-            }
-        )
+        activityResultLauncher.launch(FileParams(
+            fileType = "application/*",
+            startFileName = ""
+        ))
+    }
+
+    fun onFileForRestoreBackupSelected(uri:Uri?) {
+        if(uri == null) return
+
+        currentBackupFileForRestore.value = uri
     }
 
     fun createBackupFile(activityResultLauncher: ActivityResultLauncher<FileParams>) {
