@@ -61,8 +61,6 @@ class MainActivity :
     OrientationLockManager
 {
     @Inject
-    lateinit var notificationManager: NotificationAppManagerImpl
-    @Inject
     lateinit var notifyTaskManager: NotifyTaskManager
     @Inject
     lateinit var settingsRepository: SettingsRepository
@@ -78,8 +76,6 @@ class MainActivity :
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        notificationManager.createNotificationChannels()
 
         restoreTasks()
 
