@@ -19,6 +19,7 @@ import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
@@ -226,27 +227,14 @@ class BackupSettingsViewModel @Inject constructor(
     }
 
     fun selectFileForLocalAutoBackup(
-        activityResultLauncher: ActivityResultLauncher<CreateExternalFileContract.FileParams>
+        activityResultLauncher: ActivityResultLauncher<FileParams>
     ) {
         activityResultLauncher.launch(
-            CreateExternalFileContract.FileParams(
+            FileParams(
                 fileType = "application/${Const.BACKUP_FILE_EXTENSION}",
                 startFileName = "Backup.${Const.BACKUP_FILE_EXTENSION}"
             )
         )
-//        activityController?.selectFileForAutoBackup(
-//            onComplete = { path ->
-//                viewModelScope.launch(Dispatchers.IO) {
-//                    settingsAutoBackupRepository.updateBackupPath(path)
-//                    withContext(Dispatchers.Main) {
-//                        toastManager.showToast(R.string.Backup_path_setuped)
-//                    }
-//                }
-//            },
-//            onError = {
-//
-//            }
-//        )
     }
 
     fun onFileForLocalAutoBackupSelected(uri:Uri?) {
@@ -271,17 +259,21 @@ class BackupSettingsViewModel @Inject constructor(
         )
     }
 
-    fun createBackupFile() {
-        activityController?.createFileBackup(
-            onComplete = { path ->
-                backupSettingsInDialog.value.ifNotNull {
-                    backupSettingsInDialog.value = it.copy(backupPath = path)
-                }
-            },
-            onError = {
-
-            }
+    fun createBackupFile(activityResultLauncher: ActivityResultLauncher<FileParams>) {
+        activityResultLauncher.launch(
+            FileParams(
+                fileType = "application/${Const.BACKUP_FILE_EXTENSION}",
+                startFileName = "Backup.${Const.BACKUP_FILE_EXTENSION}"
+            )
         )
+    }
+
+    fun onBackupFileCreated(uri:Uri?) {
+        if(uri == null) return
+
+        backupSettingsInDialog.value.ifNotNull {
+            backupSettingsInDialog.value = it.copy(backupPath = uri.toString())
+        }
     }
 
     fun initActivityController(activityController: ActivityController) {

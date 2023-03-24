@@ -6,14 +6,12 @@ import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContract
 import com.xxmrk888ytxx.privatenote.Utils.Const
 
+/**
+ * Contract for create file from external storage and give permanently access for it
+ */
 class CreateExternalFileContract(
     private val context: Context,
-) : ActivityResultContract<CreateExternalFileContract.FileParams, Uri?>() {
-
-    data class FileParams(
-        val fileType: String,
-        val startFileName: String,
-    )
+) : ActivityResultContract<FileParams, Uri?>() {
 
     override fun createIntent(context: Context, input: FileParams): Intent {
         return Intent(Intent.ACTION_CREATE_DOCUMENT).apply {

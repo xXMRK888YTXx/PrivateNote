@@ -39,6 +39,7 @@ import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
@@ -496,6 +497,12 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
     val currentBackupSettings = backupSettingsViewModel.getBackupSettingsInDialog().Remember()
     val backupParamsList =
         getParamsList(backupSettingsViewModel, currentBackupSettings.value ?: BackupSettings())
+
+    val createBackupFileContract = rememberLauncherForActivityResult(
+        contract = CreateSingleAccessExternalFileContract(),
+        onResult = backupSettingsViewModel::onBackupFileCreated
+    )
+
     Dialog(onDismissRequest = { backupSettingsViewModel.hideCreateBackupDialogState() }) {
         Card(
             modifier = Modifier
@@ -509,7 +516,7 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                         SelectBackupPathButton(
                             isPathSelected = currentBackupSettings.value?.backupPath != null,
                             onClick = {
-                                backupSettingsViewModel.createBackupFile()
+                                backupSettingsViewModel.createBackupFile(createBackupFileContract)
                             })
                         Divider(
                             modifier = Modifier
