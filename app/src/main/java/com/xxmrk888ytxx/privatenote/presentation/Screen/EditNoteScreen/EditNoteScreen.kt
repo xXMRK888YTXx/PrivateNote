@@ -45,7 +45,6 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.BuildConfig
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText

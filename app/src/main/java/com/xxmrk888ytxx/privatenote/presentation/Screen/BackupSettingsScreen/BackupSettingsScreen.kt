@@ -40,7 +40,6 @@ import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.OpenExternalFileContract
@@ -51,17 +50,13 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopB
 @Composable
 fun BackupSettingsScreen(
     backupSettingsViewModel: BackupSettingsViewModel = hiltViewModel(),
-    navController: NavController,
-    activityController: ActivityController,
+    navController: NavController
 ) {
     val settings = backupSettingsViewModel.getBackupSettings().collectAsState(BackupSettings())
     val restoreBackupDialogState = backupSettingsViewModel.getRestoreBackupDialogState().Remember()
     val createBackupDialogState = backupSettingsViewModel.getCreateBackupDialogState().Remember()
     val dontKillMyAppDialogState = backupSettingsViewModel.getDontKillMyAppDialogState().Remember()
     val isLoadDialogShow = backupSettingsViewModel.isShowLoadDialog().Remember()
-    LaunchedEffect(key1 = activityController, block = {
-        backupSettingsViewModel.initActivityController(activityController)
-    })
     Column(
         modifier = Modifier
             .fillMaxSize(),

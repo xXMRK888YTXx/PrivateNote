@@ -40,13 +40,11 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authorizationManager: BiometricAuthorizationManager,
-    private val toastManager: ToastManager,
     private val deepLinkController: DeepLinkController,
-    private val googleAuthorizationManager: GoogleAuthorizationManager,
     private val lifeCycleNotifier: LifeCycleNotifier
 ) : ViewModel() {
      var isFirstStart:Boolean = true
-    get() = field
+
    private var navController:NavController? = null
 
     fun saveNavController(navController: NavController) {
@@ -62,14 +60,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     var isNotLockApp = false
-    get() = field
 
-    private var pickImageCallBacks:Pair<(image: Bitmap) -> Unit,(e:Exception) -> Unit>? = null
-    private var pickAudioCallBacks:Pair<(audioUri: Uri) -> Unit,(e:Exception) -> Unit>? = null
-    private var selectBackupFileCallBacks:Pair<(path: String) -> Unit,(e:Exception) -> Unit>? = null
-    private var openBackupFileCallBacks:Pair<(path: Uri) -> Unit,(e:Exception) -> Unit>? = null
-    private var createFileBackupCallBacks:Pair<(path: String) -> Unit,(e: Exception) -> Unit>? = null
-    private var selectExportFileCallBacks:Pair<(path:Uri) -> Unit,(e:Exception) -> Unit>? = null
 
     fun completedAuthCallBack(): (navigate:() -> Unit) -> Unit {
         return {
@@ -125,113 +116,6 @@ class MainActivityViewModel @Inject constructor(
         return true
     }
 
-    fun registerImagePickCallBacks(onComplete: (image:Bitmap) -> Unit,onError:(e:Exception) -> Unit) {
-        if(pickImageCallBacks != null) throw CallBackAlreadyRegisteredException()
-        pickImageCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterImagePickCallBacks() {
-        pickImageCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onPickComplete(image: Bitmap) {
-        if(pickImageCallBacks == null) return
-        pickImageCallBacks!!.first(image)
-        unRegisterImagePickCallBacks()
-    }
-
-    fun onPickError(e:Exception) {
-        if(pickImageCallBacks == null) return
-        pickImageCallBacks!!.second(e)
-        unRegisterImagePickCallBacks()
-    }
-
-    fun registerSelectFileForAutoBackupCallBacks(onComplete: (path:String) -> Unit, onError:(e:Exception) -> Unit) {
-        if(selectBackupFileCallBacks != null) CallBackAlreadyRegisteredException()
-        selectBackupFileCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterSelectFileForAutoBackupCallBacks() {
-        selectBackupFileCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onSelectFileForAutoBackupCompleted(path:String) {
-        selectBackupFileCallBacks.ifNotNull {
-            it.first(path)
-        }
-        unRegisterSelectFileForAutoBackupCallBacks()
-    }
-
-    fun onErrorSelectFileForAutoBackup(e:Exception) {
-        selectBackupFileCallBacks.ifNotNull {
-            it.second(e)
-        }
-        unRegisterSelectFileForAutoBackupCallBacks()
-    }
-
-    fun registerOpenBackupFileCallBacks(
-        onComplete:(path: Uri) -> Unit,
-        onError:(e:Exception) -> Unit = {}
-    ) {
-        if(openBackupFileCallBacks != null) throw CallBackAlreadyRegisteredException()
-        openBackupFileCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterOpenBackupFileCallBacks() {
-        openBackupFileCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onOpenBackupFileCompleted(uri: Uri) {
-        openBackupFileCallBacks.ifNotNull {
-            it.first(uri)
-        }
-        unRegisterOpenBackupFileCallBacks()
-    }
-
-    fun onErrorOpenBackupFile(e:Exception) {
-        openBackupFileCallBacks.ifNotNull {
-            it.second(e)
-        }
-        unRegisterOpenBackupFileCallBacks()
-    }
-
-
-    suspend fun saveInCache(imageFile: EncryptedFile, context: Context) : Uri? {
-        return try {
-            val shareImageDir: File = File(context.cacheDir, "share_files")
-            shareImageDir.mkdir()
-            val outputFile = File(shareImageDir, "temp")
-            val readStream = imageFile.openFileInput()
-            val saveStream = FileOutputStream(outputFile)
-            val bitmap = BitmapFactory.decodeStream(readStream)
-            if(isHaveAlpha(bitmap)) bitmap.compress(Bitmap.CompressFormat.PNG, 60,saveStream)
-            else bitmap.compress(Bitmap.CompressFormat.JPEG, 60,saveStream)
-            saveStream.close()
-            readStream.close()
-            getUriForFile(context, BuildConfig.APPLICATION_ID, outputFile)
-        }catch (e:Exception) {
-            Log.d("MyLog",e.message.toString())
-            null
-        }
-    }
-
-    suspend fun clearShareDir(context:Context) {
-        val shareImageDir: File = File(context.cacheDir, "share_files")
-        shareImageDir.listFiles().forEach {
-            it.delete()
-        }
-    }
-
-    suspend fun isHaveAlpha(image: Bitmap) : Boolean {
-        return image.hasAlpha()
-    }
-
     fun registerTodoDeepLink(intent: Intent?) {
         intent.ifNotNull {
             val startId = it.getIntExtra(OpenTodoInAppAction.START_ID_KEY,-1)
@@ -246,96 +130,6 @@ class MainActivityViewModel @Inject constructor(
             )
 
         }
-    }
-
-    fun registerCreateFileBackupCallBack(
-        onComplete: (path: String) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        if(createFileBackupCallBacks != null) throw CallBackAlreadyRegisteredException()
-        createFileBackupCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterCreateFileBackupCallBack() {
-        createFileBackupCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onCompleteCreateFileBackup(uri:Uri) {
-        createFileBackupCallBacks.ifNotNull {
-            it.first(uri.toString())
-            unRegisterCreateFileBackupCallBack()
-        }
-    }
-
-    fun onErrorCreateFileBackup(e:Exception) {
-        createFileBackupCallBacks.ifNotNull {
-            it.second(e)
-            unRegisterCreateFileBackupCallBack()
-        }
-    }
-
-    fun registerPickAudioCallBack(
-        onComplete: (audioUri: Uri) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        if(pickAudioCallBacks != null) throw CallBackAlreadyRegisteredException()
-        pickAudioCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterPickAudioCallBack() {
-        pickAudioCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onCompletePickAudio(audioUri: Uri) {
-        pickAudioCallBacks.ifNotNull {
-            it.first(audioUri)
-        }
-        unRegisterPickAudioCallBack()
-    }
-
-    fun onErrorPickAudio(e:Exception) {
-        pickAudioCallBacks.ifNotNull {
-            it.second(e)
-        }
-        unRegisterPickAudioCallBack()
-    }
-
-
-    fun googleSuccessAuthCallBack() {
-        if(googleAuthorizationManager.googleAccount.value != null)
-            toastManager.showToast(R.string.Successful_authorization)
-    }
-
-    fun registerSelectExportFileCallBack(
-        onComplete: (path: Uri) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        if(selectExportFileCallBacks != null) throw CallBackAlreadyRegisteredException()
-        selectExportFileCallBacks = Pair(onComplete,onError)
-        isNotLockApp = true
-    }
-
-    private fun unRegisterSelectExportFileCallBack() {
-        selectExportFileCallBacks = null
-        isNotLockApp = false
-    }
-
-    fun onCompleteSelectExportFile(path:Uri) {
-        selectExportFileCallBacks.ifNotNull {
-            it.first(path)
-        }
-        unRegisterSelectExportFileCallBack()
-    }
-
-    fun onErrorSelectExportFile(e:Exception) {
-        selectExportFileCallBacks.ifNotNull {
-            it.second(e)
-        }
-        unRegisterSelectExportFileCallBack()
     }
 
     fun onResume() {

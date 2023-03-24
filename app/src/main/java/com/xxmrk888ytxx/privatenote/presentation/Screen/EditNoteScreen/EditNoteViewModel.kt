@@ -1,7 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -18,7 +17,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
@@ -54,7 +52,6 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAud
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -135,8 +132,6 @@ class EditNoteViewModel @Inject constructor(
     private var recordStopwatch: CountDownTimer? = null
 
     private val currentRecordTime = mutableStateOf("00:00")
-
-    private var activityController: ActivityController? = null
 
     private var wakeLockController: WakeLockController? = null
 

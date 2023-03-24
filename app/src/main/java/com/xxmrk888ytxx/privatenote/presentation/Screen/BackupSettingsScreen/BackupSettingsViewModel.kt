@@ -18,7 +18,6 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -145,8 +144,6 @@ class BackupSettingsViewModel @Inject constructor(
         restoreParamsInDialog.value = null
         currentBackupFileForRestore.value = null
     }
-
-    private var activityController:ActivityController? = null
 
     fun updateBackupState(newState:Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -277,11 +274,6 @@ class BackupSettingsViewModel @Inject constructor(
         backupSettingsInDialog.value.ifNotNull {
             backupSettingsInDialog.value = it.copy(backupPath = uri.toString())
         }
-    }
-
-    fun initActivityController(activityController: ActivityController) {
-        if(this.activityController != null) return
-        this.activityController = activityController
     }
 
         fun startBackup() {

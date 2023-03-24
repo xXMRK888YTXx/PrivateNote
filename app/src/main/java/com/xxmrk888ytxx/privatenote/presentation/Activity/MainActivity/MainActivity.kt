@@ -66,7 +66,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity :
     AppCompatActivity(),
-    ActivityController,
     WakeLockController,
     InterstitialAdsController,
     BullingController,
@@ -130,7 +129,6 @@ class MainActivity :
                         composable(Screen.MainScreen.route) {
                             MainScreen(
                                 navController = navController,
-                                activityController = this@MainActivity,
                                 interstitialAdsController = this@MainActivity
                             )
                         }
@@ -157,8 +155,7 @@ class MainActivity :
                         }
                         composable(Screen.BackupSettingsScreen.route) {
                             BackupSettingsScreen(
-                                navController = navController,
-                                activityController = this@MainActivity
+                                navController = navController
                             )
                         }
                         composable(Screen.LicenseScreen.route) {
@@ -246,20 +243,6 @@ class MainActivity :
         else unLockOrientation()
     }
 
-    override val googleAuthorizationCallBack: ActivityResultLauncher<Intent> =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                GoogleSignIn.getSignedInAccountFromIntent(it.data)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            mainActivityViewModel.googleSuccessAuthCallBack()
-                        }
-                    }
-            }
-        }
-
-
-
     @SuppressLint("SourceLockedOrientationActivity")
     private fun lockOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -315,5 +298,3 @@ class MainActivity :
     override val isBillingAvailable: Boolean
         get() = billingManager.isDisableAdsAvailable
 }
-
-
