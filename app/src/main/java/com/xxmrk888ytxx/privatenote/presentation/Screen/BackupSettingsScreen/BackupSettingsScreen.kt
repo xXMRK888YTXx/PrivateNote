@@ -1,6 +1,8 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
@@ -216,6 +219,21 @@ fun AutoBackupSettingsList(
         onResult = backupSettingsViewModel::onFileForLocalAutoBackupSelected
     )
 
+    val sendGoogleAuthRequestContract = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if (it.resultCode == Activity.RESULT_OK) {
+                GoogleSignIn.getSignedInAccountFromIntent(it.data)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            googleAccount.value
+                            backupSettingsViewModel.onGoogleAuthCompleted()
+                        }
+                    }
+            }
+        }
+    )
+
     Column(
         modifier = Modifier.padding(top = 10.dp)
     ) {
@@ -357,13 +375,12 @@ fun AutoBackupSettingsList(
             item {
                 GoogleSingInButton(
                     onAuth = {
-                        backupSettingsViewModel.sendGoogleAuthRequest()
+                        backupSettingsViewModel.sendGoogleAuthRequest(sendGoogleAuthRequestContract)
                     }
 
                 )
             }
-        }
-        if (googleAccount.value != null) {
+        } else {
             item {
                 SettingsButton(text = stringResource(R.string.Login_out_from_account)) {
                     backupSettingsViewModel.loginOutGoogleAccount()

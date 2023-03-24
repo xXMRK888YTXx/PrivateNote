@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.MutableState
@@ -18,7 +19,6 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
-import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -379,9 +379,12 @@ class BackupSettingsViewModel @Inject constructor(
 
     fun getGoogleAccount() = googleAuthorizationManager.googleAccount
 
-    fun sendGoogleAuthRequest() {
-        val callBack = activityController?.googleAuthorizationCallBack ?: return
-        googleAuthorizationManager.sendAuthorizationRequest(callBack)
+    fun sendGoogleAuthRequest(activityResultLauncher: ActivityResultLauncher<Intent>) {
+        googleAuthorizationManager.sendAuthorizationRequest(activityResultLauncher)
+    }
+
+    fun onGoogleAuthCompleted() {
+        toastManager.showToast(R.string.Successful_authorization)
     }
 
     fun loginOutGoogleAccount() {
