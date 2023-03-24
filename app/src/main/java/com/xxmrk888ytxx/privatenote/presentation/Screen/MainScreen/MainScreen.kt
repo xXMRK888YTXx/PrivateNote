@@ -89,7 +89,7 @@ fun MainScreen(
                          )
                      }
                     MainScreenState.ToDoScreen.id -> {
-                        ToDoScreen(mainScreenController = mainViewModel, activityController = activityController)
+                        ToDoScreen(mainScreenController = mainViewModel)
                     }
                 }
 

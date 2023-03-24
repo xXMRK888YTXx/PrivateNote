@@ -51,6 +51,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRep
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
@@ -79,6 +80,7 @@ class EditNoteViewModel @Inject constructor(
     private val adManager: AdManager,
     private val lifecycleProvider: LifecycleProvider,
     private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
+    private val openImageInGalleryUseCase: OpenImageInGalleryUseCase
 ) : ViewModel() {
 
     init {
@@ -585,12 +587,13 @@ class EditNoteViewModel @Inject constructor(
         return isHaveImages
     }
 
-    fun openImageInImageViewer(imageFile: EncryptedFile, activityController: ActivityController) {
+    fun openImageInImageViewer(imageFile: EncryptedFile) {
         viewModelScope.launch(Dispatchers.IO) {
             isNotLock = Pair(true) {
-                activityController.clearShareDir()
+                activityController?.clearShareDir()
             }
-            activityController.sendShowImageIntent(imageFile)
+
+            openImageInGalleryUseCase.execute(imageFile)
         }
     }
 
@@ -735,9 +738,7 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    fun initActivityController(activityController: ActivityController) {
-        this.activityController = activityController
-    }
+
 
     fun initWakeLockController(wakeLockController: WakeLockController) {
         this.wakeLockController = wakeLockController

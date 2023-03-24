@@ -23,6 +23,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetT
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCase
@@ -117,5 +119,10 @@ interface UseCasesModule {
     fun bindProvideDataFromFileUriUseCase(
         ProvideDataFromFileUriUseCaseImpl: ProvideDataFromFileUriUseCaseImpl
     ): ProvideDataFromFileUriUseCase
+
+    @Binds
+    fun bindOpenImageInGalleryUseCase(
+        openImageInGalleryUseCase:OpenImageInGalleryUseCaseImpl
+    ) : OpenImageInGalleryUseCase
 
 }

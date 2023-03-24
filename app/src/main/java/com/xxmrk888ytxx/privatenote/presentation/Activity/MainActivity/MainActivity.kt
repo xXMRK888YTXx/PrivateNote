@@ -136,8 +136,7 @@ class MainActivity :
                         }
                         composable(Screen.EditNoteScreen.route) {
                             EditNoteScreen(
-                                navController = navController,
-                                activityController = this@MainActivity,
+                                navController = navController
                             )
                         }
                         composable(Screen.SettingsScreen.route) {
