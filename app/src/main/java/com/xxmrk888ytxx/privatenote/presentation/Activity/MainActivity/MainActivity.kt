@@ -241,18 +241,6 @@ class MainActivity :
         }
     }
 
-    override suspend fun sendShowImageIntent(imageFile: EncryptedFile) {
-        val uri = mainActivityViewModel.saveInCache(imageFile, this) ?: return
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "image/*")
-        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(intent)
-    }
-
-    override suspend fun clearShareDir() {
-        mainActivityViewModel.clearShareDir(this)
-    }
-
     override fun changeOrientationLockState(state: Boolean) {
         if (state) lockOrientation()
         else unLockOrientation()

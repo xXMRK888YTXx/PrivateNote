@@ -8,8 +8,6 @@ import androidx.security.crypto.EncryptedFile
 
 
 interface ActivityController {
-    suspend fun sendShowImageIntent(imageFile: EncryptedFile)
-    suspend fun clearShareDir()
     fun selectFileForAutoBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun createFileBackup(onComplete:(path:String) -> Unit, onError:(e:Exception) -> Unit = {})
     fun openBackupFile(onComplete:(path: Uri) -> Unit, onError:(e:Exception) -> Unit = {})

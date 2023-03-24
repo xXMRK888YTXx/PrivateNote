@@ -9,6 +9,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepos
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
@@ -125,4 +127,8 @@ interface UseCasesModule {
         openImageInGalleryUseCase:OpenImageInGalleryUseCaseImpl
     ) : OpenImageInGalleryUseCase
 
+    @Binds
+    fun bindClearShareDirUseCase(
+        clearShareDirUseCase: ClearShareDirUseCaseImpl
+    ) : ClearShareDirUseCase
 }

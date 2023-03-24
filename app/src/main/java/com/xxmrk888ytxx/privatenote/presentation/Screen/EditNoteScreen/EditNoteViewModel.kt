@@ -49,6 +49,7 @@ import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
@@ -80,7 +81,8 @@ class EditNoteViewModel @Inject constructor(
     private val adManager: AdManager,
     private val lifecycleProvider: LifecycleProvider,
     private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
-    private val openImageInGalleryUseCase: OpenImageInGalleryUseCase
+    private val openImageInGalleryUseCase: OpenImageInGalleryUseCase,
+    private val clearShareDirUseCase: ClearShareDirUseCase
 ) : ViewModel() {
 
     init {
@@ -590,7 +592,7 @@ class EditNoteViewModel @Inject constructor(
     fun openImageInImageViewer(imageFile: EncryptedFile) {
         viewModelScope.launch(Dispatchers.IO) {
             isNotLock = Pair(true) {
-                activityController?.clearShareDir()
+                clearShareDirUseCase.execute()
             }
 
             openImageInGalleryUseCase.execute(imageFile)
