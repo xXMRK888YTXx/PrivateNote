@@ -59,6 +59,7 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
+import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import kotlinx.coroutines.launch
@@ -69,6 +70,12 @@ fun EditNoteScreen(
     editNoteViewModel: EditNoteViewModel = hiltViewModel(),
     navController: NavController
 ) {
+    val localInterstitialAdsController = LocalInterstitialAdsController.current
+
+    LaunchedEffect(key1 = Unit, block = {
+        localInterstitialAdsController.showAd()
+    })
+
     val dialogState = remember {
         editNoteViewModel.dialogShowState
     }

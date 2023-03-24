@@ -6,7 +6,6 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository

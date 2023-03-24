@@ -1,20 +1,11 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
-import android.content.Intent.ACTION_GET_CONTENT
-import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.content.pm.ActivityInfo
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
@@ -26,23 +17,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.security.crypto.EncryptedFile
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.Const.BACKUP_FILE_EXTENSION
-import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
+import com.xxmrk888ytxx.privatenote.domain.AdMobManager.AdMobManager
 import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManager
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
@@ -80,11 +69,11 @@ class MainActivity :
     @Inject
     lateinit var billingManager: BillingManager
     @Inject
-    lateinit var adManager: AdManager
+    lateinit var adShowManager: AdShowManager
+    @Inject
+    lateinit var adMobManager: AdMobManager
 
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
-
-    private var mInterstitialAd: InterstitialAd? = null
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,6 +97,7 @@ class MainActivity :
                 otherProviders = arrayOf<ProvidedValue<*>>(
                     LocalOrientationLockManager provides this,
                     LocalWakeLockController provides this,
+                    LocalInterstitialAdsController provides this
                 ),
             ) {
                 Scaffold(
@@ -128,8 +118,7 @@ class MainActivity :
                         }
                         composable(Screen.MainScreen.route) {
                             MainScreen(
-                                navController = navController,
-                                interstitialAdsController = this@MainActivity
+                                navController = navController
                             )
                         }
                         composable(Screen.EditNoteScreen.route) {
@@ -165,30 +154,8 @@ class MainActivity :
                 }
             }
         }
-        initAd()
+        adMobManager.initAdmob()
         billingManager.connectToGooglePlay()
-    }
-
-    private fun initAd() {
-        MobileAds.initialize(this)
-        if (!adManager.isNeedShowAds().getData()) return
-        val adKey = if (BuildConfig.DEBUG) getString(R.string.TestInterstitialAdsKey)
-        else getString(R.string.InterstitialAdsKey)
-        val adRequest = AdRequest.Builder().build()
-        InterstitialAd.load(this,
-            adKey,
-            adRequest, object : InterstitialAdLoadCallback() {
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.e("MyLog", adError.toString())
-                    mInterstitialAd = null
-                }
-
-                override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                    Log.e("MyLog", "Ad was loaded.")
-                    mInterstitialAd = interstitialAd
-                }
-            })
-
     }
 
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
@@ -239,17 +206,8 @@ class MainActivity :
     }
 
     override fun changeOrientationLockState(state: Boolean) {
-        if (state) lockOrientation()
-        else unLockOrientation()
-    }
-
-    @SuppressLint("SourceLockedOrientationActivity")
-    private fun lockOrientation() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
-    private fun unLockOrientation() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
+        requestedOrientation = if (state) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        else ActivityInfo.SCREEN_ORIENTATION_USER
     }
 
     override fun lockScreen() {
@@ -260,41 +218,14 @@ class MainActivity :
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
 
-    override fun showAd() {
-        if (mInterstitialAd == null || !adManager.isNeedShowAds().getData()) return
-        mInterstitialAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-            override fun onAdClicked() {
-                // Called when a click is recorded for an ad.
-                Log.d("MyLog", "Ad was clicked.")
-            }
-
-            override fun onAdDismissedFullScreenContent() {
-                // Called when ad is dismissed.
-                Log.d("MyLog", "Ad dismissed fullscreen content.")
-                mInterstitialAd = null
-            }
-
-            override fun onAdImpression() {
-                // Called when an impression is recorded for an ad.
-                Log.d("MyLog", "Ad recorded an impression.")
-            }
-
-            override fun onAdShowedFullScreenContent() {
-                // Called when ad is shown.
-                Log.d("MyLog", "Ad showed fullscreen content.")
-            }
-
-            override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                mInterstitialAd = null
-            }
-        }
-        mInterstitialAd?.show(this)
-    }
-
     override fun bueDisableAds() {
         billingManager.bueDisableAds(this)
     }
 
     override val isBillingAvailable: Boolean
         get() = billingManager.isDisableAdsAvailable
+
+    override fun showAd() {
+        adMobManager.interstitialAds(this)
+    }
 }

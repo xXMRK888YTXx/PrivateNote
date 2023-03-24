@@ -62,13 +62,6 @@ class NoteStateViewModel @Inject constructor(
 
     private var mainScreenController: MainScreenController? = null
 
-    private var interstitialAdsController:InterstitialAdsController? = null
-
-    fun initInterstitialAdsController(interstitialAdsController:InterstitialAdsController) {
-        this.interstitialAdsController = interstitialAdsController
-    }
-
-
     fun setMainScreenController(mainScreenController: MainScreenController?) {
         if(mainScreenController == null) return
         this.mainScreenController = mainScreenController
@@ -128,13 +121,8 @@ class NoteStateViewModel @Inject constructor(
         val onNavigate = {
             navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
         }
-        if(interstitialAdsController == null) {
-            onNavigate()
-        }
-        else {
-            onNavigate()
-            interstitialAdsController?.showAd()
-        }
+
+        onNavigate()
     }
     fun toSelectionMode() {
         analytics.sendEvent(SelectionMode_In_NoteScreen,null)

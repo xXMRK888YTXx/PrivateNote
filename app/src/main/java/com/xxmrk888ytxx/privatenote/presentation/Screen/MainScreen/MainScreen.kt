@@ -29,8 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavController,
-    interstitialAdsController: InterstitialAdsController
+    navController: NavController
 ) {
     val state = remember {
         mainViewModel.screenState
@@ -80,8 +79,7 @@ fun MainScreen(
                      MainScreenState.NoteScreen.id -> {
                          NoteScreenState(
                              navController = navController,
-                             mainScreenController = mainViewModel,
-                             interstitialAdsController = interstitialAdsController
+                             mainScreenController = mainViewModel
                          )
                      }
                     MainScreenState.ToDoScreen.id -> {

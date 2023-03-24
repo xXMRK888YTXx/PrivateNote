@@ -41,7 +41,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
@@ -76,7 +76,7 @@ class EditNoteViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val exportImageUseCase: ExportImageUseCase,
     private val exportAudioUseCase: ExportAudioUseCase,
-    private val adManager: AdManager,
+    private val adShowManager: AdShowManager,
     private val lifecycleProvider: LifecycleProvider,
     private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
     private val openImageInGalleryUseCase: OpenImageInGalleryUseCase,
@@ -818,6 +818,6 @@ class EditNoteViewModel @Inject constructor(
 
     fun getAudioRepositoryLoadState() = audioRepository.getLoadState()
 
-    fun isNeedShowAd() = adManager.isNeedShowAds()
+    fun isNeedShowAd() = adShowManager.isNeedShowAds()
 
 }

@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.SettingsViewMode
 
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
@@ -11,8 +11,6 @@ import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsViewModel
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -25,13 +23,13 @@ class SettingsViewModelTest {
     private val securityUtils: SecurityUtils = mockk(relaxed = true)
     private val toastManager: ToastManager = mockk(relaxed = true)
     private val authorizationManager: BiometricAuthorizationManager = mockk(relaxed = true)
-    private val adManager = mockk<AdManager>(relaxed = true)
+    private val adShowManager = mockk<AdShowManager>(relaxed = true)
     @ExperimentalCoroutinesApi
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
     @Before
     fun init() {
-        viewModel = SettingsViewModel(settingsRepository,toastManager,securityUtils,authorizationManager,adManager)
+        viewModel = SettingsViewModel(settingsRepository,toastManager,securityUtils,authorizationManager,adShowManager)
     }
 
     @Test
