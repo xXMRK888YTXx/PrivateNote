@@ -246,26 +246,6 @@ class MainActivity :
         else unLockOrientation()
     }
 
-    override fun selectFileForAutoBackup(
-        onComplete: (path: String) -> Unit,
-        onError: (e: Exception) -> Unit,
-    ) {
-        try {
-            mainActivityViewModel.registerSelectFileForAutoBackupCallBacks(onComplete, onError)
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = "application/$BACKUP_FILE_EXTENSION"
-                putExtra(Intent.EXTRA_TITLE, "Backup.$BACKUP_FILE_EXTENSION")
-                flags = (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                        or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-            }
-            selectFileForAutoBackupCallBack.launch(intent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
     override fun createFileBackup(
         onComplete: (path: String) -> Unit,
         onError: (e: Exception) -> Unit,

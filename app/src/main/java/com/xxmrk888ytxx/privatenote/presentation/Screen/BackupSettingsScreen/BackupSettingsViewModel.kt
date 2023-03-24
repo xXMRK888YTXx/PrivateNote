@@ -1,19 +1,14 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
 import android.net.Uri
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.work.Operation
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.asyncIfNotNull
-import com.xxmrk888ytxx.privatenote.Utils.getData
-import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
-import com.xxmrk888ytxx.privatenote.Utils.toState
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupManager
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupRestoreSettings
 import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
@@ -23,9 +18,9 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -230,20 +225,39 @@ class BackupSettingsViewModel @Inject constructor(
         }
     }
 
-    fun selectFileForLocalAutoBackup() {
-        activityController?.selectFileForAutoBackup(
-            onComplete = { path ->
-                viewModelScope.launch(Dispatchers.IO) {
-                    settingsAutoBackupRepository.updateBackupPath(path)
-                    withContext(Dispatchers.Main) {
-                        toastManager.showToast(R.string.Backup_path_setuped)
-                    }
-                }
-            },
-            onError = {
-
-            }
+    fun selectFileForLocalAutoBackup(
+        activityResultLauncher: ActivityResultLauncher<CreateExternalFileContract.FileParams>
+    ) {
+        activityResultLauncher.launch(
+            CreateExternalFileContract.FileParams(
+                fileType = "application/${Const.BACKUP_FILE_EXTENSION}",
+                startFileName = "Backup.${Const.BACKUP_FILE_EXTENSION}"
+            )
         )
+//        activityController?.selectFileForAutoBackup(
+//            onComplete = { path ->
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    settingsAutoBackupRepository.updateBackupPath(path)
+//                    withContext(Dispatchers.Main) {
+//                        toastManager.showToast(R.string.Backup_path_setuped)
+//                    }
+//                }
+//            },
+//            onError = {
+//
+//            }
+//        )
+    }
+
+    fun onFileForLocalAutoBackupSelected(uri:Uri?) {
+        if(uri == null) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            settingsAutoBackupRepository.updateBackupPath(uri.toString())
+            withContext(Dispatchers.Main) {
+                toastManager.showToast(R.string.Backup_path_setuped)
+            }
+        }
     }
 
     fun selectFileForRestoreBackup() {
