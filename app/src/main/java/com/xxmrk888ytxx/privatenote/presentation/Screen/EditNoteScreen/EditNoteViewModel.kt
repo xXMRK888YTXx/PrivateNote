@@ -56,6 +56,7 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.Op
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -82,7 +83,7 @@ class EditNoteViewModel @Inject constructor(
     private val lifecycleProvider: LifecycleProvider,
     private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
     private val openImageInGalleryUseCase: OpenImageInGalleryUseCase,
-    private val clearShareDirUseCase: ClearShareDirUseCase
+    private val clearShareDirUseCase: ClearShareDirUseCase,
 ) : ViewModel() {
 
     init {
@@ -225,6 +226,10 @@ class EditNoteViewModel @Inject constructor(
     private val currentSelectedCategory = mutableStateOf(0)
 
     private val isAudioRecorderDialogState = mutableStateOf(false)
+
+    private var currentExportImage: Image? = null
+
+    private var currentExportAudio: Audio? = null
 
     fun isAudioRecorderDialogShow() = isAudioRecorderDialogState
 
@@ -733,7 +738,7 @@ class EditNoteViewModel @Inject constructor(
     }
 
     fun onAudioSelected(uri: Uri?) {
-        if(uri == null) return
+        if (uri == null) return
 
         viewModelScope.launch(Dispatchers.IO) {
             audioRepository.saveAudioFromExternalStorage(uri, note.id)
@@ -741,56 +746,77 @@ class EditNoteViewModel @Inject constructor(
     }
 
 
-
     fun initWakeLockController(wakeLockController: WakeLockController) {
         this.wakeLockController = wakeLockController
     }
 
-    fun exportImage(image: Image) {
-        activityController?.selectExportFile(
-            onComplete = {
-                ApplicationScope.launch(Dispatchers.IO) {
-                    try {
-                        exportImageUseCase.execute(image, it)
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_complited)
-                        }
+    fun exportImage(image: Image, activityResultLauncher: ActivityResultLauncher<FileParams>) {
+        if (currentExportImage != null) return
 
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_error)
-                        }
-                    }
-                }
-            },
-            onError = {
+        currentExportImage = image
 
-            },
-            exportFileType = MainActivity.IMAGE_EXPORT_TYPE
+        activityResultLauncher.launch(
+            FileParams(
+                fileType = "image/jpg",
+                startFileName = "image.jpg"
+            )
         )
     }
 
-    fun exportAudio(audio: Audio) {
-        activityController?.selectExportFile(
-            onComplete = {
-                ApplicationScope.launch(Dispatchers.IO) {
-                    try {
-                        exportAudioUseCase.execute(audio, it)
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_complited)
-                        }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_error)
-                        }
-                    }
-                }
-            },
-            onError = {
+    fun exportAudio(audio: Audio, activityResultLauncher: ActivityResultLauncher<FileParams>) {
+        if (currentExportAudio != null) return
 
-            },
-            exportFileType = MainActivity.AUDIO_EXPORT_TYPE
+        currentExportAudio = audio
+
+        activityResultLauncher.launch(
+            FileParams(
+                fileType = "audio/mp3",
+                startFileName = "audio.mp3"
+            )
         )
+    }
+
+    fun onExportAudioPathSelected(uri: Uri?) {
+        if (uri == null) return
+
+        currentExportAudio?.let { audio ->
+            ApplicationScope.launch(Dispatchers.IO) {
+                try {
+                    exportAudioUseCase.execute(audio, uri)
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_complited)
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_error)
+                    }
+                } finally {
+                    currentExportAudio = null
+                }
+            }
+        }
+    }
+
+    fun onExportImagePathSelected(uri: Uri?) {
+        if (uri == null) return
+
+        currentExportImage?.let { image ->
+            ApplicationScope.launch(Dispatchers.IO) {
+                try {
+                    exportImageUseCase.execute(image, uri)
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_complited)
+                    }
+
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_error)
+                    }
+                } finally {
+                    currentExportImage = null
+                }
+            }
+        }
     }
 
     fun getImageRepositoryLoadState() = imageRepository.getLoadState()

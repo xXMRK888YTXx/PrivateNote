@@ -57,6 +57,7 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialo
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
@@ -880,6 +881,16 @@ fun FilesDialog(
         onResult = editNoteViewModel::onImagePicked
     )
 
+    val selectExportImagePath = rememberLauncherForActivityResult(
+        contract = CreateSingleAccessExternalFileContract(),
+        onResult = editNoteViewModel::onExportImagePathSelected
+    )
+
+    val selectExportAudioPath = rememberLauncherForActivityResult(
+        contract = CreateSingleAccessExternalFileContract(),
+        onResult = editNoteViewModel::onExportAudioPathSelected
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -1007,7 +1018,7 @@ fun FilesDialog(
                                 onHide = { isOptionDropDownVisible.value = false },
                                 onDelete = { editNoteViewModel.showAudioRemoveDialogState(it.id) },
                                 onExportFile = {
-                                    editNoteViewModel.exportAudio(it)
+                                    editNoteViewModel.exportAudio(it,selectExportAudioPath)
                                 })
                         }
                     }
@@ -1101,7 +1112,7 @@ fun FilesDialog(
                                 onHide = { isOptionDropDownVisible.value = false },
                                 onDelete = { editNoteViewModel.showRemoveImageDialog(it.id) },
                                 onExportFile = {
-                                    editNoteViewModel.exportImage(it)
+                                    editNoteViewModel.exportImage(it,selectExportImagePath)
                                 }
                             )
                         }

@@ -246,44 +246,6 @@ class MainActivity :
         else unLockOrientation()
     }
 
-    override fun selectExportFile(
-        onComplete: (path: Uri) -> Unit,
-        onError: (e: Exception) -> Unit,
-        exportFileType: String,
-    ) {
-        try {
-            val fileType = when (exportFileType) {
-                AUDIO_EXPORT_TYPE -> "audio/mp3"
-                IMAGE_EXPORT_TYPE -> "image/jpg"
-                else -> throw IllegalArgumentException()
-            }
-            val fileName = when (exportFileType) {
-                AUDIO_EXPORT_TYPE -> "audio.mp3"
-                IMAGE_EXPORT_TYPE -> "image.jpg"
-                else -> throw IllegalArgumentException()
-            }
-            mainActivityViewModel.registerSelectExportFileCallBack(onComplete, onError)
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                addCategory(Intent.CATEGORY_OPENABLE)
-                type = fileType
-                putExtra(Intent.EXTRA_TITLE, fileName)
-            }
-            selectExportFileCallBack.launch(intent)
-        } catch (e: CallBackAlreadyRegisteredException) {
-            onError(e)
-        }
-    }
-
-    private val selectExportFileCallBack =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK) {
-                val data = it.data?.data ?: return@registerForActivityResult
-                mainActivityViewModel.onCompleteSelectExportFile(data)
-            } else {
-                mainActivityViewModel.onErrorSelectExportFile(Exception("Cancel"))
-            }
-        }
-
     override val googleAuthorizationCallBack: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == Activity.RESULT_OK) {
@@ -305,11 +267,6 @@ class MainActivity :
 
     private fun unLockOrientation() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_USER
-    }
-
-    companion object {
-        const val IMAGE_EXPORT_TYPE = "IMAGE_EXPORT_TYPE"
-        const val AUDIO_EXPORT_TYPE = "AUDIO_EXPORT_TYPE"
     }
 
     override fun lockScreen() {

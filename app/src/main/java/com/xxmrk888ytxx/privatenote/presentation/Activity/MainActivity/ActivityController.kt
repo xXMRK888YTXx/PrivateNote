@@ -8,11 +8,7 @@ import androidx.security.crypto.EncryptedFile
 
 
 interface ActivityController {
-    fun selectExportFile(
-        onComplete: (path: Uri) -> Unit,
-        onError: (e: Exception) -> Unit,
-        exportFileType:String
-    )
+
     val googleAuthorizationCallBack: ActivityResultLauncher<Intent>
 
 }
