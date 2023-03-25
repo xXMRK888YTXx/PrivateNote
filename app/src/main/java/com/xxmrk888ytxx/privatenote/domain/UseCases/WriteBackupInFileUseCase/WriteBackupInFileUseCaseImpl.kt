@@ -12,9 +12,9 @@ import javax.inject.Inject
 class WriteBackupInFileUseCaseImpl @Inject constructor(
     @ApplicationContext private val context: Context,
 ) : WriteBackupInFileUseCase {
-    override suspend fun execute(backupFile:File, uriString:String) {
+    override suspend fun execute(backupFile:File, path:String) {
         try {
-            val uri = Uri.parse(uriString)
+            val uri = Uri.parse(path)
             val readStream = FileInputStream(backupFile)
             val readStreamBuffer = BufferedInputStream(readStream)
             val outputStream = context.contentResolver.openOutputStream(uri) ?: throw IOException()

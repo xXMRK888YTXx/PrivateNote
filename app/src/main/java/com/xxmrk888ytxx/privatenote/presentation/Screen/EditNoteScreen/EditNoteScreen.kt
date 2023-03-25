@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.Manifest
@@ -55,7 +57,6 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingTex
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
 import com.xxmrk888ytxx.privatenote.Utils.*
-import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
@@ -83,9 +84,7 @@ fun EditNoteScreen(
     val removeImageDialogState = remember {
         editNoteViewModel.getShowRemoveImageState()
     }
-    val changeCategoryDialogStatus = remember {
-        editNoteViewModel.getChangeCategoryDialogStatus()
-    }
+
     val currentSelectedItem = remember {
         editNoteViewModel.getCurrentSelectedCategory()
     }
@@ -212,7 +211,7 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                RecordTimer(editNoteViewModel, recordState.value)
+                RecordTimer(editNoteViewModel)
                 Row(
                     modifier = Modifier.padding(bottom = 10.dp),
                     horizontalArrangement = Arrangement.Center,
@@ -248,7 +247,7 @@ fun AudioRecordDialog(editNoteViewModel: EditNoteViewModel) {
 }
 
 @Composable
-fun RecordTimer(editNoteViewModel: EditNoteViewModel, recorderState: RecorderState) {
+fun RecordTimer(editNoteViewModel: EditNoteViewModel) {
     val currentRecordTime = remember {
         editNoteViewModel.getCurrentRecordTime()
     }
@@ -557,8 +556,8 @@ fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
                 Modifier.background(themeColors.mainBackGroundColor)
 
             ) {
-                PasswordTextEdit(editNoteViewModel, passwordText, repitPasswordText, isEnabled)
-                RepitPasswordTextEdit(editNoteViewModel, repitPasswordText, passwordText, isEnabled)
+                PasswordTextEdit(passwordText, repitPasswordText, isEnabled)
+                RepeatPasswordTextEdit(repitPasswordText, passwordText, isEnabled)
                 OutlinedButton(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -588,13 +587,14 @@ fun CryptDialog(editNoteViewModel: EditNoteViewModel) {
 
 @Composable
 fun PasswordTextEdit(
-    editNoteViewModel: EditNoteViewModel, password: MutableState<String>,
-    repitPassword: MutableState<String>, isEnabled: MutableState<Boolean>,
+    password: MutableState<String>,
+    repeatPassword: MutableState<String>,
+    isEnabled: MutableState<Boolean>,
 ) {
     OutlinedTextField(
         value = password.value,
         onValueChange = {
-            password.value = it;isEnabled.value = repitPassword.value == password.value
+            password.value = it;isEnabled.value = repeatPassword.value == password.value
         },
         singleLine = true,
         modifier = Modifier
@@ -627,18 +627,19 @@ fun PasswordTextEdit(
 }
 
 @Composable
-fun RepitPasswordTextEdit(
-    editNoteViewModel: EditNoteViewModel, repitPassword: MutableState<String>,
-    password: MutableState<String>, isEnabled: MutableState<Boolean>,
+fun RepeatPasswordTextEdit(
+    repeatPassword: MutableState<String>,
+    password: MutableState<String>,
+    isEnabled: MutableState<Boolean>,
 ) {
 
     OutlinedTextField(
-        value = repitPassword.value,
+        value = repeatPassword.value,
         onValueChange = {
-            repitPassword.value = it;isEnabled.value = repitPassword.value == password.value
+            repeatPassword.value = it;isEnabled.value = repeatPassword.value == password.value
         },
         singleLine = true,
-        isError = (!isEnabled.value && !repitPassword.value.isEmpty()),
+        isError = (!isEnabled.value && !repeatPassword.value.isEmpty()),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(100))
@@ -875,7 +876,6 @@ fun FilesDialog(
     editNoteViewModel: EditNoteViewModel,
     navController: NavController,
 ) {
-    val permission = rememberPermissionState(permission = Manifest.permission.RECORD_AUDIO)
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val images = editNoteViewModel.getNoteImage().collectAsState(listOf(), scope.coroutineContext)

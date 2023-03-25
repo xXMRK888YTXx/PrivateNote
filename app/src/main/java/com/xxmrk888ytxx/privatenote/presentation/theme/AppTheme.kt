@@ -18,10 +18,7 @@ fun AppTheme(
         ThemeType.Black -> ThemeHolder.Black.colors
         ThemeType.White -> ThemeHolder.White.colors
         ThemeType.System -> {
-            val isDarkTheme = isSystemInDarkTheme()
-
-            if(isDarkTheme)
-                ThemeHolder.Black.colors
+            if(isDarkTheme) ThemeHolder.Black.colors
             else ThemeHolder.White.colors
         }
     }

@@ -60,10 +60,10 @@ fun monthToString(month:Int,context: Context) : String {
 fun Long.secondToData(context: Context) : String {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = this
-    var minute = ""
-    if(calendar.get(Calendar.MINUTE) < 10)
-        minute = "0" + calendar.get(Calendar.MINUTE).toString()
-    else minute = calendar.get(Calendar.MINUTE).toString()
+
+    val minute = if(calendar.get(Calendar.MINUTE) < 10)
+        "0" + calendar.get(Calendar.MINUTE).toString()
+    else calendar.get(Calendar.MINUTE).toString()
     return "${calendar.get(Calendar.DAY_OF_MONTH)} ${monthToString(calendar.get(Calendar.MONTH),context)}" +
             " ${calendar.get(Calendar.YEAR)} " +
             "${calendar.get(Calendar.HOUR_OF_DAY)}:$minute"

@@ -621,12 +621,6 @@ fun TopLabel(toDoViewModel: ToDoViewModel) {
 
 @Composable
 fun NotifyDialog(toDoViewModel: ToDoViewModel) {
-    val dropDownState = remember {
-        toDoViewModel.getNotifyDropDownState()
-    }
-    val toDoTime = remember {
-        toDoViewModel.getCurrentToDoTime()
-    }
     val currentNotifyTime = remember {
         toDoViewModel.getCurrentNotifyTime()
     }

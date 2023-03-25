@@ -83,7 +83,7 @@ class MainViewModel @Inject constructor(
     }
 
     suspend fun checkDeepLinks() {
-        val deepLink = validateDeepLink(deepLinkController.getDeepLink()) ?: return
+        validateDeepLink(deepLinkController.getDeepLink()) ?: return
         changeScreenState(MainScreenState.ToDoScreen)
     }
 

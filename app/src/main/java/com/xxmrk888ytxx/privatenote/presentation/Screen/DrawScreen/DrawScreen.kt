@@ -158,7 +158,9 @@ fun SelectColorDialog(drawViewModel: DrawViewModel) {
                             drawViewModel.changeCurrentSelectedColor(it.color)
                         })
                 }
-                YesNoButton(onCancel = { drawViewModel.hideSelectColorDialog() }) {
+                YesNoButton(
+                    onCancel = { drawViewModel.hideSelectColorDialog() },
+                ) {
                     drawViewModel.hideSelectColorDialog()
                     drawViewModel.changeBrushColor(currentSelectedColor.value)
                 }

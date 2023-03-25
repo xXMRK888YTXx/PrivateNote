@@ -126,7 +126,7 @@ class NotifyTaskManagerImpl @Inject constructor(
 
     override fun isTodoValid(todoId: Int) : Boolean {
         return try {
-            val todo = toDoRepository.getToDoById(todoId).getData()
+            toDoRepository.getToDoById(todoId).getData()
             true
         }catch (e:Exception) {
             false

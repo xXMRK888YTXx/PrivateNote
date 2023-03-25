@@ -1,9 +1,9 @@
 package com.xxmrk888ytxx.privatenote.data.Database.Entity
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import androidx.room.*
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
 
 @Entity(
     indices =[

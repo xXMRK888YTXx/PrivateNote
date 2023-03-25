@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.domain.RecordManager
 
 import android.content.Context

@@ -17,12 +17,13 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 @Composable
-fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
-                confirmButtonText:String = stringResource(R.string.Ok),
-                modifier:Modifier = Modifier,
-                isOkButtonEnable:Boolean = true,
-                onCancel:() -> Unit,
-                onConfirm:() -> Unit,
+fun YesNoButton(
+    modifier:Modifier = Modifier,
+    isOkButtonEnable:Boolean = true,
+    cancelButtonText:String = stringResource(R.string.cancel),
+    confirmButtonText:String = stringResource(R.string.Ok),
+    onCancel:() -> Unit,
+    onConfirm:() -> Unit,
 ) {
     Row(
         modifier,
@@ -41,7 +42,7 @@ fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
                 backgroundColor = themeColors.titleHintColor,
             )
         ) {
-            Text(text = stringResource(R.string.cancel),
+            Text(text = cancelButtonText,
                 color = themeColors.primaryFontColor
             )
         }
@@ -59,7 +60,7 @@ fun YesNoButton(cancelButtonText:String = stringResource(R.string.cancel),
                 .padding(start = 5.dp, end = 5.dp),
             shape = RoundedCornerShape(80),
         ) {
-            Text(text = stringResource(R.string.Ok),
+            Text(text = confirmButtonText,
                 color = themeColors.primaryFontColor
             )
         }

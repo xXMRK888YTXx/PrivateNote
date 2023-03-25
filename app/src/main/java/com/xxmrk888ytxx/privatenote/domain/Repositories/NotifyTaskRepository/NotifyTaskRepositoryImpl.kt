@@ -9,7 +9,6 @@ import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @SendAnalytics
@@ -21,8 +20,8 @@ class NotifyTaskRepositoryImpl @Inject constructor(
         return notifyTaskDao.getAllTasks()
     }
 
-    override fun getTaskByTodoId(todoId: Int): Flow<NotifyTask?> {
-         return notifyTaskDao.getTaskByTodoId(todoId)
+    override fun getTaskByTodoId(taskId: Int): Flow<NotifyTask?> {
+         return notifyTaskDao.getTaskByTodoId(taskId)
     }
 
     override suspend fun insertTask(task: NotifyTask) = withContext(Dispatchers.IO) {

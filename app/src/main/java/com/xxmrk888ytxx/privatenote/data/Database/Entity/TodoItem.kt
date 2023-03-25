@@ -1,11 +1,12 @@
 package com.xxmrk888ytxx.privatenote.data.Database.Entity
 
+
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.squareup.moshi.JsonClass
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Entity(
     tableName = "TODO",

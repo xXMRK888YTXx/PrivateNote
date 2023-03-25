@@ -18,7 +18,7 @@ class BillingManagerImpl @Inject constructor(
     private var removeAdProduct:ProductDetails? = null
 
     private val purchasesUpdatedListener =
-        PurchasesUpdatedListener { billingResult, purchases ->
+        PurchasesUpdatedListener { _, purchases ->
             verifyPurchase(purchases)
         }
 
@@ -69,7 +69,7 @@ class BillingManagerImpl @Inject constructor(
             .setProductList(products)
             .build()
         billingClient.queryProductDetailsAsync(params
-        ) {billingResult, prodDetailsList ->
+        ) { _, prodDetailsList ->
             if(prodDetailsList.isEmpty()) return@queryProductDetailsAsync
             prodDetailsList.forEach {
                 when(it.productId) {
@@ -111,7 +111,7 @@ class BillingManagerImpl @Inject constructor(
             .setProductDetailsParamsList(productDetailsParamsList)
             .build()
 
-        val billingResult = billingClient.launchBillingFlow(activity, billingFlowParams)
+        billingClient.launchBillingFlow(activity, billingFlowParams)
 
     }
 

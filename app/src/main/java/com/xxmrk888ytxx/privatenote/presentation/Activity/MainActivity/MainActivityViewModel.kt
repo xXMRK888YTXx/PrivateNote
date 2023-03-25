@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.app.Activity

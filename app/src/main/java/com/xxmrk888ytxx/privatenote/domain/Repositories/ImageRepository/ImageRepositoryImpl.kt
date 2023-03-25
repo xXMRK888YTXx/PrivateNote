@@ -103,7 +103,7 @@ class ImageRepositoryImpl @Inject constructor(
     override suspend fun clearNoteImages(noteId: Int) {
         analytics.sendEvent(ClearNoteImages_Event,null)
         val imageDir = File(getNoteImageDir(noteId,context))
-        imageDir.listFiles().forEach {
+        imageDir.listFiles()?.forEach {
             it.delete()
         }
         imageDir.delete()

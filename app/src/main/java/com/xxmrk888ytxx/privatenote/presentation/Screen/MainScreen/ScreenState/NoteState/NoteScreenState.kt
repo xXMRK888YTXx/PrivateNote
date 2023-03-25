@@ -117,9 +117,7 @@ fun NoteScreenState(
 }
 @Composable
 fun Topbar(noteStateViewModel: NoteStateViewModel) {
-    val isSearchListHide = remember {
-        noteStateViewModel.isSearchLineHide
-    }
+
     when(noteStateViewModel.getCurrentMode().value) {
         is NoteScreenMode.Default,
         is NoteScreenMode.ShowCategoryMenu -> {
