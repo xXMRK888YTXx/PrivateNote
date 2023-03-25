@@ -3,7 +3,6 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -18,18 +17,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.xxmrk888ytxx.privatenote.BuildConfig
-import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.AdMobManager.AdMobManager
-import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManager
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
-import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
+import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
@@ -60,27 +52,17 @@ class MainActivity :
     BullingController,
     OrientationLockManager
 {
-    @Inject
-    lateinit var settingsRepository: SettingsRepository
-    @Inject
-    lateinit var billingManager: BillingManager
-    @Inject
-    lateinit var adShowManager: AdShowManager
-    @Inject
-    lateinit var adMobManager: AdMobManager
-
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION) mainActivityViewModel.registerTodoDeepLink(
-            intent
-        )
+        if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION)
+            mainActivityViewModel.registerTodoDeepLink(intent)
 
         setContent {
-            val themeId = settingsRepository.getApplicationThemeId().collectAsState(ThemeType.System.id)
+            val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
             val startScreen = getStartScreen()
             val navController = rememberNavController()
             mainActivityViewModel.saveNavController(navController)
@@ -95,7 +77,11 @@ class MainActivity :
                 Scaffold(
                     backgroundColor = themeColors.mainBackGroundColor
                 ) {
-                    NavHost(navController = navController, startDestination = startScreen.route) {
+                    NavHost(
+                        navController = navController,
+                        startDestination = startScreen.route
+                    ) {
+
                         composable(Screen.SplashScreen.route) {
                             SplashScreen(navController,
                                 isAppPasswordInstalled = mainActivityViewModel.getAppPasswordState(),
@@ -108,37 +94,44 @@ class MainActivity :
                                 finishApp = { this@MainActivity.finish() }
                             )
                         }
+
                         composable(Screen.MainScreen.route) {
                             MainScreen(
                                 navController = navController
                             )
                         }
+
                         composable(Screen.EditNoteScreen.route) {
                             EditNoteScreen(
                                 navController = navController
                             )
                         }
+
                         composable(Screen.SettingsScreen.route) {
                             SettingsScreen(
                                 navController = navController,
                                 bullingController = this@MainActivity
                             )
                         }
+
                         composable(Screen.DrawScreen.route) {
                             DrawScreen(
                                 navController = navController,
                             )
                         }
+
                         composable(Screen.ThemeSettingsScreen.route) {
                             ThemeSettingsScreen(
                                 navController = navController
                             )
                         }
+
                         composable(Screen.BackupSettingsScreen.route) {
                             BackupSettingsScreen(
                                 navController = navController
                             )
                         }
+
                         composable(Screen.LicenseScreen.route) {
                             LicenseScreen()
                         }
@@ -146,8 +139,8 @@ class MainActivity :
                 }
             }
         }
-        adMobManager.initAdmob()
-        billingManager.connectToGooglePlay()
+
+        mainActivityViewModel.onCreate()
     }
 
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
@@ -164,7 +157,7 @@ class MainActivity :
 
     override fun onResume() {
         super.onResume()
-        billingManager.handlingPendingTransactions()
+
         mainActivityViewModel.onResume()
         lifecycleScope.launch(Dispatchers.Main) {
             mainActivityViewModel.checkAndLockApp {
@@ -178,6 +171,7 @@ class MainActivity :
     override fun onPause() {
         super.onPause()
         mainActivityViewModel.onPause()
+
         lifecycleScope.launch(Dispatchers.Main) {
             val navController = mainActivityViewModel.getNavController()
             if (mainActivityViewModel.getLockWhenLeaveState() &&
@@ -204,13 +198,13 @@ class MainActivity :
     }
 
     override fun bueDisableAds() {
-        billingManager.bueDisableAds(this)
+        mainActivityViewModel.bueDisableAds(this)
     }
 
     override val isBillingAvailable: Boolean
-        get() = billingManager.isDisableAdsAvailable
+        get() = mainActivityViewModel.isBillingAvailable
 
     override fun showAd() {
-        adMobManager.interstitialAds(this)
+        mainActivityViewModel.showAd(this)
     }
 }

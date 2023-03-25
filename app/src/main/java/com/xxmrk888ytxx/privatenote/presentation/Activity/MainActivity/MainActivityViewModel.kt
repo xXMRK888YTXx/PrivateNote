@@ -1,5 +1,6 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
+import android.app.Activity
 import android.content.Intent
 import androidx.biometric.BiometricPrompt
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,8 @@ import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
+import com.xxmrk888ytxx.privatenote.domain.AdMobManager.AdMobManager
+import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManager
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifeCycleNotifier
@@ -27,11 +30,25 @@ class MainActivityViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val authorizationManager: BiometricAuthorizationManager,
     private val deepLinkController: DeepLinkController,
-    private val lifeCycleNotifier: LifeCycleNotifier
+    private val lifeCycleNotifier: LifeCycleNotifier,
+    private val billingManager: BillingManager,
+    private val adMobManager: AdMobManager,
 ) : ViewModel() {
-     var isFirstStart:Boolean = true
+
+    val isBillingAvailable : Boolean
+        get() = billingManager.isDisableAdsAvailable
+
+    var isFirstStart:Boolean = true
 
    private var navController:NavController? = null
+    
+    private var isGooglePlayAlreadyConnect = false 
+    
+    private var isAdMobAlreadyConnect = false
+    
+    private var isPendingTransactionsHandled = false
+
+    val themeId = settingsRepository.getApplicationThemeId()
 
     fun saveNavController(navController: NavController) {
         if(this.navController != null) return
@@ -120,9 +137,34 @@ class MainActivityViewModel @Inject constructor(
 
     fun onResume() {
         lifeCycleNotifier.onStateChanged(LifeCycleState.onResume)
+        
+        if(!isPendingTransactionsHandled) {
+            billingManager.handlingPendingTransactions()
+            isPendingTransactionsHandled = true
+        }
     }
 
     fun onPause() {
         lifeCycleNotifier.onStateChanged(LifeCycleState.onPause)
+    }
+    
+    fun bueDisableAds(activity:Activity) {
+        billingManager.bueDisableAds(activity)
+    }
+
+    fun onCreate() {
+        if(!isGooglePlayAlreadyConnect) {
+            billingManager.connectToGooglePlay()
+            isGooglePlayAlreadyConnect = true   
+        }
+        
+        if(!isAdMobAlreadyConnect) {
+            adMobManager.initAdmob()
+            isAdMobAlreadyConnect = true
+        }
+    }
+
+    fun showAd(activity: Activity) {
+        adMobManager.interstitialAds(activity)
     }
 }
