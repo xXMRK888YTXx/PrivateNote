@@ -1,14 +1,14 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
 
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import kotlinx.coroutines.flow.Flow
 
 interface ToDoRepository {
-    fun getAllToDo() : Flow<List<ToDoItem>>
+    fun getAllToDo() : Flow<List<TodoItem>>
 
-    fun getToDoById(id:Int) : Flow<ToDoItem>
+    fun getToDoById(id:Int) : Flow<TodoItem>
 
-    fun insertToDo(toDoItem: ToDoItem)
+    fun insertToDo(toDoItem: TodoItem)
 
     fun removeToDo(id:Int)
 

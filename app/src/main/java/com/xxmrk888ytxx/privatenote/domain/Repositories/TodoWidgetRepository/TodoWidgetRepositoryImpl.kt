@@ -1,14 +1,11 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository
 
-import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.util.Log
 import androidx.core.os.bundleOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.glance.GlanceId
-import androidx.glance.LocalGlanceId
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.updateAll
@@ -21,8 +18,8 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget.Companion.widgetDataKey
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.first
@@ -33,7 +30,7 @@ import kotlin.coroutines.CoroutineContext
 @Singleton
 class TodoWidgetRepositoryImpl @Inject constructor(
     @ApplicationContext private val context:Context,
-    private val toDoDao: ToDoDao,
+    private val toDoDao: TodoDao,
     private val analyticsManager: AnalyticsManager
 ) : TodoWidgetRepository {
     override fun updateWidgetData() {
@@ -45,7 +42,7 @@ class TodoWidgetRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun createWidgetTodoItems(allTodo: List<ToDoItem>) {
+    private suspend fun createWidgetTodoItems(allTodo: List<TodoItem>) {
         analyticsManager.sendEvent(CreateWidgetTodoItems_Event,null)
         try {
             val todoList =  allTodo.filter { !it.isCompleted }
@@ -55,7 +52,7 @@ class TodoWidgetRepositoryImpl @Inject constructor(
                 parseAndWrite(importantTodo.take(MAX_TODO_COUNT_IN_WIDGET))
                 return
             }
-            val finalList = mutableListOf<ToDoItem>()
+            val finalList = mutableListOf<TodoItem>()
             finalList.addAll(importantTodo)
             notImportantTodo.forEach {
                 if(finalList.size >= MAX_TODO_COUNT_IN_WIDGET) {
@@ -70,7 +67,7 @@ class TodoWidgetRepositoryImpl @Inject constructor(
         }
     }
 
-    private suspend fun parseAndWrite(todoList:List<ToDoItem>) {
+    private suspend fun parseAndWrite(todoList:List<TodoItem>) {
         analyticsManager.sendEvent(ParseAndWriteTodoInWidget_Event, bundleOf(Pair("Write_In_Widget_Todo_Count",todoList.size)))
         try {
             val dataModel = TodoWidgetDataModel(todoList)

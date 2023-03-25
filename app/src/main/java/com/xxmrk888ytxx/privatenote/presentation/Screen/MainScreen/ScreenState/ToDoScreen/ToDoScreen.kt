@@ -37,7 +37,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.LazySpacer
 import com.xxmrk888ytxx.privatenote.Utils.Remember
@@ -490,7 +490,7 @@ fun ToDoStub() {
 }
 
 @Composable
-fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
+fun ToDoItem(todo: TodoItem, toDoViewModel: ToDoViewModel) {
     val fontColor =
         if (todo.isCompleted) themeColors.primaryFontColor.copy(0.3f) else themeColors.primaryFontColor
     val todoTimeText = remember {
@@ -581,13 +581,13 @@ fun ToDoItem(todo: ToDoItem, toDoViewModel: ToDoViewModel) {
 }
 
 @Composable
-fun getTodoSubText(todo: ToDoItem, context: Context): String {
+fun getTodoSubText(todo: TodoItem, context: Context): String {
     if (!todo.isCompleted && todo.todoTime != null) return "${todo.todoTime.secondToData(context)}"
     return ""
 }
 
 @Composable
-fun getTodoSubTextColor(todo: ToDoItem): Color {
+fun getTodoSubTextColor(todo: TodoItem): Color {
     if (!todo.isCompleted && todo.todoTime != null) {
         if (todo.todoTime in 0..System.currentTimeMillis()) return Color.Red.copy(0.9f)
         //  else return Color.Cyan.copy(0.7f)

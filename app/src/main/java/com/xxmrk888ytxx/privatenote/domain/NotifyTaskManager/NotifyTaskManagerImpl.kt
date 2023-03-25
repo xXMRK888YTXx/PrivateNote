@@ -7,7 +7,7 @@ import android.content.Intent
 import android.os.Build
 import com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
@@ -81,7 +81,7 @@ class NotifyTaskManagerImpl @Inject constructor(
 
     override fun checkForOld() {
         val oldTask = getAllTasks().getData().filter { it.time < System.currentTimeMillis() }
-        val todo = mutableListOf<ToDoItem>()
+        val todo = mutableListOf<TodoItem>()
         oldTask.forEach {
             todo.add(toDoRepository.getToDoById(it.todoId).getData())
         }

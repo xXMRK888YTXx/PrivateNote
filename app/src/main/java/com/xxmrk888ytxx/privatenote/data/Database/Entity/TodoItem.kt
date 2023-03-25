@@ -15,7 +15,7 @@ import kotlinx.android.parcel.Parcelize
 )
 @JsonClass(generateAdapter = true)
 @Parcelize
-data class ToDoItem(
+data class TodoItem(
     @PrimaryKey(autoGenerate = true) val id:Int = 0,
     val todoText:String,
     val isCompleted:Boolean = false,

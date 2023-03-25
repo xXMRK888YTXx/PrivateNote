@@ -1,11 +1,5 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import android.content.Context
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepositoryImpl
@@ -22,18 +16,12 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.Setti
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module

@@ -1,38 +1,24 @@
 package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
-import android.util.Log
 import androidx.biometric.BiometricPrompt
-import androidx.core.content.FileProvider.getUriForFile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import androidx.security.crypto.EncryptedFile
-import com.xxmrk888ytxx.privatenote.BuildConfig
-import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.BiometricAuthorizationManager.BiometricAuthorizationManager
-import com.xxmrk888ytxx.privatenote.Utils.Exception.CallBackAlreadyRegisteredException
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
-import com.xxmrk888ytxx.privatenote.domain.GoogleAuthorizationManager.GoogleAuthorizationManager
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifeCycleNotifier
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -120,7 +106,7 @@ class MainActivityViewModel @Inject constructor(
         intent.ifNotNull {
             val startId = it.getIntExtra(OpenTodoInAppAction.START_ID_KEY,-1)
             if(startId == -1) return@ifNotNull
-            val todo = it.getParcelableExtra<ToDoItem>(OpenTodoInAppAction.TODO_GET_KEY)
+            val todo = it.getParcelableExtra<TodoItem>(OpenTodoInAppAction.TODO_GET_KEY)
             if(deepLinkController.getDeepLink()?.idDeepLink == startId) return@ifNotNull
             deepLinkController.registerDeepLink(
                 DeepLink.TodoDeepLink(

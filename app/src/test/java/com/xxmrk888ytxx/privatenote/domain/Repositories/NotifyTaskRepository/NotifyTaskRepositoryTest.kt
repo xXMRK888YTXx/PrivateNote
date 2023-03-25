@@ -3,12 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence

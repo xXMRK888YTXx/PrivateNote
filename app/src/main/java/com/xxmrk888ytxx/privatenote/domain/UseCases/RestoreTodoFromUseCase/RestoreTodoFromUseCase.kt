@@ -1,7 +1,7 @@
 package com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase
 
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 
 interface RestoreTodoFromUseCase {
-    suspend fun execute(restoredTodo:List<ToDoItem>)
+    suspend fun execute(restoredTodo:List<TodoItem>)
 }

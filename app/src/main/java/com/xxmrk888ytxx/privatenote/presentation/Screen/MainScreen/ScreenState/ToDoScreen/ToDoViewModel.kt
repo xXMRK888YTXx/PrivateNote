@@ -12,7 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
@@ -87,7 +87,7 @@ class ToDoViewModel @Inject constructor(
 
     private val removeDialogState = mutableStateOf(Pair<Boolean,Int?>(false,null))
 
-    var cachedToDoList:List<ToDoItem> = listOf()
+    var cachedToDoList:List<TodoItem> = listOf()
 
     private val requestPermissionSendAlarmsDialog = mutableStateOf(false)
 
@@ -259,7 +259,7 @@ class ToDoViewModel @Inject constructor(
         isCurrentNotifyPriority.value = true
     }
 
-    fun toEditToDoState(currentEditToDo:ToDoItem? = null) {
+    fun toEditToDoState(currentEditToDo:TodoItem? = null) {
         if(currentEditToDo != null) {
             currentEditableToDoId = currentEditToDo.id
             dialogTextField.value = currentEditToDo.todoText
@@ -291,7 +291,7 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
-    fun getToDoList() : Flow<List<ToDoItem>> {
+    fun getToDoList() : Flow<List<TodoItem>> {
         return toDoRepository.getAllToDo()
     }
 
@@ -312,7 +312,7 @@ class ToDoViewModel @Inject constructor(
         val currentNotifyPriority = isCurrentNotifyPriority.value
         viewModelScope.launch {
             toDoRepository.insertToDo(
-                toDoItem = ToDoItem(
+                toDoItem = TodoItem(
                     id = currentId,
                     todoText = currentText,
                     isImportant = currentImportantState,

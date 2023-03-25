@@ -2,13 +2,10 @@ package com.xxmrk888ytxx.privatenote.Widgets.TodoWidget
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.updateAll
-import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +20,7 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
         super.onReceive(context, intent)
         when(intent.action) {
             MarkCompletedAction.CHANGE_MARK_TODO_STATUS -> {
-                val todo = intent.getParcelableExtra<ToDoItem>(MarkCompletedAction.TodoPutKey) ?: return
+                val todo = intent.getParcelableExtra<TodoItem>(MarkCompletedAction.TodoPutKey) ?: return
                 toDoRepository.changeMarkStatus(todo.id,!todo.isCompleted)
             }
         }

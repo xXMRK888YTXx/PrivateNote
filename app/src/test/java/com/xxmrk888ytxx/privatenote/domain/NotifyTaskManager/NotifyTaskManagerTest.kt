@@ -2,10 +2,9 @@ package com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager
 
 import android.app.AlarmManager
 import android.content.Context
-import android.content.Intent
 import com.xxmrk888ytxx.privatenote.Utils.fillList
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
@@ -187,7 +186,7 @@ class NotifyTaskManagerTest {
        }
    }
 
-    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = ToDoItem(id = id, todoText = todoText, isImportant = isImportant)
+    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = TodoItem(id = id, todoText = todoText, isImportant = isImportant)
     private fun getTestTask(todoId:Int = 0,id:Int = 0,enable:Boolean = true,time:Long = 0,isPriority:Boolean = true) =
         NotifyTask(id,todoId,enable,time,isPriority)
     private fun getListTask(size:Int = 1,task:NotifyTask = getTestTask()) = listOf<NotifyTask>().fillList(task,size)
