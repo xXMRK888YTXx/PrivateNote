@@ -61,8 +61,6 @@ class MainActivity :
     OrientationLockManager
 {
     @Inject
-    lateinit var notifyTaskManager: NotifyTaskManager
-    @Inject
     lateinit var settingsRepository: SettingsRepository
     @Inject
     lateinit var billingManager: BillingManager
@@ -76,8 +74,6 @@ class MainActivity :
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        restoreTasks()
 
         if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION) mainActivityViewModel.registerTodoDeepLink(
             intent
@@ -191,13 +187,6 @@ class MainActivity :
                 val time = mainActivityViewModel.getLockWhenLeaveTime()
                 mainActivityViewModel.saveExitLockInfo(time)
             }
-        }
-    }
-
-    private fun restoreTasks() {
-        lifecycleScope.launch {
-            notifyTaskManager.checkForOld()
-            notifyTaskManager.sendNextTask()
         }
     }
 
