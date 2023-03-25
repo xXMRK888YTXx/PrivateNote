@@ -61,9 +61,9 @@ class InputHistoryManagerImpl @Inject constructor() : InputHistoryManager {
     override fun getRedo() : String {
         try {
             currentPos++
-            val text = historyBuffer[currentPos]
-            return text
-        }catch (e:Exception) {
+
+            return historyBuffer[currentPos]
+        } catch (e: Exception) {
             throw IndexOutOfBoundsException()
         }
     }

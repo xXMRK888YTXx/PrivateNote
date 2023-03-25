@@ -1,20 +1,22 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePicker
@@ -26,9 +28,10 @@ import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -37,11 +40,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ToDoViewModel @Inject constructor(
     private val toastManager: ToastManager,
-    private val toDoRepository: ToDoRepository,
+    private val toDoRepository: TodoRepository,
     private val notifyTaskManager: NotifyTaskManager,
     private val settingsRepository: SettingsRepository,
     private val notificationAppManager: NotificationAppManager,
-    private val deepLinkController: DeepLinkController
+    private val deepLinkController: DeepLinkController,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 
@@ -83,7 +87,7 @@ class ToDoViewModel @Inject constructor(
 
     private val removeDialogState = mutableStateOf(Pair<Boolean,Int?>(false,null))
 
-    var cachedToDoList:List<ToDoItem> = listOf()
+    var cachedToDoList:List<TodoItem> = listOf()
 
     private val requestPermissionSendAlarmsDialog = mutableStateOf(false)
 
@@ -203,7 +207,8 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
-    private fun isHaveNotificationPostPermission(): Boolean = notificationAppManager.isHavePostNotificationPermission()
+    private fun isHaveNotificationPostPermission(): Boolean =
+        notificationAppManager.isHavePostNotificationPermission()
 
     fun hideNotifyDialog() {
         isNotifyDialogShow.value = false
@@ -255,7 +260,7 @@ class ToDoViewModel @Inject constructor(
         isCurrentNotifyPriority.value = true
     }
 
-    fun toEditToDoState(currentEditToDo:ToDoItem? = null) {
+    fun toEditToDoState(currentEditToDo:TodoItem? = null) {
         if(currentEditToDo != null) {
             currentEditableToDoId = currentEditToDo.id
             dialogTextField.value = currentEditToDo.todoText
@@ -287,7 +292,7 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
-    fun getToDoList() : Flow<List<ToDoItem>> {
+    fun getToDoList() : Flow<List<TodoItem>> {
         return toDoRepository.getAllToDo()
     }
 
@@ -308,7 +313,7 @@ class ToDoViewModel @Inject constructor(
         val currentNotifyPriority = isCurrentNotifyPriority.value
         viewModelScope.launch {
             toDoRepository.insertToDo(
-                toDoItem = ToDoItem(
+                toDoItem = TodoItem(
                     id = currentId,
                     todoText = currentText,
                     isImportant = currentImportantState,
@@ -407,8 +412,17 @@ class ToDoViewModel @Inject constructor(
         )
     }
 
-    fun openAlarmSettings(activityController: ActivityController) {
-        activityController.openAlarmSettings()
+    fun openAlarmSettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                data = Uri.parse("package:" + context.packageName)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            try {
+                 context.startActivity(intent)
+            }catch (_:Exception) {}
+
+        }
     }
 
     suspend fun checkDeepLinks() {

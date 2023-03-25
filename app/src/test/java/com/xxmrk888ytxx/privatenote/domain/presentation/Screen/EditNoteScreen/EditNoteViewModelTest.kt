@@ -1,12 +1,14 @@
 package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.EditNoteScreen
 
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
+import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifeCycleManager
+import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
@@ -26,6 +28,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert
@@ -39,12 +42,14 @@ class EditNoteViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private val lifeCycleManager = LifeCycleManager()
+
 
     private val noteRepository: NoteRepository = mockk(relaxed = true)
     private val categoryRepository: CategoryRepository = mockk(relaxed = true)
     private val securityUtils: SecurityUtils = mockk(relaxed = true)
     private val toastManager: ToastManager = mockk(relaxed = true)
-    private val lifeCycleState: MutableStateFlow<LifeCycleState> = MutableStateFlow(LifeCycleState.onResume)
+    private val lifeCycleState: LifecycleProvider = lifeCycleManager
     private val inputHistoryManager: InputHistoryManager = mockk(relaxed = true)
     private val analytics: AnalyticsManager = mockk(relaxed = true)
     private val recordManager: RecordManager = mockk(relaxed = true)
@@ -53,7 +58,7 @@ class EditNoteViewModelTest {
     private val imageRepository: ImageRepository = mockk(relaxed = true)
     private val exportImageUseCase : ExportImageUseCase = mockk(relaxed = true)
     private val exportAudioUseCase : ExportAudioUseCase = mockk(relaxed = true)
-    private val adManager = mockk<AdManager>(relaxed = true)
+    private val adShowManager = mockk<AdShowManager>(relaxed = true)
 
     @Before
     fun init() {
@@ -62,7 +67,6 @@ class EditNoteViewModelTest {
             categoryRepository,
             securityUtils,
             toastManager,
-            lifeCycleState,
             inputHistoryManager,
             analytics,
             recordManager,
@@ -71,13 +75,17 @@ class EditNoteViewModelTest {
             imageRepository,
             exportImageUseCase,
             exportAudioUseCase,
-            adManager
+            adShowManager,
+            lifeCycleState,
+            mockk(relaxed = true),
+            mockk(relaxed = true),
+            mockk(relaxed = true),
         )
     }
 
     @After
     fun restore() = runTest {
-        lifeCycleState.emit(LifeCycleState.onResume)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnResume)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -99,24 +107,24 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             viewModel.stopRecord()
             noteRepository.insertNote(allAny())
         }
     }
 
     @Test
-    fun `test init viewModel if lifecycle state is onPause and note encrypt and noteID not 0 expect saveNote and stopRecord`() = runTest {
+    fun `test init viewModel if lifecycle state is onPause and note encrypt and noteID not 0 expect saveNote and stopRecord`() = runBlocking {
         val note = Note(4,"h","", isEncrypted = true)
 
         every { noteRepository.getNoteById(note.id) } returns flowOf(note)
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
         Assert.assertEquals(ShowDialogState.DecryptDialog,viewModel.dialogShowState.value)
@@ -163,10 +171,10 @@ class EditNoteViewModelTest {
         every { noteRepository.getNoteById(note.id) } returns flowOf(note)
         viewModel.getNote(4)
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             noteRepository.insertNote(any())
         }
     }
@@ -179,10 +187,10 @@ class EditNoteViewModelTest {
         every { noteRepository.getNoteById(note.id) } returns flowOf(note)
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             noteRepository.insertNote(any())
         }
     }
@@ -208,7 +216,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
         viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 1) {
@@ -225,7 +233,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
         viewModel.notSaveChanges(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 1) {
@@ -241,7 +249,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(0)
         viewModel.titleTextField.value = "rtefg"
         viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 0) {

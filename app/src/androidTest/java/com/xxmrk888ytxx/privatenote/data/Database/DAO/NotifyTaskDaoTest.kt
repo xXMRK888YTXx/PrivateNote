@@ -9,7 +9,7 @@ import com.xxmrk888ytxx.privatenote.Utils.fillList
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.AppDataBase
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -121,7 +121,7 @@ class NotifyTaskDaoTest {
 
         notifyTaskDao.insertTask(task)
         if(notifyTaskDao.getTaskByTodoId(taskId).getData() != task) Assert.fail()
-        notifyTaskDao.removeTaskByTodoID(todoId)
+        notifyTaskDao.removeTaskByTodoId(todoId)
 
         val taskFromDb = notifyTaskDao.getTaskByTodoId(taskId).getData()
         Assert.assertEquals(null,taskFromDb)
@@ -157,6 +157,6 @@ class NotifyTaskDaoTest {
     private fun getTestTask(todoId:Int,id:Int = 0,enable:Boolean = true,time:Long = 0,isPriority:Boolean = true) =
         NotifyTask(id,todoId,enable,time,isPriority)
 
-    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = ToDoItem(id = id, todoText = todoText, isImportant = isImportant)
-    private fun getTodoList(size:Int,todo: ToDoItem = getTestTodo()) = listOf<ToDoItem>().fillList(todo,size)
+    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = TodoItem(id = id, todoText = todoText, isImportant = isImportant)
+    private fun getTodoList(size:Int,todo: TodoItem = getTestTodo()) = listOf<TodoItem>().fillList(todo,size)
 }

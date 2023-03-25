@@ -57,7 +57,8 @@ class RestoreNoteFromBackupUseCaseImpl @Inject constructor(
     }
 
     private suspend fun insertNote(note: Note) {
-        val noteCategory = if(note.category != null) categoryRepository.getCategoryById(note.category)?.first()
+        val noteCategory = if(note.category != null)
+            categoryRepository.getCategoryById(note.category)?.first()
         else null
         noteRepository.insertNote(note.copy(id = 0, category = noteCategory?.categoryId))
     }

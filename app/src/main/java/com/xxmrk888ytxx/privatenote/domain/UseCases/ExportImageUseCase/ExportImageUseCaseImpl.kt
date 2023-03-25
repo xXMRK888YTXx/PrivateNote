@@ -20,6 +20,7 @@ class ExportImageUseCaseImpl @Inject constructor(
         val readStream = image.image.openFileInput()
         val bitmap = BitmapFactory.decodeStream(readStream)
         readStream.close()
+
         val outputStream = context.contentResolver.openOutputStream(path) ?: throw BadFileAccessException()
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream)
         outputStream.close()

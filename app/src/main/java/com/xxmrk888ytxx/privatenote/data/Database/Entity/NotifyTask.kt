@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
     ],
     foreignKeys = [
         ForeignKey(
-            entity = ToDoItem::class,
+            entity = TodoItem::class,
             parentColumns = ["id"],
             childColumns = ["todoId"],
             onDelete = ForeignKey.CASCADE,

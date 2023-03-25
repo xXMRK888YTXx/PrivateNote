@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository
 
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
@@ -10,6 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -19,7 +20,7 @@ class CategoryRepositoryTest {
     lateinit var dao:CategoryDao
     @Before
     fun init() {
-        val analytics:AnalyticsManager = mockk(relaxed = true)
+        val analytics: AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         repo = CategoryRepositoryImpl(dao,analytics)
     }
@@ -57,7 +58,7 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    fun test_insertCategory_Input_Category_Expect_Invoke_Dao_For_Insert() {
+    fun test_insertCategory_Input_Category_Expect_Invoke_Dao_For_Insert() = runBlocking {
         val category = Category(categoryName = "test")
 
         repo.insertCategory(category)
@@ -68,7 +69,7 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    fun test_removeCategory_Input_Id_Expect_Invoke_Dao_For_Remove() {
+    fun test_removeCategory_Input_Id_Expect_Invoke_Dao_For_Remove() = runBlocking {
         val id = 5
 
         repo.removeCategory(id)
@@ -79,7 +80,7 @@ class CategoryRepositoryTest {
     }
 
     @Test
-    fun test_updateCategory_Input_Category_Expect_Update_This_Category() {
+    fun test_updateCategory_Input_Category_Expect_Update_This_Category() = runBlocking {
         val newName = "test"
         val red = 1f
         val green = 5f

@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager
 
 import android.os.Parcelable
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class IntentNotifyTask(

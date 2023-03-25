@@ -21,13 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.ComposeContext
+import com.xxmrk888ytxx.privatenote.Utils.composeContext
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.Screen.LicenseScreen.models.licenseList
 
 @Composable
 fun LicenseScreen() {
-    val context = ComposeContext()
+    val context = composeContext()
     LazyColumn() {
         items(licenseList) {
             Card(

@@ -26,19 +26,20 @@ class RestoreBackupWorker @AssistedInject constructor(
 ) : CoroutineWorker(context,workerParameters) {
 
     override suspend fun doWork(): Result {
-        try {
+        return try {
             val uri = getBackupFileUri(workerParameters.inputData)
             val backupDir = unArcherBackupUseCaseImpl.execute(uri)
             val restoreBackupParams = getRestoreBackupParams(workerParameters.inputData)
             restoreBackupUseCase.execute(backupDir,restoreBackupParams)
             clearTempFiles()
             workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.SUCCESS)
-            return Result.success()
+            Result.success()
+
         }catch (e: Exception) {
             Log.d("MyLog",e.stackTraceToString())
             clearTempFiles()
             workerObserver.changeWorkerState(WORKER_ID,WorkerObserver.Companion.WorkerState.FAILURE)
-            return Result.failure()
+            Result.failure()
         }
     }
 

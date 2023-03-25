@@ -2,7 +2,6 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import android.app.AlarmManager
 import android.content.Context
-import android.hardware.fingerprint.FingerprintManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

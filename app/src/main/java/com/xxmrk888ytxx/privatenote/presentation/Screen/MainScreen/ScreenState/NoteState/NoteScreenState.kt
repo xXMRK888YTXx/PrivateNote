@@ -54,8 +54,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.N
 fun NoteScreenState(
     noteStateViewModel: NoteStateViewModel = hiltViewModel(),
     navController: NavController,
-    mainScreenController: MainScreenController,
-    interstitialAdsController: InterstitialAdsController
+    mainScreenController: MainScreenController
 ) {
     val currentMode = remember {
         noteStateViewModel.getCurrentMode()
@@ -76,7 +75,6 @@ fun NoteScreenState(
     BackPressController.setHandler(currentMode.value == NoteScreenMode.ShowCategoryMenu) {
         noteStateViewModel.hideCategoryList()
     }
-    noteStateViewModel.initInterstitialAdsController(interstitialAdsController)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -119,9 +117,7 @@ fun NoteScreenState(
 }
 @Composable
 fun Topbar(noteStateViewModel: NoteStateViewModel) {
-    val isSearchListHide = remember {
-        noteStateViewModel.isSearchLineHide
-    }
+
     when(noteStateViewModel.getCurrentMode().value) {
         is NoteScreenMode.Default,
         is NoteScreenMode.ShowCategoryMenu -> {

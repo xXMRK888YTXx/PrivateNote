@@ -3,10 +3,9 @@ package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.MainScreen.NoteS
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
 import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
@@ -18,6 +17,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.N
 import io.mockk.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
@@ -136,7 +136,7 @@ class NoteStateViewModelTest {
         viewModel.saveCategory("test", Color.Black,id)
         delay(100)
 
-        verifySequence {
+        coVerifySequence {
             categoryRepository.updateCategory(any())
         }
     }
@@ -149,7 +149,7 @@ class NoteStateViewModelTest {
         viewModel.saveCategory("test", Color.Black,id)
         delay(100)
 
-        verifySequence {
+        coVerifySequence {
             categoryRepository.insertCategory(any())
         }
     }
@@ -163,7 +163,7 @@ class NoteStateViewModelTest {
         viewModel.removeCategory(Category(categoryId = categoryID,categoryName = "test"),context)
         delay(100)
 
-        verifySequence {
+        coVerifySequence {
             categoryRepository.removeCategory(categoryID)
         }
     }
@@ -180,7 +180,7 @@ class NoteStateViewModelTest {
         delay(100)
 
         Assert.assertEquals(Const.IGNORE_CATEGORY,viewModel.getCategoryFilterStatus().value)
-        verifySequence {
+        coVerifySequence {
             categoryRepository.removeCategory(categoryID)
         }
     }
@@ -220,25 +220,25 @@ class NoteStateViewModelTest {
     }
 
     @Test
-    fun `test changeChosenStatus send id and currentState(true) expect inversion state and invoke repository method`() {
+    fun `test changeChosenStatus send id and currentState(true) expect inversion state and invoke repository method`() = runBlocking {
         val currentState = true
         val id = 5
 
         viewModel.changeChosenStatus(id,currentState)
 
-        verifySequence {
+        coVerifySequence {
             noteRepository.changeChosenStatus(!currentState,id)
         }
     }
 
     @Test
-    fun `test changeChosenStatus send id and currentState(false) expect inversion state and invoke repository method`() {
+    fun `test changeChosenStatus send id and currentState(false) expect inversion state and invoke repository method`() = runBlocking {
         val currentState = false
         val id = 1
 
         viewModel.changeChosenStatus(id,currentState)
 
-        verifySequence {
+        coVerifySequence {
             noteRepository.changeChosenStatus(!currentState,id)
         }
     }

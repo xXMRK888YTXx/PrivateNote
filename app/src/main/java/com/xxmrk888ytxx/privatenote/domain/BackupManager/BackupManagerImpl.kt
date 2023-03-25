@@ -64,7 +64,7 @@ class BackupManagerImpl @Inject constructor(
             .build()
         workManager.enqueueUniquePeriodicWork(
             "LocalAutoBackupWork",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             work
         )
     }
@@ -89,7 +89,7 @@ class BackupManagerImpl @Inject constructor(
             .build()
         workManager.enqueueUniquePeriodicWork(
             "GDriveAutoBackupWork",
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.UPDATE,
             work
         )
     }

@@ -7,9 +7,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-class AdManagerImpl @Inject constructor(
+class AdShowManagerImpl @Inject constructor(
     private val settingsRepository: SettingsRepository
-) : AdManager {
+) : AdShowManager {
     override fun isNeedShowAds(): Flow<Boolean> = settingsRepository.getAdState()
 
 

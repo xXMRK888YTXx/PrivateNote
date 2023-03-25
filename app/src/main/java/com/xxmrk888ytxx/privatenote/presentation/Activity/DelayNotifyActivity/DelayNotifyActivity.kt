@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.presentation.Activity.DelayNotifyActivity
 
 import android.os.Bundle
@@ -34,8 +36,6 @@ import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
-import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
-import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeHolder
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
 

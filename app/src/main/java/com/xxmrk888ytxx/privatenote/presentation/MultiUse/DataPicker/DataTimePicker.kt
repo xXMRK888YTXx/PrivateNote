@@ -65,7 +65,7 @@ class DataTimePicker{
        val timePicker =  TimePickerDialog(
             context!!,
             R.style.DialogTheme,
-            TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 calendar?.set(Calendar.HOUR_OF_DAY,hourOfDay)
                 calendar?.set(Calendar.MINUTE,minute)
                 onComplete()

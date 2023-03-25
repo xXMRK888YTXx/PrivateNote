@@ -1,30 +1,37 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.Widgets.TodoWidget
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
-import androidx.glance.appwidget.updateAll
-import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = TodoWidget()
-    @Inject lateinit var toDoRepository: ToDoRepository
+    @Inject lateinit var toDoRepository: TodoRepository
     @Inject lateinit var todoWidgetRepository: TodoWidgetRepository
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         when(intent.action) {
             MarkCompletedAction.CHANGE_MARK_TODO_STATUS -> {
-                val todo = intent.getParcelableExtra<ToDoItem>(MarkCompletedAction.TodoPutKey) ?: return
-                toDoRepository.changeMarkStatus(todo.id,!todo.isCompleted)
+                val todo = intent.getParcelableExtra<TodoItem>(MarkCompletedAction.TodoPutKey)
+                    ?: return
+
+                scope.launch { toDoRepository.changeMarkStatus(todo.id,!todo.isCompleted) }
             }
         }
     }

@@ -1,13 +1,14 @@
 package com.xxmrk888ytxx.privatenote.presentation.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.*
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.OrientationLockManager
 
 @Composable
 fun AppTheme(
     themeId:Int,
+    vararg otherProviders: ProvidedValue<*>,
     content: @Composable () -> Unit
 ) {
     val themeType = ThemeType.fromInt(themeId)
@@ -17,10 +18,7 @@ fun AppTheme(
         ThemeType.Black -> ThemeHolder.Black.colors
         ThemeType.White -> ThemeHolder.White.colors
         ThemeType.System -> {
-            val isDarkTheme = isSystemInDarkTheme()
-
-            if(isDarkTheme)
-                ThemeHolder.Black.colors
+            if(isDarkTheme) ThemeHolder.Black.colors
             else ThemeHolder.White.colors
         }
     }
@@ -48,7 +46,11 @@ fun AppTheme(
         Theme.LocalColors provides colors,
         Theme.LocalValues provides values,
         Theme.LocalThemeType provides providedThemeType,
-        content = content
-    )
+    ) {
+        CompositionLocalProvider(
+            values = otherProviders,
+            content = content
+        )
+    }
 
 }

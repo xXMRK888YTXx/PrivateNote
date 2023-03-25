@@ -8,6 +8,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 
 interface GoogleAuthorizationManager {
     fun sendAuthorizationRequest(activityResultLauncher: ActivityResultLauncher<Intent>)
+
     fun loginOut()
+
     val googleAccount: State<GoogleSignInAccount?>
 }

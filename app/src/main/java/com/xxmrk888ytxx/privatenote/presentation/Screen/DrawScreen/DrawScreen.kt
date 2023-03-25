@@ -26,14 +26,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
-import com.xxmrk888ytxx.privatenote.Utils.Const
-import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
+import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
 
@@ -41,9 +39,12 @@ import io.ak1.drawbox.rememberDrawController
 fun DrawScreen(
     drawViewModel: DrawViewModel = hiltViewModel(),
     navController: NavController,
-    activityController: ActivityController
+    noteId:Int
 ) {
     val newController = rememberDrawController()
+
+    val orientationLockManager = LocalOrientationLockManager.current
+
     val loadSaveDialogState = remember {
         drawViewModel.getSaveLoadDialogState()
     }
@@ -56,36 +57,38 @@ fun DrawScreen(
     val exitDialogState = remember {
         drawViewModel.getExitDialogState()
     }
-    LaunchedEffect(key1 = activityController, block = {
-        activityController.changeOrientationLockState(true)
+    LaunchedEffect(key1 = orientationLockManager, block = {
+        orientationLockManager.changeOrientationLockState(true)
     })
-    DisposableEffect(key1 = activityController, effect = {
+    DisposableEffect(key1 = orientationLockManager, effect = {
         this.onDispose {
-            activityController.changeOrientationLockState(false)
+            orientationLockManager.changeOrientationLockState(false)
         }
     })
     val selectColorDialogState = remember {
         drawViewModel.getSelectColorDialogState()
     }
     LaunchedEffect(key1 = drawViewModel, block = {
-        drawViewModel.saveNoteId(NavArguments.bundle.getInt(Const.getNoteId))
+        drawViewModel.saveNoteId(noteId)
     })
     val controller = remember {
         drawViewModel.getController(newController)
     }
-    if(controller.value == null) navController.navigateUp()
+    if (controller.value == null) navController.navigateUp()
     val drawBoxHeight = animateFloatAsState(
-        targetValue = if(isSelectColorListShow.value||isStrokeWidthSliderShow.value) 0.85f else 0.9f
+        targetValue = if (isSelectColorListShow.value || isStrokeWidthSliderShow.value) 0.85f else 0.9f
     )
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        DrawBox(controller.value!!,
+        DrawBox(
+            controller.value!!,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(drawBoxHeight.value))
-        DrawToolBar(drawViewModel,navController)
-        if(loadSaveDialogState.value) {
+                .fillMaxHeight(drawBoxHeight.value)
+        )
+        DrawToolBar(drawViewModel, navController)
+        if (loadSaveDialogState.value) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
@@ -93,21 +96,21 @@ fun DrawScreen(
                 SaveLoadDialog()
             }
         }
-        if(selectColorDialogState.value) {
+        if (selectColorDialogState.value) {
             SelectColorDialog(drawViewModel)
         }
     }
     BackPressController.setHandler {
         drawViewModel.showExitDialog()
     }
-    if(exitDialogState.value) {
+    if (exitDialogState.value) {
         YesNoDialog(title = stringResource(R.string.Save_Image),
             confirmButtonText = stringResource(R.string.Save),
             cancelButtonText = stringResource(R.string.Not_save),
             onCancel = {
                 drawViewModel.hideExitDialog()
                 navController.navigateUp()
-                       },
+            },
             onCancelDialog = {
                 drawViewModel.hideExitDialog()
             }
@@ -155,7 +158,9 @@ fun SelectColorDialog(drawViewModel: DrawViewModel) {
                             drawViewModel.changeCurrentSelectedColor(it.color)
                         })
                 }
-                YesNoButton(onCancel = { drawViewModel.hideSelectColorDialog() }) {
+                YesNoButton(
+                    onCancel = { drawViewModel.hideSelectColorDialog() },
+                ) {
                     drawViewModel.hideSelectColorDialog()
                     drawViewModel.changeBrushColor(currentSelectedColor.value)
                 }
@@ -180,9 +185,10 @@ fun SaveLoadDialog() {
             shape = RoundedCornerShape(20),
             backgroundColor = themeColors.cardColor
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -199,7 +205,7 @@ fun SaveLoadDialog() {
 }
 
 @Composable
-fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
+fun DrawToolBar(drawViewModel: DrawViewModel, navController: NavController) {
     val isStrokeWidthSliderShow = remember {
         drawViewModel.isStrokeWidthSliderShow()
     }
@@ -217,37 +223,37 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
         DrawOptionItem(
             R.drawable.ic_save,
             iconColor = themeColors.primaryFontColor
-        ){
-         drawViewModel.saveDraw(navController)
+        ) {
+            drawViewModel.saveDraw(navController)
         },
         DrawOptionItem(
             R.drawable.ic_undo_up,
             iconColor = themeColors.primaryFontColor
-        ){
-         drawViewModel.undo()
+        ) {
+            drawViewModel.undo()
         },
         DrawOptionItem(
             R.drawable.ic_redo_up,
             iconColor = themeColors.primaryFontColor
-        ){
-         drawViewModel.redo()
+        ) {
+            drawViewModel.redo()
         },
         DrawOptionItem(
             R.drawable.ic_clear,
             iconColor = themeColors.primaryFontColor
-        ){
-         drawViewModel.clearDrawPlace()
+        ) {
+            drawViewModel.clearDrawPlace()
         },
         DrawOptionItem(
-          R.drawable.ic_circle,
-          iconColor = currentBrushColor.value
-        ){
+            R.drawable.ic_circle,
+            iconColor = currentBrushColor.value
+        ) {
             drawViewModel.changeSelectColorListShow()
         },
         DrawOptionItem(
             R.drawable.ic_thickness,
             iconColor = themeColors.primaryFontColor
-        ){
+        ) {
             drawViewModel.changeStrokeWidthSliderState()
         },
     )
@@ -271,9 +277,10 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Slider(value = currentStrokeWidth.value, onValueChange = {
-                    drawViewModel.changeCurrentStrokeWidth(it)
-                },
+                Slider(
+                    value = currentStrokeWidth.value, onValueChange = {
+                        drawViewModel.changeCurrentStrokeWidth(it)
+                    },
                     valueRange = 1f..100f,
                     colors = SliderDefaults.colors(
                         thumbColor = themeColors.secondaryColor,
@@ -301,7 +308,7 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                             )
                         )
                     }
-                    if(index == defColors.lastIndex) {
+                    if (index == defColors.lastIndex) {
                         IconButton(onClick = {
                             drawViewModel.showSelectColorDialog()
                         }) {
@@ -319,25 +326,28 @@ fun DrawToolBar(drawViewModel: DrawViewModel,navController: NavController) {
                 }
             }
         }
-       AnimatedVisibility(visible = true) {
-           Row(
-               modifier = Modifier.fillMaxWidth(),
-               verticalAlignment = Alignment.CenterVertically,
-               horizontalArrangement = Arrangement.Center
-           ) {
-               listOptions.forEach {
-                   IconButton(onClick = { it.onClick() }) {
-                       Icon(painter = painterResource(it.icon),
-                           contentDescription = "",
-                           tint = it.iconColor,
-                           modifier = Modifier.size(30.dp)
-                       )
-                   }
-                   Spacer(modifier = Modifier
-                       .height(100.dp)
-                       .width(10.dp))
-               }
-           }
-       }
+        AnimatedVisibility(visible = true) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                listOptions.forEach {
+                    IconButton(onClick = { it.onClick() }) {
+                        Icon(
+                            painter = painterResource(it.icon),
+                            contentDescription = "",
+                            tint = it.iconColor,
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(100.dp)
+                            .width(10.dp)
+                    )
+                }
+            }
+        }
     }
 }

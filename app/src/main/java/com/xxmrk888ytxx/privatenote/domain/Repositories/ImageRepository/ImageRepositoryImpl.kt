@@ -13,7 +13,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Load_Images_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NewImageNotify_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveImageNotify_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SaveBitmap_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.LoadRepositoryState
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
@@ -103,7 +103,7 @@ class ImageRepositoryImpl @Inject constructor(
     override suspend fun clearNoteImages(noteId: Int) {
         analytics.sendEvent(ClearNoteImages_Event,null)
         val imageDir = File(getNoteImageDir(noteId,context))
-        imageDir.listFiles().forEach {
+        imageDir.listFiles()?.forEach {
             it.delete()
         }
         imageDir.delete()

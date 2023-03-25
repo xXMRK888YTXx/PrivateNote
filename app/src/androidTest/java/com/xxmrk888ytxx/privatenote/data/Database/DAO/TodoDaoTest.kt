@@ -7,7 +7,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.xxmrk888ytxx.privatenote.Utils.fillList
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.AppDataBase
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -15,8 +15,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
-class ToDoDaoTest {
-    private lateinit var todoDao: ToDoDao
+class TodoDaoTest {
+    private lateinit var todoDao: TodoDao
     private lateinit var db: AppDataBase
     @Before
     fun createDb() {
@@ -33,7 +33,7 @@ class ToDoDaoTest {
 
     @Test
     fun test_getAllToDo_Input_Todo_Expect_Returns_This_Todo() {
-        val todoList = mutableListOf<ToDoItem>()
+        val todoList = mutableListOf<TodoItem>()
         repeat(30) {
             todoList.add(getTestTodo(it+1))
         }
@@ -48,7 +48,7 @@ class ToDoDaoTest {
 
     @Test
     fun test_getToDoById_Input_Todo_Expect_Returns_Todo_By_Id() {
-        val todoList = mutableListOf<ToDoItem>()
+        val todoList = mutableListOf<TodoItem>()
         val expectedId = 8
         repeat(30) {
             todoList.add(getTestTodo(it+1))
@@ -64,7 +64,7 @@ class ToDoDaoTest {
 
     @Test
     fun test_insertToDo_Insert_Todo_Expect_Returns_Inserted_Todo() {
-        val primaryList = mutableListOf<ToDoItem>()
+        val primaryList = mutableListOf<TodoItem>()
 
         repeat(30) {
             val todo = getTestTodo(it+1)
@@ -152,6 +152,6 @@ class ToDoDaoTest {
 
 
 
-    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = ToDoItem(id = id, todoText = todoText, isImportant = isImportant)
-    private fun getTodoList(size:Int,todo:ToDoItem = getTestTodo()) = listOf<ToDoItem>().fillList(todo,size)
+    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = TodoItem(id = id, todoText = todoText, isImportant = isImportant)
+    private fun getTodoList(size:Int,todo:TodoItem = getTestTodo()) = listOf<TodoItem>().fillList(todo,size)
 }

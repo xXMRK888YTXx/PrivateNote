@@ -1,5 +1,8 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
@@ -30,12 +34,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.isAllFalse
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.BackupSettings
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.OpenExternalFileContract
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DontKillMyAppDialog.DontKillMyAppDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopBar
@@ -43,40 +50,37 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.TopB
 @Composable
 fun BackupSettingsScreen(
     backupSettingsViewModel: BackupSettingsViewModel = hiltViewModel(),
-    navController: NavController,
-    activityController: ActivityController
+    navController: NavController
 ) {
     val settings = backupSettingsViewModel.getBackupSettings().collectAsState(BackupSettings())
     val restoreBackupDialogState = backupSettingsViewModel.getRestoreBackupDialogState().Remember()
     val createBackupDialogState = backupSettingsViewModel.getCreateBackupDialogState().Remember()
     val dontKillMyAppDialogState = backupSettingsViewModel.getDontKillMyAppDialogState().Remember()
     val isLoadDialogShow = backupSettingsViewModel.isShowLoadDialog().Remember()
-    LaunchedEffect(key1 = activityController, block = {
-        backupSettingsViewModel.initActivityController(activityController)
-    })
     Column(
         modifier = Modifier
             .fillMaxSize(),
     ) {
         TopBar(navController)
-        Text(text = stringResource(R.string.Backup),
+        Text(
+            text = stringResource(R.string.Backup),
             fontWeight = FontWeight.W800,
             fontSize = 30.sp,
             color = themeColors.primaryFontColor,
-            modifier = Modifier.padding(start = 20.dp,bottom = 15.dp)
+            modifier = Modifier.padding(start = 20.dp, bottom = 15.dp)
         )
-        AutoBackupSettingsList(backupSettingsViewModel,settings)
+        AutoBackupSettingsList(backupSettingsViewModel, settings)
     }
-    if(restoreBackupDialogState.value) {
+    if (restoreBackupDialogState.value) {
         RestoreBackupDialog(backupSettingsViewModel)
     }
-    if(createBackupDialogState.value) {
+    if (createBackupDialogState.value) {
         CreateBackupDialog(backupSettingsViewModel)
     }
-    if(isLoadDialogShow.value) {
+    if (isLoadDialogShow.value) {
         LoadDialog()
     }
-    if(dontKillMyAppDialogState.value.first) {
+    if (dontKillMyAppDialogState.value.first) {
         DontKillMyAppDialog(
             onExecuteAfterCloseDialog = {
                 dontKillMyAppDialogState.value.second?.invoke()
@@ -100,7 +104,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Not_copy_encrypt_note),
             settingsState = settings.isBackupNotEncryptedNote,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotEncryptedNote(it)
             },
@@ -113,7 +117,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_encrypt_note),
             settingsState = settings.isBackupEncryptedNote,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupEncryptedNote(it)
             },
@@ -126,7 +130,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_images),
             settingsState = settings.isBackupNoteImages,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteImages(it)
             },
@@ -139,7 +143,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_notes_audio),
             settingsState = settings.isBackupNoteAudio,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteAudio(it)
             },
@@ -152,7 +156,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_category),
             settingsState = settings.isBackupNoteCategory,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteCategory(it)
             },
@@ -165,7 +169,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_not_сompleted_todo),
             settingsState = settings.isBackupNotCompletedTodo,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotCompletedTodo(it)
             },
@@ -178,7 +182,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_сompleted_todo),
             settingsState = settings.isBackupCompletedTodo,
-            isEnable = settings.isEnableLocalBackup||settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupCompletedTodo(it)
             },
@@ -197,11 +201,34 @@ fun AutoBackupSettingsList(
     settings: State<BackupSettings>,
 ) {
     val paramsList: List<BackupParams> = getParamsList(backupSettingsViewModel, settings.value)
-    val localAutoBackupDropDownState = backupSettingsViewModel.
-    isRepeatLocalAutoBackupTimeDropDownVisible().Remember()
+    val localAutoBackupDropDownState =
+        backupSettingsViewModel.isRepeatLocalAutoBackupTimeDropDownVisible().Remember()
     val gDriveAutoBackupDropDownState = backupSettingsViewModel
         .isRepeatGDriveAutoBackupTimeDropDownVisible().Remember()
     val googleAccount = backupSettingsViewModel.getGoogleAccount().Remember()
+
+    val context = LocalContext.current
+
+    val selectFileForLocalAutoBackupContract = rememberLauncherForActivityResult(
+        contract = CreateExternalFileContract(context),
+        onResult = backupSettingsViewModel::onFileForLocalAutoBackupSelected
+    )
+
+    val sendGoogleAuthRequestContract = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = {
+            if (it.resultCode == Activity.RESULT_OK) {
+                GoogleSignIn.getSignedInAccountFromIntent(it.data)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            googleAccount.value
+                            backupSettingsViewModel.onGoogleAuthCompleted()
+                        }
+                    }
+            }
+        }
+    )
+
     Column(
         modifier = Modifier.padding(top = 10.dp)
     ) {
@@ -216,9 +243,11 @@ fun AutoBackupSettingsList(
                 color = themeColors.primaryFontColor,
                 modifier = Modifier.padding(start = 10.dp)
             )
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp), color = themeColors.primaryFontColor
+            )
         }
         item {
             Row(
@@ -236,12 +265,11 @@ fun AutoBackupSettingsList(
                     Switch(
                         checked = settings.value.isEnableLocalBackup,
                         onCheckedChange = {
-                            if(it) {
+                            if (it) {
                                 backupSettingsViewModel.showDontKillMyAppDialog {
                                     backupSettingsViewModel.updateBackupState(it)
                                 }
-                            }
-                            else {
+                            } else {
                                 backupSettingsViewModel.updateBackupState(it)
                             }
                         },
@@ -256,7 +284,9 @@ fun AutoBackupSettingsList(
         item {
             SelectBackupPathButton(isPathSelected = settings.value.backupPath != null,
                 onClick = {
-                    backupSettingsViewModel.selectFileForLocalAutoBackup()
+                    backupSettingsViewModel.selectFileForLocalAutoBackup(
+                        selectFileForLocalAutoBackupContract
+                    )
                 })
         }
         item {
@@ -286,13 +316,15 @@ fun AutoBackupSettingsList(
                 fontWeight = FontWeight.W800,
                 fontSize = 20.sp,
                 color = themeColors.primaryFontColor,
-                modifier = Modifier.padding(start = 10.dp,top = 10.dp)
+                modifier = Modifier.padding(start = 10.dp, top = 10.dp)
             )
         }
         item {
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp), color = themeColors.primaryFontColor
+            )
         }
         item {
             Row(
@@ -310,11 +342,11 @@ fun AutoBackupSettingsList(
                     Switch(
                         checked = settings.value.isEnableGDriveBackup,
                         onCheckedChange = {
-                            if(it) {
+                            if (it) {
                                 backupSettingsViewModel.showDontKillMyAppDialog {
                                     backupSettingsViewModel.updateIsEnableGDriveBackup(it)
                                 }
-                            }else {
+                            } else {
                                 backupSettingsViewModel.updateIsEnableGDriveBackup(it)
                             }
                         },
@@ -334,17 +366,16 @@ fun AutoBackupSettingsList(
                     backupSettingsViewModel.updateUploadToGDriveOnlyForWiFi(it)
                 })
         }
-        if(googleAccount.value == null) {
+        if (googleAccount.value == null) {
             item {
                 GoogleSingInButton(
                     onAuth = {
-                        backupSettingsViewModel.sendGoogleAuthRequest()
+                        backupSettingsViewModel.sendGoogleAuthRequest(sendGoogleAuthRequestContract)
                     }
 
                 )
             }
-        }
-        if(googleAccount.value != null) {
+        } else {
             item {
                 SettingsButton(text = stringResource(R.string.Login_out_from_account)) {
                     backupSettingsViewModel.loginOutGoogleAccount()
@@ -370,9 +401,11 @@ fun AutoBackupSettingsList(
             )
         }
         item {
-            Divider(modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp), color = themeColors.primaryFontColor)
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 10.dp), color = themeColors.primaryFontColor
+            )
         }
         items(paramsList) {
             Row(
@@ -406,13 +439,14 @@ fun AutoBackupSettingsList(
 
 @Composable
 fun MainBackupSettings(
-    backupSettingsViewModel: BackupSettingsViewModel
+    backupSettingsViewModel: BackupSettingsViewModel,
 ) {
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            backupSettingsViewModel.showCreateBackupDialogState()
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                backupSettingsViewModel.showCreateBackupDialogState()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -427,7 +461,8 @@ fun MainBackupSettings(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -437,11 +472,12 @@ fun MainBackupSettings(
         }
     }
 
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            backupSettingsViewModel.showRestoreBackupDialog()
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                backupSettingsViewModel.showRestoreBackupDialog()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -456,7 +492,8 @@ fun MainBackupSettings(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -471,7 +508,14 @@ fun MainBackupSettings(
 @Composable
 fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
     val currentBackupSettings = backupSettingsViewModel.getBackupSettingsInDialog().Remember()
-    val backupParamsList = getParamsList(backupSettingsViewModel,currentBackupSettings.value ?: BackupSettings())
+    val backupParamsList =
+        getParamsList(backupSettingsViewModel, currentBackupSettings.value ?: BackupSettings())
+
+    val createBackupFileContract = rememberLauncherForActivityResult(
+        contract = CreateSingleAccessExternalFileContract(),
+        onResult = backupSettingsViewModel::onBackupFileCreated
+    )
+
     Dialog(onDismissRequest = { backupSettingsViewModel.hideCreateBackupDialogState() }) {
         Card(
             modifier = Modifier
@@ -485,17 +529,19 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                         SelectBackupPathButton(
                             isPathSelected = currentBackupSettings.value?.backupPath != null,
                             onClick = {
-                                backupSettingsViewModel.createBackupFile()
+                                backupSettingsViewModel.createBackupFile(createBackupFileContract)
                             })
-                        Divider(modifier = Modifier
-                            .fillMaxWidth() ,
-                            color = themeColors.primaryFontColor)
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            color = themeColors.primaryFontColor
+                        )
                     }
                     items(backupParamsList) {
                         BackupItemCheckBox(
                             title = it.title,
                             state = it.settingsState,
-                            onChange = {newState ->
+                            onChange = { newState ->
                                 it.updateStateInDialog(newState)
                             }
                         )
@@ -524,7 +570,8 @@ fun CreateBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
 fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
     val backupParams = backupSettingsViewModel.getRestoreParamsInDialog().Remember()
     val restoreBackupFile = backupSettingsViewModel.getCurrentBackupFileForRestore().Remember()
-    val userConfirmRemoveOldDataState = backupSettingsViewModel.getUserConfirmRemoveOldDataState().Remember()
+    val userConfirmRemoveOldDataState =
+        backupSettingsViewModel.getUserConfirmRemoveOldDataState().Remember()
     val checkBoxBackupParams = listOf(
         CheckBoxBackupParams(
             stringResource(R.string.Restore_notes),
@@ -556,6 +603,12 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
             }
         ),
     )
+
+    val selectFileForRestoreBackupContract = rememberLauncherForActivityResult(
+        contract = OpenExternalFileContract(),
+        onResult = backupSettingsViewModel::onFileForRestoreBackupSelected
+    )
+
     Dialog(onDismissRequest = { backupSettingsViewModel.hideRestoreBackupDialog() }) {
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -564,29 +617,35 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
         ) {
             Column(Modifier.fillMaxWidth()) {
                 LazyColumn() {
-                    itemsIndexed(checkBoxBackupParams) { index,it ->
-                        if(index == 0) {
+                    itemsIndexed(checkBoxBackupParams) { index, it ->
+                        if (index == 0) {
                             Spacer(modifier = Modifier.height(5.dp))
                             SelectBackupPathButton(
                                 isPathSelected = restoreBackupFile.value != null,
                                 onClick = {
-                                    backupSettingsViewModel.selectFileForRestoreBackup()
+                                    backupSettingsViewModel.selectFileForRestoreBackup(
+                                        selectFileForRestoreBackupContract
+                                    )
                                 }
                             )
-                            Divider(modifier = Modifier
-                                .fillMaxWidth() ,
-                                color = themeColors.primaryFontColor)
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                color = themeColors.primaryFontColor
+                            )
                         }
                         BackupItemCheckBox(
                             title = it.title,
                             state = it.state,
                             onChange = it.onChange
                         )
-                        if(index == checkBoxBackupParams.lastIndex) {
+                        if (index == checkBoxBackupParams.lastIndex) {
                             Spacer(modifier = Modifier.height(7.dp))
-                            Divider(modifier = Modifier
-                                .fillMaxWidth() ,
-                                color =themeColors.primaryFontColor)
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                color = themeColors.primaryFontColor
+                            )
                             Spacer(modifier = Modifier.height(7.dp))
                             BackupItemCheckBox(title = stringResource(R.string.Restore_backup_warming),
                                 userConfirmRemoveOldDataState.value,
@@ -603,8 +662,8 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
                                     backupSettingsViewModel.hideRestoreBackupDialog()
                                 },
                                 isOkButtonEnable = !backupParams.value.isAllFalse()
-                                        &&userConfirmRemoveOldDataState.value
-                                        &&restoreBackupFile.value != null
+                                        && userConfirmRemoveOldDataState.value
+                                        && restoreBackupFile.value != null
                             )
                         }
                     }
@@ -618,7 +677,7 @@ fun RestoreBackupDialog(backupSettingsViewModel: BackupSettingsViewModel) {
 
 
 @Composable
-fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
+fun BackupItemCheckBox(title: String, state: Boolean, onChange: (Boolean) -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -629,8 +688,9 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
     ) {
         Checkbox(
             checked = state,
-            onCheckedChange = {onChange(it)},
-            colors = CheckboxDefaults.colors(checkedColor = themeColors.secondaryColor,
+            onCheckedChange = { onChange(it) },
+            colors = CheckboxDefaults.colors(
+                checkedColor = themeColors.secondaryColor,
                 themeColors.secondaryColor,
             ),
             modifier = Modifier.padding(end = 10.dp)
@@ -648,11 +708,12 @@ fun BackupItemCheckBox(title:String,state:Boolean,onChange:(Boolean) -> Unit) {
 @Composable
 fun RepeatAutoBackupTimeDropDownList(
     onChange: (Long) -> Unit,
-    isVisible:Boolean,
-    onHide:() -> Unit
+    isVisible: Boolean,
+    onHide: () -> Unit,
 ) {
     val dropDownItem = RepeatAutoBackupTimeItem.getDropDownList()
-    DropdownMenu(expanded = isVisible,
+    DropdownMenu(
+        expanded = isVisible,
         onDismissRequest = {
             onHide()
         },
@@ -665,7 +726,8 @@ fun RepeatAutoBackupTimeDropDownList(
                 onChange(it.timeAtHours)
             }) {
                 Row {
-                    Text(text = stringResource(it.title),
+                    Text(
+                        text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = themeColors.primaryFontColor
@@ -678,11 +740,11 @@ fun RepeatAutoBackupTimeDropDownList(
 
 @Composable
 fun SelectBackupPathButton(
-    isPathSelected:Boolean,
-    onClick:() -> Unit,
-    title:String = stringResource(R.string.Backup_path),
-    textIfPathNotSelected:String = stringResource(R.string.Not_set),
-    textIfPathSelected:String = stringResource(R.string.Path_set),
+    isPathSelected: Boolean,
+    onClick: () -> Unit,
+    title: String = stringResource(R.string.Backup_path),
+    textIfPathNotSelected: String = stringResource(R.string.Not_set),
+    textIfPathSelected: String = stringResource(R.string.Path_set),
 ) {
     Column(
         modifier = Modifier
@@ -708,7 +770,8 @@ fun SelectBackupPathButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 10.dp),
-                contentAlignment = Alignment.CenterEnd) {
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_arrow),
                     contentDescription = "",
@@ -717,7 +780,7 @@ fun SelectBackupPathButton(
                 )
             }
         }
-        if(!isPathSelected) {
+        if (!isPathSelected) {
             Text(
                 text = textIfPathNotSelected,
                 fontWeight = FontWeight.Medium,
@@ -725,8 +788,7 @@ fun SelectBackupPathButton(
                 color = themeColors.errorColor,
                 modifier = Modifier
             )
-        }
-        else {
+        } else {
             Text(
                 text = textIfPathSelected,
                 fontWeight = FontWeight.Medium,
@@ -740,23 +802,28 @@ fun SelectBackupPathButton(
 
 @Composable
 fun SelectRepeatBackupButton(
-    getCurrentTime:() -> Long,
+    getCurrentTime: () -> Long,
     isVisible: Boolean,
     onChange: (Long) -> Unit,
-    onShow:() -> Unit,
-    onHide:() -> Unit
+    onShow: () -> Unit,
+    onHide: () -> Unit,
 ) {
     val annotatedLabelString = buildAnnotatedString {
-        append(stringResource(RepeatAutoBackupTimeItem
-            .getDropDownItemByTime(getCurrentTime())
-            .title))
+        append(
+            stringResource(
+                RepeatAutoBackupTimeItem
+                    .getDropDownItemByTime(getCurrentTime())
+                    .title
+            )
+        )
         appendInlineContent("drop_down_triangle")
     }
     val inlineContentMap = mapOf(
         "drop_down_triangle" to InlineTextContent(
             Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
         ) {
-            Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+            Icon(
+                painter = painterResource(R.drawable.ic_drop_down_triangle),
                 contentDescription = "",
                 tint = themeColors.secondaryFontColor,
                 modifier = Modifier.padding(top = 0.dp)
@@ -780,19 +847,21 @@ fun SelectRepeatBackupButton(
             modifier = Modifier
         )
         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-            Text(text = annotatedLabelString,
+            Text(
+                text = annotatedLabelString,
                 inlineContent = inlineContentMap,
                 fontWeight = FontWeight.W800,
                 fontSize = 16.sp,
-                color = themeColors.secondaryFontColor)
-            RepeatAutoBackupTimeDropDownList(onChange,isVisible,onHide)
+                color = themeColors.secondaryFontColor
+            )
+            RepeatAutoBackupTimeDropDownList(onChange, isVisible, onHide)
         }
     }
 }
 
 @Composable
 fun GoogleSingInButton(
-    onAuth:() -> Unit,
+    onAuth: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -819,7 +888,8 @@ fun GoogleSingInButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 10.dp),
-                contentAlignment = Alignment.CenterEnd) {
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Image(
                     painter = painterResource(R.drawable.g_button),
                     contentDescription = "",
@@ -845,9 +915,10 @@ fun LoadDialog() {
             shape = RoundedCornerShape(20),
             backgroundColor = themeColors.cardColor
         ) {
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -865,9 +936,9 @@ fun LoadDialog() {
 
 @Composable
 fun SettingsRadioButton(
-    text:String,
-    state:Boolean,
-    onChange: (Boolean) -> Unit
+    text: String,
+    state: Boolean,
+    onChange: (Boolean) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -897,8 +968,8 @@ fun SettingsRadioButton(
 
 @Composable
 fun SettingsButton(
-    text:String,
-    onClick: () -> Unit
+    text: String,
+    onClick: () -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -920,7 +991,8 @@ fun SettingsButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",

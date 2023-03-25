@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.NotificationManager
+package com.xxmrk888ytxx.privatenote.domain.NotificationAppManager
 
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import kotlin.random.Random

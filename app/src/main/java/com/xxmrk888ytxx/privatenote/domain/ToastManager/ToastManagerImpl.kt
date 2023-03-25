@@ -4,8 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ShowToast_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.runOnMainThread
@@ -31,8 +30,8 @@ class ToastManagerImpl @Inject constructor(
         Toast.makeText(context,context.getString(resourceId),Toast.LENGTH_SHORT).show()
     }
 
-    override fun showToast(stringBuild: (context: Context) -> String) {
+    override fun showToast(stringBuilder: (context: Context) -> String) {
         analytics.sendEvent(ShowToast_Event,null)
-        showToast(stringBuild(context))
+        showToast(stringBuilder(context))
     }
 }

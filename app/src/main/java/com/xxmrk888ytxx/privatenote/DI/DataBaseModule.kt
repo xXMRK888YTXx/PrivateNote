@@ -6,7 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.AppDataBase
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NotifyTaskDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +37,7 @@ class DataBaseModule {
 
     @Provides
     @Singleton
-    fun getToDoDao(dataBase: AppDataBase) : ToDoDao {
+    fun getToDoDao(dataBase: AppDataBase) : TodoDao {
         return dataBase.getToDoItemDao()
     }
 

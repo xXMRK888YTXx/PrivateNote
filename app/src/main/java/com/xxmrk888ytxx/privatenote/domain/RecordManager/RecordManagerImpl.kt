@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.xxmrk888ytxx.privatenote.domain.RecordManager
 
 import android.content.Context
@@ -5,7 +7,7 @@ import android.media.MediaRecorder
 import android.os.CountDownTimer
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RecordIsStart
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RecordIsStop
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
@@ -51,9 +53,11 @@ class RecordManagerImpl @Inject constructor(
             mediaRecorder?.setOutputFile(audioFile.absolutePath)
             mediaRecorder?.prepare()
             mediaRecorder?.start()
+
             val startTime = System.currentTimeMillis()
             recordForNoteId = noteId
             _recordState.tryEmit(RecorderState.RecordingNow(startTime,0))
+
             runOnMainThread {
                 recordStopWatch = object : CountDownTimer(Long.MAX_VALUE,100) {
                     override fun onTick(p0: Long) {
@@ -80,8 +84,10 @@ class RecordManagerImpl @Inject constructor(
             mediaRecorder?.stop()
             mediaRecorder?.release()
             mediaRecorder = null
+
             _recordState.tryEmit(RecorderState.RecordDisable)
             audioRepository.addNewAudio(getOutputFile(),recordForNoteId!!)
+
             recordForNoteId = null
         }catch (e:Exception) {
             onError(e)

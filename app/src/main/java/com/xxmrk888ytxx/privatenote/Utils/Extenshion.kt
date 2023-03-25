@@ -60,10 +60,10 @@ fun monthToString(month:Int,context: Context) : String {
 fun Long.secondToData(context: Context) : String {
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = this
-    var minute = ""
-    if(calendar.get(Calendar.MINUTE) < 10)
-        minute = "0" + calendar.get(Calendar.MINUTE).toString()
-    else minute = calendar.get(Calendar.MINUTE).toString()
+
+    val minute = if(calendar.get(Calendar.MINUTE) < 10)
+        "0" + calendar.get(Calendar.MINUTE).toString()
+    else calendar.get(Calendar.MINUTE).toString()
     return "${calendar.get(Calendar.DAY_OF_MONTH)} ${monthToString(calendar.get(Calendar.MONTH),context)}" +
             " ${calendar.get(Calendar.YEAR)} " +
             "${calendar.get(Calendar.HOUR_OF_DAY)}:$minute"
@@ -115,8 +115,8 @@ fun <T> List<T>.fillList(element:T,count:Int) : List<T> {
 
 fun search(subString: String, note: Note) : Boolean {
     if(note.isEncrypted) return false
-    if(subString.toLowerCase() in note.text.toLowerCase()) return true
-    if(subString.toLowerCase() in note.title.toLowerCase()) return true
+    if(subString.lowercase() in note.text.lowercase()) return true
+    if(subString.lowercase() in note.title.lowercase()) return true
     return false
 }
 
@@ -160,15 +160,6 @@ fun List<Note>.sortedByCategory(categoryID: Int) : List<Note> {
     }
 }
 
-fun Context.setAppLocale(language: String): Context {
-    val locale = Locale(language)
-    Locale.setDefault(locale)
-    val config = resources.configuration
-    config.setLocale(locale)
-    config.setLayoutDirection(locale)
-    return createConfigurationContext(config)
-}
-
 fun File.fileNameToLong() : Long {
     if(this.name.isDigitsOnly()) return this.name.toLong()
     var finalString = ""
@@ -183,13 +174,13 @@ fun File.fileNameToLong() : Long {
 }
 
 fun EncryptedFile.getBytes() : ByteArray? {
-    try {
+    return try {
         val stream = this.openFileInput()
         val bytes = stream.readBytes()
         stream.close()
-        return bytes
+        bytes
     }catch (e:Exception) {
-        return null
+        null
     }
 }
 
@@ -231,7 +222,7 @@ fun LazySpacer(height:Int = 0,width:Int = 0) {
 }
 
 @Composable
-fun ComposeContext() = LocalContext.current
+fun composeContext() = LocalContext.current
 
 fun Int.isEvenNumber() : Boolean = this % 2 == 0
 

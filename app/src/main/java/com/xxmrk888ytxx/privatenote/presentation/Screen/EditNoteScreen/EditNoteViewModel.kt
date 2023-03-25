@@ -1,9 +1,12 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -14,7 +17,6 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
@@ -37,17 +39,22 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdManager
+import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
+import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportImageUseCase.ExportImageUseCase
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.MainActivity
+import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +69,6 @@ class EditNoteViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val securityUtils: SecurityUtils,
     private val toastManager: ToastManager,
-    private val lifeCycleState: MutableStateFlow<LifeCycleState>,
     private val inputHistoryManager: InputHistoryManager,
     private val analytics: AnalyticsManager,
     private val recordManager: RecordManager,
@@ -71,7 +77,11 @@ class EditNoteViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val exportImageUseCase: ExportImageUseCase,
     private val exportAudioUseCase: ExportAudioUseCase,
-    private val adManager: AdManager
+    private val adShowManager: AdShowManager,
+    private val lifecycleProvider: LifecycleProvider,
+    private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
+    private val openImageInGalleryUseCase: OpenImageInGalleryUseCase,
+    private val clearShareDirUseCase: ClearShareDirUseCase,
 ) : ViewModel() {
 
     init {
@@ -86,57 +96,59 @@ class EditNoteViewModel @Inject constructor(
         }
         //Наблюдение за жизненым циклом
         viewModelScope.launch {
-            lifeCycleState.collect() {
+            lifecycleProvider.currentState.collect() {
                 try {
-                    if(isNotLock.first) {
-                        if(it == LifeCycleState.onPause){
-                            if(note.id != 0) saveNote()
+                    if (isNotLock.first) {
+                        if (it == LifeCycleState.OnPause) {
+                            if (note.id != 0) saveNote()
                             return@collect
                         }
                         isNotLock.second()
-                        isNotLock = Pair(false){}
+                        isNotLock = Pair(false) {}
                     }
-                }catch (e:Exception) {}
+                } catch (e: Exception) {
+                }
                 try {
-                    if(it == LifeCycleState.onPause) {
+                    if (it == LifeCycleState.OnPause) {
                         stopRecord()
-                        if(saveNoteState.value == SaveNoteState.CryptSaveNote) {
+                        if (saveNoteState.value == SaveNoteState.CryptSaveNote) {
                             isHideText.value = true
                             dialogShowState.value = ShowDialogState.DecryptDialog
                         }
-                        if(note.id == 0) return@collect
+                        if (note.id == 0) return@collect
                         saveNote()
                     }
-                }catch (e:Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }
     }
+
     val titleTextField = mutableStateOf("")
 
     val textField = mutableStateOf("")
 
     val currentTime = mutableStateOf(0L)
 
-    private var recordStopwatch:CountDownTimer? = null
+    private var recordStopwatch: CountDownTimer? = null
 
     private val currentRecordTime = mutableStateOf("00:00")
 
-    private var activityController:ActivityController? = null
-
-    private var wakeLockController:WakeLockController? = null
+    private var wakeLockController: WakeLockController? = null
 
     fun getCurrentRecordTime() = currentRecordTime
 
-    private var note: Note = Note(id = 0,title = "", text = "")
+    private var note: Note = Note(id = 0, title = "", text = "")
 
     //режим сохранения заметки
     private val saveNoteState = mutableStateOf<SaveNoteState>(SaveNoteState.None)
 
     val isDropDownMenuShow = mutableStateOf(false)
-        //состояние показа диалоговых окон
+
+    //состояние показа диалоговых окон
     val dialogShowState = mutableStateOf<ShowDialogState>(ShowDialogState.None)
 
-    private var notePassword:String? = null
+    private var notePassword: String? = null
 
     val isHideText = mutableStateOf(false)
 
@@ -144,11 +156,11 @@ class EditNoteViewModel @Inject constructor(
 
     private var isHaveAudio = false
 
-    private val isShowRemoveImageDialog = mutableStateOf(Pair(false){})
+    private val isShowRemoveImageDialog = mutableStateOf(Pair(false) {})
 
-    private val playerDialogState = mutableStateOf(Pair<Boolean, Audio?>(false,null))
+    private val playerDialogState = mutableStateOf(Pair<Boolean, Audio?>(false, null))
 
-    private val audioRemoveDialogState = mutableStateOf(Pair<Boolean,() -> Unit>(false,{}))
+    private val audioRemoveDialogState = mutableStateOf(Pair<Boolean, () -> Unit>(false, {}))
 
     private val addAudioDropDownState = mutableStateOf(false)
 
@@ -164,26 +176,26 @@ class EditNoteViewModel @Inject constructor(
 
     fun getAudioRemoveDialogState() = audioRemoveDialogState
 
-    fun showAudioRemoveDialogState(audioId:Long) {
+    fun showAudioRemoveDialogState(audioId: Long) {
         audioRemoveDialogState.value = Pair(true) {
             viewModelScope.launch(Dispatchers.IO) {
-                audioRepository.removeAudio(note.id,audioId)
+                audioRepository.removeAudio(note.id, audioId)
             }
         }
     }
 
     fun hideAudioRemoveDialog() {
-        audioRemoveDialogState.value = Pair(false){}
+        audioRemoveDialogState.value = Pair(false) {}
     }
 
     fun getPlayerDialogState() = playerDialogState
 
     fun showPlayerDialog(audio: Audio) {
-        playerDialogState.value = Pair(true,audio)
+        playerDialogState.value = Pair(true, audio)
     }
 
     fun hidePlayerDialog() {
-        playerDialogState.value = Pair(false,null)
+        playerDialogState.value = Pair(false, null)
         viewModelScope.launch(Dispatchers.IO) {
             playerManager.resetPlayer()
         }
@@ -198,18 +210,22 @@ class EditNoteViewModel @Inject constructor(
     }
 
     fun hideRemoveImageDialog() {
-        isShowRemoveImageDialog.value = Pair(false){}
+        isShowRemoveImageDialog.value = Pair(false) {}
     }
 
-    private var primaryNoteVersion:Note? = null
+    private var primaryNoteVersion: Note? = null
 
-    private var currentCategory:MutableState<Category?> = mutableStateOf(null)
+    private var currentCategory: MutableState<Category?> = mutableStateOf(null)
 
     val isChosenNoteState = mutableStateOf(false)
 
     private val currentSelectedCategory = mutableStateOf(0)
 
     private val isAudioRecorderDialogState = mutableStateOf(false)
+
+    private var currentExportImage: Image? = null
+
+    private var currentExportAudio: Audio? = null
 
     fun isAudioRecorderDialogShow() = isAudioRecorderDialogState
 
@@ -228,44 +244,43 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    private var isNotLock:Pair<Boolean,suspend () -> Unit> = Pair(false){}
+    private var isNotLock: Pair<Boolean, suspend () -> Unit> = Pair(false) {}
     //отвечает за блокировку при выходе из приложения, лямба будет выполнена после возвращаения
     // в приложение
 
     private val isShowCategoryChangeDialog = mutableStateOf(false)
-        //сохроняет версию до изменений
+
+    //сохроняет версию до изменений
     fun savePrimaryVersion(note: Note) {
-        if(primaryNoteVersion != null) return
+        if (primaryNoteVersion != null) return
         inputHistoryManager.setPrimaryVersion(note.text)
         primaryNoteVersion = note
     }
+
     //получает заметку из БД
-    fun getNote(id:Int) {
-        if(id != 0) {
+    fun getNote(id: Int) {
+        if (id != 0) {
             note = noteRepository.getNoteById(id).getData()
             savePrimaryVersion(note.copy())
             saveCategory(note.category)
-            if(!note.isEncrypted) {
+            if (!note.isEncrypted) {
                 viewModelScope.launch(Dispatchers.IO) {
                     imageRepository.loadImagesInBuffer(id)
                     audioRepository.loadAudioInBuffer(id)
                 }
-                    titleTextField.value = note.title
-                    textField.value = note.text
+                titleTextField.value = note.title
+                textField.value = note.text
                 saveNoteState.value = SaveNoteState.DefaultSaveNote
-            }
-            else {
+            } else {
                 dialogShowState.value = ShowDialogState.DecryptDialog
             }
             currentTime.value = note.created_at
             isChosenNoteState.value = note.isChosen
 
-        }
-        else {
-            if(saveNoteState.value != SaveNoteState.CryptSaveNote) {
+        } else {
+            if (saveNoteState.value != SaveNoteState.CryptSaveNote) {
                 saveNoteState.value = SaveNoteState.DefaultSaveNote
-            }
-            else {
+            } else {
                 dialogShowState.value = ShowDialogState.DecryptDialog
                 isHideText.value = true
             }
@@ -273,7 +288,7 @@ class EditNoteViewModel @Inject constructor(
     }
 
     private fun saveCategory(categoryID: Int?) {
-        if(categoryID == null) return
+        if (categoryID == null) return
         viewModelScope.launch(Dispatchers.IO) {
             val category = categoryRepository.getCategoryById(categoryID)?.getData()
             currentCategory.value = category
@@ -284,7 +299,7 @@ class EditNoteViewModel @Inject constructor(
     //проверяет наличие изменений
     fun checkChanges() {
         viewModelScope.launch {
-            if(!isHavePrimaryVersion()) return@launch
+            if (!isHavePrimaryVersion()) return@launch
             if (isEncryptNote()) {
                 val title = securityUtils.encrypt(titleTextField.value, notePassword!!)
                 val text = securityUtils.encrypt(textField.value, notePassword!!)
@@ -298,44 +313,48 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    private fun isHaveAudios() : Boolean {
+    private fun isHaveAudios(): Boolean {
         return isHaveAudio
     }
 
     fun updateImagesCount() {
         viewModelScope.launch {
-           isHaveImages = getNoteImage().first().isNotEmpty()
+            isHaveImages = getNoteImage().first().isNotEmpty()
         }
     }
 
-     suspend fun updateAudiosCount() {
-         isHaveAudio = audioRepository.isHaveAudios(note.id)
+    suspend fun updateAudiosCount() {
+        isHaveAudio = audioRepository.isHaveAudios(note.id)
     }
 
     val isHaveChanges = mutableStateOf(false)
-    get() = field
-        //сохрание заметки(зависит от режима)
-        private fun saveNote() {
-            val noteId = note.id
-        ApplicationScope.launch(Dispatchers.IO+CoroutineName("SaveNoteCoroutine")) {
+        get() = field
+
+    //сохрание заметки(зависит от режима)
+    private fun saveNote() {
+        val noteId = note.id
+        ApplicationScope.launch(Dispatchers.IO + CoroutineName("SaveNoteCoroutine")) {
             try {
-                when(saveNoteState.value) {
+                when (saveNoteState.value) {
                     is SaveNoteState.DefaultSaveNote -> {
-                        if((textField.value == note.text&&
+                        if ((textField.value == note.text &&
                                     titleTextField.value == note.title &&
                                     !checkChangeNoteConfiguration())
                         )
                             return@launch
 
-                        noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
-                            title = titleTextField.value,
-                            text = textField.value,
-                            isChosen = isChosenNoteState.value,
-                            category = currentCategory.value?.categoryId
-                        ))
+                        noteRepository.insertNote(
+                            note.copy(
+                                created_at = System.currentTimeMillis(),
+                                title = titleTextField.value,
+                                text = textField.value,
+                                isChosen = isChosenNoteState.value,
+                                category = currentCategory.value?.categoryId
+                            )
+                        )
                     }
                     is SaveNoteState.RemoveNote -> {
-                        if(note.id != 0) {
+                        if (note.id != 0) {
                             noteRepository.removeNote(note.id)
                         }
                     }
@@ -344,35 +363,41 @@ class EditNoteViewModel @Inject constructor(
                     }
                     is SaveNoteState.CryptSaveNote -> {
                         try {
-                            val title = securityUtils.encrypt(titleTextField.value,notePassword!!)
-                            val text = securityUtils.encrypt(textField.value,notePassword!!)
-                            if(text == note.text&&title == note.title
-                                &&!checkChangeNoteConfiguration()) return@launch
-                            noteRepository.insertNote(note.copy(created_at = System.currentTimeMillis(),
-                                title = title,
-                                text = text,
-                                isChosen = isChosenNoteState.value,
-                                category = currentCategory.value?.categoryId
-                            ))
-                        }catch (e:Exception){}
+                            val title = securityUtils.encrypt(titleTextField.value, notePassword!!)
+                            val text = securityUtils.encrypt(textField.value, notePassword!!)
+                            if (text == note.text && title == note.title
+                                && !checkChangeNoteConfiguration()
+                            ) return@launch
+                            noteRepository.insertNote(
+                                note.copy(
+                                    created_at = System.currentTimeMillis(),
+                                    title = title,
+                                    text = text,
+                                    isChosen = isChosenNoteState.value,
+                                    category = currentCategory.value?.categoryId
+                                )
+                            )
+                        } catch (e: Exception) {
+                        }
 
                     }
 
                     is SaveNoteState.None -> return@launch
                 }
-                if(noteId == 0) {
+                if (noteId == 0) {
                     val newNoteId = noteRepository.getAllNote().getData().maxBy { it.id }.id
                     imageRepository.tempDirToImageDir(newNoteId)
                     audioRepository.tempDirToAudioDir(newNoteId)
                 }
-            }catch (e:Exception) {}
+            } catch (e: Exception) {
+            }
         }
     }
 
     private fun checkChangeNoteConfiguration(): Boolean {
-        if(!isHavePrimaryVersion()&&(isHaveImages()||isHaveAudios())) return true
-        if(!isHavePrimaryVersion()) return false
-        if (currentCategory.value?.categoryId != primaryNoteVersion?.category ) return true
+        if (!isHavePrimaryVersion() && (isHaveImages() || isHaveAudios())) return true
+        if (!isHavePrimaryVersion()) return false
+        if (currentCategory.value?.categoryId != primaryNoteVersion?.category) return true
         return primaryNoteVersion?.isChosen != isChosenNoteState.value
     }
 
@@ -383,7 +408,7 @@ class EditNoteViewModel @Inject constructor(
         navController.navigateUp()
     }
 
-    fun changeStateToEncryptNote(password:String) {
+    fun changeStateToEncryptNote(password: String) {
         saveNoteState.value = SaveNoteState.CryptSaveNote
         note.isEncrypted = true
         notePassword = securityUtils.passwordToHash(password)
@@ -393,22 +418,21 @@ class EditNoteViewModel @Inject constructor(
 
     fun isEncryptNote() = note.isEncrypted
 
-   fun decrypt(password: String) {
-       if(notePassword != null) {
-           if(notePassword == securityUtils.passwordToHash(password)) {
-               dialogShowState.value = ShowDialogState.None
-               isHideText.value = false
-               return
-           }
-           else {
-               throw FailedDecryptException("Invalid password")
-           }
-       }
+    fun decrypt(password: String) {
+        if (notePassword != null) {
+            if (notePassword == securityUtils.passwordToHash(password)) {
+                dialogShowState.value = ShowDialogState.None
+                isHideText.value = false
+                return
+            } else {
+                throw FailedDecryptException("Invalid password")
+            }
+        }
         try {
             val hashPassword = securityUtils.passwordToHash(password)
             isHideText.value = false
-            titleTextField.value = securityUtils.decrypt(note.title,hashPassword)
-            textField.value = securityUtils.decrypt(note.text,hashPassword)
+            titleTextField.value = securityUtils.decrypt(note.title, hashPassword)
+            textField.value = securityUtils.decrypt(note.text, hashPassword)
             notePassword = hashPassword
             viewModelScope.launch(Dispatchers.IO) {
                 imageRepository.loadImagesInBuffer(note.id)
@@ -416,7 +440,7 @@ class EditNoteViewModel @Inject constructor(
             }
             saveNoteState.value = SaveNoteState.CryptSaveNote
             dialogShowState.value = ShowDialogState.None
-        }catch (e:Exception) {
+        } catch (e: Exception) {
             throw FailedDecryptException("Invalid password")
         }
 
@@ -447,6 +471,7 @@ class EditNoteViewModel @Inject constructor(
         }
         super.onCleared()
     }
+
     fun getToast() = toastManager
 
     fun isHavePrimaryVersion() = primaryNoteVersion != null
@@ -459,24 +484,27 @@ class EditNoteViewModel @Inject constructor(
         isHaveRepo.value = inputHistoryManager.isHaveRedo()
         isHaveUndo.value = inputHistoryManager.isHaveUndo()
     }
+
     //перемещает указатель истории изменений вперёд
     fun redo() {
         try {
             textField.value = inputHistoryManager.getRedo()
             checkHistoryState()
-        }catch (e:IndexOutOfBoundsException) {
+        } catch (e: IndexOutOfBoundsException) {
             toastManager.showToast(R.string.Text_rollback_error)
         }
     }
+
     //перемещает указатель истории изменений назад
     fun undo() {
         try {
             textField.value = inputHistoryManager.getUndo()
             checkHistoryState()
-        }catch (e:IndexOutOfBoundsException) {
+        } catch (e: IndexOutOfBoundsException) {
             toastManager.showToast(R.string.Text_rollback_error)
         }
     }
+
     //добавление изменений в историю
     fun addInHistoryChanges() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -526,65 +554,72 @@ class EditNoteViewModel @Inject constructor(
 
     }
 
-    fun changeCategoryEditDialogStatus(status:Boolean) {
+    fun changeCategoryEditDialogStatus(status: Boolean) {
         isShowCategoryChangeDialog.value = status
     }
 
-    fun getNoteImage() : SharedFlow<List<Image>> {
+    fun getNoteImage(): SharedFlow<List<Image>> {
         return imageRepository.getNoteImages()
     }
 
-    fun addImage(activityController: ActivityController) {
-        isNotLock = Pair(true){}
+    fun addImage(contract: ActivityResultLauncher<String>) {
+        isNotLock = Pair(true) {}
         analytics.sendEvent(SELECT_IMAGE_EVENT, Bundle())
-        activityController.pickImage(
-            onComplete = {
-                isHaveImages = true
-                viewModelScope.launch(Dispatchers.IO) {
-                    imageRepository.addImage(it,note.id)
-                }
-                isNotLock = Pair(false){}
-                analytics.sendEvent(SELECT_IMAGE_EVENT_OK,Bundle())
-            },
-            onError = {
-                isNotLock = Pair(false){}
-                analytics.sendEvent(SELECT_IMAGE_EVENT_ERROR,Bundle())
-            }
-        )
+
+        contract.launch("image/*")
     }
 
-    fun isHaveImages() : Boolean {
-        return isHaveImages
-    }
-
-    fun openImageInImageViewer(imageFile:EncryptedFile,activityController: ActivityController) {
+    fun onImagePicked(uri: Uri?) {
         viewModelScope.launch(Dispatchers.IO) {
-            isNotLock = Pair(true){
-                activityController.clearShareDir()
+            val image = provideDataFromFileUriUseCase.provideFromFileUri(uri) {
+                BitmapFactory.decodeByteArray(it, 0, it.size)
             }
-            activityController.sendShowImageIntent(imageFile)
+
+            if (image == null) {
+                isNotLock = Pair(false) {}
+                analytics.sendEvent(SELECT_IMAGE_EVENT_ERROR, Bundle())
+            } else {
+                imageRepository.addImage(image, note.id)
+                isNotLock = Pair(false) {}
+                analytics.sendEvent(SELECT_IMAGE_EVENT_OK, Bundle())
+            }
         }
     }
 
-    private fun removeImage(imageId:Long) {
+    fun isHaveImages(): Boolean {
+        return isHaveImages
+    }
+
+    fun openImageInImageViewer(imageFile: EncryptedFile) {
         viewModelScope.launch(Dispatchers.IO) {
-            imageRepository.removeImage(note.id,imageId)
+            isNotLock = Pair(true) {
+                clearShareDirUseCase.execute()
+            }
+
+            openImageInGalleryUseCase.execute(imageFile)
+        }
+    }
+
+    private fun removeImage(imageId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            imageRepository.removeImage(note.id, imageId)
             updateImagesCount()
         }
     }
 
     fun toDrawScreen(navController: NavController) {
-        navController.navigate(Screen.DrawScreen.route) {launchSingleTop = true}
+        navController.navigate(Screen.DrawScreen.route) { launchSingleTop = true }
+
+        navController.getBackStackEntry(Screen.DrawScreen.route)
+            .arguments?.putInt(NOTE_ID_TO_DRAW_SCREEN_KEY,note.id)
     }
 
     fun getImageRequest(context: Context, bytes: ByteArray?): ImageRequest {
         return ImageRequest.Builder(context)
             .data(bytes)
             .memoryCachePolicy(CachePolicy.DISABLED)
-           // .size(100)
             .build()
     }
-
 
 
     @OptIn(ExperimentalPermissionsApi::class)
@@ -616,7 +651,6 @@ class EditNoteViewModel @Inject constructor(
     }
 
 
-
     fun stopRecord() {
         viewModelScope.launch(Dispatchers.IO) {
             recordManager.stopRecord()
@@ -624,23 +658,25 @@ class EditNoteViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 updateAudiosCount()
-            }catch (e:Exception) {}
-        }
-    }
-
-    fun playAudio(file:EncryptedFile) {
-        viewModelScope.launch(Dispatchers.IO) {
-            playerManager.startPlayer(file) {
-                Log.d("MyLog",it.stackTraceToString())
+            } catch (e: Exception) {
             }
         }
     }
 
-    fun startRecordStopWatch(startRecordTime:Long) {
-        if(recordStopwatch != null) return
-        recordStopwatch = object :CountDownTimer(Long.MAX_VALUE,1000) {
+    fun playAudio(file: EncryptedFile) {
+        viewModelScope.launch(Dispatchers.IO) {
+            playerManager.startPlayer(file) {
+                Log.d("MyLog", it.stackTraceToString())
+            }
+        }
+    }
+
+    fun startRecordStopWatch(startRecordTime: Long) {
+        if (recordStopwatch != null) return
+        recordStopwatch = object : CountDownTimer(Long.MAX_VALUE, 1000) {
             override fun onTick(p: Long) {
-                currentRecordTime.value = (System.currentTimeMillis() - startRecordTime).milliSecondToSecond()
+                currentRecordTime.value =
+                    (System.currentTimeMillis() - startRecordTime).milliSecondToSecond()
             }
 
             override fun onFinish() {}
@@ -656,7 +692,7 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    fun getPlayerController() : PlayerController {
+    fun getPlayerController(): PlayerController {
         return object : PlayerController {
             override fun getPlayerState(): SharedFlow<PlayerState> = playerManager.getPlayerState()
 
@@ -678,7 +714,7 @@ class EditNoteViewModel @Inject constructor(
                 }
             }
 
-            override fun seekTo(pos:Long) {
+            override fun seekTo(pos: Long) {
                 viewModelScope.launch(Dispatchers.IO) {
                     playerManager.seekTo(pos)
                 }
@@ -695,78 +731,96 @@ class EditNoteViewModel @Inject constructor(
         }
     }
 
-    fun selectAudioFromExternalStorage() {
-        activityController?.pickAudio(
-            onComplete = {
-                viewModelScope.launch(Dispatchers.IO) {
-                    audioRepository.saveAudioFromExternalStorage(it,note.id)
-                }
-            },
-            onError = {
-
-            }
-        )
+    fun selectAudioFromExternalStorage(activityResultLauncher: ActivityResultLauncher<String>) {
+        activityResultLauncher.launch("audio/*")
     }
 
-    fun initActivityController(activityController: ActivityController) {
-        this.activityController = activityController
+    fun onAudioSelected(uri: Uri?) {
+        if (uri == null) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            audioRepository.saveAudioFromExternalStorage(uri, note.id)
+        }
     }
+
 
     fun initWakeLockController(wakeLockController: WakeLockController) {
         this.wakeLockController = wakeLockController
     }
 
-    fun exportImage(image: Image) {
-        activityController?.selectExportFile(
-            onComplete = {
-               ApplicationScope.launch(Dispatchers.IO) {
-                   try {
-                        exportImageUseCase.execute(image,it)
-                       withContext(Dispatchers.Main) {
-                           toastManager.showToast(R.string.Export_file_complited)
-                       }
+    fun exportImage(image: Image, activityResultLauncher: ActivityResultLauncher<FileParams>) {
+        if (currentExportImage != null) return
 
-                   }catch (e:Exception) {
-                       withContext(Dispatchers.Main) {
-                           toastManager.showToast(R.string.Export_file_error)
-                       }
-                   }
-               }
-            },
-            onError = {
+        currentExportImage = image
 
-            },
-            exportFileType = MainActivity.IMAGE_EXPORT_TYPE
+        activityResultLauncher.launch(
+            FileParams(
+                fileType = "image/jpg",
+                startFileName = "image.jpg"
+            )
         )
     }
 
-    fun exportAudio(audio: Audio) {
-        activityController?.selectExportFile(
-            onComplete = {
-                ApplicationScope.launch(Dispatchers.IO) {
-                    try {
-                        exportAudioUseCase.execute(audio,it)
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_complited)
-                        }
-                    }catch (e:Exception) {
-                        withContext(Dispatchers.Main) {
-                            toastManager.showToast(R.string.Export_file_error)
-                        }
-                    }
-                }
-            },
-            onError = {
+    fun exportAudio(audio: Audio, activityResultLauncher: ActivityResultLauncher<FileParams>) {
+        if (currentExportAudio != null) return
 
-            },
-            exportFileType = MainActivity.AUDIO_EXPORT_TYPE
+        currentExportAudio = audio
+
+        activityResultLauncher.launch(
+            FileParams(
+                fileType = "audio/mp3",
+                startFileName = "audio.mp3"
+            )
         )
+    }
+
+    fun onExportAudioPathSelected(uri: Uri?) {
+        if (uri == null) return
+
+        currentExportAudio?.let { audio ->
+            ApplicationScope.launch(Dispatchers.IO) {
+                try {
+                    exportAudioUseCase.execute(audio, uri)
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_complited)
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_error)
+                    }
+                } finally {
+                    currentExportAudio = null
+                }
+            }
+        }
+    }
+
+    fun onExportImagePathSelected(uri: Uri?) {
+        if (uri == null) return
+
+        currentExportImage?.let { image ->
+            ApplicationScope.launch(Dispatchers.IO) {
+                try {
+                    exportImageUseCase.execute(image, uri)
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_complited)
+                    }
+
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        toastManager.showToast(R.string.Export_file_error)
+                    }
+                } finally {
+                    currentExportImage = null
+                }
+            }
+        }
     }
 
     fun getImageRepositoryLoadState() = imageRepository.getLoadState()
 
     fun getAudioRepositoryLoadState() = audioRepository.getLoadState()
 
-    fun isNeedShowAd() = adManager.isNeedShowAds()
+    fun isNeedShowAd() = adShowManager.isNeedShowAds()
 
 }

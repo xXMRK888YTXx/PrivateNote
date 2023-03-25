@@ -80,7 +80,7 @@ fun GridNoteView(
 
             val swapBoxBackground = if(themeType == ThemeType.White) backGroundColor.copy(alpha)
             else Color.Transparent.copy(0f)
-            val additionalSizeForStar = if(it.isChosen) 7.dp else 0.dp
+
             LaunchedEffect(key1 = selectedItemCount.value, block = {
                 isSelected.value = noteStateViewModel.isItemSelected(it.id)
             })

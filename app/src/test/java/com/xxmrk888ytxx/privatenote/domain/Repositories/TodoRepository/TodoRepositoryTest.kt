@@ -1,40 +1,37 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository
 
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
-import com.xxmrk888ytxx.privatenote.data.Database.DAO.ToDoDao
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.ToDoItem
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import kotlinx.coroutines.flow.flowOf
-import org.junit.After
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 
-class ToDoRepositoryTest {
-    lateinit var repo:ToDoRepository
-    lateinit var dao:ToDoDao
+class TodoRepositoryTest {
+    lateinit var repo:TodoRepository
+    lateinit var dao:TodoDao
     val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase = mockk(relaxed = true)
     @Before
     fun init() {
-        val analytics:AnalyticsManager = mockk(relaxed = true)
+        val analytics: AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         val removeNotifyTaskIfTodoCompletedUseCase = mockk<RemoveNotifyTaskIfTodoCompletedUseCase>(relaxed = true)
-        repo = ToDoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
+        repo = TodoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
     }
 
     @Test
     fun test_getAllToDo_Expect_Returns_Test_ToDo() {
-        val list = flowOf(listOf(ToDoItem(todoText = "12", isImportant = false),
-            ToDoItem(todoText = "543512", isImportant = false),
-            ToDoItem(todoText = "1345352", isImportant = false)))
+        val list = flowOf(listOf(TodoItem(todoText = "12", isImportant = false),
+            TodoItem(todoText = "543512", isImportant = false),
+            TodoItem(todoText = "1345352", isImportant = false)))
         every { dao.getAllToDo() } returns list
 
         val returnsList = repo.getAllToDo()
@@ -45,7 +42,7 @@ class ToDoRepositoryTest {
     @Test
     fun test_getToDoById_Expect_Returns_Test_Todo_By_Id() {
         val testId = 5
-        val todo = flowOf(ToDoItem(todoText = "1345352", isImportant = false))
+        val todo = flowOf(TodoItem(todoText = "1345352", isImportant = false))
         every { dao.getToDoById(testId) } returns todo
 
         val returnsTodo = repo.getToDoById(testId)
@@ -54,8 +51,8 @@ class ToDoRepositoryTest {
     }
 
     @Test
-    fun test_insertToDo_Input_Todo_Expect_Invoke_Dao_For_Insert() {
-        val todo = ToDoItem(todoText = "12", isImportant = false)
+    fun test_insertToDo_Input_Todo_Expect_Invoke_Dao_For_Insert() = runBlocking {
+        val todo = TodoItem(todoText = "12", isImportant = false)
 
         repo.insertToDo(todo)
 
@@ -66,7 +63,7 @@ class ToDoRepositoryTest {
     }
 
     @Test
-    fun test_removeToDo_Input_Id_Expect_Invoke_Dao_For_Remove() {
+    fun test_removeToDo_Input_Id_Expect_Invoke_Dao_For_Remove() = runBlocking {
         val id = 7
 
         repo.removeToDo(id)
@@ -78,7 +75,7 @@ class ToDoRepositoryTest {
     }
 
     @Test
-    fun test_changeMarkStatus_Set_True_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() {
+    fun test_changeMarkStatus_Set_True_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() = runBlocking {
         val state = true
         val id = 4
 
@@ -91,7 +88,7 @@ class ToDoRepositoryTest {
     }
 
     @Test
-    fun test_changeMarkStatus_Set_False_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() {
+    fun test_changeMarkStatus_Set_False_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() = runBlocking {
         val state = false
         val id = 4
 

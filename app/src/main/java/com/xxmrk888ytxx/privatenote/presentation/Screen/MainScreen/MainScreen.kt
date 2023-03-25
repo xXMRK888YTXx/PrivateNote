@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -15,7 +14,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.BuildConfig
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.ActivityController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
@@ -24,7 +22,6 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAn
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
-import com.xxmrk888ytxx.privatenote.presentation.theme.Theme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
@@ -32,9 +29,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
-    navController: NavController,
-    activityController: ActivityController,
-    interstitialAdsController: InterstitialAdsController
+    navController: NavController
 ) {
     val state = remember {
         mainViewModel.screenState
@@ -84,12 +79,11 @@ fun MainScreen(
                      MainScreenState.NoteScreen.id -> {
                          NoteScreenState(
                              navController = navController,
-                             mainScreenController = mainViewModel,
-                             interstitialAdsController = interstitialAdsController
+                             mainScreenController = mainViewModel
                          )
                      }
                     MainScreenState.ToDoScreen.id -> {
-                        ToDoScreen(mainScreenController = mainViewModel, activityController = activityController)
+                        ToDoScreen(mainScreenController = mainViewModel)
                     }
                 }
 

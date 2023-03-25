@@ -23,16 +23,14 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SearchMode_In_NoteScre
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SelectionMode_In_NoteScreen
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_Category_List
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_EditCategory_Dialog
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
-import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId
-import com.xxmrk888ytxx.privatenote.Utils.NavArguments
+import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -61,13 +59,6 @@ class NoteStateViewModel @Inject constructor(
     private val categoryFilterStatus = mutableStateOf(IGNORE_CATEGORY)
 
     private var mainScreenController: MainScreenController? = null
-
-    private var interstitialAdsController:InterstitialAdsController? = null
-
-    fun initInterstitialAdsController(interstitialAdsController:InterstitialAdsController) {
-        this.interstitialAdsController = interstitialAdsController
-    }
-
 
     fun setMainScreenController(mainScreenController: MainScreenController?) {
         if(mainScreenController == null) return
@@ -124,18 +115,12 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun toEditNoteScreen(navController: NavController, id:Int) {
-        NavArguments.bundle.putInt(getNoteId,id)
-        val onNavigate = {
-            navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
-        }
-        if(interstitialAdsController == null) {
-            onNavigate()
-        }
-        else {
-            onNavigate()
-            interstitialAdsController?.showAd()
-        }
+        navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
+
+        navController.getBackStackEntry(Screen.EditNoteScreen.route)
+            .arguments?.putInt(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY,id)
     }
+
     fun toSelectionMode() {
         analytics.sendEvent(SelectionMode_In_NoteScreen,null)
         currentNoteMode.value = NoteScreenMode.SelectionScreenMode
@@ -323,7 +308,7 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun changeChosenStatus(id: Int,currentStatus:Boolean) {
-        noteRepository.changeChosenStatus(!currentStatus,id)
+        viewModelScope.launch { noteRepository.changeChosenStatus(!currentStatus,id) }
     }
 
     fun isNoteChosen(noteId: Int) : Boolean = noteRepository.getNoteById(noteId).getData().isChosen
