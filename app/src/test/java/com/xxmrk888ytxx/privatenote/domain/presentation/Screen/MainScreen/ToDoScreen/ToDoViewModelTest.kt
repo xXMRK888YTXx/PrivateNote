@@ -136,7 +136,7 @@ class ToDoViewModelTest {
             viewModel.changeMarkStatus(state, id)
             delay(100)
 
-            verifySequence {
+            coVerifySequence {
                 toDoRepository.changeMarkStatus(id, state)
                 notifyTaskManager.cancelTask(id)
             }
@@ -153,7 +153,7 @@ class ToDoViewModelTest {
             viewModel.changeMarkStatus(state, id)
             delay(100)
 
-            verifySequence {
+            coVerifySequence {
                 toDoRepository.changeMarkStatus(id, state)
                 notifyTaskManager.cancelTask(id)
             }
@@ -175,7 +175,7 @@ class ToDoViewModelTest {
         viewModel.saveToDo()
         delay(100)
 
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             toDoRepository.insertToDo(allAny())
         }
     }
@@ -188,7 +188,7 @@ class ToDoViewModelTest {
         viewModel.removeToDo(id)
         delay(100)
 
-        verifySequence {
+        coVerifySequence {
             toDoRepository.removeToDo(id)
             notifyTaskManager.cancelTask(id)
         }

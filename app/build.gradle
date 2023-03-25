@@ -121,7 +121,7 @@ dependencies {
     implementation 'com.google.accompanist:accompanist-permissions:0.29.1-alpha'
     //MockK
     testImplementation "io.mockk:mockk:$Mockk_version"
-    testImplementation "io.mockk:mockk-agent-jvm:1.13.2"
+    testImplementation "io.mockk:mockk-agent-jvm:1.12.5"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
     //Glance

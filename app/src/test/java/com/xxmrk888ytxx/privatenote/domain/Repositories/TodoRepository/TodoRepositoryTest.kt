@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -50,7 +51,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    fun test_insertToDo_Input_Todo_Expect_Invoke_Dao_For_Insert() {
+    fun test_insertToDo_Input_Todo_Expect_Invoke_Dao_For_Insert() = runBlocking {
         val todo = TodoItem(todoText = "12", isImportant = false)
 
         repo.insertToDo(todo)
@@ -62,7 +63,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    fun test_removeToDo_Input_Id_Expect_Invoke_Dao_For_Remove() {
+    fun test_removeToDo_Input_Id_Expect_Invoke_Dao_For_Remove() = runBlocking {
         val id = 7
 
         repo.removeToDo(id)
@@ -74,7 +75,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    fun test_changeMarkStatus_Set_True_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() {
+    fun test_changeMarkStatus_Set_True_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() = runBlocking {
         val state = true
         val id = 4
 
@@ -87,7 +88,7 @@ class TodoRepositoryTest {
     }
 
     @Test
-    fun test_changeMarkStatus_Set_False_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() {
+    fun test_changeMarkStatus_Set_False_Mark_Status_Expect_Invoke_Dao_With_Installed_Status() = runBlocking {
         val state = false
         val id = 4
 

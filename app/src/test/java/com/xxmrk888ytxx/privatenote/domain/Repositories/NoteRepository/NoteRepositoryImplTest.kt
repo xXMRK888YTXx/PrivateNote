@@ -19,7 +19,7 @@ class NoteRepositoryImplTest {
 
 
     @Test
-    fun `insertNote method test`() {
+    fun `insertNote method test`() = runBlocking {
         val noteDao = mockk<NoteDao>(relaxed = true)
         val noteRepositoryImpl = getNoteRepo(noteDao)
 
@@ -57,7 +57,7 @@ class NoteRepositoryImplTest {
     }
 
     @Test
-    fun `test change changeChosenStatus Method`() {
+    fun `test change changeChosenStatus Method`() = runBlocking {
         val repo = getNoteRepo()
 
         repo.changeChosenStatus(true,1)
@@ -68,7 +68,7 @@ class NoteRepositoryImplTest {
     }
 
     @Test
-    fun `test changeCurrentCategory Method if send not NUll or 0`() {
+    fun `test changeCurrentCategory Method if send not NUll or 0`() = runBlocking {
         val repo = getNoteRepo()
         val id = Random.nextInt()
 
@@ -80,7 +80,7 @@ class NoteRepositoryImplTest {
     }
 
     @Test
-    fun `test changeCurrentCategory Method if send NUll or 0`() {
+    fun `test changeCurrentCategory Method if send NUll or 0`() = runBlocking {
         val repo = getNoteRepo()
         val id = Random.nextInt()
 

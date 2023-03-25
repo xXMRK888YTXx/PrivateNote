@@ -8,6 +8,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verifySequence
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
@@ -55,7 +56,7 @@ class NotifyTaskRepositoryTest {
     }
 
     @Test
-    fun test_insertTask_Input_Task_Expect_Invoke_Dao_For_Insert() {
+    fun test_insertTask_Input_Task_Expect_Invoke_Dao_For_Insert() = runBlocking {
         val task = NotifyTask(1,2,true,5,true)
 
         repo.insertTask(task)
@@ -66,7 +67,7 @@ class NotifyTaskRepositoryTest {
     }
 
     @Test
-    fun test_removeTask_Input_Id_Expect_Invoke_Dao_For_Remove() {
+    fun test_removeTask_Input_Id_Expect_Invoke_Dao_For_Remove() = runBlocking {
         val id = 5
 
         repo.removeTask(id)
@@ -77,7 +78,7 @@ class NotifyTaskRepositoryTest {
     }
 
     @Test
-    fun test_getTaskEnableStatus_Set_True_Status_Expect_Installed_Status() {
+    fun test_getTaskEnableStatus_Set_True_Status_Expect_Installed_Status() = runBlocking {
         val state = true
         val id = 4
         every { dao.getTaskEnableStatus(id) } returns state
@@ -88,7 +89,7 @@ class NotifyTaskRepositoryTest {
     }
 
     @Test
-    fun test_getTaskEnableStatus_Set_False_Status_Expect_Installed_Status() {
+    fun test_getTaskEnableStatus_Set_False_Status_Expect_Installed_Status() = runBlocking {
         val state = false
         val id = 4
         every { dao.getTaskEnableStatus(id) } returns state
@@ -99,7 +100,7 @@ class NotifyTaskRepositoryTest {
     }
 
     @Test
-    fun test_getTaskEnableStatus_Input_Does_Exist_Id_Expect_Returns_Null() {
+    fun test_getTaskEnableStatus_Input_Does_Exist_Id_Expect_Returns_Null() = runBlocking {
         val state = null
         val id = 4
         every { dao.getTaskEnableStatus(id) } returns state

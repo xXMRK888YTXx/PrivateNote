@@ -10,6 +10,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.Not
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -38,7 +39,7 @@ class NotifyTaskManagerTest {
     }
 
     @Test
-    fun test_newTask_Input_Task_Expect_Invoke_Insert_Dao_Method() {
+    fun test_newTask_Input_Task_Expect_Invoke_Insert_Dao_Method() = runBlocking {
         val size = 5
         val taskList = getListTask(size)
         every { manager.getNotifyTaskByTodoId(any()) } returns flowOf(getTestTask())
@@ -48,13 +49,13 @@ class NotifyTaskManagerTest {
             manager.newTask(it)
         }
 
-        verify(exactly = size) {
+        coVerify(exactly = size) {
             notifyTaskRepository.insertTask(any())
         }
     }
 
     @Test
-    fun test_newTask_Simulate_Task_Already_Exists_Expect_Rewrite_Current_Task() {
+    fun test_newTask_Simulate_Task_Already_Exists_Expect_Rewrite_Current_Task() = runBlocking {
         val size = 5
         val taskList = getListTask(size)
         every { manager.getNotifyTaskByTodoId(any()) } returns flowOf(getTestTask())
@@ -64,10 +65,10 @@ class NotifyTaskManagerTest {
             manager.newTask(it)
         }
 
-        verify(exactly = size) {
+        coVerify(exactly = size) {
             notifyTaskRepository.removeTaskByTodoId(any())
         }
-        verify(exactly = size) {
+        coVerify(exactly = size) {
             notifyTaskRepository.insertTask(any())
         }
     }
@@ -84,42 +85,42 @@ class NotifyTaskManagerTest {
     }
 
     @Test
-    fun test_taskIsValid_Repository_Returns_True_Expect_This_Method_Returns_True() {
+    fun test_taskIsValid_Repository_Returns_True_Expect_This_Method_Returns_True() = runBlocking {
         val taskId = 6
         val expectState = true
-        every { notifyTaskRepository.getTaskEnableStatus(taskId) } returns expectState
+        coEvery { notifyTaskRepository.getTaskEnableStatus(taskId) } returns expectState
 
         val returnsState = manager.taskIsValid(taskId)
 
-        verifySequence {
+        coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
         Assert.assertEquals(expectState,returnsState)
     }
 
     @Test
-    fun test_taskIsValid_Repository_Returns_False_Expect_This_Method_Returns_False() {
+    fun test_taskIsValid_Repository_Returns_False_Expect_This_Method_Returns_False() = runBlocking {
         val taskId = 6
         val expectState = false
-        every { notifyTaskRepository.getTaskEnableStatus(taskId) } returns expectState
+        coEvery { notifyTaskRepository.getTaskEnableStatus(taskId) } returns expectState
 
         val returnsState = manager.taskIsValid(taskId)
 
-        verifySequence {
+        coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
         Assert.assertEquals(expectState,returnsState)
     }
 
     @Test
-    fun test_taskIsValid_Repository_Returns_Null_Expect_This_Method_Returns_False() {
+    fun test_taskIsValid_Repository_Returns_Null_Expect_This_Method_Returns_False() = runBlocking {
         val taskId = 6
         val expectState = false
-        every { notifyTaskRepository.getTaskEnableStatus(taskId) } returns null
+        coEvery { notifyTaskRepository.getTaskEnableStatus(taskId) } returns null
 
         val returnsState = manager.taskIsValid(taskId)
 
-        verifySequence {
+        coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
         Assert.assertEquals(expectState,returnsState)
@@ -140,18 +141,18 @@ class NotifyTaskManagerTest {
     }
 
     @Test
-    fun test_removeTask_Expect_Invoke_Repository_Remove_Method() {
+    fun test_removeTask_Expect_Invoke_Repository_Remove_Method() = runBlocking {
         val taskId = 5
 
         manager.removeTask(taskId)
 
-        verifySequence {
+        coVerifySequence {
             notifyTaskRepository.removeTask(taskId)
         }
     }
 
     @Test
-    fun test_checkForOld_Input_Tasks_Expect_Send_Notification_If_Task_Time_Is_Miss() {
+    fun test_checkForOld_Input_Tasks_Expect_Send_Notification_If_Task_Time_Is_Miss() = runBlocking {
         val taskList = listOf(
             getTestTask(1, time = System.currentTimeMillis()-12314,id = 1),
             getTestTask(2, time = System.currentTimeMillis()+12314,id = 2),
@@ -172,16 +173,16 @@ class NotifyTaskManagerTest {
         verify(exactly = 2) {
             notificationAppManager.sendTaskNotification(any(),any(),any(),any(),any())
         }
-        verify(exactly = 2) { manager.removeTask(any()) }
+        coVerify(exactly = 2) { manager.removeTask(any()) }
      }
 
    @Test
-   fun test_markCompletedAction_Send_Id_Expect_Call_Repository_Method_With_Sended_Id() {
+   fun test_markCompletedAction_Send_Id_Expect_Call_Repository_Method_With_Sended_Id()= runBlocking {
        val todoId = 5
 
        manager.markCompletedAction(todoId)
 
-       verifySequence {
+       coVerifySequence {
            todoRepository.changeMarkStatus(todoId,true)
        }
    }
