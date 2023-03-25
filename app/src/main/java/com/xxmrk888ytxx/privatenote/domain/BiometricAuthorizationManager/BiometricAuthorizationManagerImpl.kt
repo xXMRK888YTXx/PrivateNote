@@ -11,8 +11,7 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Check_Available_FingerPrint
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Send_Biometric_Authorization_Request
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,14 +25,14 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
 ) : BiometricAuthorizationManager {
 
     override fun isHaveFingerPrint() : Boolean {
-        try {
+        return try {
             val fingerprintManager = context.getSystemService(Context.FINGERPRINT_SERVICE) as FingerprintManager
             val state = fingerprintManager.hasEnrolledFingerprints()
             analytics.sendEvent(Check_Available_FingerPrint,
                 bundleOf(Pair("is_FingerPrint_Available",state)))
-            return state
+            state
         }catch (e:Exception) {
-            return false
+            false
         }
     }
 
@@ -42,6 +41,7 @@ class BiometricAuthorizationManagerImpl @Inject constructor(
         executor: Executor,
         callBack: BiometricPrompt.AuthenticationCallback
     ) {
+
         analytics.sendEvent(Send_Biometric_Authorization_Request,null)
         val biometricPrompt = BiometricPrompt(fragmentActivity,executor,callBack)
         val promptInfo = BiometricPrompt.PromptInfo.Builder()

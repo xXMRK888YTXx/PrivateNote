@@ -5,9 +5,9 @@ import android.content.Context
 import com.xxmrk888ytxx.privatenote.Utils.fillList
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import org.junit.After
@@ -19,7 +19,7 @@ class NotifyTaskManagerTest {
     lateinit var manager:NotifyTaskManager
     lateinit var notifyTaskRepository:NotifyTaskRepository
     lateinit var alarmManager: AlarmManager
-    lateinit var todoRepository: ToDoRepository
+    lateinit var todoRepository: TodoRepository
     lateinit var notificationAppManager: NotificationAppManager
     lateinit var context: Context
     @Before

@@ -6,7 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_NotifyTask
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_NotifyTask_By_TodoId
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

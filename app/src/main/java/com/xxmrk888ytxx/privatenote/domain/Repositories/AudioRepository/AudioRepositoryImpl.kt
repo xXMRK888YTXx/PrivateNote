@@ -17,7 +17,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NotifyDeleteAudio_Even
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.NotifyNewAudio_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.RemoveAudio_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.TempDirToAudioDir_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.Utils.LoadRepositoryState
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
@@ -57,7 +57,7 @@ class AudioRepositoryImpl @Inject constructor(
     override suspend fun loadAudioInBuffer(noteId: Int) {
         val audioDir = File(getAudioDir(noteId))
         val audioList = mutableListOf<Audio>()
-        audioDir.listFiles().forEach {
+        audioDir.listFiles()?.forEach {
             audioList.add(getAudioFile(it))
         }
         analyticsManager.sendEvent(LoadAudioInBuffer_Event, bundleOf(Pair("Load_Audio_Count",audioList.size)))

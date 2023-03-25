@@ -1,14 +1,7 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import android.content.Context
-import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
-import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
@@ -47,11 +40,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.Wri
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCaseImpl
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -12,8 +12,8 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Exception.BadFileAccessException
 import com.xxmrk888ytxx.privatenote.Utils.Exception.NotSetBackupPathException
 import com.xxmrk888ytxx.privatenote.domain.BackupManager.BackupDataModel
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepository
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GenerateBackupFileUseCase.GenerateBackupFileUseCase

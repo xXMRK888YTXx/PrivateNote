@@ -14,7 +14,7 @@ import com.squareup.moshi.Moshi
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.CreateWidgetTodoItems_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.ParseAndWriteTodoInWidget_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.UpdateWidgetData_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidget.Companion.widgetDataKey
 import com.xxmrk888ytxx.privatenote.Widgets.TodoWidget.TodoWidgetDataModel
@@ -48,12 +48,15 @@ class TodoWidgetRepositoryImpl @Inject constructor(
             val todoList =  allTodo.filter { !it.isCompleted }
             val importantTodo = todoList.filter { it.isImportant }
             val notImportantTodo = todoList.filter { !it.isImportant }
+
             if(importantTodo.size >= MAX_TODO_COUNT_IN_WIDGET) {
                 parseAndWrite(importantTodo.take(MAX_TODO_COUNT_IN_WIDGET))
                 return
             }
+
             val finalList = mutableListOf<TodoItem>()
             finalList.addAll(importantTodo)
+
             notImportantTodo.forEach {
                 if(finalList.size >= MAX_TODO_COUNT_IN_WIDGET) {
                     parseAndWrite(finalList.take(MAX_TODO_COUNT_IN_WIDGET))
@@ -61,6 +64,7 @@ class TodoWidgetRepositoryImpl @Inject constructor(
                 }
                 finalList.add(it)
             }
+
             parseAndWrite(finalList)
         }catch (e:Exception) {
             Log.d("MyLog","error in provideTodoToWidget is ${e.printStackTrace()}")
@@ -68,13 +72,16 @@ class TodoWidgetRepositoryImpl @Inject constructor(
     }
 
     private suspend fun parseAndWrite(todoList:List<TodoItem>) {
-        analyticsManager.sendEvent(ParseAndWriteTodoInWidget_Event, bundleOf(Pair("Write_In_Widget_Todo_Count",todoList.size)))
+        analyticsManager.sendEvent(ParseAndWriteTodoInWidget_Event,
+            bundleOf(Pair("Write_In_Widget_Todo_Count",todoList.size)))
         try {
             val dataModel = TodoWidgetDataModel(todoList)
             val moshi: Moshi = Moshi.Builder().build()
+
             val jsonAdapter: JsonAdapter<TodoWidgetDataModel> = moshi.adapter(
                 TodoWidgetDataModel::class.java)
             val jsonString = jsonAdapter.toJson(dataModel)
+
                 GlanceAppWidgetManager(context).getGlanceIds(TodoWidget::class.java).forEach { glanceId ->
                     updateAppWidgetState(context, glanceId) { pref ->
                         pref[widgetDataKey] = jsonString
@@ -89,10 +96,12 @@ class TodoWidgetRepositoryImpl @Inject constructor(
     }
 
     private object WidgetRepositoryScope : CoroutineScope {
-        override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default + CoroutineName("ProviderWidgetScope")
+        override val coroutineContext: CoroutineContext = SupervisorJob() +
+                Dispatchers.Default + CoroutineName("ProviderWidgetScope")
     }
+
     private val Context.dataStore: DataStore<Preferences> by
-    preferencesDataStore(name = TodoWidget.WIDGET_DATA_PREFERENCE_NAME)
+        preferencesDataStore(name = TodoWidget.WIDGET_DATA_PREFERENCE_NAME)
     companion object {
         private const val MAX_TODO_COUNT_IN_WIDGET = 4
     }

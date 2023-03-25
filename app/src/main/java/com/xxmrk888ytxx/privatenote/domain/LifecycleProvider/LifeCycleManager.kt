@@ -12,7 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class LifeCycleManager @Inject constructor() : LifecycleProvider,LifeCycleNotifier {
 
-    private val _currentState:MutableStateFlow<LifeCycleState> = MutableStateFlow(LifeCycleState.onResume)
+    private val _currentState:MutableStateFlow<LifeCycleState> = MutableStateFlow(LifeCycleState.OnResume)
 
     override val currentState: Flow<LifeCycleState>
         get() = _currentState.asStateFlow()

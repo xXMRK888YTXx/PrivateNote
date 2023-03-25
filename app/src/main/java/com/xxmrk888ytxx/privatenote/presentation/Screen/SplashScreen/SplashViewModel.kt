@@ -11,7 +11,7 @@ import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Error
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Failed
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Biometric_Authorization_Succeeded
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import dagger.hilt.android.lifecycle.HiltViewModel

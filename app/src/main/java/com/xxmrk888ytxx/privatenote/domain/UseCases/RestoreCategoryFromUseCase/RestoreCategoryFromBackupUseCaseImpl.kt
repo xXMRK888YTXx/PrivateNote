@@ -11,9 +11,11 @@ class RestoreCategoryFromBackupUseCaseImpl @Inject constructor(
 
     override suspend fun execute(restoreCategory: List<Category>) {
         val nowInAppCategory = categoryRepository.getAllCategory().first()
+
         nowInAppCategory.forEach {
             categoryRepository.removeCategory(it.categoryId)
         }
+
         restoreCategory.forEach {
             categoryRepository.insertCategory(it)
         }

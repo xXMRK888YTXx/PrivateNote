@@ -2,22 +2,17 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.DelayNotifyActivity
 
 import android.app.Activity
 import android.content.Context
-import android.content.res.Configuration
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.LanguagesCodes
-import com.xxmrk888ytxx.privatenote.Utils.MustBeLocalization
-import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.IntentNotifyTask
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel

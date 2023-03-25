@@ -6,7 +6,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_Category_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_Category_Event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Update_Category_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

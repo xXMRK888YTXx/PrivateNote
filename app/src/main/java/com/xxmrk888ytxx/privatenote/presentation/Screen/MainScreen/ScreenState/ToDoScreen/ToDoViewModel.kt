@@ -16,7 +16,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePicker
@@ -28,7 +28,7 @@ import com.xxmrk888ytxx.privatenote.Utils.secondToData
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.requestPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,7 +40,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ToDoViewModel @Inject constructor(
     private val toastManager: ToastManager,
-    private val toDoRepository: ToDoRepository,
+    private val toDoRepository: TodoRepository,
     private val notifyTaskManager: NotifyTaskManager,
     private val settingsRepository: SettingsRepository,
     private val notificationAppManager: NotificationAppManager,

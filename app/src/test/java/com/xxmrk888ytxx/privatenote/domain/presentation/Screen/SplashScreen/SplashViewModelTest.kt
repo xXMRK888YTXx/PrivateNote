@@ -2,7 +2,7 @@ package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.SplashScreen
 
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
@@ -19,7 +19,7 @@ class SplashViewModelTest {
     private val settingsRepository:SettingsRepository = mockk(relaxed = true)
     private val securityUtils:SecurityUtils = mockk(relaxed = true)
     private val toastManager:ToastManager = mockk(relaxed = true)
-    private val analytics:AnalyticsManager = mockk(relaxed = true)
+    private val analytics: AnalyticsManager = mockk(relaxed = true)
     @Before
     fun init() {
         viewModel = SplashViewModel(settingsRepository,securityUtils,toastManager,analytics)

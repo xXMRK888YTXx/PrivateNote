@@ -6,7 +6,7 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -14,7 +14,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = TodoWidget()
-    @Inject lateinit var toDoRepository: ToDoRepository
+    @Inject lateinit var toDoRepository: TodoRepository
     @Inject lateinit var todoWidgetRepository: TodoWidgetRepository
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)

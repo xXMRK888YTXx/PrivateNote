@@ -14,8 +14,11 @@ import javax.inject.Inject
 class ProvideDataFromFileUriUseCaseImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ProvideDataFromFileUriUseCase {
-    override suspend fun <T> provideFromFileUri(uri: Uri?, onMapBytes: (ByteArray) -> T?): T? = withContext(Dispatchers.IO) {
+    override suspend fun <T> provideFromFileUri(uri: Uri?, onMapBytes: (ByteArray) -> T?): T?
+        = withContext(Dispatchers.IO) {
+
         var inputStream:InputStream? = null
+
         return@withContext try {
             if(uri == null) return@withContext null
             inputStream = context.contentResolver.openInputStream(uri) ?: return@withContext null

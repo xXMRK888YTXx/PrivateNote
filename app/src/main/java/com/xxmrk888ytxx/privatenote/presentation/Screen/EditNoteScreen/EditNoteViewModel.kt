@@ -39,7 +39,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
@@ -98,7 +98,7 @@ class EditNoteViewModel @Inject constructor(
             lifecycleProvider.currentState.collect() {
                 try {
                     if (isNotLock.first) {
-                        if (it == LifeCycleState.onPause) {
+                        if (it == LifeCycleState.OnPause) {
                             if (note.id != 0) saveNote()
                             return@collect
                         }
@@ -108,7 +108,7 @@ class EditNoteViewModel @Inject constructor(
                 } catch (e: Exception) {
                 }
                 try {
-                    if (it == LifeCycleState.onPause) {
+                    if (it == LifeCycleState.OnPause) {
                         stopRecord()
                         if (saveNoteState.value == SaveNoteState.CryptSaveNote) {
                             isHideText.value = true

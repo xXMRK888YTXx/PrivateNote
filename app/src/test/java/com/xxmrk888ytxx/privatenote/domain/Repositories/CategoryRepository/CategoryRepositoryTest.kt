@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository
 
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.CategoryDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
@@ -19,7 +19,7 @@ class CategoryRepositoryTest {
     lateinit var dao:CategoryDao
     @Before
     fun init() {
-        val analytics:AnalyticsManager = mockk(relaxed = true)
+        val analytics: AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         repo = CategoryRepositoryImpl(dao,analytics)
     }

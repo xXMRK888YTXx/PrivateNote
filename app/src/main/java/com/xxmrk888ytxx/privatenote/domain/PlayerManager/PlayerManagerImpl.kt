@@ -9,7 +9,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsPause
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsReset
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerIsStart
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.PlayerSeekTo_Event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers

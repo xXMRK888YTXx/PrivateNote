@@ -1,7 +1,7 @@
 package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
 import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManagerImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository

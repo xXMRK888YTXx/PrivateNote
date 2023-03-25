@@ -8,12 +8,12 @@ import android.os.Build
 import com.xxmrk888ytxx.privatenote.domain.BroadcastReceiver.Receiver
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -21,7 +21,7 @@ import javax.inject.Inject
 class NotifyTaskManagerImpl @Inject constructor(
     private val notifyTaskRepository: NotifyTaskRepository,
     private val alarmManager: AlarmManager,
-    private val toDoRepository: ToDoRepository,
+    private val toDoRepository: TodoRepository,
     private val notificationManager: NotificationAppManager,
     @ApplicationContext private val context: Context
 ) : NotifyTaskManager {
@@ -47,26 +47,31 @@ class NotifyTaskManagerImpl @Inject constructor(
     override fun sendNextTask() {
         val tasks = getAllTasks().getData().sortedBy { it.time }
         if(tasks.isEmpty()) return
+
         val todo = toDoRepository.getToDoById(tasks.first().todoId).getData()
         val intent = Intent(context, Receiver::class.java)
         intent.action = NOTIFY_TASK_ACTION
         intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.todoText,todo.id))
+
         val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
         alarmManager.setAlarmClock(AlarmManager
             .AlarmClockInfo(tasks.first().time,pendingIntent),pendingIntent)
-        //Log.d("MyLog","Send alarm ${tasks.first()}  ${tasks.first().time.secondToData(context)}")
     }
 
     override fun cancelTask(todoId: Int) {
         val tasks = getAllTasks().getData().sortedBy { it.time }
         if(tasks.isEmpty()) return
+
         if(tasks.size-1 <= 0) {
             val todo = toDoRepository.getToDoById(tasks.first().todoId)
             val intent = Intent(context, Receiver::class.java)
+
             intent.action = NOTIFY_TASK_ACTION
             intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.getData().todoText,
             todo.getData().id))
+
             val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
             alarmManager.cancel(pendingIntent)
@@ -82,9 +87,11 @@ class NotifyTaskManagerImpl @Inject constructor(
     override fun checkForOld() {
         val oldTask = getAllTasks().getData().filter { it.time < System.currentTimeMillis() }
         val todo = mutableListOf<TodoItem>()
+
         oldTask.forEach {
             todo.add(toDoRepository.getToDoById(it.todoId).getData())
         }
+
         todo.forEachIndexed { index,it ->
             notificationManager.sendTaskNotification(
                 title = it.todoText,
@@ -96,6 +103,7 @@ class NotifyTaskManagerImpl @Inject constructor(
                 else NotificationAppManagerImpl.PRIORITY_DEFAULT_REMINDERS_CHANNELS
             )
         }
+
         oldTask.forEach {
             removeTask(it.taskId)
         }
@@ -113,11 +121,11 @@ class NotifyTaskManagerImpl @Inject constructor(
     }
 
     override fun isTodoValid(todoId: Int) : Boolean {
-        try {
+        return try {
             val todo = toDoRepository.getToDoById(todoId).getData()
-            return true
+            true
         }catch (e:Exception) {
-            return false
+            false
         }
     }
 

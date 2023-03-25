@@ -3,7 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import kotlinx.coroutines.flow.Flow
 
-interface ToDoRepository {
+interface TodoRepository {
     fun getAllToDo() : Flow<List<TodoItem>>
 
     fun getToDoById(id:Int) : Flow<TodoItem>

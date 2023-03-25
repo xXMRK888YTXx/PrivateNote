@@ -136,7 +136,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onResume() {
-        lifeCycleNotifier.onStateChanged(LifeCycleState.onResume)
+        lifeCycleNotifier.onStateChanged(LifeCycleState.OnResume)
         
         if(!isPendingTransactionsHandled) {
             billingManager.handlingPendingTransactions()
@@ -145,7 +145,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onPause() {
-        lifeCycleNotifier.onStateChanged(LifeCycleState.onPause)
+        lifeCycleNotifier.onStateChanged(LifeCycleState.OnPause)
     }
     
     fun bueDisableAds(activity:Activity) {

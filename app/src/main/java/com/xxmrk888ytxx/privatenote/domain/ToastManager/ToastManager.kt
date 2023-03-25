@@ -5,5 +5,5 @@ import android.content.Context
 interface ToastManager {
     fun showToast(text:String)
     fun showToast(resourceId:Int)
-    fun showToast(getString:(context: Context) -> String)
+    fun showToast(stringBuilder:(context: Context) -> String)
 }

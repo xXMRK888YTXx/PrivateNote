@@ -5,10 +5,10 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreenState
@@ -29,7 +29,7 @@ class ToDoViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
     lateinit var viewModel: ToDoViewModel
     private val toastManager = mockk<ToastManager>(relaxed = true)
-    private val toDoRepository = mockk<ToDoRepository>(relaxed = true)
+    private val toDoRepository = mockk<TodoRepository>(relaxed = true)
     private val notifyTaskManager = mockk<NotifyTaskManager>(relaxed = true)
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
     private val notificationAppManager = mockk<NotificationAppManager>(relaxed = true)

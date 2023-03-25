@@ -2,10 +2,9 @@ package com.xxmrk888ytxx.privatenote
 
 import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
-import androidx.lifecycle.lifecycleScope
 import androidx.work.Configuration
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.domain.NotificationManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch

@@ -14,8 +14,8 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupRepository.SettingsAutoBackupRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepositoryImpl
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.ToDoRepositoryImpl
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepositoryImpl
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepository
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoWidgetRepository.TodoWidgetRepositoryImpl
 import dagger.Binds
@@ -34,7 +34,7 @@ interface RepositoryModule {
     fun bindsCategoryRepository(categoryRepositoryImpl: CategoryRepositoryImpl): CategoryRepository
 
     @Binds
-    fun bindsToDoRepoRepositoryImpl(toDoRepositoryImpl: ToDoRepositoryImpl) : ToDoRepository
+    fun bindsToDoRepoRepositoryImpl(toDoRepositoryImpl: TodoRepositoryImpl) : TodoRepository
 
     @Binds
     fun bindsNotifyTaskRepositoryImpl(notifyTaskRepositoryImpl: NotifyTaskRepositoryImpl) : NotifyTaskRepository

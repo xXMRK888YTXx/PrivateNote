@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.NoteRepository
 
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.NoteDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
@@ -96,7 +96,7 @@ class NoteRepositoryImplTest {
 
     private val noteDaoTest = mockk<NoteDao>(relaxed = true)
     private val removeNoteFileUseCaseTest: RemoveNoteFileUseCase = mockk()
-    private val analyticsTest:AnalyticsManager = mockk(relaxed = true)
+    private val analyticsTest: AnalyticsManager = mockk(relaxed = true)
 
 
     private fun getNoteRepo(

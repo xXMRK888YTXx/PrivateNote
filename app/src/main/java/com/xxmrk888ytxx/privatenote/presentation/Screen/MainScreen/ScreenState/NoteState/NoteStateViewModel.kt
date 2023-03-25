@@ -23,7 +23,7 @@ import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SearchMode_In_NoteScre
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SelectionMode_In_NoteScreen
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_Category_List
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Show_EditCategory_Dialog
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.Utils.Const.getNoteId

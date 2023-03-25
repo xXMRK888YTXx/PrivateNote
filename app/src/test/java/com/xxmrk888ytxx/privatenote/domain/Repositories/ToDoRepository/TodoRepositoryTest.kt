@@ -1,6 +1,6 @@
 package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
 
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
@@ -14,16 +14,16 @@ import org.junit.Before
 import org.junit.Test
 
 
-class ToDoRepositoryTest {
-    lateinit var repo:ToDoRepository
+class TodoRepositoryTest {
+    lateinit var repo:TodoRepository
     lateinit var dao:TodoDao
     val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase = mockk(relaxed = true)
     @Before
     fun init() {
-        val analytics:AnalyticsManager = mockk(relaxed = true)
+        val analytics: AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         val removeNotifyTaskIfTodoCompletedUseCase = mockk<RemoveNotifyTaskIfTodoCompletedUseCase>(relaxed = true)
-        repo = ToDoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
+        repo = TodoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
     }
 
     @Test

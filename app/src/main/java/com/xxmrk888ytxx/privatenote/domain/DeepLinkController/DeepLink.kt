@@ -6,6 +6,6 @@ sealed class DeepLink(var isActiveDeepLink: Boolean,val idDeepLink: Int) {
     data class TodoDeepLink(
         private val id:Int,
         val todo:TodoItem?,
-        private var Active:Boolean = true,
-    ) : DeepLink(Active,id)
+        private var active:Boolean = true,
+    ) : DeepLink(active,id)
 }

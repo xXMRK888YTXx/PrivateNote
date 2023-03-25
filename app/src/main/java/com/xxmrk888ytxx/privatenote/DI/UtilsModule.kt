@@ -2,8 +2,8 @@ package com.xxmrk888ytxx.privatenote.DI
 
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManagerImpl
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManagerImpl
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifeCycleManager
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider

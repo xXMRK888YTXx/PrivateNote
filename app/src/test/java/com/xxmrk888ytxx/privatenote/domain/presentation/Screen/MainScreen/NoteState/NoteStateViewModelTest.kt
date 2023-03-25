@@ -3,7 +3,7 @@ package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.MainScreen.NoteS
 import android.content.Context
 import androidx.compose.ui.graphics.Color
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Const
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.domain.MainDispatcherRule

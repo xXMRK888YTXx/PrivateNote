@@ -1,7 +1,7 @@
 package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.EditNoteScreen
 
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
 import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
@@ -44,7 +44,7 @@ class EditNoteViewModelTest {
     private val categoryRepository: CategoryRepository = mockk(relaxed = true)
     private val securityUtils: SecurityUtils = mockk(relaxed = true)
     private val toastManager: ToastManager = mockk(relaxed = true)
-    private val lifeCycleState: MutableStateFlow<LifeCycleState> = MutableStateFlow(LifeCycleState.onResume)
+    private val lifeCycleState: MutableStateFlow<LifeCycleState> = MutableStateFlow(LifeCycleState.OnResume)
     private val inputHistoryManager: InputHistoryManager = mockk(relaxed = true)
     private val analytics: AnalyticsManager = mockk(relaxed = true)
     private val recordManager: RecordManager = mockk(relaxed = true)
@@ -77,7 +77,7 @@ class EditNoteViewModelTest {
 
     @After
     fun restore() = runTest {
-        lifeCycleState.emit(LifeCycleState.onResume)
+        lifeCycleState.emit(LifeCycleState.OnResume)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -99,7 +99,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         verify(exactly = 1) {
@@ -116,7 +116,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         Assert.assertEquals(ShowDialogState.DecryptDialog,viewModel.dialogShowState.value)
@@ -163,7 +163,7 @@ class EditNoteViewModelTest {
         every { noteRepository.getNoteById(note.id) } returns flowOf(note)
         viewModel.getNote(4)
 
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         verify(exactly = 0) {
@@ -179,7 +179,7 @@ class EditNoteViewModelTest {
         every { noteRepository.getNoteById(note.id) } returns flowOf(note)
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         verify(exactly = 1) {
@@ -208,7 +208,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
         viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 1) {
@@ -225,7 +225,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
         viewModel.titleTextField.value = "rtefg"
         viewModel.notSaveChanges(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 1) {
@@ -241,7 +241,7 @@ class EditNoteViewModelTest {
         viewModel.getNote(0)
         viewModel.titleTextField.value = "rtefg"
         viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleState.emit(LifeCycleState.onPause)
+        lifeCycleState.emit(LifeCycleState.OnPause)
         delay(100)
 
         coVerify(exactly = 0) {

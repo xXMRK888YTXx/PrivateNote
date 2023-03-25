@@ -5,7 +5,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Add_or_update_note_event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Change_category_event
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.Remove_Note_event
-import com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import kotlinx.coroutines.Dispatchers

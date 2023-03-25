@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.Utils.AnalyticsManager
+package com.xxmrk888ytxx.privatenote.domain.AnalyticsManager
 
 import android.os.Bundle
 

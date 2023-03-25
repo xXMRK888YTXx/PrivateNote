@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.NotificationManager
+package com.xxmrk888ytxx.privatenote.domain.NotificationAppManager
 
 import android.Manifest.permission.POST_NOTIFICATIONS
 import android.app.NotificationChannel
@@ -133,10 +133,10 @@ class NotificationAppManagerImpl @Inject constructor(
     }
 
     override fun isHavePostNotificationPermission(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return context.checkSelfPermission(POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.checkSelfPermission(POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
         }else {
-            return true
+            true
         }
     }
 
