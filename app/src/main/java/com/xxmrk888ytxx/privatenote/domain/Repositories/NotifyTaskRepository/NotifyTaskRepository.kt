@@ -8,11 +8,11 @@ interface NotifyTaskRepository {
 
     fun getTaskByTodoId(taskId:Int) : Flow<NotifyTask?>
 
-    fun insertTask(task: NotifyTask)
+    suspend fun insertTask(task: NotifyTask)
 
-    fun removeTask(taskId:Int)
+    suspend fun removeTask(taskId:Int)
 
-    fun removeTaskByTodoId(todoId:Int)
+    suspend fun removeTaskByTodoId(todoId:Int)
 
-    fun getTaskEnableStatus(taskId: Int) : Boolean?
+    suspend fun getTaskEnableStatus(taskId: Int) : Boolean?
 }

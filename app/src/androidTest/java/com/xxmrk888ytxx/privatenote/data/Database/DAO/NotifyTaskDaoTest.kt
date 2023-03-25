@@ -121,7 +121,7 @@ class NotifyTaskDaoTest {
 
         notifyTaskDao.insertTask(task)
         if(notifyTaskDao.getTaskByTodoId(taskId).getData() != task) Assert.fail()
-        notifyTaskDao.removeTaskByTodoID(todoId)
+        notifyTaskDao.removeTaskByTodoId(todoId)
 
         val taskFromDb = notifyTaskDao.getTaskByTodoId(taskId).getData()
         Assert.assertEquals(null,taskFromDb)

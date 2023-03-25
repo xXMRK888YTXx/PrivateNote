@@ -1,7 +1,7 @@
 package com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase
 
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 

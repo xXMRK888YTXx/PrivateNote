@@ -9,7 +9,9 @@ import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.SendAnalytics
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @SendAnalytics
@@ -18,31 +20,33 @@ class NoteRepositoryImpl @Inject constructor(
     private val removeNoteFileUseCase: RemoveNoteFileUseCase,
     private val analytics: AnalyticsManager
 ) : NoteRepository {
-    override fun getAllNote() = runBlocking(Dispatchers.IO) {
-        return@runBlocking noteDao.getAllNote()
+    override fun getAllNote() : Flow<List<Note>> {
+        return noteDao.getAllNote()
     }
 
-    override fun insertNote(note: Note) = runBlocking(Dispatchers.IO) {
+    override suspend fun insertNote(note: Note) = withContext(Dispatchers.IO) {
         analytics.sendEvent(Add_or_update_note_event,null)
         noteDao.insertNote(note)
     }
 
-    override fun getNoteById(id:Int) = runBlocking(Dispatchers.IO) {
-        return@runBlocking noteDao.getNoteById(id)
+    override fun getNoteById(id:Int) : Flow<Note> {
+        return noteDao.getNoteById(id)
     }
 
-    override suspend fun removeNote(id:Int) {
+    override suspend fun removeNote(id:Int) = withContext(Dispatchers.IO) {
         analytics.sendEvent(Remove_Note_event,null)
         noteDao.removeNote(id)
         removeNoteFileUseCase.removeNoteFiles(id)
 
     }
 
-    override fun changeChosenStatus(isChosen:Boolean,id:Int) = runBlocking(Dispatchers.IO) {
+    override suspend fun changeChosenStatus(isChosen:Boolean,id:Int)
+    = withContext(Dispatchers.IO) {
         noteDao.changeChosenStatus(isChosen,id)
     }
 
-    override fun changeCurrentCategory(noteId: Int, categoryId: Int?) = runBlocking(Dispatchers.IO) {
+    override suspend fun changeCurrentCategory(noteId: Int, categoryId: Int?)
+    = withContext(Dispatchers.IO) {
         analytics.sendEvent(Change_category_event,null)
         noteDao.changeCurrentCategory(noteId,if(categoryId == 0) null else categoryId)
     }

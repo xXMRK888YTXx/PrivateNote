@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.Flow
 interface NotifyTaskManager {
     fun getAllTasks() : Flow<List<NotifyTask>>
     fun getNotifyTaskByTodoId(todoId:Int) : Flow<NotifyTask?>
-    fun newTask(notifyTask: NotifyTask)
-    fun taskIsValid(taskId: Int) : Boolean
+    suspend fun newTask(notifyTask: NotifyTask)
+    suspend fun taskIsValid(taskId: Int) : Boolean
     fun sendNextTask()
-    fun cancelTask(todoId: Int)
-    fun removeTask(taskId:Int)
-    fun checkForOld()
+    suspend fun cancelTask(todoId: Int)
+    suspend fun removeTask(taskId:Int)
+    suspend fun checkForOld()
     fun isCanSendAlarms() : Boolean
-    fun markCompletedAction(todoId: Int)
+    suspend fun markCompletedAction(todoId: Int)
     fun isTodoValid(todoId: Int) : Boolean
 }

@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository
 
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
@@ -12,38 +12,39 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoComple
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @SendAnalytics
 class TodoRepositoryImpl @Inject constructor(
-    private val toDoDao: TodoDao,
+    private val todoDao: TodoDao,
     private val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase,
     private val removeNotifyTaskIfTodoCompletedUseCase: RemoveNotifyTaskIfTodoCompletedUseCase,
     private val analytics: AnalyticsManager
 ) : TodoRepository {
-    override fun getAllToDo(): Flow<List<TodoItem>> = runBlocking(Dispatchers.IO) {
-       return@runBlocking toDoDao.getAllToDo()
+    override fun getAllToDo(): Flow<List<TodoItem>> {
+       return todoDao.getAllToDo()
     }
 
-    override fun getToDoById(id: Int): Flow<TodoItem> = runBlocking(Dispatchers.IO) {
-        return@runBlocking toDoDao.getToDoById(id)
+    override fun getToDoById(id: Int): Flow<TodoItem> {
+        return todoDao.getToDoById(id)
     }
 
-    override fun insertToDo(toDoItem: TodoItem) = runBlocking(Dispatchers.IO){
+    override suspend fun insertToDo(toDoItem: TodoItem) = withContext(Dispatchers.IO) {
        analytics.sendEvent(Insert_Todo_Event,null)
-        toDoDao.insertToDo(toDoItem)
+        todoDao.insertToDo(toDoItem)
         notifyWidgetDataChangedUseCase.execute()
     }
 
-    override fun removeToDo(id: Int) = runBlocking(Dispatchers.IO) {
+    override suspend fun removeToDo(id: Int) = withContext(Dispatchers.IO) {
         analytics.sendEvent(Remove_Todo_Event,null)
-        toDoDao.removeToDo(id)
+        todoDao.removeToDo(id)
         notifyWidgetDataChangedUseCase.execute()
         removeNotifyTaskIfTodoCompletedUseCase.execute(id)
     }
 
-    override fun changeMarkStatus(id: Int, status: Boolean) = runBlocking(Dispatchers.IO) {
+    override suspend fun changeMarkStatus(id: Int, status: Boolean) = withContext(Dispatchers.IO) {
         analytics.sendEvent(Change_Mark_Status,null)
-        toDoDao.changeMarkStatus(id,status)
+        todoDao.changeMarkStatus(id,status)
         notifyWidgetDataChangedUseCase.execute()
         if(status) {
             removeNotifyTaskIfTodoCompletedUseCase.execute(id)

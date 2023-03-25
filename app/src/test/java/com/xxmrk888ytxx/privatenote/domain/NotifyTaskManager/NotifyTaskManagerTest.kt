@@ -7,7 +7,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.NotifyTask
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import io.mockk.*
 import kotlinx.coroutines.flow.flowOf
 import org.junit.After

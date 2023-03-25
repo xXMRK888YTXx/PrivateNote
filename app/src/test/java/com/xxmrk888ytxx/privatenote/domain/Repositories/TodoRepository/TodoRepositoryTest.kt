@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository
 
 import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao

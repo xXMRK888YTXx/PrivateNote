@@ -16,7 +16,7 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.MainScreenState
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.DataPicker.DataTimePicker
@@ -207,7 +207,8 @@ class ToDoViewModel @Inject constructor(
         }
     }
 
-    private fun isHaveNotificationPostPermission(): Boolean = notificationAppManager.isHavePostNotificationPermission()
+    private fun isHaveNotificationPostPermission(): Boolean =
+        notificationAppManager.isHavePostNotificationPermission()
 
     fun hideNotifyDialog() {
         isNotifyDialogShow.value = false

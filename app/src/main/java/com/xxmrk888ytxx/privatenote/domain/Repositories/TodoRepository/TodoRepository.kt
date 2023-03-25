@@ -1,4 +1,4 @@
-package com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository
+package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository
 
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import kotlinx.coroutines.flow.Flow
@@ -8,9 +8,9 @@ interface TodoRepository {
 
     fun getToDoById(id:Int) : Flow<TodoItem>
 
-    fun insertToDo(toDoItem: TodoItem)
+    suspend fun insertToDo(toDoItem: TodoItem)
 
-    fun removeToDo(id:Int)
+    suspend fun removeToDo(id:Int)
 
-    fun changeMarkStatus(id:Int,status:Boolean)
+    suspend fun changeMarkStatus(id:Int,status:Boolean)
 }

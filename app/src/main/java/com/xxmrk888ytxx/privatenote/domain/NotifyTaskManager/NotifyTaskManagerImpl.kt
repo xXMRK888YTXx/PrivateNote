@@ -11,11 +11,13 @@ import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManagerImpl
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.NotifyTaskRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ToDoRepository.TodoRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 class NotifyTaskManagerImpl @Inject constructor(
@@ -25,21 +27,23 @@ class NotifyTaskManagerImpl @Inject constructor(
     private val notificationManager: NotificationAppManager,
     @ApplicationContext private val context: Context
 ) : NotifyTaskManager {
+
+
     override fun getAllTasks()  = notifyTaskRepository.getAllTasks()
 
     override fun getNotifyTaskByTodoId(todoId:Int) : Flow<NotifyTask?> {
         return notifyTaskRepository.getTaskByTodoId(todoId)
     }
 
-    override fun newTask(notifyTask: NotifyTask) {
-        if(getNotifyTaskByTodoId(notifyTask.todoId).getData() != null) {
+    override suspend fun newTask(notifyTask: NotifyTask) {
+        if(getNotifyTaskByTodoId(notifyTask.todoId).first() != null) {
             notifyTaskRepository.removeTaskByTodoId(notifyTask.todoId)
         }
         notifyTaskRepository.insertTask(notifyTask)
         sendNextTask()
     }
 
-    override fun taskIsValid(taskId: Int) : Boolean {
+    override suspend fun taskIsValid(taskId: Int) : Boolean {
         val status = notifyTaskRepository.getTaskEnableStatus(taskId)
         return status == true
     }
@@ -60,7 +64,7 @@ class NotifyTaskManagerImpl @Inject constructor(
             .AlarmClockInfo(tasks.first().time,pendingIntent),pendingIntent)
     }
 
-    override fun cancelTask(todoId: Int) {
+    override suspend fun cancelTask(todoId: Int) {
         val tasks = getAllTasks().getData().sortedBy { it.time }
         if(tasks.isEmpty()) return
 
@@ -80,11 +84,11 @@ class NotifyTaskManagerImpl @Inject constructor(
         sendNextTask()
     }
 
-    override fun removeTask(taskId:Int) {
+    override suspend fun removeTask(taskId:Int) {
         notifyTaskRepository.removeTask(taskId)
     }
 
-    override fun checkForOld() {
+    override suspend fun checkForOld() {
         val oldTask = getAllTasks().getData().filter { it.time < System.currentTimeMillis() }
         val todo = mutableListOf<TodoItem>()
 
@@ -116,7 +120,7 @@ class NotifyTaskManagerImpl @Inject constructor(
         return true
     }
 
-    override fun markCompletedAction(todoId: Int) {
+    override suspend fun markCompletedAction(todoId: Int) {
         toDoRepository.changeMarkStatus(todoId,true)
     }
 

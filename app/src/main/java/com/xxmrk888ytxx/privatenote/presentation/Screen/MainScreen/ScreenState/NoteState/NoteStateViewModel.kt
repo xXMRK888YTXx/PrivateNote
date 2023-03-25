@@ -308,7 +308,7 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun changeChosenStatus(id: Int,currentStatus:Boolean) {
-        noteRepository.changeChosenStatus(!currentStatus,id)
+        viewModelScope.launch { noteRepository.changeChosenStatus(!currentStatus,id) }
     }
 
     fun isNoteChosen(noteId: Int) : Boolean = noteRepository.getNoteById(noteId).getData().isChosen
