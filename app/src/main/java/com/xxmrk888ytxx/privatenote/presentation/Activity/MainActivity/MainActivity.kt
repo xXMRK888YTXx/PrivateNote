@@ -17,12 +17,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.*
+import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
+import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
-import com.xxmrk888ytxx.privatenote.domain.AdMobManager.AdMobManager
-import com.xxmrk888ytxx.privatenote.domain.BillingManager.BillingManagerImpl
-import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
@@ -41,7 +39,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -102,8 +99,12 @@ class MainActivity :
                         }
 
                         composable(Screen.EditNoteScreen.route) {
+                            val noteId = it.arguments?.getInt(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY)
+                                ?: return@composable
+
                             EditNoteScreen(
-                                navController = navController
+                                navController = navController,
+                                noteId = noteId
                             )
                         }
 
@@ -115,8 +116,12 @@ class MainActivity :
                         }
 
                         composable(Screen.DrawScreen.route) {
+                            val noteId = it.arguments?.getInt(NOTE_ID_TO_DRAW_SCREEN_KEY)
+                                ?: return@composable
+
                             DrawScreen(
                                 navController = navController,
+                                noteId = noteId
                             )
                         }
 

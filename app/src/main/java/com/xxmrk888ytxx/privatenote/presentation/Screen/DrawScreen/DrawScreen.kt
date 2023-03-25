@@ -30,8 +30,6 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButt
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.BackPressController
-import com.xxmrk888ytxx.privatenote.Utils.Const
-import com.xxmrk888ytxx.privatenote.Utils.NavArguments
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import io.ak1.drawbox.DrawBox
@@ -41,6 +39,7 @@ import io.ak1.drawbox.rememberDrawController
 fun DrawScreen(
     drawViewModel: DrawViewModel = hiltViewModel(),
     navController: NavController,
+    noteId:Int
 ) {
     val newController = rememberDrawController()
 
@@ -70,7 +69,7 @@ fun DrawScreen(
         drawViewModel.getSelectColorDialogState()
     }
     LaunchedEffect(key1 = drawViewModel, block = {
-        drawViewModel.saveNoteId(NavArguments.bundle.getInt(Const.getNoteId))
+        drawViewModel.saveNoteId(noteId)
     })
     val controller = remember {
         drawViewModel.getController(newController)

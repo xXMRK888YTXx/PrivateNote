@@ -39,6 +39,7 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
+import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
 import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
@@ -608,13 +609,15 @@ class EditNoteViewModel @Inject constructor(
 
     fun toDrawScreen(navController: NavController) {
         navController.navigate(Screen.DrawScreen.route) { launchSingleTop = true }
+
+        navController.getBackStackEntry(Screen.DrawScreen.route)
+            .arguments?.putInt(NOTE_ID_TO_DRAW_SCREEN_KEY,note.id)
     }
 
     fun getImageRequest(context: Context, bytes: ByteArray?): ImageRequest {
         return ImageRequest.Builder(context)
             .data(bytes)
             .memoryCachePolicy(CachePolicy.DISABLED)
-            // .size(100)
             .build()
     }
 

@@ -8,5 +8,7 @@ object Const {
     const val PRIVACY_POLICY = "https://xxmrk888ytxx.github.io/privacy.htm"
     const val TERMS = "https://xxmrk888ytxx.github.io/terms.htm"
     const val BACKUP_FILE_EXTENSION = "pndb"
+    const val NOTE_ID_TO_DRAW_SCREEN_KEY = "NOTE_ID_FROM_DRAW_SCREEN_KEY"
+    const val NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY = "NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY"
 }
 

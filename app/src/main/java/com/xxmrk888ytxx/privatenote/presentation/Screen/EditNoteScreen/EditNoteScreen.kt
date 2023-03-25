@@ -68,7 +68,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun EditNoteScreen(
     editNoteViewModel: EditNoteViewModel = hiltViewModel(),
-    navController: NavController
+    navController: NavController,
+    noteId:Int
 ) {
     val localInterstitialAdsController = LocalInterstitialAdsController.current
 
@@ -98,7 +99,7 @@ fun EditNoteScreen(
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.updateImagesCount()
         editNoteViewModel.updateAudiosCount()
-        editNoteViewModel.getNote(NavArguments.bundle.getInt(getNoteId))
+        editNoteViewModel.getNote(noteId)
     })
     val textFieldFocus = remember { FocusRequester() }
     ProvideWindowInsets(consumeWindowInsets = true) {
