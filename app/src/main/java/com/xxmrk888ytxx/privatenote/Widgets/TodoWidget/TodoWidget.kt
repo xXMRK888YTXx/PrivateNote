@@ -74,7 +74,7 @@ class TodoWidget : GlanceAppWidget() {
         val pref = currentState<Preferences>()
         updateState(pref)
 
-        AppTheme(themeId = if (isSystemInDarkTheme()) ThemeType.Black.id else ThemeType.White.id) {
+        WidgetTheme(themeType = ThemeType.Black) {
             Column(
                 modifier =
                 GlanceModifier.fillMaxSize().height(260.dp)
