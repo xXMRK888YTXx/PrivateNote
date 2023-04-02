@@ -4,6 +4,9 @@ jobs:
   upload-app-to-appsweep:
     runs-on: ubuntu-latest
     steps:
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
+
       - name: Check out repository code
         uses: actions/checkout@v2
 
