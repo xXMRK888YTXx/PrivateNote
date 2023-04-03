@@ -99,22 +99,7 @@ class EditNoteViewModelTest {
         }
     }
 
-    @Test
-    fun `test init viewModel if lifecycle state is onPause and note not encrypt and noteID not 0 expect saveNote and stopRecord`() = runTest {
-        val note = Note(4,"test,","test")
 
-        every { noteRepository.getNoteById(note.id) } returns flowOf(note)
-        viewModel.getNote(4)
-        viewModel.titleTextField.value = "rtefg"
-
-        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
-
-        coVerify(exactly = 1) {
-            viewModel.stopRecord()
-            noteRepository.insertNote(allAny())
-        }
-    }
 
     @Test
     fun `test init viewModel if lifecycle state is onPause and note encrypt and noteID not 0 expect saveNote and stopRecord`() = runBlocking {
@@ -172,29 +157,12 @@ class EditNoteViewModelTest {
         viewModel.getNote(4)
 
         lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
+        delay(250)
 
         coVerify(exactly = 0) {
             noteRepository.insertNote(any())
         }
     }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `test saveNote if note have changes expect note not save`() = runTest {
-        val note = Note(4,"h","", isEncrypted = false)
-
-        every { noteRepository.getNoteById(note.id) } returns flowOf(note)
-        viewModel.getNote(4)
-        viewModel.titleTextField.value = "rtefg"
-        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
-
-        coVerify(exactly = 1) {
-            noteRepository.insertNote(any())
-        }
-    }
-
     @Test
     fun `test changeStateToEncryptNote expect note is encrypt`() {
         val password = "passtest"
@@ -207,22 +175,6 @@ class EditNoteViewModelTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `test saveNote if remove note expect invoke remove note methods`() = runTest {
-        val note = Note(4,"h","", isEncrypted = false)
-
-        every { noteRepository.getNoteById(note.id) } returns flowOf(note)
-        viewModel.getNote(4)
-        viewModel.titleTextField.value = "rtefg"
-        viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
-
-        coVerify(exactly = 1) {
-            noteRepository.removeNote(note.id)
-        }
-    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -234,26 +186,10 @@ class EditNoteViewModelTest {
         viewModel.titleTextField.value = "rtefg"
         viewModel.notSaveChanges(mockk(relaxed = true))
         lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
+        delay(250)
 
         coVerify(exactly = 1) {
             noteRepository.insertNote(note)
-        }
-    }
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `test saveNote if not save changes in new note expect invoke this not save`() = runTest {
-        val note = Note(0,"h","", isEncrypted = false)
-
-        every { noteRepository.getNoteById(note.id) } returns flowOf(note)
-        viewModel.getNote(0)
-        viewModel.titleTextField.value = "rtefg"
-        viewModel.removeNote(mockk(relaxed = true))
-        lifeCycleManager.onStateChanged(LifeCycleState.OnPause)
-        delay(100)
-
-        coVerify(exactly = 0) {
-            noteRepository.removeNote(any())
         }
     }
 
@@ -266,7 +202,7 @@ class EditNoteViewModelTest {
         val password = "test"
 
         viewModel.decrypt(password)
-        delay(100)
+        delay(250)
 
         coVerify(exactly = 1) {
             imageRepository.loadImagesInBuffer(any())

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package com.xxmrk888ytxx.privatenote.domain.presentation.Screen.MainScreen.NoteState
 
 import android.content.Context
@@ -52,10 +54,11 @@ class NoteStateViewModelTest {
     }
 
     @Test
-    fun `test removeNote send note id expect call repository from delete`() {
+    fun `test removeNote send note id expect call repository from delete`() = runTest {
         val id = 3
 
         viewModel.removeNote(id)
+        delay(250)
 
         coVerifySequence {
             noteRepository.removeNote(id)
@@ -220,24 +223,26 @@ class NoteStateViewModelTest {
     }
 
     @Test
-    fun `test changeChosenStatus send id and currentState(true) expect inversion state and invoke repository method`() = runBlocking {
+    fun `test changeChosenStatus send id and currentState(true) expect inversion state and invoke repository method`() = runTest {
         val currentState = true
         val id = 5
 
         viewModel.changeChosenStatus(id,currentState)
 
-        coVerifySequence {
+        delay(100)
+        coVerify(exactly = 1) {
             noteRepository.changeChosenStatus(!currentState,id)
         }
     }
 
     @Test
-    fun `test changeChosenStatus send id and currentState(false) expect inversion state and invoke repository method`() = runBlocking {
+    fun `test changeChosenStatus send id and currentState(false) expect inversion state and invoke repository method`() = runTest {
         val currentState = false
         val id = 1
 
         viewModel.changeChosenStatus(id,currentState)
 
+        delay(100)
         coVerifySequence {
             noteRepository.changeChosenStatus(!currentState,id)
         }

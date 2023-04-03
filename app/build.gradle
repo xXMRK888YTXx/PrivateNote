@@ -124,7 +124,7 @@ dependencies {
     testImplementation "io.mockk:mockk:$Mockk_version"
     testImplementation "io.mockk:mockk-agent-jvm:1.12.5"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
     //Glance
     implementation 'androidx.glance:glance-appwidget:1.0.0-alpha05'
     //Moshi
