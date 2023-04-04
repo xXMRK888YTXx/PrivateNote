@@ -1,7 +1,7 @@
-name: Run unit tests
+name: Run android tests
 on: [pull_request_target]
 jobs:
-  run-unit-tests:
+  run-android-tests:
     runs-on: macos-latest
     steps:
       - name: Check out repository code
