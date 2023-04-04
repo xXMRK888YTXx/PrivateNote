@@ -19,4 +19,4 @@ The main functionality of the application:
 
 * Create backups so you don't lose your data. Copies can be saved both locally and on Google Drive.
 
-Download - https://play.google.com/store/apps/details?id=com.xxmrk888ytxx.observer
+Download - https://play.google.com/store/apps/details?id=com.xxmrk888ytxx.privatenote
