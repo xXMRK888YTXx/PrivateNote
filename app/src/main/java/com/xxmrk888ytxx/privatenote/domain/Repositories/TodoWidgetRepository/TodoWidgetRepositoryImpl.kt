@@ -49,19 +49,10 @@ class TodoWidgetRepositoryImpl @Inject constructor(
             val importantTodo = todoList.filter { it.isImportant }
             val notImportantTodo = todoList.filter { !it.isImportant }
 
-            if(importantTodo.size >= MAX_TODO_COUNT_IN_WIDGET) {
-                parseAndWrite(importantTodo.take(MAX_TODO_COUNT_IN_WIDGET))
-                return
-            }
-
             val finalList = mutableListOf<TodoItem>()
             finalList.addAll(importantTodo)
 
             notImportantTodo.forEach {
-                if(finalList.size >= MAX_TODO_COUNT_IN_WIDGET) {
-                    parseAndWrite(finalList.take(MAX_TODO_COUNT_IN_WIDGET))
-                    return
-                }
                 finalList.add(it)
             }
 
@@ -102,7 +93,5 @@ class TodoWidgetRepositoryImpl @Inject constructor(
 
     private val Context.dataStore: DataStore<Preferences> by
         preferencesDataStore(name = TodoWidget.WIDGET_DATA_PREFERENCE_NAME)
-    companion object {
-        private const val MAX_TODO_COUNT_IN_WIDGET = 4
-    }
+
 }

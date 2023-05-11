@@ -3,6 +3,7 @@ package com.xxmrk888ytxx.privatenote.Widgets.TodoWidget
 import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.dp
@@ -16,6 +17,9 @@ import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.*
 import androidx.glance.appwidget.action.actionRunCallback
+import androidx.glance.appwidget.lazy.LazyColumn
+import androidx.glance.appwidget.lazy.items
+import androidx.glance.appwidget.lazy.itemsIndexed
 import androidx.glance.layout.*
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.text.FontWeight
@@ -31,6 +35,7 @@ import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.MarkCompletedAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenAppAction
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import java.io.File
@@ -38,9 +43,14 @@ import java.io.File
 class TodoWidget : GlanceAppWidget() {
     override val stateDefinition: GlanceStateDefinition<*>
         get() = CustomGlanceStateDefinition
+
+
+
     override val sizeMode: SizeMode
-        get() = SizeMode.Single
+        get() = SizeMode.Exact
+
     private val widgetState: MutableState<WidgetState> = mutableStateOf(WidgetState.EmptyTodoList)
+
     private fun updateState(preferences: Preferences) {
         try {
             val moshi: Moshi = Moshi.Builder().build()
@@ -68,16 +78,24 @@ class TodoWidget : GlanceAppWidget() {
         }
     }
 
+    override suspend fun provideGlance(context: Context, id: GlanceId) {
+        provideContent {
+            Content()
+        }
+    }
+
     @Composable
-    override fun Content() {
+    fun Content() {
         val context = LocalContext.current
         val pref = currentState<Preferences>()
-        updateState(pref)
+        LaunchedEffect(key1 = Unit, block = {
+            updateState(pref)
+        })
 
         WidgetTheme(themeType = ThemeType.Black) {
             Column(
                 modifier =
-                GlanceModifier.fillMaxSize().height(260.dp)
+                GlanceModifier.fillMaxSize()
                     .background(themeColors.cardColor)
                     .cornerRadius(20.dp)
             ) {
@@ -154,53 +172,64 @@ class TodoWidget : GlanceAppWidget() {
 
     @Composable
     fun CreateTodoList(model: TodoWidgetDataModel) {
-        model.todoList.forEach {
-            Row(
-                modifier = GlanceModifier.fillMaxWidth().padding(10.dp)
-                    .clickable(
-                        actionRunCallback<OpenTodoInAppAction>(
-                            parameters = actionParametersOf(
-                                OpenTodoInAppAction.TODO_KEY to it
-                            )
-                        )
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CheckBox(
-                    checked = it.isCompleted,
-                    onCheckedChange = null,
-                    modifier = GlanceModifier
-                        .padding(end = 10.dp)
-                        .clickable(
-                            actionRunCallback<MarkCompletedAction>(
-                                parameters = actionParametersOf(
-                                    MarkCompletedAction.actionWidgetKey to it
-                                )
-                            )
-                        ),
-                    colors = CheckBoxColors(
-                        checkedColor = ColorProvider(themeColors.secondaryColor),
-                        uncheckedColor = ColorProvider(themeColors.secondaryColor),
-                    )
-                )
-                Text(
-                    text = it.todoText,
-                    style = TextStyle(
-                        color = ColorProvider(themeColors.primaryFontColor),
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Medium
-                    ),
-                    maxLines = 1,
-                    modifier = GlanceModifier.clickable(
-                        actionRunCallback<OpenTodoInAppAction>(
-                            parameters = actionParametersOf(
-                                OpenTodoInAppAction.TODO_KEY to it
-                            )
-                        )
-                    )
-                )
+        LazyColumn() {
+            itemsIndexed(model.todoList, itemId = { _,it -> it.id.toLong() }) { index,it ->
+                Column() {
+                    TodoListItem(it)
+
+                    if(index != model.todoList.lastIndex)
+                        Diver()
+                }
             }
-            Diver()
+        }
+    }
+
+    @Composable
+    fun TodoListItem(it:TodoItem) {
+        Row(
+            modifier = GlanceModifier.fillMaxWidth().padding(10.dp)
+                .clickable(
+                    actionRunCallback<OpenTodoInAppAction>(
+                        parameters = actionParametersOf(
+                            OpenTodoInAppAction.TODO_KEY to it
+                        )
+                    )
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CheckBox(
+                checked = it.isCompleted,
+                onCheckedChange = null,
+                modifier = GlanceModifier
+                    .padding(end = 10.dp)
+                    .clickable(
+                        actionRunCallback<MarkCompletedAction>(
+                            parameters = actionParametersOf(
+                                MarkCompletedAction.actionWidgetKey to it
+                            )
+                        )
+                    ),
+                colors = CheckboxDefaults.colors(
+                    checkedColor = ColorProvider(themeColors.secondaryColor),
+                    uncheckedColor =  ColorProvider(themeColors.secondaryColor)
+                ),
+            )
+            Text(
+                text = it.todoText,
+                style = TextStyle(
+                    color = ColorProvider(themeColors.primaryFontColor),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                maxLines = 1,
+                modifier = GlanceModifier.clickable(
+                    actionRunCallback<OpenTodoInAppAction>(
+                        parameters = actionParametersOf(
+                            OpenTodoInAppAction.TODO_KEY to it
+                        )
+                    )
+                )
+            )
         }
     }
 
