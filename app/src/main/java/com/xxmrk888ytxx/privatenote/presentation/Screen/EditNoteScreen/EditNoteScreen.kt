@@ -63,6 +63,7 @@ import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFile
 import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -332,7 +333,7 @@ fun Toolbar(editNoteViewModel: EditNoteViewModel, navController: NavController) 
     val isNoteChosen = remember {
         editNoteViewModel.isChosenNoteState
     }
-    val dropDownItemList = listOf(
+    val dropDownItemList = persistentListOf(
         DropDownItem(
             stringResource(R.string.Encrypt_note),
             isEnable = !editNoteViewModel.isEncryptNote()

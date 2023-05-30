@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ThemeSettingsScreen(
@@ -45,7 +46,7 @@ fun ThemeList(themeSettingsViewModel: ThemeSettingsViewModel) {
     val currentTheme = themeSettingsViewModel
         .getCurrentApplicationThemeId()
         .collectAsState(initial = com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.System.id)
-    val themeList = listOf(
+    val themeList = persistentListOf(
         ThemeType(
             com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType.System.id,
             stringResource(R.string.System_theme)

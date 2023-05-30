@@ -26,12 +26,16 @@ import com.xxmrk888ytxx.privatenote.Utils.themeColors
 
 
 @Composable
-fun PasswordEditText(titleText: MutableState<String>,
-                     password: MutableState<String>,onDoneClick:() -> Unit = {}) {
+fun PasswordEditText(
+    titleText: MutableState<String>,
+    password: MutableState<String>, onDoneClick: () -> Unit = {},
+) {
     val context = LocalContext.current
-    OutlinedTextField(value = password.value,
-        onValueChange = {password.value = it;
-            if(titleText.value == context.getString(R.string.Invalid_password))
+    OutlinedTextField(
+        value = password.value,
+        onValueChange = {
+            password.value = it;
+            if (titleText.value == context.getString(R.string.Invalid_password))
                 titleText.value = context.getString(R.string.Enter_password)
         },
         singleLine = true,
@@ -39,10 +43,12 @@ fun PasswordEditText(titleText: MutableState<String>,
             .fillMaxWidth()
             .clip(RoundedCornerShape(100))
             .padding(15.dp),
-        label = { Text(text = titleText.value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold
-        )
+        label = {
+            Text(
+                text = titleText.value,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
         },
         isError = titleText.value == stringResource(id = R.string.Invalid_password),
         colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -56,7 +62,8 @@ fun PasswordEditText(titleText: MutableState<String>,
             errorBorderColor = themeColors.errorColor
         ),
         textStyle = TextStyle(fontSize = 16.sp),
-        keyboardOptions = KeyboardOptions(autoCorrect = false,
+        keyboardOptions = KeyboardOptions(
+            autoCorrect = false,
             keyboardType = KeyboardType.Password,
         ),
         visualTransformation = PasswordVisualTransformation(),
