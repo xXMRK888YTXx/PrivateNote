@@ -19,11 +19,17 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = TodoWidget()
+
     @Inject lateinit var toDoRepository: TodoRepository
     @Inject lateinit var todoWidgetRepository: TodoWidgetRepository
 
+    override val glanceAppWidget: GlanceAppWidget by lazy {
+        TodoWidget(todoWidgetRepository.todoListFlow)
+    }
+
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         when(intent.action) {

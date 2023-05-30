@@ -16,8 +16,6 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.Get
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetNotesForBackupUseCase.GetNotesForBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.GetTodoForBackupUseCase.GetTodoForBackupUseCaseImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.OpenImageInGalleryUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
@@ -48,10 +46,6 @@ import dagger.hilt.components.SingletonComponent
 interface UseCasesModule {
     @Binds
     fun bindsRemoveNoteFileUseCase(removeNoteFileUseCaseImpl: RemoveNoteFileUseCaseImpl): RemoveNoteFileUseCase
-
-    @Binds
-    fun bindsNotifyWidgetDataChangedUseCase(notifyWidgetDataChangedUseCaseImpl: NotifyWidgetDataChangedUseCaseImpl)
-            : NotifyWidgetDataChangedUseCase
 
     @Binds
     fun bindsRemoveNotifyTaskIfTodoCompletedUseCase(

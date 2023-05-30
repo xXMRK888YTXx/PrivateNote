@@ -38,59 +38,60 @@ import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoIn
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import java.io.File
 
-class TodoWidget : GlanceAppWidget() {
-    override val stateDefinition: GlanceStateDefinition<*>
-        get() = CustomGlanceStateDefinition
+class TodoWidget (
+    private val todoItems:Flow<List<TodoItem>>
+) : GlanceAppWidget() {
 
-
-
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     override val sizeMode: SizeMode
         get() = SizeMode.Exact
 
+    private var isCollect = false
+
     private val widgetState: MutableState<WidgetState> = mutableStateOf(WidgetState.EmptyTodoList)
 
-    private fun updateState(preferences: Preferences) {
-        try {
-            val moshi: Moshi = Moshi.Builder().build()
-            val jsonAdapter: JsonAdapter<TodoWidgetDataModel> =
-                moshi.adapter(TodoWidgetDataModel::class.java)
-            var jsonString = preferences[widgetDataKey] ?: ""
-            if (jsonString.isEmpty()) {
-                widgetState.value = WidgetState.EmptyTodoList
-                return
-            }
-            val model = jsonAdapter.fromJson(jsonString)
-            if (model == null) {
-                widgetState.value = WidgetState.EmptyTodoList
-                return
-            }
-            model.ifNotNull {
-                if (it.todoList.isEmpty()) {
-                    widgetState.value = WidgetState.EmptyTodoList
-                } else {
-                    widgetState.value = WidgetState.ShowTodo(it)
-                }
-            }
-        } catch (e: Exception) {
-            widgetState.value = WidgetState.Error
-        }
-    }
-
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        startCollect(context,id)
         provideContent {
             Content()
         }
     }
 
+    private fun startCollect(context: Context, id: GlanceId) {
+        if(isCollect) return
+
+        isCollect = true
+
+        scope.launch {
+            todoItems.collect() { todoList ->
+                if(todoList.isEmpty()) {
+                    widgetState.value = WidgetState.EmptyTodoList
+                } else {
+                    widgetState.value = WidgetState.ShowTodo(todoList)
+                }
+            }
+
+            update(context, id)
+        }
+    }
+
+    override suspend fun onDelete(context: Context, glanceId: GlanceId) {
+        super.onDelete(context, glanceId)
+        scope.cancel()
+        widgetState.value = WidgetState.EmptyTodoList
+    }
+
     @Composable
     fun Content() {
         val context = LocalContext.current
-        val pref = currentState<Preferences>()
-        LaunchedEffect(key1 = Unit, block = {
-            updateState(pref)
-        })
 
         WidgetTheme(themeType = ThemeType.Black) {
             Column(
@@ -129,7 +130,7 @@ class TodoWidget : GlanceAppWidget() {
                 Diver()
                 when (widgetState.value) {
                     is WidgetState.ShowTodo -> {
-                        val model = (widgetState.value as WidgetState.ShowTodo).data
+                        val model = (widgetState.value as WidgetState.ShowTodo).todoList
                         CreateTodoList(model)
                     }
                     WidgetState.EmptyTodoList -> {
@@ -171,13 +172,13 @@ class TodoWidget : GlanceAppWidget() {
     }
 
     @Composable
-    fun CreateTodoList(model: TodoWidgetDataModel) {
+    fun CreateTodoList(list:List<TodoItem>) {
         LazyColumn() {
-            itemsIndexed(model.todoList, itemId = { _,it -> it.id.toLong() }) { index,it ->
+            itemsIndexed(list, itemId = { _,it -> it.id.toLong() }) { index,it ->
                 Column() {
                     TodoListItem(it)
 
-                    if(index != model.todoList.lastIndex)
+                    if(index != list.lastIndex)
                         Diver()
                 }
             }
@@ -239,32 +240,5 @@ class TodoWidget : GlanceAppWidget() {
             modifier = GlanceModifier.fillMaxWidth().height(1.dp)
                 .background(ColorProvider(themeColors.primaryFontColor))
         ) {}
-    }
-
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = WIDGET_DATA_PREFERENCE_NAME)
-
-    private object CustomGlanceStateDefinition : GlanceStateDefinition<Preferences> {
-        override suspend fun getDataStore(
-            context: Context,
-            fileKey: String,
-        ): DataStore<Preferences> {
-            return context.dataStore
-        }
-
-        override fun getLocation(context: Context, fileKey: String): File {
-            return File(
-                context.applicationContext.filesDir,
-                "datastore/$WIDGET_DATA_PREFERENCE_NAME"
-            )
-        }
-
-        private val Context.dataStore: DataStore<Preferences>
-                by preferencesDataStore(name = WIDGET_DATA_PREFERENCE_NAME)
-
-    }
-
-    companion object {
-        const val WIDGET_DATA_PREFERENCE_NAME = "widget_data"
-        val widgetDataKey = stringPreferencesKey("WidgetData")
     }
 }
