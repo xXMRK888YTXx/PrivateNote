@@ -34,6 +34,7 @@ import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import io.ak1.drawbox.DrawBox
 import io.ak1.drawbox.rememberDrawController
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun DrawScreen(
@@ -257,7 +258,7 @@ fun DrawToolBar(drawViewModel: DrawViewModel, navController: NavController) {
             drawViewModel.changeStrokeWidthSliderState()
         },
     )
-    val defColors = listOf(
+    val defColors = persistentListOf(
         Color.Black,
         Color.DarkGray,
         Color.Gray,

@@ -29,6 +29,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.model
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -188,7 +189,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     val settingsCategory = listOf<SettingsCategory>(
         SettingsCategory(
             stringResource(R.string.General),
-            listOf<SettingsItem>(
+            persistentListOf<SettingsItem>(
                 SettingsItem() {
                         SplashScreenSettings(
                             settingsViewModel.getSplashScreenVisible().collectAsState(true),
@@ -216,7 +217,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         ),
         SettingsCategory(
             stringResource(R.string.Display),
-            listOf<SettingsItem>(
+            persistentListOf<SettingsItem>(
                 SettingsItem {
                     SelectSortState(
                         sortNoteState,
@@ -251,7 +252,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         ),
         SettingsCategory(
             stringResource(R.string.Security),
-            listOf<SettingsItem>(
+            persistentListOf<SettingsItem>(
                 SettingsItem() {
                     SecureLoginSettings(appPasswordEnable)
                     {
@@ -288,7 +289,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         ),
         SettingsCategory(
             stringResource(R.string.Navigation),
-            listOf<SettingsItem>(
+            persistentListOf<SettingsItem>(
                 SettingsItem() {
                     ScrollWithScreenSettings(settingsViewModel.getNavigationSwipeState().collectAsState(
                         initial = true
@@ -301,7 +302,7 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         ),
         SettingsCategory(
                     stringResource(R.string.About_app),
-            listOf(
+            persistentListOf(
                 SettingsItem() {
                     Email() {
                         settingsViewModel.openEmailClient(context)

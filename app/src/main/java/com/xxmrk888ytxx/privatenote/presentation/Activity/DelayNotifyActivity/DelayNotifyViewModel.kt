@@ -15,6 +15,8 @@ import com.xxmrk888ytxx.privatenote.domain.NotifyTaskManager.NotifyTaskManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,8 +31,8 @@ class DelayNotifyViewModel @Inject constructor(
     private var currentTask:IntentNotifyTask? = null
     private var notificationId = -1
 
-    fun getTimeList() : List<DelayTime> {
-        return listOf(
+    fun getTimeList() : ImmutableList<DelayTime> {
+        return persistentListOf(
             DelayTime(
                 context.getString(R.string.five_minutes),300_000
             ),

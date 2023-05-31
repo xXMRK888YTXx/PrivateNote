@@ -38,6 +38,8 @@ import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButt
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @AndroidEntryPoint
 class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
@@ -74,7 +76,7 @@ class DelayNotifyActivity : ComponentActivity(),DelayDialogController {
         this.finish()
     }
 
-    override fun getDelayTimeList(): List<DelayTime> {
+    override fun getDelayTimeList(): ImmutableList<DelayTime> {
        return delayNotifyViewModel.getTimeList()
     }
 
@@ -159,8 +161,8 @@ fun Preview() {
 
         }
 
-        override fun getDelayTimeList(): List<DelayTime> {
-            return listOf(DelayTime("1",1000),DelayTime("2",1000),DelayTime("3",1000))
+        override fun getDelayTimeList(): ImmutableList<DelayTime> {
+            return persistentListOf(DelayTime("1",1000),DelayTime("2",1000),DelayTime("3",1000))
         }
 
         override fun getCurrentSelectedTime(): State<DelayTime> {

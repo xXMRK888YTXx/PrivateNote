@@ -2,13 +2,14 @@ package com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen
 
 import android.content.Context
 import com.xxmrk888ytxx.privatenote.R
+import kotlinx.collections.immutable.persistentListOf
 
 data class RepeatAutoBackupTimeItem(
     val title:Int,
     val timeAtHours:Long
 ) {
     companion object {
-        fun getDropDownList() = listOf(
+        fun getDropDownList() = persistentListOf(
             RepeatAutoBackupTimeItem(
                 title = R.string.three_hours,
                 timeAtHours = 3

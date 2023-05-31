@@ -45,13 +45,18 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.model
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoButtons.YesNoButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import java.util.*
 
 
 @Composable
-fun ScrollWithScreenSettings(currentState: State<Boolean>,
-                             onChangeState:(state:Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(),
+fun ScrollWithScreenSettings(
+    currentState: State<Boolean>,
+    onChangeState: (state: Boolean) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -60,7 +65,8 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Switch(
@@ -78,9 +84,12 @@ fun ScrollWithScreenSettings(currentState: State<Boolean>,
 }
 
 @Composable
-fun SplashScreenSettings(currentState: State<Boolean>,
-                         onChangeState:(state:Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(),
+fun SplashScreenSettings(
+    currentState: State<Boolean>,
+    onChangeState: (state: Boolean) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -89,7 +98,8 @@ fun SplashScreenSettings(currentState: State<Boolean>,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Switch(
@@ -108,7 +118,8 @@ fun SplashScreenSettings(currentState: State<Boolean>,
 
 @Composable
 fun AppVersion() {
-    Row(Modifier.fillMaxWidth(),
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -117,7 +128,8 @@ fun AppVersion() {
             fontSize = 16.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Text(
@@ -131,7 +143,7 @@ fun AppVersion() {
 }
 
 @Composable
-fun Email(onSend:() -> Unit) {
+fun Email(onSend: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -146,7 +158,8 @@ fun Email(onSend:() -> Unit) {
             fontSize = 16.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Icon(
@@ -161,7 +174,8 @@ fun Email(onSend:() -> Unit) {
 
 @Composable
 fun AboutMainDeveloper_Me() {
-    Row(Modifier.fillMaxWidth(),
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -170,7 +184,8 @@ fun AboutMainDeveloper_Me() {
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Text(
@@ -182,9 +197,11 @@ fun AboutMainDeveloper_Me() {
         }
     }
 }
+
 @Composable
 fun AboutSubDeveloper() {
-    Row(Modifier.fillMaxWidth(),
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -193,7 +210,8 @@ fun AboutSubDeveloper() {
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Text(
@@ -207,8 +225,9 @@ fun AboutSubDeveloper() {
 }
 
 @Composable
-fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Boolean) -> Unit) {
-    Row(Modifier.fillMaxWidth(),
+fun SecureLoginSettings(currentState: State<Boolean>, onChangeState: (state: Boolean) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -217,7 +236,8 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
         )
-        Box(Modifier.fillMaxWidth(),
+        Box(
+            Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
         ) {
             Switch(
@@ -233,8 +253,9 @@ fun SecureLoginSettings(currentState: State<Boolean>,onChangeState: (state: Bool
         }
     }
 }
+
 @Composable
-fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) -> Unit) {
+fun EnterLoginPasswordDialog(onCancel: () -> Unit, onComplete: (password: String) -> Unit) {
     val textPassword = remember {
         mutableStateOf("")
     }
@@ -245,32 +266,44 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
         mutableStateOf(false)
     }
     Dialog(onDismissRequest = { onCancel() }) {
-        Card(modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             backgroundColor = themeColors.mainBackGroundColor,
             shape = RoundedCornerShape(20.dp)
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()) {
-                EnterPassword(password = textPassword, isEnabled = isEnable, repitPassword = repitPassword)
-                RepitPassword(repitPassword = repitPassword, password = textPassword, isEnabled = isEnable)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                EnterPassword(
+                    password = textPassword,
+                    isEnabled = isEnable,
+                    repitPassword = repitPassword
+                )
+                RepitPassword(
+                    repitPassword = repitPassword,
+                    password = textPassword,
+                    isEnabled = isEnable
+                )
                 OutlinedButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.CenterHorizontally)
                         .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
                     onClick = { onComplete(textPassword.value) },
-                    enabled = (isEnable.value&&textPassword.value.isNotEmpty()
-                            &&repitPassword.value.isNotEmpty()),
+                    enabled = (isEnable.value && textPassword.value.isNotEmpty()
+                            && repitPassword.value.isNotEmpty()),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = themeColors.largeButtonColor,
                         disabledContentColor = themeColors.largeButtonColor.copy(0.3f),
                         disabledBackgroundColor = themeColors.largeButtonColor.copy(0.3f)
                     )
-                ){
-                    Text(text = stringResource(R.string.Confirm),
+                ) {
+                    Text(
+                        text = stringResource(R.string.Confirm),
                         fontSize = 18.sp,
                         color = Color.Black
                     )
@@ -280,22 +313,29 @@ fun EnterLoginPasswordDialog(onCancel: () -> Unit,onComplete: (password:String) 
         }
     }
 }
+
 @Composable
-fun EnterPassword(password:MutableState<String>,
-                     isEnabled:MutableState<Boolean>,
-                     repitPassword:MutableState<String>
+fun EnterPassword(
+    password: MutableState<String>,
+    isEnabled: MutableState<Boolean>,
+    repitPassword: MutableState<String>,
 ) {
-    OutlinedTextField(value = password.value,
-        onValueChange = {password.value = it;isEnabled.value = repitPassword.value == password.value},
+    OutlinedTextField(
+        value = password.value,
+        onValueChange = {
+            password.value = it;isEnabled.value = repitPassword.value == password.value
+        },
         singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(100))
             .padding(15.dp),
-        label = { Text(text = stringResource(R.string.Enter_password),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        label = {
+            Text(
+                text = stringResource(R.string.Enter_password),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = themeColors.primaryFontColor,
@@ -307,28 +347,37 @@ fun EnterPassword(password:MutableState<String>,
             unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
-        keyboardOptions = KeyboardOptions(autoCorrect = false,
+        keyboardOptions = KeyboardOptions(
+            autoCorrect = false,
             keyboardType = KeyboardType.Password,
         ),
         visualTransformation = PasswordVisualTransformation()
     )
 }
-@Composable
-fun RepitPassword(repitPassword:MutableState<String>,
-                          password: MutableState<String>, isEnabled:MutableState<Boolean>) {
 
-    OutlinedTextField(value = repitPassword.value,
-        onValueChange = {repitPassword.value = it;isEnabled.value = repitPassword.value == password.value },
+@Composable
+fun RepitPassword(
+    repitPassword: MutableState<String>,
+    password: MutableState<String>, isEnabled: MutableState<Boolean>,
+) {
+
+    OutlinedTextField(
+        value = repitPassword.value,
+        onValueChange = {
+            repitPassword.value = it;isEnabled.value = repitPassword.value == password.value
+        },
         singleLine = true,
-        isError = (!isEnabled.value&&!repitPassword.value.isEmpty()),
+        isError = (!isEnabled.value && !repitPassword.value.isEmpty()),
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(100))
             .padding(start = 15.dp, end = 15.dp, bottom = 15.dp),
-        label = { Text(text = stringResource(R.string.Repit_password),
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+        label = {
+            Text(
+                text = stringResource(R.string.Repit_password),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
         },
         colors = TextFieldDefaults.outlinedTextFieldColors(
             textColor = themeColors.primaryFontColor,
@@ -340,183 +389,198 @@ fun RepitPassword(repitPassword:MutableState<String>,
             unfocusedLabelColor = themeColors.primaryFontColor.copy(0.6f)
         ),
         textStyle = TextStyle(fontSize = 16.sp),
-        keyboardOptions = KeyboardOptions(autoCorrect = false,
+        keyboardOptions = KeyboardOptions(
+            autoCorrect = false,
             keyboardType = KeyboardType.Password,
         ),
         visualTransformation = PasswordVisualTransformation()
     )
 }
+
 @Composable
 fun BiometricAuthorizationSettings(
-    BioMetricAuthorizationEnable:State<Boolean>,
-    onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit
+    BioMetricAuthorizationEnable: State<Boolean>,
+    onChangeBioMetricAuthorizationState: (state: Boolean) -> Unit,
 ) {
-       Row(Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically,
-       ) {
-           Text(
-               text = stringResource(R.string.Biometric_login),
-               fontWeight = FontWeight.Medium,
-               fontSize = 18.sp,
-               color = themeColors.primaryFontColor,
-           )
-           Box(Modifier.fillMaxWidth(),
-               contentAlignment = Alignment.CenterEnd
-           ) {
-               Switch(
-                   checked = BioMetricAuthorizationEnable.value,
-                   onCheckedChange = {
-                       onChangeBioMetricAuthorizationState(it)
-                   },
-                   colors = SwitchDefaults.colors(
-                       checkedThumbColor = themeColors.secondaryColor,
-                       uncheckedThumbColor = themeColors.secondaryFontColor
-                   ),
-               )
-           }
-       }
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.Biometric_login),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = themeColors.primaryFontColor,
+        )
+        Box(
+            Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Switch(
+                checked = BioMetricAuthorizationEnable.value,
+                onCheckedChange = {
+                    onChangeBioMetricAuthorizationState(it)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
+                ),
+            )
+        }
+    }
 }
 
 @Composable
 fun LockWhenLeaveSettings(
     currentState: State<Boolean>,
-    onChangeState: (state: Boolean) -> Unit){
-       Row(Modifier.fillMaxWidth(),
-           verticalAlignment = Alignment.CenterVertically,
-       ) {
-           Text(
-               text = stringResource(R.string.Block_on_collapse),
-               fontWeight = FontWeight.Medium,
-               fontSize = 18.sp,
-               color = themeColors.primaryFontColor,
-           )
-           Box(Modifier.fillMaxWidth(),
-               contentAlignment = Alignment.CenterEnd
-           ) {
-               Switch(
-                   checked = currentState.value,
-                   onCheckedChange = {
-                       onChangeState(it)
-                   },
-                   colors = SwitchDefaults.colors(
-                       checkedThumbColor = themeColors.secondaryColor,
-                       uncheckedThumbColor = themeColors.secondaryFontColor
-                   ),
-               )
-           }
-       }
+    onChangeState: (state: Boolean) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.Block_on_collapse),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = themeColors.primaryFontColor,
+        )
+        Box(
+            Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Switch(
+                checked = currentState.value,
+                onCheckedChange = {
+                    onChangeState(it)
+                },
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = themeColors.secondaryColor,
+                    uncheckedThumbColor = themeColors.secondaryFontColor
+                ),
+            )
+        }
+    }
 }
 
 @Composable
-fun getLockWhenLeaveItems() : List<Pair<String,Int>> {
-    return listOf(
-        Pair(stringResource(R.string.Immediately),1_000),
-        Pair(stringResource(R.string.Ten_seconds),10_000),
-        Pair(stringResource(R.string.thirty_seconds),30_000),
-        Pair(stringResource(R.string.one_minute),60_000),
-        Pair(stringResource(R.string.two_minutes),120_000),
-        Pair(stringResource(R.string.five_minutes),300_000),
+fun getLockWhenLeaveItems(): ImmutableList<Pair<String, Int>> {
+    return persistentListOf(
+        Pair(stringResource(R.string.Immediately), 1_000),
+        Pair(stringResource(R.string.Ten_seconds), 10_000),
+        Pair(stringResource(R.string.thirty_seconds), 30_000),
+        Pair(stringResource(R.string.one_minute), 60_000),
+        Pair(stringResource(R.string.two_minutes), 120_000),
+        Pair(stringResource(R.string.five_minutes), 300_000),
     )
 }
+
 @Composable
-fun getCurrent(currentTime:Int) : Pair<String,Int> {
+fun getCurrent(currentTime: Int): Pair<String, Int> {
     val list = getLockWhenLeaveItems()
     list.forEach {
-        if(it.second == currentTime) return it
+        if (it.second == currentTime) return it
     }
     return list[0]
 }
 
 @Composable
 fun TimerLockWhenLeave(
-    currentTime:State<Int>,
-    dropDownState:State<Boolean>,
-    onShowDropDown:() -> Unit,
+    currentTime: State<Int>,
+    dropDownState: State<Boolean>,
+    onShowDropDown: () -> Unit,
     onCancelDropDown: () -> Unit,
-    onTimeChanged:(time:Int) -> Unit
+    onTimeChanged: (time: Int) -> Unit,
 ) {
     val dropDownItems = getLockWhenLeaveItems()
-    val current:Pair<String,Int> = getCurrent(currentTime.value)
-        val annotatedLabelString = buildAnnotatedString {
-            append(current.first)
-            appendInlineContent("drop_down_triangle")
-        }
-        val inlineContentMap = mapOf(
-            "drop_down_triangle" to InlineTextContent(
-                Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
-            ) {
-                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
-                    contentDescription = "",
-                    tint = themeColors.secondaryFontColor,
-                    modifier = Modifier.padding(top = 0.dp)
-                )
-            }
-        )
-        Row(Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+    val current: Pair<String, Int> = getCurrent(currentTime.value)
+    val annotatedLabelString = buildAnnotatedString {
+        append(current.first)
+        appendInlineContent("drop_down_triangle")
+    }
+    val inlineContentMap = mapOf(
+        "drop_down_triangle" to InlineTextContent(
+            Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
         ) {
-            Text(
-                text = stringResource(R.string.Time_to_block),
-                fontWeight = FontWeight.Medium,
-                fontSize = 18.sp,
-                color = themeColors.primaryFontColor,
+            Icon(
+                painter = painterResource(R.drawable.ic_drop_down_triangle),
+                contentDescription = "",
+                tint = themeColors.secondaryFontColor,
+                modifier = Modifier.padding(top = 0.dp)
             )
-            Box() {
-                DropdownMenu(expanded = dropDownState.value,
-                    onDismissRequest = {onCancelDropDown()},
-                    modifier = Modifier
-                        .background(themeColors.dropDownMenuColor)
-                        .verticalScroll(
-                            rememberScrollState()
-                        )
-                        .heightIn(max = 200.dp)
-                ) {
-                    dropDownItems.forEach {
-                        Column(
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            DropdownMenuItem(onClick = {
-                                onTimeChanged(it.second)
-                                onCancelDropDown() }) {
-                                Row {
-                                    Text(text = it.first,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = themeColors.primaryFontColor
-                                    )
-                                }
+        }
+    )
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.Time_to_block),
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = themeColors.primaryFontColor,
+        )
+        Box() {
+            DropdownMenu(
+                expanded = dropDownState.value,
+                onDismissRequest = { onCancelDropDown() },
+                modifier = Modifier
+                    .background(themeColors.dropDownMenuColor)
+                    .verticalScroll(
+                        rememberScrollState()
+                    )
+                    .heightIn(max = 200.dp)
+            ) {
+                dropDownItems.forEach {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            onTimeChanged(it.second)
+                            onCancelDropDown()
+                        }) {
+                            Row {
+                                Text(
+                                    text = it.first,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = themeColors.primaryFontColor
+                                )
                             }
                         }
                     }
                 }
             }
-            Box(Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                Text(text = annotatedLabelString,
-                    inlineContent = inlineContentMap,
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 18.sp,
-                    color = themeColors.secondaryFontColor,
-                    textAlign = TextAlign.End,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onShowDropDown()
-                        }
-                )
-            }
         }
+        Box(
+            Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Text(text = annotatedLabelString,
+                inlineContent = inlineContentMap,
+                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp,
+                color = themeColors.secondaryFontColor,
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        onShowDropDown()
+                    }
+            )
+        }
+    }
 }
 
 @Composable
 fun ToThemeSettingsScreenButton(navController: NavController) {
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            navController.navigate(Screen.ThemeSettingsScreen.route) { launchSingleTop = true }
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                navController.navigate(Screen.ThemeSettingsScreen.route) { launchSingleTop = true }
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -530,7 +594,8 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -543,12 +608,13 @@ fun ToThemeSettingsScreenButton(navController: NavController) {
 
 @Composable
 fun ToBackupSettingsScreenButton(navController: NavController) {
-    Row(Modifier
-        .fillMaxWidth()
-        .padding(top = 10.dp)
-        .clickable {
-            navController.navigate(Screen.BackupSettingsScreen.route) { launchSingleTop = true }
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp)
+            .clickable {
+                navController.navigate(Screen.BackupSettingsScreen.route) { launchSingleTop = true }
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -562,7 +628,8 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -576,13 +643,14 @@ fun ToBackupSettingsScreenButton(navController: NavController) {
 @Composable
 fun DontKillMyAppButton() {
     val context = LocalContext.current
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://dontkillmyapp.com/"))
-            context.startActivity(browserIntent)
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://dontkillmyapp.com/"))
+                context.startActivity(browserIntent)
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -596,7 +664,8 @@ fun DontKillMyAppButton() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -611,13 +680,14 @@ fun DontKillMyAppButton() {
 @Composable
 fun PrivatePolicyButton() {
     val context = LocalContext.current
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY))
-            context.startActivity(browserIntent)
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY))
+                context.startActivity(browserIntent)
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -631,7 +701,8 @@ fun PrivatePolicyButton() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -645,13 +716,14 @@ fun PrivatePolicyButton() {
 @Composable
 fun TermsButton() {
     val context = LocalContext.current
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable {
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse(TERMS))
-            context.startActivity(browserIntent)
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable {
+                val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse(TERMS))
+                context.startActivity(browserIntent)
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -665,7 +737,8 @@ fun TermsButton() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -679,16 +752,18 @@ fun TermsButton() {
 @SuppressLint("ResourceType")
 @Composable
 fun SelectSortState(
-    currentState:State<SortNoteState>,
-    onShowDropDown:() -> Unit,
+    currentState: State<SortNoteState>,
+    onShowDropDown: () -> Unit,
     onChangeSortState: (SortNoteState) -> Unit,
     isVisibleDropDown: Boolean,
-    onHideDropDown:() -> Unit
+    onHideDropDown: () -> Unit,
 ) {
-    Row(Modifier.fillMaxWidth(),
+    Row(
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = stringResource(R.string.Sorting_notes),
+        Text(
+            text = stringResource(R.string.Sorting_notes),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
@@ -701,16 +776,17 @@ fun SelectSortState(
             "drop_down_triangle" to InlineTextContent(
                 Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
             ) {
-                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                Icon(
+                    painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
                     tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
         )
-        if(isVisibleDropDown) {
+        if (isVisibleDropDown) {
             Box() {
-                SelectSortDropDown(onChangeSortState,isVisibleDropDown,onHideDropDown)
+                SelectSortDropDown(onChangeSortState, isVisibleDropDown, onHideDropDown)
             }
         }
         Text(text = annotatedLabelString,
@@ -733,11 +809,12 @@ fun SelectSortState(
 @Composable
 fun SelectSortDropDown(
     onChangeSortState: (SortNoteState) -> Unit,
-    isVisible:Boolean,
-    onHide:() -> Unit
+    isVisible: Boolean,
+    onHide: () -> Unit,
 ) {
-    val dropDownItem = listOf(SortNoteState.ByAscending,SortNoteState.ByDescending)
-    DropdownMenu(expanded = isVisible,
+    val dropDownItem = listOf(SortNoteState.ByAscending, SortNoteState.ByDescending)
+    DropdownMenu(
+        expanded = isVisible,
         onDismissRequest = {
             onHide()
         },
@@ -751,7 +828,8 @@ fun SelectSortDropDown(
                 onHide()
             }) {
                 Row {
-                    Text(text = stringResource(it.title),
+                    Text(
+                        text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = themeColors.primaryFontColor
@@ -765,19 +843,20 @@ fun SelectSortDropDown(
 @Composable
 fun DisableAdsButton(
     onOpenDisableDialog: () -> Unit,
-    isAdEnabled:Boolean
+    isAdEnabled: Boolean,
 ) {
-    Row(Modifier
-        .fillMaxWidth()
-        .padding(start = 20.dp, end = 10.dp, bottom = 10.dp)
-        .clickable(enabled = isAdEnabled) {
-            onOpenDisableDialog()
-        },
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 10.dp, bottom = 10.dp)
+            .clickable(enabled = isAdEnabled) {
+                onOpenDisableDialog()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if(isAdEnabled) stringResource(R.string.Disable_Ad) else stringResource(R.string.Ad_is_disabled),
+            text = if (isAdEnabled) stringResource(R.string.Disable_Ad) else stringResource(R.string.Ad_is_disabled),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
@@ -786,31 +865,32 @@ fun DisableAdsButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
-           if(isAdEnabled) {
-               Icon(
-                   painter = painterResource(id = R.drawable.ic_arrow),
-                   contentDescription = "",
-                   tint = themeColors.primaryFontColor,
-                   modifier = Modifier.size(20.dp)
-               )
-           } else {
-               Icon(
-                   painter = painterResource(id = R.drawable.ic_done),
-                   contentDescription = "",
-                   tint = themeColors.green,
-                   modifier = Modifier.size(20.dp)
-               )
-           }
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            if (isAdEnabled) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow),
+                    contentDescription = "",
+                    tint = themeColors.primaryFontColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_done),
+                    contentDescription = "",
+                    tint = themeColors.green,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
 fun DisableAdsDialog(
-    onOpenBuyDisableAds:() -> Unit,
-    onCloseDialog:() -> Unit,
-    isBueAvailable:Boolean
+    onOpenBuyDisableAds: () -> Unit,
+    onCloseDialog: () -> Unit,
+    isBueAvailable: Boolean,
 ) {
     Dialog(
         onDismissRequest = { onCloseDialog() }
@@ -820,10 +900,12 @@ fun DisableAdsDialog(
             shape = RoundedCornerShape(20.dp),
             backgroundColor = themeColors.cardColor
         ) {
-            Column(Modifier
-                .fillMaxWidth()
-                .padding(10.dp)
-                .verticalScroll(rememberScrollState())) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
                 Text(
                     text = stringResource(R.string.Bue_disable_ad_test),
                     textAlign = TextAlign.Center,
@@ -846,12 +928,14 @@ fun DisableAdsDialog(
                     enabled = isBueAvailable,
                     shape = RoundedCornerShape(80),
                 ) {
-                    if(isBueAvailable) {
-                        Text(text = stringResource(R.string.Disable_Ad),
+                    if (isBueAvailable) {
+                        Text(
+                            text = stringResource(R.string.Disable_Ad),
                             color = themeColors.primaryFontColor
                         )
                     } else {
-                        Text(text = stringResource(R.string.Repit_after),
+                        Text(
+                            text = stringResource(R.string.Repit_after),
                             color = themeColors.primaryFontColor
                         )
                     }
@@ -862,12 +946,13 @@ fun DisableAdsDialog(
 }
 
 @Composable
-fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
-    Row(Modifier
-        .fillMaxWidth()
-        .clickable() {
-            onNavigateToLicenseScreen()
-        },
+fun LicenseButton(onNavigateToLicenseScreen: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable() {
+                onNavigateToLicenseScreen()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -881,7 +966,8 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = 10.dp),
-            contentAlignment = Alignment.CenterEnd) {
+            contentAlignment = Alignment.CenterEnd
+        ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow),
                 contentDescription = "",
@@ -895,11 +981,11 @@ fun LicenseButton(onNavigateToLicenseScreen:() -> Unit ) {
 @SuppressLint("ResourceType")
 @Composable
 fun SelectViewNoteListStateButton(
-    currentState:State<ViewNoteListState>,
-    onShowDropDown:() -> Unit,
+    currentState: State<ViewNoteListState>,
+    onShowDropDown: () -> Unit,
     onChangeViewNoteListState: (ViewNoteListState) -> Unit,
     isVisibleDropDown: Boolean,
-    onHideDropDown:() -> Unit
+    onHideDropDown: () -> Unit,
 ) {
     Row(
         Modifier
@@ -907,7 +993,8 @@ fun SelectViewNoteListStateButton(
             .padding(top = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = stringResource(R.string.Notes_display),
+        Text(
+            text = stringResource(R.string.Notes_display),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
@@ -920,16 +1007,21 @@ fun SelectViewNoteListStateButton(
             "drop_down_triangle" to InlineTextContent(
                 Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
             ) {
-                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                Icon(
+                    painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
                     tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
                 )
             }
         )
-        if(isVisibleDropDown) {
+        if (isVisibleDropDown) {
             Box() {
-                SelectionViewNoteListStateDropDown(onChangeViewNoteListState,isVisibleDropDown,onHideDropDown)
+                SelectionViewNoteListStateDropDown(
+                    onChangeViewNoteListState,
+                    isVisibleDropDown,
+                    onHideDropDown
+                )
             }
         }
         Text(text = annotatedLabelString,
@@ -952,11 +1044,12 @@ fun SelectViewNoteListStateButton(
 @Composable
 fun SelectionViewNoteListStateDropDown(
     onChangeSortState: (ViewNoteListState) -> Unit,
-    isVisible:Boolean,
-    onHide:() -> Unit
+    isVisible: Boolean,
+    onHide: () -> Unit,
 ) {
-    val dropDownItem = listOf(ViewNoteListState.List,ViewNoteListState.Table)
-    DropdownMenu(expanded = isVisible,
+    val dropDownItem = listOf(ViewNoteListState.List, ViewNoteListState.Table)
+    DropdownMenu(
+        expanded = isVisible,
         onDismissRequest = {
             onHide()
         },
@@ -970,7 +1063,8 @@ fun SelectionViewNoteListStateDropDown(
                 onHide()
             }) {
                 Row {
-                    Text(text = stringResource(it.title),
+                    Text(
+                        text = stringResource(it.title),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
                         color = themeColors.primaryFontColor
@@ -983,11 +1077,15 @@ fun SelectionViewNoteListStateDropDown(
 
 
 @Composable
-fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(top = 5.dp),
+fun LanguageChose(currentLanguage: LanguageItem, onShowLanguageDialog: () -> Unit) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 5.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = stringResource(R.string.Language),
+        Text(
+            text = stringResource(R.string.Language),
             fontWeight = FontWeight.Medium,
             fontSize = 18.sp,
             color = themeColors.primaryFontColor,
@@ -1000,7 +1098,8 @@ fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit)
             "drop_down_triangle" to InlineTextContent(
                 Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
             ) {
-                Icon(painter = painterResource(R.drawable.ic_drop_down_triangle),
+                Icon(
+                    painter = painterResource(R.drawable.ic_drop_down_triangle),
                     contentDescription = "",
                     tint = themeColors.secondaryFontColor,
                     modifier = Modifier.padding(top = 0.dp)
@@ -1024,14 +1123,13 @@ fun LanguageChose(currentLanguage:LanguageItem,onShowLanguageDialog: () -> Unit)
 }
 
 
-
 @Composable
 fun LanguageChoseDialog(
-    languageList:List<LanguageItem>,
-    currentSelected:MutableState<String>,
-    onNewSelected:(languageCode:LanguageItem) -> Unit,
-    onCancel:() -> Unit,
-    onComplete:() -> Unit
+    languageList: ImmutableList<LanguageItem>,
+    currentSelected: MutableState<String>,
+    onNewSelected: (languageCode: LanguageItem) -> Unit,
+    onCancel: () -> Unit,
+    onComplete: () -> Unit,
 ) {
     Dialog(onDismissRequest = {
         onCancel()
@@ -1041,8 +1139,10 @@ fun LanguageChoseDialog(
             shape = RoundedCornerShape(20.dp),
             backgroundColor = themeColors.cardColor
         ) {
-            Column(modifier = Modifier
-                .fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
                 languageList.forEach {
                     Row(
                         modifier = Modifier
@@ -1051,7 +1151,8 @@ fun LanguageChoseDialog(
                                 onNewSelected(it)
                             }
                     ) {
-                        RadioButton(selected = currentSelected.value == it.languageCode ,
+                        RadioButton(
+                            selected = currentSelected.value == it.languageCode,
                             onClick = { onNewSelected(it) },
                             colors = RadioButtonDefaults.colors(
                                 selectedColor = themeColors.primaryFontColor,
@@ -1059,7 +1160,8 @@ fun LanguageChoseDialog(
                             ),
                             modifier = Modifier.padding(end = 10.dp)
                         )
-                        Text(text = it.name,
+                        Text(
+                            text = it.name,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Medium,
                             color = themeColors.primaryFontColor.copy(0.75f),
@@ -1074,16 +1176,17 @@ fun LanguageChoseDialog(
         }
     }
 }
+
 @Composable
-fun getLanguageList() : List<LanguageItem> {
-    return listOf(
+fun getLanguageList(): ImmutableList<LanguageItem> {
+    return persistentListOf(
         LanguageItem(
             stringResource(R.string.System_language),
             "xx"
         ),
         LanguageItem(
             "English",
-             Locale.ENGLISH.language
+            Locale.ENGLISH.language
         ),
         LanguageItem(
             "Русский",
@@ -1101,9 +1204,9 @@ fun getLanguageList() : List<LanguageItem> {
 }
 
 @Composable
-fun languageCodeToItem(languageCode:String) : LanguageItem {
+fun languageCodeToItem(languageCode: String): LanguageItem {
     getLanguageList().forEach {
-        if(it.languageCode == languageCode) return it
+        if (it.languageCode == languageCode) return it
     }
     return getLanguageList()[0]
 }
@@ -1112,5 +1215,5 @@ fun languageCodeToItem(languageCode:String) : LanguageItem {
 @Preview(backgroundColor = 0xFF000000)
 @Composable
 fun Preview() {
-    DisableAdsButton({},false)
+    DisableAdsButton({}, false)
 }
