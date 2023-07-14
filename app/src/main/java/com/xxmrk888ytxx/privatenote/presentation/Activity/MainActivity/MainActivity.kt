@@ -58,6 +58,8 @@ class MainActivity :
         if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION)
             mainActivityViewModel.registerTodoDeepLink(intent)
 
+
+        mainActivityViewModel.loadConsentForm(this)
         setContent {
             val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
             val startScreen = getStartScreen()
