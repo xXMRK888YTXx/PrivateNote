@@ -18,7 +18,7 @@ android {
         applicationId "com.xxmrk888ytxx.privatenote"
         minSdk 23
         compileSdk 36
-        targetSdk 33
+        targetSdk 36
         versionCode 25
         versionName "1.4.1r"
 
