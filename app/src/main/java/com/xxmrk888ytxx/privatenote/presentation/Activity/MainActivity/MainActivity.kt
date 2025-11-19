@@ -5,12 +5,19 @@ import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
@@ -60,6 +67,7 @@ class MainActivity :
 
 
         mainActivityViewModel.loadConsentForm(this)
+        enableEdgeToEdge()
         setContent {
             val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
             val startScreen = getStartScreen()
@@ -74,7 +82,8 @@ class MainActivity :
                 ),
             ) {
                 Scaffold(
-                    backgroundColor = themeColors.mainBackGroundColor
+                    backgroundColor = themeColors.mainBackGroundColor,
+                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 ) {
                     NavHost(
                         navController = navController,
