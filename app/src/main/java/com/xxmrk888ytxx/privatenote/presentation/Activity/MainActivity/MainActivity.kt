@@ -24,9 +24,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.android.gms.ads.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY
@@ -107,8 +110,13 @@ class MainActivity :
                             )
                         }
 
-                        composable(Screen.EditNoteScreen.route) {
-                            val noteId = it.arguments?.getInt(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY)
+                        composable(
+                            "${Screen.EditNoteScreen.route}/{$NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY}",
+                            arguments = listOf(
+                                navArgument(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY) { NavType.StringType }
+                            )
+                        ) {
+                            val noteId = it.arguments?.getString(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY)?.toIntOrNull()
                                 ?: return@composable
 
                             EditNoteScreen(
@@ -123,8 +131,13 @@ class MainActivity :
                             )
                         }
 
-                        composable(Screen.DrawScreen.route) {
-                            val noteId = it.arguments?.getInt(NOTE_ID_TO_DRAW_SCREEN_KEY)
+                        composable(
+                            route = "${Screen.DrawScreen.route}/{$NOTE_ID_TO_DRAW_SCREEN_KEY}",
+                            arguments = listOf(
+                                navArgument(NOTE_ID_TO_DRAW_SCREEN_KEY) { NavType.StringType }
+                            )
+                        ) {
+                            val noteId = it.arguments?.getString(NOTE_ID_TO_DRAW_SCREEN_KEY)?.toIntOrNull()
                                 ?: return@composable
 
                             DrawScreen(

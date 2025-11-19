@@ -606,10 +606,7 @@ class EditNoteViewModel @Inject constructor(
     }
 
     fun toDrawScreen(navController: NavController) {
-        navController.navigate(Screen.DrawScreen.route) { launchSingleTop = true }
-
-        navController.getBackStackEntry(Screen.DrawScreen.route)
-            .arguments?.putInt(NOTE_ID_TO_DRAW_SCREEN_KEY,note.id)
+        navController.navigate("${Screen.DrawScreen.route}/${note.id}") { launchSingleTop = true }
     }
 
     fun getImageRequest(context: Context, bytes: ByteArray?): ImageRequest {
