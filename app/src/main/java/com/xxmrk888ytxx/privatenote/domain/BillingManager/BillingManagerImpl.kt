@@ -41,7 +41,7 @@ class BillingManagerImpl @Inject constructor(
     private val billingClient by lazy {
         BillingClient.newBuilder(context)
             .setListener(purchasesUpdatedListener)
-            .enablePendingPurchases()
+            .enablePendingPurchases(PendingPurchasesParams.newBuilder().enableOneTimeProducts().build())
             .build()
     }
 
@@ -69,7 +69,9 @@ class BillingManagerImpl @Inject constructor(
             .setProductList(products)
             .build()
         billingClient.queryProductDetailsAsync(params
-        ) { _, prodDetailsList ->
+        ) { _, prodDetailsListQueryProductDetailsResult ->
+
+            val prodDetailsList = prodDetailsListQueryProductDetailsResult.productDetailsList
             if(prodDetailsList.isEmpty()) return@queryProductDetailsAsync
             prodDetailsList.forEach {
                 when(it.productId) {
