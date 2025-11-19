@@ -2,8 +2,10 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -17,6 +19,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +44,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsS
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeHolder
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -61,8 +66,6 @@ class MainActivity :
 
         if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION)
             mainActivityViewModel.registerTodoDeepLink(intent)
-
-
         enableEdgeToEdge()
         setContent {
             val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
@@ -78,11 +81,11 @@ class MainActivity :
             ) {
                 Scaffold(
                     backgroundColor = themeColors.mainBackGroundColor,
-                    modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = startScreen.route
+                        startDestination = startScreen.route,
+                        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                     ) {
 
                         composable(Screen.SplashScreen.route) {
