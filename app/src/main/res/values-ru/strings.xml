@@ -155,7 +155,6 @@
     <string name="Copy_not_сompleted_todo">Копировать незавершенные задачи</string>
     <string name="Copy_сompleted_todo">Копировать завершенные задачи</string>
     <string name="Auto_Backup_Settings_Local">Параметры авто бэкапа(локально)</string>
-    <string name="Auto_Backup_Settings_GDrive">Параметры авто бэкапа(GDrive)</string>
     <string name="Main_settings">Основные настройки</string>
     <string name="Backup_is_active">Состояние</string>
     <string name="Backup_path">Путь для бэкапа</string>
@@ -188,17 +187,6 @@
     <string name="Twelve_hours">12 часов</string>
     <string name="twenty_four_hours">24 часа</string>
     <string name="Forty_eight_hours">48 часов</string>
-    <string name="Google_sing_in">Вход в Google</string>
-    <string name="Authorization">Авторизовано</string>
-    <string name="Click_to_sign_in">Нажмите для входа</string>
-    <string name="GDrive_backup_started">Бэкап на Google Drive запущен</string>
-    <string name="Google_drive_backup_error_title">Во время бэкапа на Google Drive произошла ошибка</string>
-    <string name="GoogleDriveBadWrite_description">Google Drive отказал в доступе, проверьте что приложение имеет доступ к Google Drive</string>
-    <string name="Not_known_error">Во время бэкапа произошла неизвестная ошибка.</string>
-    <string name="Successful_authorization">Авторизовано успешно</string>
-    <string name="Need_login_to_google">Для работы необходимо войти в аккаунт Google</string>
-    <string name="Load_only_from_WIFI">Загружать только по WiFi</string>
-    <string name="Login_out_from_account">Выйти из аккаунта Google</string>
     <string name="Record">Записать</string>
     <string name="From_device">С устройства</string>
     <string name="DontKillMyApp_dialog_text">В связи с тем, что некоторые производители ограничивают работу вне приложения, необходимо провести дополнительные настройки. Перейдите на сайт dontkillmyapp.com, найдите своего производителя, и выполните находящийся там инструкции.</string>

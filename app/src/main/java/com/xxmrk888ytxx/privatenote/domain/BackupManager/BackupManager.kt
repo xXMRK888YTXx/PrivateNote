@@ -11,6 +11,4 @@ interface BackupManager {
     suspend fun restoreBackup(uri: Uri,restoreBackupParams: BackupRestoreSettings) : StateFlow<WorkerObserver.Companion.WorkerState?>
     fun enableLocalAutoBackup(timeRepeatHours:Long)
     fun disableLocalAutoBackup()
-    fun enableGDriveBackup(timeRepeatHours: Long,isUploadByWifiOnly:Boolean)
-    fun disableGDriveAutoBackup()
 }
