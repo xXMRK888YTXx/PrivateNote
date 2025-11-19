@@ -7,11 +7,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerState
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButtonController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButtonController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,7 +20,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val deepLinkController: DeepLinkController,
-    private val adShowManager: AdShowManager
 ) : ViewModel(),MainScreenController,FloatButtonController {
 
     @OptIn(ExperimentalPagerApi::class)
@@ -104,6 +102,6 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun isNeedShowAd() = adShowManager.isNeedShowAds()
+    fun isNeedShowAd() = false
 
 }

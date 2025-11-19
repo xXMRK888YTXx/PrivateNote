@@ -182,7 +182,6 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     }
     val isShowDropDownSortStateVisible = settingsViewModel.isShowDropDownSortStateVisible().Remember()
     val sortNoteState = settingsViewModel.getNoteSortState().collectAsState(SortNoteState.ByDescending)
-    val isShowAd = settingsViewModel.isNeedShowAd().collectAsState(true)
     val currentViewNoteListState = settingsViewModel.getViewNoteListState()
         .collectAsState(ViewNoteListState.List)
     val isViewNoteListDropDownVisible = settingsViewModel.isViewNoteListDropDownVisible().Remember()
@@ -335,14 +334,6 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         )
     )
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-           item {
-                   DisableAdsButton(
-                    onOpenDisableDialog = {
-                       settingsViewModel.openDisableAdsDialog()
-                   },
-                   isAdEnabled = isShowAd.value
-              )
-           }
         settingsCategory.forEach { category ->
             item {
                 Text(text = category.categoryName,

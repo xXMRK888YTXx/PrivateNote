@@ -5,7 +5,6 @@ import android.content.Context
 import android.util.Log
 import com.android.billingclient.api.*
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,7 +12,6 @@ import javax.inject.Inject
 
 class BillingManagerImpl @Inject constructor(
     @ApplicationContext context: Context,
-    private val adShowManager: AdShowManager,
 ) : BillingManager {
     private var removeAdProduct:ProductDetails? = null
 
@@ -32,7 +30,6 @@ class BillingManagerImpl @Inject constructor(
             billingClient.acknowledgePurchase(acknowledgePurchaseParams
             ) { billingResult: BillingResult ->
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    adShowManager.disableAd()
                 }
             }
         }

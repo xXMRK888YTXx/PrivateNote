@@ -16,8 +16,6 @@ import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
@@ -40,7 +38,6 @@ fun MainScreen(
     val getScrollBetweenScreenEnabled = remember {
         mainViewModel.getScrollBetweenScreenEnabled()
     }
-    val isNeedShowAd = mainViewModel.isNeedShowAd().collectAsState(initial = true)
     val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
     val isPolityAndTermsConfirmed = mainViewModel.isPolityAndTermsConfirmed().collectAsState(true)
     Scaffold(
@@ -55,12 +52,6 @@ fun MainScreen(
                         pageState = state.value,
                         navController = navController
                     )
-                    if(isNeedShowAd.value) {
-                        AdMobBanner(
-                            if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
-                            else stringResource(R.string.MainScreenBannerKey)
-                        )
-                    }
                 }
 
 

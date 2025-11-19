@@ -145,8 +145,6 @@ dependencies {
     //Google Auth
     //zip lib
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
-    //Google AdMob
-    implementation 'com.google.android.gms:play-services-ads:24.7.0'
     //google Billing In App
     implementation "com.android.billingclient:billing-ktx:8.1.0"
 

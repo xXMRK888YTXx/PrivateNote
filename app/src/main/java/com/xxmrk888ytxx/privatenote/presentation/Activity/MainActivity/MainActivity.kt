@@ -28,7 +28,6 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
@@ -52,10 +51,8 @@ import java.util.*
 class MainActivity :
     AppCompatActivity(),
     WakeLockController,
-    InterstitialAdsController,
     BullingController,
-    OrientationLockManager
-{
+    OrientationLockManager {
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -66,7 +63,6 @@ class MainActivity :
             mainActivityViewModel.registerTodoDeepLink(intent)
 
 
-        mainActivityViewModel.loadConsentForm(this)
         enableEdgeToEdge()
         setContent {
             val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
@@ -78,7 +74,6 @@ class MainActivity :
                 otherProviders = arrayOf<ProvidedValue<*>>(
                     LocalOrientationLockManager provides this,
                     LocalWakeLockController provides this,
-                    LocalInterstitialAdsController provides this
                 ),
             ) {
                 Scaffold(
@@ -91,11 +86,12 @@ class MainActivity :
                     ) {
 
                         composable(Screen.SplashScreen.route) {
-                            SplashScreen(navController,
+                            SplashScreen(
+                                navController,
                                 isAppPasswordInstalled = mainActivityViewModel.getAppPasswordState(),
                                 animationShowState = mainActivityViewModel.getAnimationShowState(),
                                 isBiometricAuthorizationEnable =
-                                mainActivityViewModel.checkBiometricAuthorization(),
+                                    mainActivityViewModel.checkBiometricAuthorization(),
                                 onAuthorization = { authorizationRequest(it) },
                                 isFirstStart = mainActivityViewModel.isFirstStart,
                                 onCompletedAuth = mainActivityViewModel.completedAuthCallBack(),
@@ -219,8 +215,4 @@ class MainActivity :
 
     override val isBillingAvailable: Boolean
         get() = mainActivityViewModel.isBillingAvailable
-
-    override fun showAd() {
-        mainActivityViewModel.showAd(this)
-    }
 }

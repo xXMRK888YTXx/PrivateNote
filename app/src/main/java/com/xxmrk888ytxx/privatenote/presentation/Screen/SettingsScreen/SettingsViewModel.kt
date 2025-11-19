@@ -17,7 +17,6 @@ import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.toState
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
@@ -30,10 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val toastManager: ToastManager,
     private val securityUtils: SecurityUtils,
     private val authorizationManager: BiometricAuthorizationManager,
-    private val adShowManager: AdShowManager
 ) : ViewModel() {
 
     private var bullingController: BullingController? = null
@@ -231,7 +228,7 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun isNeedShowAd() = adShowManager.isNeedShowAds()
+    fun isNeedShowAd() = false
 
     fun onOpenBuyDisableAds() {
         bullingController?.bueDisableAds()

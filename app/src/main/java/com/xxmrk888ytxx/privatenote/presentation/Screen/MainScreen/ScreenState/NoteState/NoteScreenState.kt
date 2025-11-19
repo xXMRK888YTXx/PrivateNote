@@ -44,7 +44,6 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid.GridNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.List.ListNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
