@@ -56,7 +56,6 @@ import java.util.*
 class MainActivity :
     AppCompatActivity(),
     WakeLockController,
-    BullingController,
     OrientationLockManager {
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
@@ -121,7 +120,6 @@ class MainActivity :
                         composable(Screen.SettingsScreen.route) {
                             SettingsScreen(
                                 navController = navController,
-                                bullingController = this@MainActivity
                             )
                         }
 
@@ -154,8 +152,6 @@ class MainActivity :
                 }
             }
         }
-
-        mainActivityViewModel.onCreate()
     }
 
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
@@ -211,11 +207,4 @@ class MainActivity :
     override fun unlockScreen() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
     }
-
-    override fun bueDisableAds() {
-        mainActivityViewModel.bueDisableAds(this)
-    }
-
-    override val isBillingAvailable: Boolean
-        get() = mainActivityViewModel.isBillingAvailable
 }

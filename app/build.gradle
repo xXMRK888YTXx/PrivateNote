@@ -145,9 +145,6 @@ dependencies {
     //Google Auth
     //zip lib
     implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '2.11.5'
-    //google Billing In App
-    implementation "com.android.billingclient:billing-ktx:8.1.0"
-
     implementation "com.google.accompanist:accompanist-insets:0.30.1"
     // If using insets-ui
     implementation "com.google.accompanist:accompanist-insets-ui:0.36.0"

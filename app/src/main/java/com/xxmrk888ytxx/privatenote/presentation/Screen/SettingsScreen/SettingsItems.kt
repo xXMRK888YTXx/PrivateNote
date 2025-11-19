@@ -887,65 +887,6 @@ fun DisableAdsButton(
 }
 
 @Composable
-fun DisableAdsDialog(
-    onOpenBuyDisableAds: () -> Unit,
-    onCloseDialog: () -> Unit,
-    isBueAvailable: Boolean,
-) {
-    Dialog(
-        onDismissRequest = { onCloseDialog() }
-    ) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            backgroundColor = themeColors.cardColor
-        ) {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = stringResource(R.string.Bue_disable_ad_test),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    fontSize = 17.sp,
-                    color = themeColors.primaryFontColor,
-                    fontWeight = FontWeight.Bold
-                )
-                LazySpacer(10)
-                OutlinedButton(
-                    onClick = {
-                        onOpenBuyDisableAds()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = themeColors.secondaryColor,
-                        disabledBackgroundColor = themeColors.secondaryColor.copy(0.4f)
-                    ),
-                    enabled = isBueAvailable,
-                    shape = RoundedCornerShape(80),
-                ) {
-                    if (isBueAvailable) {
-                        Text(
-                            text = stringResource(R.string.Disable_Ad),
-                            color = themeColors.primaryFontColor
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.Repit_after),
-                            color = themeColors.primaryFontColor
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun LicenseButton(onNavigateToLicenseScreen: () -> Unit) {
     Row(
         Modifier

@@ -26,7 +26,6 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import kotlinx.collections.immutable.persistentListOf
@@ -36,11 +35,7 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     navController: NavController,
-    bullingController: BullingController
 ) {
-    LaunchedEffect(key1 = bullingController, block = {
-        settingsViewModel.initOnBueDisableAd(bullingController)
-    })
     val languageDialogState = remember {
         settingsViewModel.getShowLanguageDialogState()
     }
@@ -72,17 +67,6 @@ fun SettingsScreen(
         EnterLoginPasswordDialog(
             onCancel = {settingsViewModel.hideAppPasswordDialog()},
             onComplete = {settingsViewModel.enableAppPassword(it)}
-        )
-    }
-    if(isShowDisableAdsDialog.value) {
-        DisableAdsDialog(
-            onOpenBuyDisableAds = {
-                settingsViewModel.onOpenBuyDisableAds()
-            },
-            onCloseDialog = {
-                settingsViewModel.closeDisableAdsDialog()
-            },
-            isBueAvailable = settingsViewModel.isBueDisableAdAvailable()
         )
     }
     if(enterAppPasswordDialogState.value) {

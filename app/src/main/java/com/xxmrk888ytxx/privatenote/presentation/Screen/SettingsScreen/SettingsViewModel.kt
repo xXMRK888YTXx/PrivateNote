@@ -18,7 +18,6 @@ import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.toState
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,12 +31,6 @@ class SettingsViewModel @Inject constructor(
     private val securityUtils: SecurityUtils,
     private val authorizationManager: BiometricAuthorizationManager,
 ) : ViewModel() {
-
-    private var bullingController: BullingController? = null
-
-    fun initOnBueDisableAd(bullingController:BullingController) {
-        this.bullingController = bullingController
-    }
 
     private val showLanguageDialogState = mutableStateOf(false)
 
@@ -227,15 +220,6 @@ class SettingsViewModel @Inject constructor(
             settingsRepository.changeSortNoteState(sortNoteState)
         }
     }
-
-    fun isNeedShowAd() = false
-
-    fun onOpenBuyDisableAds() {
-        bullingController?.bueDisableAds()
-    }
-
-    fun isBueDisableAdAvailable() = bullingController?.isBillingAvailable ?: false
-
     fun getViewNoteListState() = settingsRepository.getViewNoteListState()
 
     fun changeViewNoteListState(viewNoteListState: ViewNoteListState) {
