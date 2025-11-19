@@ -105,13 +105,13 @@ fun ListNoteView(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .animateItemPlacement()
+                    .animateItem()
             ) {
                 Card(
                     Modifier
                         .fillMaxWidth(cardSize)
                         .padding(10.dp)
-                        .animateItemPlacement()
+                        .animateItem()
                         .combinedClickable(
                             onClick = {
                                 if (noteStateViewModel.getCurrentMode().value != NoteScreenMode.SelectionScreenMode) {

@@ -102,7 +102,7 @@ fun GridNoteView(
                         noteStateViewModel.toSelectionMode()
                     }
                 )
-                .animateItemPlacement()
+                .animateItem()
                 ,
                 shape = RoundedCornerShape(10.dp),
                 backgroundColor = cardBackground

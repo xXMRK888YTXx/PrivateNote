@@ -586,7 +586,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                             it.onClick()
                             noteStateViewModel.toDefaultMode()
                         }
-                        .animateItemPlacement(),
+                        .animateItem(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -615,7 +615,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .animateItemPlacement()
+                            .animateItem()
                             .padding(bottom = 10.dp)
                     ) {
                         Text(
@@ -652,7 +652,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .animateItemPlacement()
+                        .animateItem()
                         .combinedClickable(
                             onClick = {
                                 noteStateViewModel.changeCategoryFilterStatus(it.categoryId)
