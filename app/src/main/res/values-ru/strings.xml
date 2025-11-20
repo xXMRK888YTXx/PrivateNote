@@ -215,4 +215,5 @@
     <string name="Notes_display">Отображение заметок</string>
     <string name="System_language">Системный</string>
     <string name="Language">Язык</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">Напоминание отменено, потому что отсутствует разрешение на отправку таких напоминаний</string>
 </resources>

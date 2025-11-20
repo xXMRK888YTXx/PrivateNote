@@ -14,6 +14,7 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.NotifyTaskRepository.Not
 import com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository.TodoRepository
 import com.xxmrk888ytxx.privatenote.Utils.getData
 import com.xxmrk888ytxx.privatenote.domain.NotificationAppManager.NotificationAppManager
+import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
@@ -25,66 +26,89 @@ class NotifyTaskManagerImpl @Inject constructor(
     private val alarmManager: AlarmManager,
     private val toDoRepository: TodoRepository,
     private val notificationManager: NotificationAppManager,
+    private val toastManager: ToastManager,
     @ApplicationContext private val context: Context
 ) : NotifyTaskManager {
 
 
-    override fun getAllTasks()  = notifyTaskRepository.getAllTasks()
+    override fun getAllTasks() = notifyTaskRepository.getAllTasks()
 
-    override fun getNotifyTaskByTodoId(todoId:Int) : Flow<NotifyTask?> {
+    override fun getNotifyTaskByTodoId(todoId: Int): Flow<NotifyTask?> {
         return notifyTaskRepository.getTaskByTodoId(todoId)
     }
 
     override suspend fun newTask(notifyTask: NotifyTask) {
-        if(getNotifyTaskByTodoId(notifyTask.todoId).first() != null) {
+        if (getNotifyTaskByTodoId(notifyTask.todoId).first() != null) {
             notifyTaskRepository.removeTaskByTodoId(notifyTask.todoId)
         }
         notifyTaskRepository.insertTask(notifyTask)
         sendNextTask()
     }
 
-    override suspend fun taskIsValid(taskId: Int) : Boolean {
+    override suspend fun taskIsValid(taskId: Int): Boolean {
         val status = notifyTaskRepository.getTaskEnableStatus(taskId)
         return status == true
     }
 
-    override fun sendNextTask() {
+    override suspend fun sendNextTask() {
         val tasks = getAllTasks().getData().sortedBy { it.time }
-        if(tasks.isEmpty()) return
+        if (tasks.isEmpty()) return
 
         val todo = toDoRepository.getToDoById(tasks.first().todoId).getData()
         val intent = Intent(context, Receiver::class.java)
         intent.action = NOTIFY_TASK_ACTION
-        intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.todoText,todo.id))
+        intent.putExtra(TASK_KEY, IntentNotifyTask.fromTask(tasks.first(), todo.todoText, todo.id))
 
-        val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        alarmManager.setAlarmClock(AlarmManager
-            .AlarmClockInfo(tasks.first().time,pendingIntent),pendingIntent)
+        try {
+            alarmManager.setAlarmClock(
+                AlarmManager
+                    .AlarmClockInfo(
+                        tasks.first().time,
+                        pendingIntent
+                    ),
+                pendingIntent
+            )
+        } catch (e: SecurityException) {
+            cancelTask(todo.id)
+            withContext(Dispatchers.Main) {
+                toastManager.showToast(R.string.the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders)
+            }
+        }
+
     }
 
     override suspend fun cancelTask(todoId: Int) {
         val tasks = getAllTasks().getData().sortedBy { it.time }
-        if(tasks.isEmpty()) return
+        if (tasks.isEmpty()) return
 
-        if(tasks.size-1 <= 0) {
+        if (tasks.size - 1 <= 0) {
             val todo = toDoRepository.getToDoById(tasks.first().todoId)
             val intent = Intent(context, Receiver::class.java)
 
             intent.action = NOTIFY_TASK_ACTION
-            intent.putExtra(TASK_KEY,IntentNotifyTask.fromTask(tasks.first(),todo.getData().todoText,
-            todo.getData().id))
+            intent.putExtra(
+                TASK_KEY, IntentNotifyTask.fromTask(
+                    tasks.first(), todo.getData().todoText,
+                    todo.getData().id
+                )
+            )
 
-            val pendingIntent = PendingIntent.getBroadcast(context,0,intent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            val pendingIntent = PendingIntent.getBroadcast(
+                context, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
             alarmManager.cancel(pendingIntent)
         }
         notifyTaskRepository.removeTaskByTodoId(todoId)
         sendNextTask()
     }
 
-    override suspend fun removeTask(taskId:Int) {
+    override suspend fun removeTask(taskId: Int) {
         notifyTaskRepository.removeTask(taskId)
     }
 
@@ -96,14 +120,16 @@ class NotifyTaskManagerImpl @Inject constructor(
             todo.add(toDoRepository.getToDoById(it.todoId).getData())
         }
 
-        todo.forEachIndexed { index,it ->
+        todo.forEachIndexed { index, it ->
             notificationManager.sendTaskNotification(
                 title = it.todoText,
                 text = context.getString(R.string.Reminder),
                 id = oldTask[index].taskId,
-                intentNotifyTask = IntentNotifyTask.fromTask(oldTask[index],
-                    todo[index].todoText,todo[index].id),
-                channel = if(oldTask[index].isPriority) NotificationAppManagerImpl.PRIORITY_HIGH_REMINDERS_CHANNELS
+                intentNotifyTask = IntentNotifyTask.fromTask(
+                    oldTask[index],
+                    todo[index].todoText, todo[index].id
+                ),
+                channel = if (oldTask[index].isPriority) NotificationAppManagerImpl.PRIORITY_HIGH_REMINDERS_CHANNELS
                 else NotificationAppManagerImpl.PRIORITY_DEFAULT_REMINDERS_CHANNELS
             )
         }
@@ -121,14 +147,14 @@ class NotifyTaskManagerImpl @Inject constructor(
     }
 
     override suspend fun markCompletedAction(todoId: Int) {
-        toDoRepository.changeMarkStatus(todoId,true)
+        toDoRepository.changeMarkStatus(todoId, true)
     }
 
-    override fun isTodoValid(todoId: Int) : Boolean {
+    override fun isTodoValid(todoId: Int): Boolean {
         return try {
             toDoRepository.getToDoById(todoId).getData()
             true
-        }catch (e:Exception) {
+        } catch (e: Exception) {
             false
         }
     }

@@ -224,4 +224,5 @@
     <string name="Notes_display">Notes display</string>
     <string name="System_language">Systemic</string>
     <string name="Language">Language</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">The reminder was canceled because there is no permission to send such reminders.</string>
 </resources>

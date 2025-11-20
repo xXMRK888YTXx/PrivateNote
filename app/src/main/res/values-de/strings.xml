@@ -215,4 +215,5 @@
     <string name="Notes_display">Anzeigetyp Notizen</string>
     <string name="System_language">Systemisch</string>
     <string name="Language">Sprache</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">Die Erinnerung wurde abgebrochen, weil Sie nicht berechtigt sind, solche Erinnerungen zu senden</string>
 </resources>

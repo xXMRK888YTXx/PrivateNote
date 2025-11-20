@@ -217,4 +217,5 @@
     <string name="Notes_display">Mostrar notas como</string>
     <string name="System_language">Sistémica</string>
     <string name="Language">Lengua</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">El recordatorio se canceló porque no hay permiso para enviar dichos recordatorios</string>
 </resources>
