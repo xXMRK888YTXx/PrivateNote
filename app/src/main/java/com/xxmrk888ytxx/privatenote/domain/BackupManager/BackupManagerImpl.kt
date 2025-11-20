@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BackupManagerImpl @Inject constructor(
-    @ApplicationContext private val context:Context,
+    @param:ApplicationContext private val context:Context,
     private val workerObserver: WorkerObserver
 ) : BackupManager {
 

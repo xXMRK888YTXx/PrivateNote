@@ -14,7 +14,7 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 class UnArcherBackupUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context:Context
+    @param:ApplicationContext private val context:Context
 ) : UnArcherBackupUseCase {
     private val tempFile = File(context.cacheDir,"tempRestoreBackupArcher.zip")
     private var unArcherBackupDir = File(context.cacheDir,"RestoreBackupTempDir")

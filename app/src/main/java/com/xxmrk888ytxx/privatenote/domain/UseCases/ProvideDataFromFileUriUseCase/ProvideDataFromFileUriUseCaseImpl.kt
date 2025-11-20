@@ -12,7 +12,7 @@ import java.io.InputStream
 import javax.inject.Inject
 
 class ProvideDataFromFileUriUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ProvideDataFromFileUriUseCase {
     override suspend fun <T> provideFromFileUri(uri: Uri?, onMapBytes: (ByteArray) -> T?): T?
         = withContext(Dispatchers.IO) {

@@ -1,12 +1,12 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen
 
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLink
 import com.xxmrk888ytxx.privatenote.domain.DeepLinkController.DeepLinkController
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.SettingsRepository
@@ -22,10 +22,7 @@ class MainViewModel @Inject constructor(
     private val deepLinkController: DeepLinkController,
 ) : ViewModel(),MainScreenController,FloatButtonController {
 
-    @OptIn(ExperimentalPagerApi::class)
-    val screenState = mutableStateOf(PagerState())
-    get() = field
-
+    val screenState = mutableStateOf(PagerState { 2 })
     private val topBarVisibleStatus = mutableStateOf(true)
 
     private val isFloatButtonEnable = mutableStateOf(true)
@@ -42,7 +39,6 @@ class MainViewModel @Inject constructor(
 
     fun getButtonListener(key:Int) = onClickHolder.get(key) ?: {}
 
-    @OptIn(ExperimentalPagerApi::class)
     suspend fun changeScreenState(state: MainScreenState) {
             screenState.value.animateScrollToPage(state.id)
     }
@@ -64,7 +60,6 @@ class MainViewModel @Inject constructor(
         isScrollBetweenScreenEnabled.value = state
     }
 
-    @OptIn(ExperimentalPagerApi::class)
     override fun setOnClickListener(navController: NavController) {
         onClickFloatButton.get(screenState.value.currentPage)?.invoke(navController)
 
@@ -101,7 +96,5 @@ class MainViewModel @Inject constructor(
             settingsRepository.disablePolicyAndTermsDialogState()
         }
     }
-
-    fun isNeedShowAd() = false
 
 }

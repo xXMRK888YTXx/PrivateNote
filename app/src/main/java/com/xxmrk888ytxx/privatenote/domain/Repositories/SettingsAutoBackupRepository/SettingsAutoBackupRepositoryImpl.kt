@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SettingsAutoBackupRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context:Context
+    @param:ApplicationContext private val context:Context
 ) : SettingsAutoBackupRepository {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "backup_settings")
 

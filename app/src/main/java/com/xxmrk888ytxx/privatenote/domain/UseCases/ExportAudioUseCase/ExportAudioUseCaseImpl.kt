@@ -9,7 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class ExportAudioUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context:Context
+    @param:ApplicationContext private val context:Context
 ) : ExportAudioUseCase {
     override suspend fun execute(audio: Audio, path: Uri) {
         val bytes = audio.file.getBytes()

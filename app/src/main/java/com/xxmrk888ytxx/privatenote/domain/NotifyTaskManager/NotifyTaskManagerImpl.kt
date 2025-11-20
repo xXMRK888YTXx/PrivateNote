@@ -27,7 +27,7 @@ class NotifyTaskManagerImpl @Inject constructor(
     private val toDoRepository: TodoRepository,
     private val notificationManager: NotificationAppManager,
     private val toastManager: ToastManager,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : NotifyTaskManager {
 
 

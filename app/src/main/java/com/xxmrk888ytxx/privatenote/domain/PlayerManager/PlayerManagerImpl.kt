@@ -23,7 +23,7 @@ import javax.inject.Inject
 @SendAnalytics
 class PlayerManagerImpl @Inject constructor(
     private val analytics: AnalyticsManager,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : PlayerManager  {
     private var mediaPlayer: MediaPlayer? = null
 

@@ -22,7 +22,7 @@ import java.util.concurrent.Executor
 import javax.inject.Inject
 @SendAnalytics
 class BiometricAuthorizationManagerImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val analytics: AnalyticsManager
 ) : BiometricAuthorizationManager {
 
