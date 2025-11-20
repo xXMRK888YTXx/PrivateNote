@@ -1,7 +1,5 @@
 package com.xxmrk888ytxx.privatenote.DI
 
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.CreateBackupUseCase.CreateBackupModelUseCase
@@ -22,6 +20,8 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCas
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ReadBackupFileUseCase.UnArcherBackupUseCaseImpl
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCase
+import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNoteFileUseCase.RemoveNoteFileUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreBackupUseCase.RestoreBackupUseCase
@@ -32,8 +32,6 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreNoteFromBackupUseCase.RestoreNoteFromBackupUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RestoreTodoFromUseCase.RestoreTodoFromUseCaseImpl
-import com.xxmrk888ytxx.privatenote.domain.UseCases.UploadBackupToGoogleDriveUseCase.UploadBackupToGoogleDriveUseCase
-import com.xxmrk888ytxx.privatenote.domain.UseCases.UploadBackupToGoogleDriveUseCase.UploadBackupToGoogleDriveUseCaseImpl
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.WriteBackupInFileUseCase.WriteBackupInFileUseCaseImpl
 import dagger.Binds
@@ -87,10 +85,6 @@ interface UseCasesModule {
 
     @Binds
     fun bindsCreateBackupUseCase(createBackupModelUseCaseImpl: CreateBackupModelUseCaseImpl): CreateBackupModelUseCase
-
-    @Binds
-    fun bindsUploadBackupToGoogleDriveUseCaseImpl(uploadBackupToGoogleDriveUseCaseImpl: UploadBackupToGoogleDriveUseCaseImpl)
-            : UploadBackupToGoogleDriveUseCase
 
     @Binds
     fun bindsExportImageUseCase(exportImageUseCaseImpl: ExportImageUseCaseImpl): ExportImageUseCase
