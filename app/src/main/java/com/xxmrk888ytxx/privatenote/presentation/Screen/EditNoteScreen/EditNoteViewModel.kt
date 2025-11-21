@@ -17,36 +17,32 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.PermissionState
-import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
-import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
-import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
-import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
-import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
-import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
-import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.Player.PlayerController
 import com.xxmrk888ytxx.privatenote.R
-import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
-import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.SelectionCategoryDialog.SelectionCategoryController
-import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.Image
-import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.SaveNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
-import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
-import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
-import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_ERROR
 import com.xxmrk888ytxx.privatenote.Utils.AnalyticsEvents.SELECT_IMAGE_EVENT_OK
-import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
-import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.Utils.CoroutineScopes.ApplicationScope
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
+import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
+import com.xxmrk888ytxx.privatenote.Utils.LifeCycleState
+import com.xxmrk888ytxx.privatenote.Utils.getData
+import com.xxmrk888ytxx.privatenote.Utils.ifNotNull
+import com.xxmrk888ytxx.privatenote.Utils.milliSecondToSecond
+import com.xxmrk888ytxx.privatenote.Utils.toState
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
+import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
+import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
+import com.xxmrk888ytxx.privatenote.domain.InputHistoryManager.InputHistoryManager
 import com.xxmrk888ytxx.privatenote.domain.LifecycleProvider.LifecycleProvider
 import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerManager
+import com.xxmrk888ytxx.privatenote.domain.PlayerManager.PlayerState
+import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecordManager
+import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.Audio
 import com.xxmrk888ytxx.privatenote.domain.Repositories.AudioRepository.AudioRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.CategoryRepository.CategoryRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.Image
 import com.xxmrk888ytxx.privatenote.domain.Repositories.ImageRepository.ImageRepository
+import com.xxmrk888ytxx.privatenote.domain.Repositories.NoteReposiroty.NoteRepository
+import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ClearTempDirUseCase.ClearShareDirUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ExportAudioUseCase.ExportAudioUseCase
@@ -55,10 +51,17 @@ import com.xxmrk888ytxx.privatenote.domain.UseCases.OpenImageInGallaryUseCase.Op
 import com.xxmrk888ytxx.privatenote.domain.UseCases.ProvideDataFromFileUriUseCase.ProvideDataFromFileUriUseCase
 import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.WakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.FileParams
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.Player.PlayerController
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.SelectionCategoryDialog.SelectionCategoryController
+import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.SaveNoteState
+import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
+import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -77,7 +80,6 @@ class EditNoteViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val exportImageUseCase: ExportImageUseCase,
     private val exportAudioUseCase: ExportAudioUseCase,
-    private val adShowManager: AdShowManager,
     private val lifecycleProvider: LifecycleProvider,
     private val provideDataFromFileUriUseCase: ProvideDataFromFileUriUseCase,
     private val openImageInGalleryUseCase: OpenImageInGalleryUseCase,
@@ -608,10 +610,7 @@ class EditNoteViewModel @Inject constructor(
     }
 
     fun toDrawScreen(navController: NavController) {
-        navController.navigate(Screen.DrawScreen.route) { launchSingleTop = true }
-
-        navController.getBackStackEntry(Screen.DrawScreen.route)
-            .arguments?.putInt(NOTE_ID_TO_DRAW_SCREEN_KEY,note.id)
+        navController.navigate("${Screen.DrawScreen.route}/${note.id}") { launchSingleTop = true }
     }
 
     fun getImageRequest(context: Context, bytes: ByteArray?): ImageRequest {
@@ -821,6 +820,6 @@ class EditNoteViewModel @Inject constructor(
 
     fun getAudioRepositoryLoadState() = audioRepository.getLoadState()
 
-    fun isNeedShowAd() = adShowManager.isNeedShowAds()
+    fun isNeedShowAd() = false
 
 }

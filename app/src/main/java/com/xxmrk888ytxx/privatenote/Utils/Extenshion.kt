@@ -14,9 +14,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.security.crypto.EncryptedFile
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
@@ -184,14 +184,14 @@ fun EncryptedFile.getBytes() : ByteArray? {
     }
 }
 
-fun <T> T?.ifNotNull(Runnable:(T) -> Unit) {
+fun <T> T?.ifNotNull(runnable:(T) -> Unit) {
     if(this != null) {
-        Runnable(this)
+        runnable(this)
     }
 }
-suspend  fun <T> T?.asyncIfNotNull(Runnable:suspend (T) -> Unit) {
+suspend  fun <T> T?.asyncIfNotNull(runnable:suspend (T) -> Unit) {
     if(this != null) {
-        Runnable(this)
+        runnable(this)
     }
 }
 
@@ -209,9 +209,9 @@ fun Long.milliSecondToSecond() : String {
 @Composable
 fun <T> State<T>.Remember() = remember {this}
 
-fun Any?.runOnMainThread(Runnable: () -> Unit) {
+fun Any?.runOnMainThread(runnable: () -> Unit) {
     val handler = Handler(Looper.getMainLooper())
-    handler.post { Runnable() }
+    handler.post { runnable() }
 }
 
 fun <T> MutableState<T>.toState():State<T> = this

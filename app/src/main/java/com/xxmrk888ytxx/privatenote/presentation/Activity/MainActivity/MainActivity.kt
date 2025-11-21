@@ -2,26 +2,39 @@ package com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity
 
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricPrompt
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.ProvidedValue
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.android.gms.ads.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_DRAW_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.Const.NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.Widgets.Actions.TodoWidgetActions.OpenTodoInAppAction
-import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.LocalOrientationLockManager
 import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.BackupSettingsScreen.BackupSettingsScreen
@@ -34,6 +47,7 @@ import com.xxmrk888ytxx.privatenote.presentation.Screen.SettingsScreen.SettingsS
 import com.xxmrk888ytxx.privatenote.presentation.Screen.SplashScreen.SplashScreen
 import com.xxmrk888ytxx.privatenote.presentation.Screen.ThemeSettingsScreen.ThemeSettingsScreen
 import com.xxmrk888ytxx.privatenote.presentation.theme.AppTheme
+import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeHolder
 import com.xxmrk888ytxx.privatenote.presentation.theme.ThemeType
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -45,10 +59,7 @@ import java.util.*
 class MainActivity :
     AppCompatActivity(),
     WakeLockController,
-    InterstitialAdsController,
-    BullingController,
-    OrientationLockManager
-{
+    OrientationLockManager {
     private val mainActivityViewModel by viewModels<MainActivityViewModel>()
 
     @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -57,9 +68,7 @@ class MainActivity :
 
         if (intent.action == OpenTodoInAppAction.OPEN_TODO_ACTION)
             mainActivityViewModel.registerTodoDeepLink(intent)
-
-
-        mainActivityViewModel.loadConsentForm(this)
+        enableEdgeToEdge()
         setContent {
             val themeId = mainActivityViewModel.themeId.collectAsState(ThemeType.System.id)
             val startScreen = getStartScreen()
@@ -70,23 +79,24 @@ class MainActivity :
                 otherProviders = arrayOf<ProvidedValue<*>>(
                     LocalOrientationLockManager provides this,
                     LocalWakeLockController provides this,
-                    LocalInterstitialAdsController provides this
                 ),
             ) {
                 Scaffold(
-                    backgroundColor = themeColors.mainBackGroundColor
+                    backgroundColor = themeColors.mainBackGroundColor,
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = startScreen.route
+                        startDestination = startScreen.route,
+                        modifier = Modifier.windowInsetsPadding(WindowInsets.systemBars)
                     ) {
 
                         composable(Screen.SplashScreen.route) {
-                            SplashScreen(navController,
+                            SplashScreen(
+                                navController,
                                 isAppPasswordInstalled = mainActivityViewModel.getAppPasswordState(),
                                 animationShowState = mainActivityViewModel.getAnimationShowState(),
                                 isBiometricAuthorizationEnable =
-                                mainActivityViewModel.checkBiometricAuthorization(),
+                                    mainActivityViewModel.checkBiometricAuthorization(),
                                 onAuthorization = { authorizationRequest(it) },
                                 isFirstStart = mainActivityViewModel.isFirstStart,
                                 onCompletedAuth = mainActivityViewModel.completedAuthCallBack(),
@@ -100,8 +110,13 @@ class MainActivity :
                             )
                         }
 
-                        composable(Screen.EditNoteScreen.route) {
-                            val noteId = it.arguments?.getInt(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY)
+                        composable(
+                            "${Screen.EditNoteScreen.route}/{$NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY}",
+                            arguments = listOf(
+                                navArgument(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY) { NavType.StringType }
+                            )
+                        ) {
+                            val noteId = it.arguments?.getString(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY)?.toIntOrNull()
                                 ?: return@composable
 
                             EditNoteScreen(
@@ -113,12 +128,16 @@ class MainActivity :
                         composable(Screen.SettingsScreen.route) {
                             SettingsScreen(
                                 navController = navController,
-                                bullingController = this@MainActivity
                             )
                         }
 
-                        composable(Screen.DrawScreen.route) {
-                            val noteId = it.arguments?.getInt(NOTE_ID_TO_DRAW_SCREEN_KEY)
+                        composable(
+                            route = "${Screen.DrawScreen.route}/{$NOTE_ID_TO_DRAW_SCREEN_KEY}",
+                            arguments = listOf(
+                                navArgument(NOTE_ID_TO_DRAW_SCREEN_KEY) { NavType.StringType }
+                            )
+                        ) {
+                            val noteId = it.arguments?.getString(NOTE_ID_TO_DRAW_SCREEN_KEY)?.toIntOrNull()
                                 ?: return@composable
 
                             DrawScreen(
@@ -146,8 +165,6 @@ class MainActivity :
                 }
             }
         }
-
-        mainActivityViewModel.onCreate()
     }
 
     private fun authorizationRequest(callBack: BiometricPrompt.AuthenticationCallback) {
@@ -202,16 +219,5 @@ class MainActivity :
 
     override fun unlockScreen() {
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-    }
-
-    override fun bueDisableAds() {
-        mainActivityViewModel.bueDisableAds(this)
-    }
-
-    override val isBillingAvailable: Boolean
-        get() = mainActivityViewModel.isBillingAvailable
-
-    override fun showAd() {
-        mainActivityViewModel.showAd(this)
     }
 }

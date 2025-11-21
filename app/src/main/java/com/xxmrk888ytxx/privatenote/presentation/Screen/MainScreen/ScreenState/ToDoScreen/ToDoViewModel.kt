@@ -45,7 +45,7 @@ class ToDoViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
     private val notificationAppManager: NotificationAppManager,
     private val deepLinkController: DeepLinkController,
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
     private var mainScreenController: MainScreenController? = null
 

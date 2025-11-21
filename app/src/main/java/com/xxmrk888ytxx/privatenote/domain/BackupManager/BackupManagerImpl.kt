@@ -8,7 +8,6 @@ import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsAutoBackupReposi
 import com.xxmrk888ytxx.privatenote.domain.WorkerObserver.WorkerObserver
 import com.xxmrk888ytxx.privatenote.domain.Workers.LocalAutoBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.BackupWorker
-import com.xxmrk888ytxx.privatenote.domain.Workers.GDriveBackupWorker
 import com.xxmrk888ytxx.privatenote.domain.Workers.RestoreBackupWorker
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class BackupManagerImpl @Inject constructor(
-    @ApplicationContext private val context:Context,
+    @param:ApplicationContext private val context:Context,
     private val workerObserver: WorkerObserver
 ) : BackupManager {
 
@@ -73,31 +72,4 @@ class BackupManagerImpl @Inject constructor(
         val workManager = WorkManager.getInstance(context)
         workManager.cancelAllWorkByTag(LocalAutoBackupWorker.WORK_TAG)
     }
-
-    override fun enableGDriveBackup(timeRepeatHours: Long,isUploadByWifiOnly:Boolean) {
-        disableGDriveAutoBackup()
-        val constraints = Constraints.Builder()
-        constraints.setRequiredNetworkType(
-            if(isUploadByWifiOnly) NetworkType.UNMETERED
-            else NetworkType.CONNECTED
-        )
-        val workManager = WorkManager.getInstance(context)
-        val work = PeriodicWorkRequestBuilder<GDriveBackupWorker>((timeRepeatHours * 60)+10, TimeUnit.MINUTES)
-            .addTag(GDriveBackupWorker.WORK_TAG)
-            .setInitialDelay(1,TimeUnit.MINUTES)
-            .setConstraints(constraints.build())
-            .build()
-        workManager.enqueueUniquePeriodicWork(
-            "GDriveAutoBackupWork",
-            ExistingPeriodicWorkPolicy.UPDATE,
-            work
-        )
-    }
-
-    override fun disableGDriveAutoBackup() {
-        val workManager = WorkManager.getInstance(context)
-        workManager.cancelAllWorkByTag(GDriveBackupWorker.WORK_TAG)
-    }
-
-
 }

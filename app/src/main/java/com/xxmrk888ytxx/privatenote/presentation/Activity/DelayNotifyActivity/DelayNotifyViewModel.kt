@@ -24,7 +24,7 @@ import javax.inject.Inject
 class DelayNotifyViewModel @Inject constructor(
     private val notifyTaskManager: NotifyTaskManager,
     private val notificationAppManager: NotificationAppManager,
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
 

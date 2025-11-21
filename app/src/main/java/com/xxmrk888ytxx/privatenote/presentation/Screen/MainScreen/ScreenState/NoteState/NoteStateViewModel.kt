@@ -115,10 +115,9 @@ class NoteStateViewModel @Inject constructor(
     }
 
     fun toEditNoteScreen(navController: NavController, id:Int) {
-        navController.navigate(Screen.EditNoteScreen.route) {launchSingleTop = true}
-
-        navController.getBackStackEntry(Screen.EditNoteScreen.route)
-            .arguments?.putInt(NOTE_ID_TO_EDIT_NOTE_SCREEN_KEY,id)
+        navController.navigate("${Screen.EditNoteScreen.route}/$id") {
+            launchSingleTop = true
+        }
     }
 
     fun toSelectionMode() {

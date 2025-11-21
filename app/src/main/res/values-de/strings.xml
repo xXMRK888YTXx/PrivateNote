@@ -155,7 +155,6 @@
     <string name="Copy_not_сompleted_todo">Kopieren Sie unvollständige Aufgaben</string>
     <string name="Copy_сompleted_todo">Erledigte Aufgaben kopieren</string>
     <string name="Auto_Backup_Settings_Local">Automatische Backup-Optionen (lokal)</string>
-    <string name="Auto_Backup_Settings_GDrive">Automatische Backup-Einstellungen (GDrive)</string>
     <string name="Main_settings">Grundeinstellungen</string>
     <string name="Backup_is_active">Staatlich</string>
     <string name="Backup_path">Pfad für die Sicherung</string>
@@ -188,17 +187,6 @@
     <string name="Twelve_hours">12 Stunden</string>
     <string name="twenty_four_hours">24 Stunden</string>
     <string name="Forty_eight_hours">48 Stunden</string>
-    <string name="Google_sing_in">Melden Sie sich bei Google an</string>
-    <string name="Authorization">Autorisiert</string>
-    <string name="Click_to_sign_in">Klicken Sie, um einzutreten</string>
-    <string name="GDrive_backup_started">Sicherung auf Google Drive gestartet</string>
-    <string name="Google_drive_backup_error_title">Beim Sichern auf Google Drive ist ein Fehler aufgetreten</string>
-    <string name="GoogleDriveBadWrite_description">Zugriff von Google Drive verweigert, überprüfen Sie, ob die Anwendung Zugriff auf Google Drive hat</string>
-    <string name="Not_known_error">Während der Sicherung ist ein unbekannter Fehler aufgetreten.</string>
-    <string name="Successful_authorization">Autorisiert erfolgreich</string>
-    <string name="Need_login_to_google">Sie müssen in Ihrem Google-Konto angemeldet sein, um zu arbeiten.</string>
-    <string name="Load_only_from_WIFI">Nur über WLAN hochladen</string>
-    <string name="Login_out_from_account">Abmelden von Ihrem Google-Konto</string>
     <string name="Record">Ton aufnehmen</string>
     <string name="From_device">Vom Gerät</string>
     <string name="DontKillMyApp_dialog_text">Da einige Hersteller die Arbeit außerhalb der Anwendung einschränken, müssen zusätzliche Einstellungen vorgenommen werden. Gehen Sie zu dontkillmyapp.com, finden Sie Ihren Hersteller und folgen Sie den dortigen Anweisungen.</string>
@@ -227,4 +215,5 @@
     <string name="Notes_display">Anzeigetyp Notizen</string>
     <string name="System_language">Systemisch</string>
     <string name="Language">Sprache</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">Die Erinnerung wurde abgebrochen, weil Sie nicht berechtigt sind, solche Erinnerungen zu senden</string>
 </resources>

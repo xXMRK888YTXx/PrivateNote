@@ -6,7 +6,7 @@ import java.io.File
 import javax.inject.Inject
 
 class ClearShareDirUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ClearShareDirUseCase {
     override suspend fun execute() {
         val shareImageDir = File(context.cacheDir, "share_files")

@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -47,22 +47,20 @@ import com.google.accompanist.insets.navigationBarsWithImePadding
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.xxmrk888ytxx.privatenote.BuildConfig
-import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
+import com.xxmrk888ytxx.privatenote.R
+import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Exception.FailedDecryptException
+import com.xxmrk888ytxx.privatenote.domain.RecordManager.RecorderState
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
+import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
+import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.Player.PlayerDialog
-import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.SelectionCategoryDialog
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.WarmingText.WarmingText
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.YesNoDialog.YesNoDialog
 import com.xxmrk888ytxx.privatenote.presentation.Screen.EditNoteScreen.States.ShowDialogState
-import com.xxmrk888ytxx.privatenote.Utils.*
-import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.CreateSingleAccessExternalFileContract
-import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickContentContract
-import com.xxmrk888ytxx.privatenote.presentation.ActivityLaunchContacts.PickFileContract
-import com.xxmrk888ytxx.privatenote.presentation.LocalInterstitialAdsController
-import com.xxmrk888ytxx.privatenote.presentation.LocalWakeLockController
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
@@ -73,11 +71,7 @@ fun EditNoteScreen(
     navController: NavController,
     noteId:Int
 ) {
-    val localInterstitialAdsController = LocalInterstitialAdsController.current
 
-    LaunchedEffect(key1 = Unit, block = {
-        localInterstitialAdsController.showAd()
-    })
 
     val dialogState = remember {
         editNoteViewModel.dialogShowState
@@ -94,7 +88,6 @@ fun EditNoteScreen(
     }
     val playerDialogState = editNoteViewModel.getPlayerDialogState().Remember()
     val removeAudioDialogState = editNoteViewModel.getAudioRemoveDialogState().Remember()
-    val isNeedShowAd = editNoteViewModel.isNeedShowAd().collectAsState(true)
 
     LaunchedEffect(key1 = editNoteViewModel, block = {
         editNoteViewModel.updateImagesCount()
@@ -117,12 +110,6 @@ fun EditNoteScreen(
             TimeCreated(editNoteViewModel)
             LazySpacer(5)
             CategorySelector(editNoteViewModel)
-            if (isNeedShowAd.value) {
-                AdMobBanner(
-                    if (BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
-                    else stringResource(R.string.EditScreenBannerKey)
-                )
-            }
             NoteTextEdit(editNoteViewModel, textFieldFocus)
         }
     }

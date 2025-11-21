@@ -20,7 +20,7 @@ import java.io.OutputStream
 import javax.inject.Inject
 
 class OpenImageInGalleryUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context:Context
+    @param:ApplicationContext private val context:Context
 ) : OpenImageInGalleryUseCase {
 
     private fun intentFactory(uri: Uri?) : Intent {

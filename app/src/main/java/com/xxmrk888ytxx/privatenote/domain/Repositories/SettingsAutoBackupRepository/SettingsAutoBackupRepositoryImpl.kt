@@ -14,7 +14,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SettingsAutoBackupRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context:Context
+    @param:ApplicationContext private val context:Context
 ) : SettingsAutoBackupRepository {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "backup_settings")
 
@@ -36,7 +36,6 @@ class SettingsAutoBackupRepositoryImpl @Inject constructor(
 
     private suspend fun restoreSettings() {
         val isEnableLocalBackup = getIsEnableLocalBackup().first()
-        val isEnableGDriveBackup = getIsEnableGDriveBackup().first()
         val isBackupNotEncryptedNoteKey = getIsBackupNotEncryptedNote().first()
         val isBackupEncryptedNoteKey = getIsBackupEncryptedNote().first()
         val isBackupNoteImagesKey = getIsBackupNoteImages().first()
@@ -46,11 +45,8 @@ class SettingsAutoBackupRepositoryImpl @Inject constructor(
         val isBackupCompletedTodoKey = getIsBackupCompletedTodo().first()
         val backupPath = getBackupPath().first()
         val repeatLocalAutoBackupTimeAtHours = getLocalAutoBackupTime().first()
-        val repeatGDriveAutoBackupTimeAtHours = getGDriveAutoBackupTime().first()
-        val uploadToGDriveOnlyForWiFi = getUploadToGDriveOnlyForWiFi().first()
         _settingsBackup.emit(BackupSettings(
             isEnableLocalBackup,
-            isEnableGDriveBackup,
             isBackupNotEncryptedNoteKey,
             isBackupEncryptedNoteKey,
             isBackupNoteImagesKey,
@@ -60,8 +56,6 @@ class SettingsAutoBackupRepositoryImpl @Inject constructor(
             isBackupCompletedTodoKey,
             backupPath,
             repeatLocalAutoBackupTimeAtHours,
-            repeatGDriveAutoBackupTimeAtHours,
-            uploadToGDriveOnlyForWiFi
         ))
     }
 
@@ -85,15 +79,6 @@ class SettingsAutoBackupRepositoryImpl @Inject constructor(
         }
         notifySettingsChanges {
             it.copy(isEnableLocalBackup = newState)
-        }
-    }
-
-    override suspend fun updateIsEnableGDriveBackup(newState: Boolean) {
-        context.dataStore.edit {
-            it[isEnableGDriveBackup] = newState
-        }
-        notifySettingsChanges {
-            it.copy(isEnableGDriveBackup = newState)
         }
     }
 
@@ -182,24 +167,6 @@ class SettingsAutoBackupRepositoryImpl @Inject constructor(
         }
         notifySettingsChanges {
             it.copy(repeatLocalAutoBackupTimeAtHours = newTime)
-        }
-    }
-
-    override suspend fun changeGDriveAutoBackupTime(newTime: Long) {
-        context.dataStore.edit {
-            it[repeatGDriveAutoBackupTimeAtHours] = newTime
-        }
-        notifySettingsChanges {
-            it.copy(repeatGDriveAutoBackupTimeAtHours = newTime)
-        }
-    }
-
-    override suspend fun updateUploadToGDriveOnlyForWiFi(newState: Boolean) {
-        context.dataStore.edit {
-            it[uploadToGDriveOnlyForWiFiKey] = newState
-        }
-        notifySettingsChanges {
-            it.copy(isUploadToGDriveOnlyForWiFi = newState)
         }
     }
 

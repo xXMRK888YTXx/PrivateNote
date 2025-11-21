@@ -23,7 +23,7 @@ import kotlin.random.Random
 
 @Singleton
 class NotificationAppManagerImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : NotificationAppManager
 {
     override fun createNotificationChannels() {

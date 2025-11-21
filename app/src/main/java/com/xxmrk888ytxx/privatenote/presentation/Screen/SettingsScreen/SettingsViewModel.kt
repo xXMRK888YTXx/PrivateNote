@@ -17,9 +17,7 @@ import com.xxmrk888ytxx.privatenote.domain.SecurityUtils.SecurityUtils
 import com.xxmrk888ytxx.privatenote.Utils.Const.DEVELOPER_EMAIL
 import com.xxmrk888ytxx.privatenote.domain.ToastManager.ToastManager
 import com.xxmrk888ytxx.privatenote.Utils.toState
-import com.xxmrk888ytxx.privatenote.domain.AdManager.AdShowManager
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -30,17 +28,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    private val toastManager: ToastManager,
     private val securityUtils: SecurityUtils,
     private val authorizationManager: BiometricAuthorizationManager,
-    private val adShowManager: AdShowManager
 ) : ViewModel() {
-
-    private var bullingController: BullingController? = null
-
-    fun initOnBueDisableAd(bullingController:BullingController) {
-        this.bullingController = bullingController
-    }
 
     private val showLanguageDialogState = mutableStateOf(false)
 
@@ -230,15 +220,6 @@ class SettingsViewModel @Inject constructor(
             settingsRepository.changeSortNoteState(sortNoteState)
         }
     }
-
-    fun isNeedShowAd() = adShowManager.isNeedShowAds()
-
-    fun onOpenBuyDisableAds() {
-        bullingController?.bueDisableAds()
-    }
-
-    fun isBueDisableAdAvailable() = bullingController?.isBillingAvailable ?: false
-
     fun getViewNoteListState() = settingsRepository.getViewNoteListState()
 
     fun changeViewNoteListState(viewNoteListState: ViewNoteListState) {

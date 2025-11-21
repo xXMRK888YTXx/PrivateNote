@@ -3,7 +3,6 @@ package com.xxmrk888ytxx.privatenote.domain.Repositories.TodoRepository
 import com.xxmrk888ytxx.privatenote.domain.AnalyticsManager.AnalyticsManager
 import com.xxmrk888ytxx.privatenote.data.Database.DAO.TodoDao
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.TodoItem
-import com.xxmrk888ytxx.privatenote.domain.UseCases.NotifyWidgetDataChangedUseCase.NotifyWidgetDataChangedUseCase
 import com.xxmrk888ytxx.privatenote.domain.UseCases.RemoveNotifyTaskIfTodoCompletedUseCase.RemoveNotifyTaskIfTodoCompletedUseCase
 import io.mockk.every
 import io.mockk.mockk
@@ -18,13 +17,12 @@ import org.junit.Test
 class TodoRepositoryTest {
     lateinit var repo:TodoRepository
     lateinit var dao:TodoDao
-    val notifyWidgetDataChangedUseCase: NotifyWidgetDataChangedUseCase = mockk(relaxed = true)
     @Before
     fun init() {
         val analytics: AnalyticsManager = mockk(relaxed = true)
         dao = mockk(relaxed = true)
         val removeNotifyTaskIfTodoCompletedUseCase = mockk<RemoveNotifyTaskIfTodoCompletedUseCase>(relaxed = true)
-        repo = TodoRepositoryImpl(dao,notifyWidgetDataChangedUseCase,removeNotifyTaskIfTodoCompletedUseCase,analytics)
+        repo = TodoRepositoryImpl(dao, removeNotifyTaskIfTodoCompletedUseCase,analytics)
     }
 
     @Test
@@ -58,7 +56,6 @@ class TodoRepositoryTest {
 
         verifySequence {
             dao.insertToDo(todo)
-            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -70,7 +67,6 @@ class TodoRepositoryTest {
 
         verifySequence {
             dao.removeToDo(id)
-            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -83,7 +79,6 @@ class TodoRepositoryTest {
 
         verifySequence {
             dao.changeMarkStatus(id,state)
-            notifyWidgetDataChangedUseCase.execute()
         }
     }
 
@@ -96,7 +91,6 @@ class TodoRepositoryTest {
 
         verifySequence {
             dao.changeMarkStatus(id,state)
-            notifyWidgetDataChangedUseCase.execute()
         }
     }
 

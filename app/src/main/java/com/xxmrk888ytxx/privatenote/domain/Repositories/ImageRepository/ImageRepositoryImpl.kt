@@ -30,7 +30,7 @@ import javax.inject.Singleton
 @SendAnalytics
 @Singleton
 class ImageRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val analytics: AnalyticsManager
 ) : ImageRepository {
 

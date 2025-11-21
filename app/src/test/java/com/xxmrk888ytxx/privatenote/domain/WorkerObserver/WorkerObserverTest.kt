@@ -11,6 +11,9 @@ import org.junit.Rule
 import org.junit.Test
 import kotlin.coroutines.CoroutineContext
 
+
+private object Lock
+
 class WorkerObserverTest {
     @ExperimentalCoroutinesApi
     @get:Rule
@@ -26,7 +29,7 @@ class WorkerObserverTest {
     private var testCounter = 0
 
     private fun upTestCounter() {
-        synchronized(true) {
+        synchronized(Lock) {
             testCounter += 1
         }
     }

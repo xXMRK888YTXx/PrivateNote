@@ -13,7 +13,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class ExportImageUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context
+    @param:ApplicationContext private val context: Context
 ) : ExportImageUseCase {
 
     override suspend fun execute(image: Image, path: Uri) {

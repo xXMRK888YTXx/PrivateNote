@@ -17,7 +17,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class GenerateBackupFileUseCase @AssistedInject constructor(
-    @ApplicationContext private val context:Context,
+    @param:ApplicationContext private val context:Context,
     private val imageRepository: ImageRepository,
     private val audioRepository: AudioRepository,
     @Assisted tempDirName:String

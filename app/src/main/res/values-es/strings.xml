@@ -156,7 +156,6 @@
     <string name="Copy_not_сompleted_todo">Copiar tareas incompletas</string>
     <string name="Copy_сompleted_todo">Copiar tareas completadas</string>
     <string name="Auto_Backup_Settings_Local">Opciones de respaldo automático (localmente)</string>
-    <string name="Auto_Backup_Settings_GDrive">Ajustes de copia de seguridad automática (GDrive)</string>
     <string name="Main_settings">Ajustes básicos</string>
     <string name="Backup_is_active">Estado</string>
     <string name="Backup_path">Ruta de respaldo</string>
@@ -190,17 +189,6 @@
     <string name="Twelve_hours">12 horas</string>
     <string name="twenty_four_hours">24 horas</string>
     <string name="Forty_eight_hours">48 horas</string>
-    <string name="Google_sing_in">Iniciar sesión en Google</string>
-    <string name="Authorization">Autorizado</string>
-    <string name="Click_to_sign_in">Haga clic para entrar</string>
-    <string name="GDrive_backup_started">Copia de seguridad en Google Drive lanzada</string>
-    <string name="Google_drive_backup_error_title">Se produjo un error al realizar la copia de seguridad en Google Drive</string>
-    <string name="GoogleDriveBadWrite_description">Acceso denegado a Google Drive, compruebe que la aplicación tiene acceso a Google Drive</string>
-    <string name="Not_known_error">Se produjo un error desconocido durante la copia de seguridad.</string>
-    <string name="Successful_authorization">Autorizado con éxito</string>
-    <string name="Need_login_to_google">Debe iniciar sesión en su cuenta de Google para trabajar.</string>
-    <string name="Load_only_from_WIFI">Subir solo a través de Wi-Fi</string>
-    <string name="Login_out_from_account">Sal de tu cuenta de Google</string>
     <string name="Record">Registro</string>
     <string name="From_device">Desde el dispositivo</string>
     <string name="DontKillMyApp_dialog_text">Debido al hecho de que algunos fabricantes restringen el trabajo fuera de la aplicación, es necesario realizar configuraciones adicionales. Vaya a dontkillmyapp.com, busque su fabricante y siga las instrucciones allí.</string>
@@ -229,4 +217,5 @@
     <string name="Notes_display">Mostrar notas como</string>
     <string name="System_language">Sistémica</string>
     <string name="Language">Lengua</string>
+    <string name="the_reminder_was_canceled_because_there_is_no_permission_to_send_such_reminders">El recordatorio se canceló porque no hay permiso para enviar dichos recordatorios</string>
 </resources>

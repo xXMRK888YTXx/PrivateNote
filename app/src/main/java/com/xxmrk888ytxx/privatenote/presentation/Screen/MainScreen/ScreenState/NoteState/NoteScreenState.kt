@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Category
 import com.xxmrk888ytxx.privatenote.data.Database.Entity.Note
@@ -44,7 +44,6 @@ import com.xxmrk888ytxx.privatenote.Utils.*
 import com.xxmrk888ytxx.privatenote.Utils.Const.CHOSEN_ONLY
 import com.xxmrk888ytxx.privatenote.Utils.Const.IGNORE_CATEGORY
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.Grid.GridNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteListView.List.ListNoteView
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
@@ -586,7 +585,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                             it.onClick()
                             noteStateViewModel.toDefaultMode()
                         }
-                        .animateItemPlacement(),
+                        .animateItem(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -615,7 +614,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .animateItemPlacement()
+                            .animateItem()
                             .padding(bottom = 10.dp)
                     ) {
                         Text(
@@ -652,7 +651,7 @@ fun CategoryMenu(noteStateViewModel: NoteStateViewModel) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .animateItemPlacement()
+                        .animateItem()
                         .combinedClickable(
                             onClick = {
                                 noteStateViewModel.changeCategoryFilterStatus(it.categoryId)

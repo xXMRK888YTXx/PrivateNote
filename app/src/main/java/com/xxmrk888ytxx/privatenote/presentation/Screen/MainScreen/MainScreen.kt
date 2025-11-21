@@ -1,66 +1,65 @@
 package com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.rememberScaffoldState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.xxmrk888ytxx.privatenote.BuildConfig
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.InterstitialAdsController
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.AdMobBanner.AdMobBanner
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.ConfirmPrivatePolicyAndTermsDialog.ConfirmPrivatePolicyAndTermsDialog
+import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.NoteScreenState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.ToDoScreen.ToDoScreen
-import com.xxmrk888ytxx.privatenote.presentation.MultiUse.FloatButton.FloatButton
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MainScreen(
     mainViewModel: MainViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val state = remember {
-        mainViewModel.screenState
-    }
+    val state = remember { mainViewModel.screenState }
     val bottomBarState = remember {
         mainViewModel.getShowBottomBarStatus()
     }
     val getScrollBetweenScreenEnabled = remember {
         mainViewModel.getScrollBetweenScreenEnabled()
     }
-    val isNeedShowAd = mainViewModel.isNeedShowAd().collectAsState(initial = true)
     val navigationSwipeState = mainViewModel.getNavigationSwipeState().collectAsState(true)
     val isPolityAndTermsConfirmed = mainViewModel.isPolityAndTermsConfirmed().collectAsState(true)
     Scaffold(
         modifier = Modifier.fillMaxSize(),
-        floatingActionButton = { FloatButton(mainViewModel,navController) },
+        floatingActionButton = { FloatButton(mainViewModel, navController) },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
-            if(bottomBarState.value) {
+            if (bottomBarState.value) {
                 Column() {
                     BottomBar(
                         mainViewModel = mainViewModel,
                         pageState = state.value,
                         navController = navController
                     )
-                    if(isNeedShowAd.value) {
-                        AdMobBanner(
-                            if(BuildConfig.DEBUG) stringResource(R.string.TestBannerKey)
-                            else stringResource(R.string.MainScreenBannerKey)
-                        )
-                    }
                 }
 
 
@@ -71,17 +70,18 @@ fun MainScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            HorizontalPager(count = 2,
+            HorizontalPager(
                 state = state.value,
                 userScrollEnabled = navigationSwipeState.value && getScrollBetweenScreenEnabled.value
             ) {
-                when(it) {
-                     MainScreenState.NoteScreen.id -> {
-                         NoteScreenState(
-                             navController = navController,
-                             mainScreenController = mainViewModel
-                         )
-                     }
+                when (it) {
+                    MainScreenState.NoteScreen.id -> {
+                        NoteScreenState(
+                            navController = navController,
+                            mainScreenController = mainViewModel
+                        )
+                    }
+
                     MainScreenState.ToDoScreen.id -> {
                         ToDoScreen(mainScreenController = mainViewModel)
                     }
@@ -90,7 +90,7 @@ fun MainScreen(
             }
         }
     }
-    if(!isPolityAndTermsConfirmed.value) {
+    if (!isPolityAndTermsConfirmed.value) {
         ConfirmPrivatePolicyAndTermsDialog {
             mainViewModel.confirmPolityAndTerms()
         }
@@ -102,7 +102,6 @@ fun MainScreen(
     })
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun BottomBar(
     mainViewModel: MainViewModel,
@@ -146,16 +145,19 @@ fun BottomBar(
     ) {
         items.forEach {
             BottomNavigationItem(
-                icon =  { Icon(painterResource(id = it.icon),
-                    contentDescription = it.name,
-                    modifier = Modifier.size(20.dp)
-                )},
-                label = { Text(text = it.name)},
+                icon = {
+                    Icon(
+                        painterResource(id = it.icon),
+                        contentDescription = it.name,
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
+                label = { Text(text = it.name) },
                 selectedContentColor = themeColors.primaryFontColor,
                 unselectedContentColor = themeColors.primaryFontColor.copy(0.4f),
                 alwaysShowLabel = true,
                 selected = it.id == pageState.currentPage,
-                onClick = {it.onClick()}
+                onClick = { it.onClick() }
             )
         }
     }

@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.xxmrk888ytxx.privatenote.Utils.Exception.InvalidPasswordException
 import com.xxmrk888ytxx.privatenote.presentation.MultiUse.PasswordEditText.PasswordEditText
@@ -26,7 +26,6 @@ import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
 import com.xxmrk888ytxx.privatenote.domain.Repositories.SettingsRepository.models.SortNoteState
-import com.xxmrk888ytxx.privatenote.presentation.Activity.MainActivity.BullingController
 import com.xxmrk888ytxx.privatenote.presentation.Screen.MainScreen.ScreenState.NoteState.models.ViewNoteListState
 import com.xxmrk888ytxx.privatenote.presentation.Screen.Screen
 import kotlinx.collections.immutable.persistentListOf
@@ -36,11 +35,7 @@ import kotlinx.coroutines.launch
 fun SettingsScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     navController: NavController,
-    bullingController: BullingController
 ) {
-    LaunchedEffect(key1 = bullingController, block = {
-        settingsViewModel.initOnBueDisableAd(bullingController)
-    })
     val languageDialogState = remember {
         settingsViewModel.getShowLanguageDialogState()
     }
@@ -72,17 +67,6 @@ fun SettingsScreen(
         EnterLoginPasswordDialog(
             onCancel = {settingsViewModel.hideAppPasswordDialog()},
             onComplete = {settingsViewModel.enableAppPassword(it)}
-        )
-    }
-    if(isShowDisableAdsDialog.value) {
-        DisableAdsDialog(
-            onOpenBuyDisableAds = {
-                settingsViewModel.onOpenBuyDisableAds()
-            },
-            onCloseDialog = {
-                settingsViewModel.closeDisableAdsDialog()
-            },
-            isBueAvailable = settingsViewModel.isBueDisableAdAvailable()
         )
     }
     if(enterAppPasswordDialogState.value) {
@@ -182,7 +166,6 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
     }
     val isShowDropDownSortStateVisible = settingsViewModel.isShowDropDownSortStateVisible().Remember()
     val sortNoteState = settingsViewModel.getNoteSortState().collectAsState(SortNoteState.ByDescending)
-    val isShowAd = settingsViewModel.isNeedShowAd().collectAsState(true)
     val currentViewNoteListState = settingsViewModel.getViewNoteListState()
         .collectAsState(ViewNoteListState.List)
     val isViewNoteListDropDownVisible = settingsViewModel.isViewNoteListDropDownVisible().Remember()
@@ -335,14 +318,6 @@ fun SettingsList(settingsViewModel: SettingsViewModel,navController: NavControll
         )
     )
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
-           item {
-                   DisableAdsButton(
-                    onOpenDisableDialog = {
-                       settingsViewModel.openDisableAdsDialog()
-                   },
-                   isAdEnabled = isShowAd.value
-              )
-           }
         settingsCategory.forEach { category ->
             item {
                 Text(text = category.categoryName,

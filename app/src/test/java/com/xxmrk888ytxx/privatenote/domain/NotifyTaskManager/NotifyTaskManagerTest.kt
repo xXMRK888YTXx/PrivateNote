@@ -17,12 +17,13 @@ import org.junit.Before
 import org.junit.Test
 
 class NotifyTaskManagerTest {
-    lateinit var manager:NotifyTaskManager
-    lateinit var notifyTaskRepository:NotifyTaskRepository
+    lateinit var manager: NotifyTaskManager
+    lateinit var notifyTaskRepository: NotifyTaskRepository
     lateinit var alarmManager: AlarmManager
     lateinit var todoRepository: TodoRepository
     lateinit var notificationAppManager: NotificationAppManager
     lateinit var context: Context
+
     @Before
     fun init() {
         notifyTaskRepository = mockk(relaxed = true)
@@ -30,7 +31,16 @@ class NotifyTaskManagerTest {
         todoRepository = mockk(relaxed = true)
         context = mockk(relaxed = true)
         notificationAppManager = mockk(relaxed = true)
-        manager = spyk(NotifyTaskManagerImpl(notifyTaskRepository,alarmManager,todoRepository,notificationAppManager,context))
+        manager = spyk(
+            NotifyTaskManagerImpl(
+                notifyTaskRepository,
+                alarmManager,
+                todoRepository,
+                notificationAppManager,
+                mockk(),
+                context
+            )
+        )
     }
 
     @After
@@ -43,7 +53,7 @@ class NotifyTaskManagerTest {
         val size = 5
         val taskList = getListTask(size)
         every { manager.getNotifyTaskByTodoId(any()) } returns flowOf(getTestTask())
-        every { manager.sendNextTask() } answers {}
+        coEvery { manager.sendNextTask() } answers {}
 
         taskList.forEach {
             manager.newTask(it)
@@ -59,7 +69,7 @@ class NotifyTaskManagerTest {
         val size = 5
         val taskList = getListTask(size)
         every { manager.getNotifyTaskByTodoId(any()) } returns flowOf(getTestTask())
-        every { manager.sendNextTask() } answers {}
+        coEvery { manager.sendNextTask() } answers {}
 
         taskList.forEach {
             manager.newTask(it)
@@ -95,7 +105,7 @@ class NotifyTaskManagerTest {
         coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
-        Assert.assertEquals(expectState,returnsState)
+        Assert.assertEquals(expectState, returnsState)
     }
 
     @Test
@@ -109,7 +119,7 @@ class NotifyTaskManagerTest {
         coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
-        Assert.assertEquals(expectState,returnsState)
+        Assert.assertEquals(expectState, returnsState)
     }
 
     @Test
@@ -123,11 +133,11 @@ class NotifyTaskManagerTest {
         coVerifySequence {
             notifyTaskRepository.getTaskEnableStatus(taskId)
         }
-        Assert.assertEquals(expectState,returnsState)
+        Assert.assertEquals(expectState, returnsState)
     }
 
     @Test
-    fun `test_sendNextTask_If_Haven't_Task_Expect_Alarm_Manager_Method_Not_Called`() {
+    fun `test_sendNextTask_If_Haven't_Task_Expect_Alarm_Manager_Method_Not_Called`() = runBlocking {
         val tasks = listOf<NotifyTask>()
         every { manager.getAllTasks() } returns flowOf(tasks)
         every { todoRepository.getToDoById(any()) } returns flowOf(getTestTodo())
@@ -135,8 +145,8 @@ class NotifyTaskManagerTest {
         manager.sendNextTask()
 
 
-        verify(exactly = 0){
-            alarmManager.setAlarmClock(any(),any())
+        verify(exactly = 0) {
+            alarmManager.setAlarmClock(any(), any())
         }
     }
 
@@ -154,12 +164,12 @@ class NotifyTaskManagerTest {
     @Test
     fun test_checkForOld_Input_Tasks_Expect_Send_Notification_If_Task_Time_Is_Miss() = runBlocking {
         val taskList = listOf(
-            getTestTask(1, time = System.currentTimeMillis()-12314,id = 1),
-            getTestTask(2, time = System.currentTimeMillis()+12314,id = 2),
-            getTestTask(3, time = System.currentTimeMillis()-12314,id = 3),
-            getTestTask(4, time = System.currentTimeMillis()+12314,id = 4),
+            getTestTask(1, time = System.currentTimeMillis() - 12314, id = 1),
+            getTestTask(2, time = System.currentTimeMillis() + 12314, id = 2),
+            getTestTask(3, time = System.currentTimeMillis() - 12314, id = 3),
+            getTestTask(4, time = System.currentTimeMillis() + 12314, id = 4),
         )
-        val todoList = listOf(getTestTodo(1),getTestTodo(3))
+        val todoList = listOf(getTestTodo(1), getTestTodo(3))
         every { manager.getAllTasks() } returns flowOf(taskList)
         every { todoRepository.getToDoById(1) } answers {
             flowOf(todoList[0])
@@ -171,24 +181,35 @@ class NotifyTaskManagerTest {
         manager.checkForOld()
 
         verify(exactly = 2) {
-            notificationAppManager.sendTaskNotification(any(),any(),any(),any(),any())
+            notificationAppManager.sendTaskNotification(any(), any(), any(), any(), any())
         }
         coVerify(exactly = 2) { manager.removeTask(any()) }
-     }
+    }
 
-   @Test
-   fun test_markCompletedAction_Send_Id_Expect_Call_Repository_Method_With_Sended_Id()= runBlocking {
-       val todoId = 5
+    @Test
+    fun test_markCompletedAction_Send_Id_Expect_Call_Repository_Method_With_Sended_Id() =
+        runBlocking {
+            val todoId = 5
 
-       manager.markCompletedAction(todoId)
+            manager.markCompletedAction(todoId)
 
-       coVerifySequence {
-           todoRepository.changeMarkStatus(todoId,true)
-       }
-   }
+            coVerifySequence {
+                todoRepository.changeMarkStatus(todoId, true)
+            }
+        }
 
-    private fun getTestTodo(id:Int = 0, todoText:String = "test", isImportant:Boolean = false) = TodoItem(id = id, todoText = todoText, isImportant = isImportant)
-    private fun getTestTask(todoId:Int = 0,id:Int = 0,enable:Boolean = true,time:Long = 0,isPriority:Boolean = true) =
-        NotifyTask(id,todoId,enable,time,isPriority)
-    private fun getListTask(size:Int = 1,task:NotifyTask = getTestTask()) = listOf<NotifyTask>().fillList(task,size)
+    private fun getTestTodo(id: Int = 0, todoText: String = "test", isImportant: Boolean = false) =
+        TodoItem(id = id, todoText = todoText, isImportant = isImportant)
+
+    private fun getTestTask(
+        todoId: Int = 0,
+        id: Int = 0,
+        enable: Boolean = true,
+        time: Long = 0,
+        isPriority: Boolean = true
+    ) =
+        NotifyTask(id, todoId, enable, time, isPriority)
+
+    private fun getListTask(size: Int = 1, task: NotifyTask = getTestTask()) =
+        listOf<NotifyTask>().fillList(task, size)
 }

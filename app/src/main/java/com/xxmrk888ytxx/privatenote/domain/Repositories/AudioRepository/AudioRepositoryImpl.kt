@@ -36,7 +36,7 @@ import javax.inject.Singleton
 @SendAnalytics
 @Singleton
 class AudioRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val analyticsManager: AnalyticsManager
 ) : AudioRepository {
     private val _audioFiles: MutableSharedFlow<List<Audio>> = MutableSharedFlow(1)

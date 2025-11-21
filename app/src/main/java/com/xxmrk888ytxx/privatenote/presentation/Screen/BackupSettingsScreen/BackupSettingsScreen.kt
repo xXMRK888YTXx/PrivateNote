@@ -32,9 +32,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.xxmrk888ytxx.privatenote.R
 import com.xxmrk888ytxx.privatenote.Utils.Remember
 import com.xxmrk888ytxx.privatenote.Utils.themeColors
@@ -104,7 +103,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Not_copy_encrypt_note),
             settingsState = settings.isBackupNotEncryptedNote,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotEncryptedNote(it)
             },
@@ -117,7 +116,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_encrypt_note),
             settingsState = settings.isBackupEncryptedNote,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupEncryptedNote(it)
             },
@@ -130,7 +129,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_images),
             settingsState = settings.isBackupNoteImages,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteImages(it)
             },
@@ -143,7 +142,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_notes_audio),
             settingsState = settings.isBackupNoteAudio,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteAudio(it)
             },
@@ -156,7 +155,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_note_category),
             settingsState = settings.isBackupNoteCategory,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNoteCategory(it)
             },
@@ -169,7 +168,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_not_сompleted_todo),
             settingsState = settings.isBackupNotCompletedTodo,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupNotCompletedTodo(it)
             },
@@ -182,7 +181,7 @@ fun getParamsList(
         BackupParams(
             title = stringResource(R.string.Copy_сompleted_todo),
             settingsState = settings.isBackupCompletedTodo,
-            isEnable = settings.isEnableLocalBackup || settings.isEnableGDriveBackup,
+            isEnable = settings.isEnableLocalBackup,
             updateStateInAutoBackupParams = {
                 backupSettingsViewModel.updateAutoBackupParamsIsBackupCompletedTodo(it)
             },
@@ -205,28 +204,12 @@ fun AutoBackupSettingsList(
         backupSettingsViewModel.isRepeatLocalAutoBackupTimeDropDownVisible().Remember()
     val gDriveAutoBackupDropDownState = backupSettingsViewModel
         .isRepeatGDriveAutoBackupTimeDropDownVisible().Remember()
-    val googleAccount = backupSettingsViewModel.getGoogleAccount().Remember()
 
     val context = LocalContext.current
 
     val selectFileForLocalAutoBackupContract = rememberLauncherForActivityResult(
         contract = CreateExternalFileContract(context),
         onResult = backupSettingsViewModel::onFileForLocalAutoBackupSelected
-    )
-
-    val sendGoogleAuthRequestContract = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            if (it.resultCode == Activity.RESULT_OK) {
-                GoogleSignIn.getSignedInAccountFromIntent(it.data)
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            googleAccount.value
-                            backupSettingsViewModel.onGoogleAuthCompleted()
-                        }
-                    }
-            }
-        }
     )
 
     Column(
@@ -305,106 +288,6 @@ fun AutoBackupSettingsList(
                 onHide = {
                     backupSettingsViewModel.hideRepeatLocalAutoBackupTimeDropDown()
                 }
-            )
-        }
-        item {
-//            Divider(modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(bottom = 10.dp), color = ThemeManager.PrimaryFontColor)
-            Text(
-                text = stringResource(R.string.Auto_Backup_Settings_GDrive),
-                fontWeight = FontWeight.W800,
-                fontSize = 20.sp,
-                color = themeColors.primaryFontColor,
-                modifier = Modifier.padding(start = 10.dp, top = 10.dp)
-            )
-        }
-        item {
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp), color = themeColors.primaryFontColor
-            )
-        }
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(R.string.Backup_is_active),
-                    fontWeight = FontWeight.W800,
-                    fontSize = 18.sp,
-                    color = themeColors.primaryFontColor,
-                    modifier = Modifier.padding(start = 10.dp, bottom = 0.dp)
-                )
-                Box(contentAlignment = Alignment.BottomEnd, modifier = Modifier.fillMaxWidth()) {
-                    Switch(
-                        checked = settings.value.isEnableGDriveBackup,
-                        onCheckedChange = {
-                            if (it) {
-                                backupSettingsViewModel.showDontKillMyAppDialog {
-                                    backupSettingsViewModel.updateIsEnableGDriveBackup(it)
-                                }
-                            } else {
-                                backupSettingsViewModel.updateIsEnableGDriveBackup(it)
-                            }
-                        },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = themeColors.secondaryColor,
-                            uncheckedThumbColor = themeColors.secondaryFontColor
-                        ),
-                    )
-                }
-            }
-        }
-        item {
-            SettingsRadioButton(
-                text = stringResource(R.string.Load_only_from_WIFI),
-                state = settings.value.isUploadToGDriveOnlyForWiFi,
-                onChange = {
-                    backupSettingsViewModel.updateUploadToGDriveOnlyForWiFi(it)
-                })
-        }
-        if (googleAccount.value == null) {
-            item {
-                GoogleSingInButton(
-                    onAuth = {
-                        backupSettingsViewModel.sendGoogleAuthRequest(sendGoogleAuthRequestContract)
-                    }
-
-                )
-            }
-        } else {
-            item {
-                SettingsButton(text = stringResource(R.string.Login_out_from_account)) {
-                    backupSettingsViewModel.loginOutGoogleAccount()
-                }
-            }
-        }
-        item {
-            SelectRepeatBackupButton(
-                getCurrentTime = {
-                    settings.value.repeatGDriveAutoBackupTimeAtHours
-                },
-                isVisible = gDriveAutoBackupDropDownState.value,
-                onChange = {
-                    backupSettingsViewModel.hideRepeatGDriveAutoBackupTimeDropDownVisible()
-                    backupSettingsViewModel.updateGDriveAutoBackupTime(it)
-                },
-                onShow = {
-                    backupSettingsViewModel.showRepeatGDriveAutoBackupTimeDropDownVisible()
-                },
-                onHide = {
-                    backupSettingsViewModel.hideRepeatGDriveAutoBackupTimeDropDownVisible()
-                }
-            )
-        }
-        item {
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp), color = themeColors.primaryFontColor
             )
         }
         items(paramsList) {

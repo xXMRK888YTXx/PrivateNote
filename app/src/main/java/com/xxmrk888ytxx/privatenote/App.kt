@@ -31,7 +31,7 @@ class App : Application(), Configuration.Provider {
         }
     }
 
-    override fun getWorkManagerConfiguration(): Configuration {
-        return Configuration.Builder().setWorkerFactory(workerFactory).build()
+    override val workManagerConfiguration: Configuration by lazy {
+        Configuration.Builder().setWorkerFactory(workerFactory).build()
     }
 }
